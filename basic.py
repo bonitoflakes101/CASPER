@@ -3,14 +3,46 @@ DIGITS = '0123456789'
 
 # Reserved keywords (language constructs)
 RESERVED_KEYWORDS = {
+    # Start and Finish
     'birth': 'birth',
     'ghost': 'ghost',
-    'global': 'GLOBAL',
+
+    # Data Types
     'int': 'integer',
     'flt': 'float',
     'bln': 'boolean',
     'chr': 'character',
-    'str': 'string'
+    'str': 'string',
+    
+    # Input/Output
+    'input': 'input',
+    'display': 'display',
+
+    # Conditionals
+    'check': 'check',
+    'if': 'if',
+    'otherwise': 'otherwise',
+    'otherwise_check': 'otherwise_check',
+    'elseif': 'elseif',
+    
+    # Loop
+    'for': 'for',
+    'repeat': 'repeat',
+    'until': 'until',
+    'stop': 'stop',
+    'skip': 'skip',
+    'swap': 'swap',
+    'shift': 'shift',
+    'revive': 'revive',
+    
+    # Others
+    'GLOBAL': 'GLOBAL',
+    'function': 'function',
+    'structure': 'structure',
+    'Day': 'Day',
+    'Night': 'Night',
+    'measure': 'measure',
+    'in': 'in'
 }
 
 # Reserved symbols (operators and parentheses)
@@ -84,6 +116,10 @@ class Token:
         if self.value:
             return f'{self.type}:{self.value}'
         return f'{self.type}'
+
+
+
+# LEXER
 class Lexer:
     def __init__(self, fn, text):
         self.fn = fn
@@ -158,12 +194,11 @@ class Lexer:
         if '$' in word:  # Only treat as identifier if $ is present
             return Token(TT_IDENTIFIER, word)
 
-        # If it is a reserved keyword, return that token
+        # Check if the word is a reserved keyword
         if word in RESERVED_KEYWORDS:
             return Token(RESERVED_KEYWORDS[word], word)
         else:
-            # Word is neither a keyword nor a valid identifier, return it as a non-identifier
-            return None  # Returning None here indicates it's neither an identifier nor a keyword.
+            return None  # If not a keyword, return None
 
 # RUN
 def run(fn, text):
