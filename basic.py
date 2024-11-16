@@ -1,6 +1,28 @@
 # CONSTANTS
 DIGITS = '0123456789'
 
+# Reserved keywords (language constructs)
+RESERVED_KEYWORDS = {
+    'birth': 'birth',
+    'ghost': 'ghost',
+    'global': 'GLOBAL',
+    'int': 'integer',
+    'flt': 'float',
+    'bln': 'boolean',
+    'chr': 'character',
+    'str': 'string'
+}
+
+# Reserved symbols (operators and parentheses)
+RESERVED_SYMBOLS = {
+    '+': 'PLUS',
+    '-': 'MINUS',
+    '*': 'MUL',
+    '/': 'DIV',
+    '(': 'LPAREN',
+    ')': 'RPAREN',
+}
+
 # ERRORS
 
 class Error:
@@ -11,7 +33,7 @@ class Error:
         self.details = details
     
     def as_string(self):
-        result  = f'{self.error_name}: {self.details}\n'
+        result = f'{self.error_name}: {self.details}\n'
         result += f'File {self.pos_start.fn}, line {self.pos_start.ln + 1}'
         return result
 
@@ -43,14 +65,15 @@ class Position:
 
 
 # TOKENS
-TT_INT		= 'INT'
-TT_FLOAT    = 'FLOAT'
-TT_PLUS     = 'PLUS'
-TT_MINUS    = 'MINUS'
-TT_MUL      = 'MUL'
-TT_DIV      = 'DIV'
-TT_LPAREN   = 'LPAREN'
-TT_RPAREN   = 'RPAREN'
+TT_INT = 'INT'
+TT_FLOAT = 'FLOAT'
+TT_PLUS = 'PLUS'
+TT_MINUS = 'MINUS'
+TT_MUL = 'MUL'
+TT_DIV = 'DIV'
+TT_LPAREN = 'LPAREN'
+TT_RPAREN = 'RPAREN'
+TT_IDENTIFIER = 'IDENTIFIER'
 
 class Token:
     def __init__(self, type_, value=None):
@@ -58,9 +81,9 @@ class Token:
         self.value = value
     
     def __repr__(self):
-        if self.value: return f'{self.type}:{self.value}'
+        if self.value:
+            return f'{self.type}:{self.value}'
         return f'{self.type}'
-
 
 # LEXER
 class Lexer:
@@ -79,27 +102,16 @@ class Lexer:
         tokens = []
 
         while self.current_char != None:
-            if self.current_char in ' \t':
+            if self.current_char in ' \t':  # Skip whitespace
                 self.advance()
-            elif self.current_char in DIGITS:
+            elif self.current_char in DIGITS:  # Handle numbers
                 tokens.append(self.make_number())
-            elif self.current_char == '+':
-                tokens.append(Token(TT_PLUS))
-                self.advance()
-            elif self.current_char == '-':
-                tokens.append(Token(TT_MINUS))
-                self.advance()
-            elif self.current_char == '*':
-                tokens.append(Token(TT_MUL))
-                self.advance()
-            elif self.current_char == '/':
-                tokens.append(Token(TT_DIV))
-                self.advance()
-            elif self.current_char == '(':
-                tokens.append(Token(TT_LPAREN))
-                self.advance()
-            elif self.current_char == ')':
-                tokens.append(Token(TT_RPAREN))
+            elif self.current_char == '$':  # Handle '$' as part of the identifier
+                tokens.append(self.make_identifier())
+            elif self.current_char.isalpha():  # Handle keywords or regular identifiers
+                tokens.append(self.make_keyword_or_identifier())
+            elif self.current_char in RESERVED_SYMBOLS:  # Handle reserved symbols (operators, parentheses)
+                tokens.append(Token(RESERVED_SYMBOLS[self.current_char], self.current_char))
                 self.advance()
             else:
                 pos_start = self.pos.copy()
@@ -127,10 +139,31 @@ class Lexer:
         else:
             return Token(TT_FLOAT, float(num_str))
 
-# RUN
+    def make_identifier(self):
+        # $ is part of the identifier, followed by alphanumeric characters or underscores
+        identifier_str = '$'
+        self.advance()  # Skip the '$'
 
+        while self.current_char != None and (self.current_char.isalnum() or self.current_char == '_'):
+            identifier_str += self.current_char
+            self.advance()
+
+        return Token(TT_IDENTIFIER, identifier_str)
+
+    def make_keyword_or_identifier(self):
+        word = ''
+        while self.current_char != None and self.current_char.isalpha():
+            word += self.current_char
+            self.advance()
+
+        # Check if the word is a reserved keyword
+        if word in RESERVED_KEYWORDS:
+            return Token(RESERVED_KEYWORDS[word], word)
+        else:
+            return Token(TT_IDENTIFIER, word)
+
+# RUN
 def run(fn, text):
     lexer = Lexer(fn, text)
     tokens, error = lexer.make_tokens()
-
     return tokens, error
