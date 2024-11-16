@@ -45,14 +45,38 @@ RESERVED_KEYWORDS = {
     'in': 'in'
 }
 
-# Reserved symbols (operators and parentheses)
+# Reserved symbols
 RESERVED_SYMBOLS = {
     '+': 'PLUS',
     '-': 'MINUS',
     '*': 'MUL',
     '/': 'DIV',
-    '(': 'LPAREN',
-    ')': 'RPAREN',
+    '%': 'MOD',
+    '//': 'DIVIDE_INT',
+    '**': 'POWER',
+    '~': 'TILDE',
+    
+    # Assignment operators
+    '=': 'ASSIGN',
+    
+    # Combined operators
+    '+=': 'PLUS_ASSIGN',
+    '*=': 'MULT_ASSIGN',
+    '-=': 'MINUS_ASSIGN',
+    '%=': 'MOD_ASSIGN',
+    '/=': 'DIV_ASSIGN',
+    
+    # Relational operators
+    '==': 'EQUAL',
+    '!=': 'NOT_EQUAL',
+    '>': 'GREATER',
+    '<': 'LESS',
+    '>=': 'GREATER_EQUAL',
+    '<=': 'LESS_EQUAL',
+    
+    # Comments (triple dash and shift-left)
+    '---': 'COMMENT',
+    '<<': 'SHIFT_LEFT'
 }
 
 # ERRORS
@@ -96,7 +120,7 @@ class Position:
         return Position(self.idx, self.ln, self.col, self.fn, self.ftxt)
 
 
-# TOKENS
+# TOKENS 
 TT_INT = 'INT'
 TT_FLOAT = 'FLOAT'
 TT_PLUS = 'PLUS'
@@ -117,9 +141,6 @@ class Token:
             return f'{self.type}:{self.value}'
         return f'{self.type}'
 
-
-
-# LEXER
 class Lexer:
     def __init__(self, fn, text):
         self.fn = fn
@@ -127,7 +148,7 @@ class Lexer:
         self.pos = Position(-1, 0, -1, fn, text)
         self.current_char = None
         self.advance()
-    
+
     def advance(self):
         self.pos.advance(self.current_char)
         self.current_char = self.text[self.pos.idx] if self.pos.idx < len(self.text) else None
@@ -144,9 +165,12 @@ class Lexer:
                 tokens.append(self.make_identifier())
             elif self.current_char.isalpha():  # Handle keywords or regular identifiers (without $)
                 tokens.append(self.make_keyword_or_identifier())
-            elif self.current_char in RESERVED_SYMBOLS:  # Handle reserved symbols (operators, parentheses)
-                tokens.append(Token(RESERVED_SYMBOLS[self.current_char], self.current_char))
-                self.advance()
+            elif self.current_char in RESERVED_SYMBOLS:  # Handle operators (keywords and symbols)
+                token = self.handle_single_char_operator()
+                if token:
+                    tokens.append(token)
+                else:
+                    self.advance()
             else:
                 pos_start = self.pos.copy()
                 char = self.current_char
@@ -154,6 +178,25 @@ class Lexer:
                 return [], IllegalCharError(pos_start, self.pos, "'" + char + "'")
 
         return tokens, None
+
+    def handle_single_char_operator(self):
+        current_char = self.current_char
+
+        # First, check for two-character operators (e.g., +=, -=, *=, /=)
+        if self.pos.idx + 1 < len(self.text):
+            next_char = self.text[self.pos.idx + 1]
+            two_char_operator = current_char + next_char
+            if two_char_operator in RESERVED_SYMBOLS:
+                self.advance()  # Skip the next character as part of the operator
+                self.advance()  # Skip the current character as well
+                return Token(RESERVED_SYMBOLS[two_char_operator], two_char_operator)
+
+        # After checking for two-character operators, check for single-character operators
+        if current_char in RESERVED_SYMBOLS:
+            self.advance()
+            return Token(RESERVED_SYMBOLS[current_char], current_char)
+
+        return None
 
     def make_number(self):
         num_str = ''
@@ -199,7 +242,6 @@ class Lexer:
             return Token(RESERVED_KEYWORDS[word], word)
         else:
             return None  # If not a keyword, return None
-
 # RUN
 def run(fn, text):
     lexer = Lexer(fn, text)
