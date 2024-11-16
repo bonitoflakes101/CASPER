@@ -84,8 +84,6 @@ class Token:
         if self.value:
             return f'{self.type}:{self.value}'
         return f'{self.type}'
-
-# LEXER
 class Lexer:
     def __init__(self, fn, text):
         self.fn = fn
@@ -108,7 +106,7 @@ class Lexer:
                 tokens.append(self.make_number())
             elif self.current_char == '$':  # Handle '$' as part of the identifier
                 tokens.append(self.make_identifier())
-            elif self.current_char.isalpha():  # Handle keywords or regular identifiers
+            elif self.current_char.isalpha():  # Handle keywords or regular identifiers (without $)
                 tokens.append(self.make_keyword_or_identifier())
             elif self.current_char in RESERVED_SYMBOLS:  # Handle reserved symbols (operators, parentheses)
                 tokens.append(Token(RESERVED_SYMBOLS[self.current_char], self.current_char))
@@ -140,7 +138,7 @@ class Lexer:
             return Token(TT_FLOAT, float(num_str))
 
     def make_identifier(self):
-        # $ is part of the identifier, followed by alphanumeric characters or underscores
+        # $ is mandatory for the identifier
         identifier_str = '$'
         self.advance()  # Skip the '$'
 
@@ -156,14 +154,23 @@ class Lexer:
             word += self.current_char
             self.advance()
 
-        # Check if the word is a reserved keyword
+        # Ensure the word has a $ in it, otherwise it is not an identifier
+        if '$' in word:  # Only treat as identifier if $ is present
+            return Token(TT_IDENTIFIER, word)
+
+        # If it is a reserved keyword, return that token
         if word in RESERVED_KEYWORDS:
             return Token(RESERVED_KEYWORDS[word], word)
         else:
-            return Token(TT_IDENTIFIER, word)
+            # Word is neither a keyword nor a valid identifier, return it as a non-identifier
+            return None  # Returning None here indicates it's neither an identifier nor a keyword.
 
 # RUN
 def run(fn, text):
     lexer = Lexer(fn, text)
     tokens, error = lexer.make_tokens()
+
+    # If any token is None (invalid identifier/word), remove it from the token list
+    tokens = [token for token in tokens if token is not None]
+
     return tokens, error
