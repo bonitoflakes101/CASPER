@@ -13,7 +13,7 @@ RESERVED_KEYWORDS = {
     'bln': 'boolean',
     'chr': 'character',
     'str': 'string',
-    
+
     # Input/Output
     'input': 'input',
     'display': 'display',
@@ -24,7 +24,7 @@ RESERVED_KEYWORDS = {
     'otherwise': 'otherwise',
     'otherwise_check': 'otherwise_check',
     'elseif': 'elseif',
-    
+
     # Loop
     'for': 'for',
     'repeat': 'repeat',
@@ -34,7 +34,7 @@ RESERVED_KEYWORDS = {
     'swap': 'swap',
     'shift': 'shift',
     'revive': 'revive',
-    
+
     # Others
     'GLOBAL': 'GLOBAL',
     'function': 'function',
@@ -42,7 +42,7 @@ RESERVED_KEYWORDS = {
     'Day': 'Day',
     'Night': 'Night',
     'measure': 'measure',
-    'in': 'in'
+    'in': 'in',
 }
 
 # Reserved symbols
@@ -55,47 +55,38 @@ RESERVED_SYMBOLS = {
     '//': 'DIVIDE_INT',
     '**': 'POWER',
     '~': 'TILDE',
-    
-    # Assignment operators
     '=': 'ASSIGN',
-    
-    # Combined operators
     '+=': 'PLUS_ASSIGN',
-    '*=': 'MULT_ASSIGN',
     '-=': 'MINUS_ASSIGN',
-    '%=': 'MOD_ASSIGN',
+    '*=': 'MULT_ASSIGN',
     '/=': 'DIV_ASSIGN',
-    
-    # Relational operators
+    '%=': 'MOD_ASSIGN',
     '==': 'EQUAL',
     '!=': 'NOT_EQUAL',
     '>': 'GREATER',
     '<': 'LESS',
     '>=': 'GREATER_EQUAL',
     '<=': 'LESS_EQUAL',
-    
-    # Comments (triple dash and shift-left)
     '---': 'COMMENT',
-    '<<': 'SHIFT_LEFT'
+    '<<': 'SHIFT_LEFT',
 }
 
 # ERRORS
-
 class Error:
     def __init__(self, pos_start, pos_end, error_name, details):
         self.pos_start = pos_start
         self.pos_end = pos_end
         self.error_name = error_name
         self.details = details
-    
+
     def as_string(self):
-        result = f'{self.error_name}: {self.details}\n'
-        result += f'File {self.pos_start.fn}, line {self.pos_start.ln + 1}'
-        return result
+        return f'{self.error_name}: {self.details}\nFile {self.pos_start.fn}, line {self.pos_start.ln + 1}'
+
 
 class IllegalCharError(Error):
     def __init__(self, pos_start, pos_end, details):
         super().__init__(pos_start, pos_end, 'Illegal Character', details)
+
 
 # POSITION
 class Position:
@@ -106,41 +97,29 @@ class Position:
         self.fn = fn
         self.ftxt = ftxt
 
-    def advance(self, current_char):
+    def advance(self, current_char=None):
         self.idx += 1
         self.col += 1
-
         if current_char == '\n':
             self.ln += 1
             self.col = 0
-
         return self
 
     def copy(self):
         return Position(self.idx, self.ln, self.col, self.fn, self.ftxt)
 
 
-# TOKENS 
-TT_INT = 'INT'
-TT_FLOAT = 'FLOAT'
-TT_PLUS = 'PLUS'
-TT_MINUS = 'MINUS'
-TT_MUL = 'MUL'
-TT_DIV = 'DIV'
-TT_LPAREN = 'LPAREN'
-TT_RPAREN = 'RPAREN'
-TT_IDENTIFIER = 'IDENTIFIER'
-
+# TOKENS
 class Token:
     def __init__(self, type_, value=None):
         self.type = type_
         self.value = value
-    
-    def __repr__(self):
-        if self.value:
-            return f'{self.type}:{self.value}'
-        return f'{self.type}'
 
+    def __repr__(self):
+        return f'{self.type}:{self.value}' if self.value else f'{self.type}'
+
+
+# LEXER
 class Lexer:
     def __init__(self, fn, text):
         self.fn = fn
@@ -155,99 +134,64 @@ class Lexer:
 
     def make_tokens(self):
         tokens = []
-
-        while self.current_char != None:
-            if self.current_char in ' \t':  # Skip whitespace
+        while self.current_char is not None:
+            if self.current_char in ' \t':
                 self.advance()
-            elif self.current_char in DIGITS:  # Handle numbers
+            elif self.current_char in DIGITS:
                 tokens.append(self.make_number())
-            elif self.current_char == '$':  # Handle '$' as part of the identifier
+            elif self.current_char == '$':
                 tokens.append(self.make_identifier())
-            elif self.current_char.isalpha():  # Handle keywords or regular identifiers (without $)
+            elif self.current_char.isalpha():
                 tokens.append(self.make_keyword_or_identifier())
-            elif self.current_char in RESERVED_SYMBOLS:  # Handle operators (keywords and symbols)
-                token = self.handle_single_char_operator()
-                if token:
-                    tokens.append(token)
-                else:
-                    self.advance()
+            elif self.current_char in RESERVED_SYMBOLS:
+                tokens.append(self.make_operator())
             else:
                 pos_start = self.pos.copy()
                 char = self.current_char
                 self.advance()
-                return [], IllegalCharError(pos_start, self.pos, "'" + char + "'")
-
+                return [], IllegalCharError(pos_start, self.pos, f"'{char}'")
         return tokens, None
-
-    def handle_single_char_operator(self):
-        current_char = self.current_char
-
-        # First, check for two-character operators (e.g., +=, -=, *=, /=)
-        if self.pos.idx + 1 < len(self.text):
-            next_char = self.text[self.pos.idx + 1]
-            two_char_operator = current_char + next_char
-            if two_char_operator in RESERVED_SYMBOLS:
-                self.advance()  # Skip the next character as part of the operator
-                self.advance()  # Skip the current character as well
-                return Token(RESERVED_SYMBOLS[two_char_operator], two_char_operator)
-
-        # After checking for two-character operators, check for single-character operators
-        if current_char in RESERVED_SYMBOLS:
-            self.advance()
-            return Token(RESERVED_SYMBOLS[current_char], current_char)
-
-        return None
 
     def make_number(self):
         num_str = ''
         dot_count = 0
-
-        while self.current_char != None and self.current_char in DIGITS + '.':
+        while self.current_char is not None and self.current_char in DIGITS + '.':
             if self.current_char == '.':
-                if dot_count == 1: break
+                if dot_count == 1:
+                    break
                 dot_count += 1
-                num_str += '.'
-            else:
-                num_str += self.current_char
+            num_str += self.current_char
             self.advance()
-
-        if dot_count == 0:
-            return Token(TT_INT, int(num_str))
-        else:
-            return Token(TT_FLOAT, float(num_str))
+        return Token('FLOAT' if dot_count else 'INT', float(num_str) if dot_count else int(num_str))
 
     def make_identifier(self):
-        # $ is mandatory for the identifier
         identifier_str = '$'
-        self.advance()  # Skip the '$'
-
-        while self.current_char != None and (self.current_char.isalnum() or self.current_char == '_'):
+        self.advance()
+        while self.current_char is not None and (self.current_char.isalnum() or self.current_char == '_'):
             identifier_str += self.current_char
             self.advance()
-
-        return Token(TT_IDENTIFIER, identifier_str)
+        return Token('IDENTIFIER', identifier_str)
 
     def make_keyword_or_identifier(self):
         word = ''
-        while self.current_char != None and self.current_char.isalpha():
+        while self.current_char is not None and self.current_char.isalpha():
             word += self.current_char
             self.advance()
+        return Token(RESERVED_KEYWORDS.get(word, 'IDENTIFIER'), word)
 
-        # Ensure the word has a $ in it, otherwise it is not an identifier
-        if '$' in word:  # Only treat as identifier if $ is present
-            return Token(TT_IDENTIFIER, word)
+    def make_operator(self):
+        op = self.current_char
+        if self.pos.idx + 1 < len(self.text):
+            two_char_op = op + self.text[self.pos.idx + 1]
+            if two_char_op in RESERVED_SYMBOLS:
+                self.advance()
+                op = two_char_op
+        self.advance()
+        return Token(RESERVED_SYMBOLS[op], op)
 
-        # Check if the word is a reserved keyword
-        if word in RESERVED_KEYWORDS:
-            return Token(RESERVED_KEYWORDS[word], word)
-        else:
-            return None  # If not a keyword, return None
-# RUN
+
+# RUN FUNCTION
 def run(fn, text):
     lexer = Lexer(fn, text)
     tokens, error = lexer.make_tokens()
-
-    # If any token is None (invalid identifier/word), remove it from the token list
-    tokens = [token for token in tokens if token is not None]
-
     return tokens, error
