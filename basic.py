@@ -1,7 +1,9 @@
 # CONSTANTS
 DIGITS = '0123456789'
 
-# Reserved keywords (language constructs)
+# Token type: Value
+
+# Reserved keywords 
 RESERVED_KEYWORDS = {
     # Start and Finish
     'birth': 'birth',
