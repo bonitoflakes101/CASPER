@@ -67,8 +67,8 @@ RESERVED_SYMBOLS = {
     '<': 'LESS',
     '>=': 'GREATER_EQUAL',
     '<=': 'LESS_EQUAL',
-    '---': 'COMMENT',
-    '<<': 'SHIFT_LEFT',
+    '---': 'MULTI_COMMENT',
+    '<<': 'SINGLE_COMMENT',
 }
 
 # ERRORS
