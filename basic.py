@@ -8,7 +8,7 @@ RESERVED_KEYWORDS = {
     'ghost': 'ghost',
 
     # Data Types
-    'int': 'integer',
+    'int': 'int',
     'flt': 'float',
     'bln': 'boolean',
     'chr': 'character',
@@ -19,11 +19,9 @@ RESERVED_KEYWORDS = {
     'display': 'display',
 
     # Conditionals
-    'check': 'check',
-    'if': 'if',
-    'otherwise': 'otherwise',
-    'otherwise_check': 'otherwise_check',
-    'elseif': 'elseif',
+    'check': 'if',
+    'otherwise': 'else',
+    'otherwise_check': 'elseif',
 
     # Loop
     'for': 'for',
