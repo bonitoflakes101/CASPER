@@ -134,23 +134,56 @@ class Lexer:
 
     def make_tokens(self):
         tokens = []
+        errors = []
+        print(f"{'Index':<6}{'Char':<6}{'Action':<30}{'Token (if any)':<20}")
+        print('-' * 70)
+
         while self.current_char is not None:
-            if self.current_char in ' \t':
+            index = self.pos.idx
+            char = self.current_char
+            action = ""
+            token = None
+
+            if char in ' \t':
+                action = "Skipped whitespace"
                 self.advance()
-            elif self.current_char in DIGITS:
-                tokens.append(self.make_number())
-            elif self.current_char == '$':
-                tokens.append(self.make_identifier())
-            elif self.current_char.isalpha():
-                tokens.append(self.make_keyword_or_identifier())
-            elif self.current_char in RESERVED_SYMBOLS:
-                tokens.append(self.make_operator())
+            elif char in DIGITS:
+                start_pos = self.pos.idx
+                token = self.make_number()
+                action = f"Tokenized number [{start_pos}-{self.pos.idx - 1}]"
+                tokens.append(token)
+            elif char == '$':
+                start_pos = self.pos.idx
+                token = self.make_identifier()
+                action = f"Tokenized identifier [{start_pos}-{self.pos.idx - 1}]"
+                tokens.append(token)
+            elif char.isalpha():
+                token = self.make_keyword_or_identifier()
+                if token.type == 'ERROR':
+                    errors.append(token.value)
+                    action = f"Error: {token.value}"
+                else:
+                    action = f"Tokenized keyword/identifier [{index}-{self.pos.idx - 1}]"
+                    tokens.append(token)
+            elif char in RESERVED_SYMBOLS:
+                start_pos = self.pos.idx
+                token = self.make_operator()
+                action = f"Tokenized operator/symbol [{start_pos}-{self.pos.idx - 1}]"
+                tokens.append(token)
             else:
                 pos_start = self.pos.copy()
-                char = self.current_char
+                action = "Illegal character"
+                errors.append(f"Illegal character '{char}' at position {index}")
                 self.advance()
-                return [], IllegalCharError(pos_start, self.pos, f"'{char}'")
-        return tokens, None
+
+            for i in range(index, self.pos.idx):
+                token_display = repr(token) if i == index else ""
+                print(f"{i:<6}{self.text[i]:<6}{action:<30}{token_display:<20}")
+
+        print('-' * 70)
+        print("Tokenization complete.")
+        return tokens, errors
+
 
     def make_number(self):
         num_str = ''
@@ -174,10 +207,22 @@ class Lexer:
 
     def make_keyword_or_identifier(self):
         word = ''
-        while self.current_char is not None and self.current_char.isalpha():
+        pos_start = self.pos.copy()
+
+        while self.current_char is not None and self.current_char.isalnum():
             word += self.current_char
             self.advance()
-        return Token(RESERVED_KEYWORDS.get(word, 'IDENTIFIER'), word)
+
+        if word in RESERVED_KEYWORDS:
+            return Token(RESERVED_KEYWORDS[word], word)
+
+        if not word.startswith('$'):
+            return Token('ERROR', f"Invalid identifier '{word}' (must start with '$')")
+
+        return Token('IDENTIFIER', word)
+
+
+
 
     def make_operator(self):
         op = self.current_char
@@ -193,5 +238,12 @@ class Lexer:
 # RUN FUNCTION
 def run(fn, text):
     lexer = Lexer(fn, text)
-    tokens, error = lexer.make_tokens()
-    return tokens, error
+    tokens, errors = lexer.make_tokens()
+
+    if errors:
+        print("\nErrors encountered during tokenization:")
+        for error in errors:
+            print(f" - {error}")
+
+    return tokens, None
+
