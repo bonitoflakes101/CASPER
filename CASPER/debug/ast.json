@@ -7,13 +7,29 @@
                 "expr": {
                     "type": "InfixExpression",
                     "left_node": {
-                        "type": "IntegerLiteral",
-                        "value": 5
+                        "type": "InfixExpression",
+                        "left_node": {
+                            "type": "IntegerLiteral",
+                            "value": 5
+                        },
+                        "operator": "+",
+                        "right_node": {
+                            "type": "IntegerLiteral",
+                            "value": 5
+                        }
                     },
-                    "operator": "+",
+                    "operator": "-",
                     "right_node": {
-                        "type": "IntegerLiteral",
-                        "value": 5
+                        "type": "InfixExpression",
+                        "left_node": {
+                            "type": "IntegerLiteral",
+                            "value": 10
+                        },
+                        "operator": "*",
+                        "right_node": {
+                            "type": "IntegerLiteral",
+                            "value": 10
+                        }
                     }
                 }
             }

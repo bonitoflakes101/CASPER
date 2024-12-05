@@ -27,7 +27,7 @@ class NodeType(Enum):
 
     # Literals
     IntegerLiteral = "IntegerLiteral"
-    # FloatLiteral = "FloatLiteral"
+    FloatLiteral = "FloatLiteral"
     # IdentifierLiteral = "IdentifierLiteral"
     # BooleanLiteral = "BooleanLiteral"
     # StringLiteral = "StringLiteral"
