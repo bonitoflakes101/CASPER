@@ -14,7 +14,7 @@ PARSER_DEBUG: bool = False
 COMPILER_DEBUG: bool = True
 
 if __name__ == '__main__':
-    with open("tests/lexer.lime", "r") as f:
+    with open("tests/compiler.lime", "r") as f:
         code: str = f.read()
 
 
@@ -51,5 +51,5 @@ if __name__ == '__main__':
     if COMPILER_DEBUG: 
         with open("debug/ir.ll", "w") as f:
             f.write(str(module))
-            
+
 

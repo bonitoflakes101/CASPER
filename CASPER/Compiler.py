@@ -186,11 +186,10 @@ class Compiler:
                     value = self.builder.mul(left_value, right_value)
                 case '/':
                     value = self.builder.sdiv(left_value, right_value)
-        #         case '%':
-        #             value = self.builder.srem(left_value, right_value)
-        #         case '^':
-        #             ement this (Having an issue off camera implementing this)
-        #             pass
+                case '%':
+                    value = self.builder.srem(left_value, right_value)
+                case '^':
+                    pass
         #         case '<':
         #             value = self.builder.icmp_signed('<', left_value, right_value)
         #             Type = ir.IntType(1)
@@ -207,22 +206,22 @@ class Compiler:
         #             value = self.builder.icmp_signed('==', left_value, right_value)
         #             Type = ir.IntType(1)
                 
-        # elif isinstance(right_type, ir.FloatType) and isinstance(left_type, ir.FloatType):
-        #     Type = ir.FloatType()
-        #     match operator:
-        #         case '+':
-        #             value = self.builder.fadd(left_value, right_value)
-        #         case '-':
-        #             value = self.builder.fsub(left_value, right_value)
-        #         case '*':
-        #             value = self.builder.fmul(left_value, right_value)
-        #         case '/':
-        #             value = self.builder.fdiv(left_value, right_value)
-        #         case '%':
-        #             value = self.builder.frem(left_value, right_value)
-        #         case '^':
-        #            
-        #             pass
+        elif isinstance(right_type, ir.FloatType) and isinstance(left_type, ir.FloatType):
+            Type = ir.FloatType()
+            match operator:
+                case '+':
+                    value = self.builder.fadd(left_value, right_value)
+                case '-':
+                    value = self.builder.fsub(left_value, right_value)
+                case '*':
+                    value = self.builder.fmul(left_value, right_value)
+                case '/':
+                    value = self.builder.fdiv(left_value, right_value)
+                case '%':
+                    value = self.builder.frem(left_value, right_value)
+                case '^':
+                   
+                    pass
         #         case '<':
         #             value = self.builder.fcmp_ordered('<', left_value, right_value)
         #             Type = ir.IntType(1)
