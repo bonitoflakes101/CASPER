@@ -4,7 +4,7 @@ from typing import Callable
 from enum import Enum, auto
 
 from AST import Statement, Expression, Program
-from AST import ExpressionStatement
+from AST import ExpressionStatement, LetStatement
 from AST import InfixExpression
 from AST import IntegerLiteral, FloatLiteral, IdentifierLiteral, BooleanLiteral, StringLiteral
 
@@ -67,8 +67,8 @@ class Parser:
         self.current_token = self.peek_token
         self.peek_token = self.lexer.next_token()
 
-    # def __current_token_is(self, tt: TokenType) -> bool:
-    #     return self.current_token.type == tt
+    def __current_token_is(self, tt: TokenType) -> bool:
+        return self.current_token.type == tt
 
     def __peek_token_is(self, tt: TokenType) -> bool:
         """ Peeks one token ahead and checks the type """
@@ -126,27 +126,25 @@ class Parser:
 
     # # region Statament Methods
     def __parse_statement(self) -> Statement:
-        return self.__parse_expression_statement()
-
-    #     match self.current_token.type:
-    #         case TokenType.LET:
-    #             return self.__parse_let_statement()
-    #         case TokenType.FN:
-    #             return self.__parse_function_statement()
-    #         case TokenType.RETURN:
-    #             return self.__parse_return_statement()
-    #         case TokenType.WHILE:
-    #             return self.__parse_while_statement()
-    #         case TokenType.BREAK:
-    #             return self.__parse_break_statement()
-    #         case TokenType.CONTINUE:
-    #             return self.__parse_continue_statement()
-    #         case TokenType.FOR:
-    #             return self.__parse_for_statement()
-    #         case TokenType.IMPORT:
-    #             return self.__parse_import_statement()
-    #         case _:
-    #             return self.__parse_expression_statement()
+        match self.current_token.type:
+            case TokenType.LET:
+                return self.__parse_let_statement()
+            # case TokenType.FN:
+            #     return self.__parse_function_statement()
+            # case TokenType.RETURN:
+            #     return self.__parse_return_statement()
+            # case TokenType.WHILE:
+            #     return self.__parse_while_statement()
+            # case TokenType.BREAK:
+            #     return self.__parse_break_statement()
+            # case TokenType.CONTINUE:
+            #     return self.__parse_continue_statement()
+            # case TokenType.FOR:
+            #     return self.__parse_for_statement()
+            # case TokenType.IMPORT:
+            #     return self.__parse_import_statement()
+            case _:
+                return self.__parse_expression_statement()
     
     def __parse_expression_statement(self) -> ExpressionStatement:
         expr = self.__parse_expression(PrecedenceType.P_LOWEST)
@@ -158,35 +156,35 @@ class Parser:
 
         return stmt
     
-    # def __parse_let_statement(self) -> LetStatement:
-    #     stmt: LetStatement = LetStatement()
+    def __parse_let_statement(self) -> LetStatement:
+        stmt: LetStatement = LetStatement()
 
-    #     # let a: int = 10;
+        # let a: int = 10;
 
-    #     if not self.__expect_peek(TokenType.IDENT):
-    #         return None
+        if not self.__expect_peek(TokenType.IDENT):
+            return None
         
-    #     stmt.name = IdentifierLiteral(value=self.current_token.literal)
+        stmt.name = IdentifierLiteral(value=self.current_token.literal)
 
-    #     if not self.__expect_peek(TokenType.COLON):
-    #         return None
+        if not self.__expect_peek(TokenType.COLON):
+            return None
         
-    #     if not self.__expect_peek(TokenType.TYPE):
-    #         return None
+        if not self.__expect_peek(TokenType.TYPE):
+            return None
         
-    #     stmt.value_type = self.current_token.literal
+        stmt.value_type = self.current_token.literal
 
-    #     if not self.__expect_peek(TokenType.EQ):
-    #         return None
+        if not self.__expect_peek(TokenType.EQ):
+            return None
         
-    #     self.__next_token()
+        self.__next_token()
 
-    #     stmt.value = self.__parse_expression(PrecedenceType.P_LOWEST)
+        stmt.value = self.__parse_expression(PrecedenceType.P_LOWEST)
 
-    #     while not self.__current_token_is(TokenType.SEMICOLON) and not self.__current_token_is(TokenType.EOF):
-    #         self.__next_token()
+        while not self.__current_token_is(TokenType.SEMICOLON) and not self.__current_token_is(TokenType.EOF):
+            self.__next_token()
 
-    #     return stmt
+        return stmt
     
     # def __parse_function_statement(self) -> FunctionStatement:
     #     stmt: FunctionStatement = FunctionStatement()
