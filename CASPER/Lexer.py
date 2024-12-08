@@ -53,7 +53,7 @@ class Lexer:
 
         if dot_count == 0:
             return self.__new_token(TokenType.INT, int(output))
-        return self.__new_token(TokenType.FLOAT, float(output))
+        return self.__new_token(TokenType.FLT, float(output))
 
     # def __read_identifier(self) -> str:
     #     """Reads an identifier or keyword."""

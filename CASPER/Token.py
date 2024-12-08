@@ -9,7 +9,7 @@ class TokenType(Enum):
     # Data Types
     IDENT = "IDENT"
     INT = "INT"
-    FLOAT = "FLOAT"
+    FLT = "FLT"
     BLN = "BLN"
     STR = "STR"
     CHR = "CHR"
@@ -76,6 +76,8 @@ class TokenType(Enum):
     # Parentheses
     LPAREN = "LPAREN"
     RPAREN = "RPAREN"
+    LBRACE = '{'
+    RBRACE = '}'
 
 
 class Token:
@@ -116,7 +118,7 @@ KEYWORDS: dict[str, TokenType] = {
     "measure": TokenType.MEASURE,
     "in": TokenType.IN,
     "int": TokenType.INT,
-    "float": TokenType.FLOAT,
+    "flt": TokenType.FLT,
     "bln": TokenType.BLN,
     "str": TokenType.STR,  # Ensure to use "STR" for string type
     "chr": TokenType.CHR
@@ -127,7 +129,7 @@ def lookup_ident(ident: str) -> TokenType:
     if tt is not None:
         return tt
     
-    if ident in {"int", "float", "bln", "str", "chr"}:
+    if ident in {"int", "flt", "bln", "str", "chr"}:
         return TokenType.TYPE
     
     return TokenType.IDENT
