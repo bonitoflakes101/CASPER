@@ -1,4 +1,4 @@
-from Token import Token, TokenType
+from Token import Token, TokenType, lookup_ident
 from typing import Any
 
 class Lexer:
@@ -41,6 +41,9 @@ class Lexer:
         """ Checks if the character is a digit """
         return '0' <= ch and ch <= '9'
     
+    def __is_letter(self, ch: str) -> bool:
+         return 'a' <= ch and ch <= 'z' or 'A' <= ch and ch <= 'Z' or ch == '-'
+    
     def __read_number(self) -> Token:
         """ Reads a number from the input file and returns a Token """
         start_pos: int = self.position
@@ -66,6 +69,12 @@ class Lexer:
         else:
             return self.__new_token(TokenType.FLOAT, float(output))
         
+    def __read_identifier(self) -> str:
+        position = self.position
+        while self.current_char is not None and (self.__is_letter(self.current_char) or self.current_char.isalnum()):
+            self.__read_char()
+        
+        return self.source[position:self.position]
     
     def next_token(self) -> list[Token]:
         """
@@ -117,7 +126,14 @@ class Lexer:
             case None:
                 tok = self.__new_token(TokenType.EOF, "")
             case _:
-                if self.__is_digit(self.current_char):
+                if self.__is_letter(self.current_char):
+                
+                    identifier = self.__read_identifier()
+                    token_type = lookup_ident(identifier)
+                    token = self.__new_token(tt=token_type, literal=identifier)
+                    return token
+
+                elif self.__is_digit(self.current_char):
                     tok = self.__read_number()
                     return tok
                 else:

@@ -84,52 +84,53 @@ class Token:
         return str(self)
     
 
-# KEYWORDS: dict[str, TokenType] = {
-#     "let": TokenType.LET,
-#     "fn": TokenType.FN,
-#     "return": TokenType.RETURN,
-#     "if": TokenType.IF,
-#     "else": TokenType.ELSE,
-#     "true": TokenType.TRUE,
-#     "false": TokenType.FALSE,
-#     "while": TokenType.WHILE,
-#     "break": TokenType.BREAK,
-#     "continue": TokenType.CONTINUE,
-#     "for": TokenType.FOR,
-#     "import": TokenType.IMPORT
-# }
+KEYWORDS: dict[str, TokenType] = {
+    "let": TokenType.LET, #
+    "fn": TokenType.FN,
+    "return": TokenType.RETURN,
+    "if": TokenType.IF,
+    "else": TokenType.ELSE,
+    "true": TokenType.TRUE,
+    "false": TokenType.FALSE,
+    "while": TokenType.WHILE,
+    "break": TokenType.BREAK,
+    "continue": TokenType.CONTINUE,
+    "for": TokenType.FOR,
+    "import": TokenType.IMPORT
+}
 
-# ALT_KEYWORDS: dict[str, TokenType] = {
-#     "lit": TokenType.LET,
-#     "be": TokenType.EQ,
-#     "rn": TokenType.SEMICOLON,
-#     "bruh": TokenType.FN,
-#     "pause": TokenType.RETURN,
-#     "3--D": TokenType.ARROW,
-#     "sus": TokenType.IF,
-#     "imposter": TokenType.ELSE,
-#     "wee": TokenType.WHILE,
-#     "yeet": TokenType.BREAK,
-#     "anothaone": TokenType.CONTINUE,
-#     "dab": TokenType.FOR,
-#     "come": TokenType.IMPORT,
-#     "nocap": TokenType.TRUE,
-#     "cap": TokenType.FALSE,
-#     "gib": TokenType.IMPORT
-# }
+ALT_KEYWORDS: dict[str, TokenType] = {
+    "lit": TokenType.LET, #
+    "be": TokenType.EQ, #
+    "rn": TokenType.SEMICOLON, #
+    "bruh": TokenType.FN,
+    "pause": TokenType.RETURN,
+    "3--D": TokenType.ARROW,
+    "sus": TokenType.IF,
+    "imposter": TokenType.ELSE,
+    "wee": TokenType.WHILE,
+    "yeet": TokenType.BREAK,
+    "anothaone": TokenType.CONTINUE,
+    "dab": TokenType.FOR,
+    "come": TokenType.IMPORT,
+    "nocap": TokenType.TRUE,
+    "cap": TokenType.FALSE,
+    "gib": TokenType.IMPORT
+}
 
-# TYPE_KEYWORDS: list[str] = ["int", "float", "bool", "str", "void"]
+TYPE_KEYWORDS: list[str] = ["int", "float"]
+TYPE_KEYWORDS: list[str] = ["int", "float", "bool", "str", "void"]
 
-# def lookup_ident(ident: str) -> TokenType:
-#     tt: TokenType | None = KEYWORDS.get(ident)
-#     if tt is not None:
-#         return tt
+def lookup_ident(ident: str) -> TokenType:
+    tt: TokenType | None = KEYWORDS.get(ident)
+    if tt is not None:
+        return tt
     
-#     tt: TokenType | None = ALT_KEYWORDS.get(ident)
-#     if tt is not None:
-#         return tt
+    tt: TokenType | None = ALT_KEYWORDS.get(ident)
+    if tt is not None:
+        return tt
     
-#     if ident in TYPE_KEYWORDS:
-#         return TokenType.TYPE
+    if ident in TYPE_KEYWORDS:
+        return TokenType.TYPE
     
-#     return TokenType.IDENT
+    return TokenType.IDENT
