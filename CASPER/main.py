@@ -9,12 +9,12 @@ from llvmlite import ir
 import llvmlite.binding as llvm
 from ctypes import CFUNCTYPE, c_int, c_float
 
-LEXER_DEBUG: bool = False
+LEXER_DEBUG: bool = True
 PARSER_DEBUG: bool = False
-COMPILER_DEBUG: bool = True
+COMPILER_DEBUG: bool = False
 
 if __name__ == '__main__':
-    with open("tests/test.lime", "r") as f:
+    with open("tests/lexer.lime", "r") as f:
         code: str = f.read()
 
 
@@ -29,8 +29,9 @@ if __name__ == '__main__':
 
     program: Program = p.parse_program()
     if len(p.errors) > 0:
-        for err in p.errors:
-            print(err)
+        # for parser
+        # for err in p.errors: 
+        #     print(err)
         exit(1)
 
     if PARSER_DEBUG:

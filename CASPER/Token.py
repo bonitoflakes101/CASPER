@@ -10,22 +10,19 @@ class TokenType(Enum):
     IDENT = "IDENT"
     INT = "INT"
     FLOAT = "FLOAT"
-    STRING = "STRING"
+    BLN = "BLN"
+    STR = "STR"
+    CHR = "CHR"
 
     # Arithmetic Symbols
     PLUS = "PLUS"
     MINUS = "MINUS"
     ASTERISK = "ASTERISK"
     SLASH = "SLASH"
+    DOUBLE_SLASH = "DOUBLE_SLASH"
     POW = "POW"
     MODULUS = "MODULUS"
-
-    # Prefix Symbols
-    BANG = "BANG"
-    
-    # Postfix Symbols
-    PLUS_PLUS = "PLUS_PLUS"
-    MINUS_MINUS = "MINUS_MINUS"
+    TILDE = "TILDE"
 
     # Assignment Symbols
     EQ = "EQ"
@@ -33,41 +30,52 @@ class TokenType(Enum):
     MINUS_EQ = "MINUS_EQ"
     MUL_EQ = "MUL_EQ"
     DIV_EQ = "DIV_EQ"
+    MOD_EQ = "MOD_EQ"
 
     # Comparison Symbols
-    LT = '<'
-    GT = '>'
-    EQ_EQ = '=='
-    NOT_EQ = '!='
-    LT_EQ = '<='
-    GT_EQ = '>='
+    EQ_EQ = "EQ_EQ"
+    NOT_EQ = "NOT_EQ"
+    LT = "LT"
+    GT = "GT"
+    LT_EQ = "LT_EQ"
+    GT_EQ = "GT_EQ"
 
-    # Symbols
-    COLON = "COLON"
-    COMMA = "COMMA"
-    SEMICOLON = "SEMICOLON"
-    ARROW = "ARROW"
-    LPAREN = "LPAREN"
-    RPAREN = "RPAREN"
-    LBRACE = "LBRACE"
-    RBRACE = "RBRACE"
+    # Comments
+    COMMENT = "COMMENT"
+    DOUBLE_LT = "DOUBLE_LT"
 
     # Keywords
-    LET = "LET"
-    FN = "FN"
-    RETURN = "RETURN"
-    IF = "IF"
-    ELSE = "ELSE"
-    TRUE = "TRUE"
-    FALSE = "FALSE"
-    WHILE = "WHILE"
-    BREAK = "BREAK"
-    CONTINUE = "CONTINUE"
+    BIRTH = "BIRTH"
+    GHOST = "GHOST"
+    INPUT = "INPUT"
+    DISPLAY = "DISPLAY"
+    CHECK = "CHECK"
+    OTHERWISE = "OTHERWISE"
+    OTHERWISE_CHECK = "OTHERWISE_CHECK"
     FOR = "FOR"
-    IMPORT = "IMPORT"
+    REPEAT = "REPEAT"
+    UNTIL = "UNTIL"
+    STOP = "STOP"
+    SKIP = "SKIP"
+    SWAP = "SWAP"
+    SHIFT = "SHIFT"
+    REVIVE = "REVIVE"
+    GLOBAL = "GLOBAL"
+    FUNCTION = "FUNCTION"
+    STRUCTURE = "STRUCTURE"
+    DAY = "DAY"
+    NIGHT = "NIGHT"
+    MEASURE = "MEASURE"
+    IN = "IN"
+    NEWLINE = "NEWLINE"
+    SEMICOLON = ";" 
 
     # Typing
     TYPE = "TYPE"
+
+    # Parentheses
+    LPAREN = "LPAREN"
+    RPAREN = "RPAREN"
 
 
 class Token:
@@ -82,55 +90,45 @@ class Token:
     
     def __repr__(self) -> str:
         return str(self)
-    
+
 
 KEYWORDS: dict[str, TokenType] = {
-    "let": TokenType.LET, #
-    "fn": TokenType.FN,
-    "return": TokenType.RETURN,
-    "if": TokenType.IF,
-    "else": TokenType.ELSE,
-    "true": TokenType.TRUE,
-    "false": TokenType.FALSE,
-    "while": TokenType.WHILE,
-    "break": TokenType.BREAK,
-    "continue": TokenType.CONTINUE,
+    "birth": TokenType.BIRTH,
+    "ghost": TokenType.GHOST,
+    "input": TokenType.INPUT,
+    "display": TokenType.DISPLAY,
+    "check": TokenType.CHECK,
+    "otherwise": TokenType.OTHERWISE,
+    "otherwise_check": TokenType.OTHERWISE_CHECK,
     "for": TokenType.FOR,
-    "import": TokenType.IMPORT
+    "repeat": TokenType.REPEAT,
+    "until": TokenType.UNTIL,
+    "stop": TokenType.STOP,
+    "skip": TokenType.SKIP,
+    "swap": TokenType.SWAP,
+    "shift": TokenType.SHIFT,
+    "revive": TokenType.REVIVE,
+    "GLOBAL": TokenType.GLOBAL,
+    "function": TokenType.FUNCTION,
+    "structure": TokenType.STRUCTURE,
+    "day": TokenType.DAY,
+    "night": TokenType.NIGHT,
+    "measure": TokenType.MEASURE,
+    "in": TokenType.IN,
+    "int": TokenType.INT,
+    "float": TokenType.FLOAT,
+    "bln": TokenType.BLN,
+    "str": TokenType.STR,  # Ensure to use "STR" for string type
+    "chr": TokenType.CHR
 }
-
-ALT_KEYWORDS: dict[str, TokenType] = {
-    "lit": TokenType.LET, #
-    "be": TokenType.EQ, #
-    "rn": TokenType.SEMICOLON, #
-    "bruh": TokenType.FN,
-    "pause": TokenType.RETURN,
-    "3--D": TokenType.ARROW,
-    "sus": TokenType.IF,
-    "imposter": TokenType.ELSE,
-    "wee": TokenType.WHILE,
-    "yeet": TokenType.BREAK,
-    "anothaone": TokenType.CONTINUE,
-    "dab": TokenType.FOR,
-    "come": TokenType.IMPORT,
-    "nocap": TokenType.TRUE,
-    "cap": TokenType.FALSE,
-    "gib": TokenType.IMPORT
-}
-
-TYPE_KEYWORDS: list[str] = ["int", "float"]
-TYPE_KEYWORDS: list[str] = ["int", "float", "bool", "str", "void"]
 
 def lookup_ident(ident: str) -> TokenType:
     tt: TokenType | None = KEYWORDS.get(ident)
     if tt is not None:
         return tt
     
-    tt: TokenType | None = ALT_KEYWORDS.get(ident)
-    if tt is not None:
-        return tt
-    
-    if ident in TYPE_KEYWORDS:
+    if ident in {"int", "float", "bln", "str", "chr"}:
         return TokenType.TYPE
     
     return TokenType.IDENT
+
