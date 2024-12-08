@@ -55,12 +55,26 @@ class Lexer:
             return self.__new_token(TokenType.INT, int(output))
         return self.__new_token(TokenType.FLOAT, float(output))
 
+    # def __read_identifier(self) -> str:
+    #     """Reads an identifier or keyword."""
+    #     start_pos = self.position
+    #     while self.current_char is not None and (self.__is_letter(self.current_char) or self.current_char.isalnum()):
+    #         self.__read_char()
+    #     return self.source[start_pos:self.position]
     def __read_identifier(self) -> str:
-        """Reads an identifier or keyword."""
+        """Reads an identifier, including those starting with $."""
         start_pos = self.position
-        while self.current_char is not None and (self.__is_letter(self.current_char) or self.current_char.isalnum()):
+
+        # Allow identifiers to start with $
+        if self.current_char == '$':
+            self.__read_char()  # Consume the $
+        
+        # Continue reading valid identifier characters
+        while self.current_char is not None and (self.__is_letter(self.current_char) or self.current_char.isdigit()):
             self.__read_char()
+
         return self.source[start_pos:self.position]
+
 
     def next_token(self) -> Token:
         """Returns the next token."""
@@ -94,9 +108,14 @@ class Lexer:
             case '}': return self.__consume_single_char_token(TokenType.RBRACE)
             case '"': return self.__new_token(TokenType.STRING, self.__read_string())
             case _:
-                if self.__is_letter(self.current_char):
+                if self.__is_letter(self.current_char) or self.current_char == '$':
                     identifier = self.__read_identifier()
                     token_type = lookup_ident(identifier)
+
+                    # Identifiers must be valid and follow naming rules
+                    if token_type == TokenType.IDENT and not identifier.startswith('$'):
+                        return self.__new_token(TokenType.ILLEGAL, identifier)
+
                     return self.__new_token(tt=token_type, literal=identifier)
                 elif self.__is_digit(self.current_char):
                     return self.__read_number()
@@ -104,6 +123,7 @@ class Lexer:
                     tok = self.__new_token(TokenType.ILLEGAL, self.current_char)
                     self.__read_char()
                     return tok
+
 
     def __consume_single_char_token(self, token_type: TokenType) -> Token:
         """Helper to return a token for a single character."""
@@ -127,3 +147,4 @@ class Lexer:
             self.__read_char()  # Consume the closing quote
             return output
         return ""
+
