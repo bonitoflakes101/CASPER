@@ -73,6 +73,11 @@ class Lexer:
 
         return self.source[start_pos:self.position]
 
+    def __skip_invalid_characters(self) -> None:
+        """Skips characters after an illegal token."""
+        while self.current_char not in [' ', '\n', None]:
+            self.__read_char()
+
     def next_token(self) -> Token:
         """Returns the next token."""
         self.__skip_whitespace()
@@ -111,8 +116,15 @@ class Lexer:
                 if self.__is_letter(self.current_char):  # Potential keyword or illegal token
                     identifier = self.__read_identifier()  # Read the full identifier
                     token_type = lookup_ident(identifier)
+
                     if token_type != TokenType.IDENT:  # It's a keyword
+                        # If the next character is not a space, square bracket, or newline, it's illegal
+                        if self.current_char not in [' ', '[', '\n']:
+                            self.__skip_invalid_characters()
+                            return self.__new_token(TokenType.ILLEGAL, identifier)
+
                         return self.__new_token(tt=token_type, literal=identifier)
+
                     else:  # Not a keyword, and doesn't have a `$`
                         return self.__new_token(TokenType.ILLEGAL, identifier)
 
@@ -128,8 +140,6 @@ class Lexer:
                     tok = self.__new_token(TokenType.ILLEGAL, self.current_char)
                     self.__read_char()  # Advance the position
                     return tok
-                
-                
 
     def __consume_single_char_token(self, token_type: TokenType) -> Token:
         """Helper to return a token for a single character."""
