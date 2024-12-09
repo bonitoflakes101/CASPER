@@ -79,6 +79,9 @@ class TokenType(Enum):
     LBRACE = '{'
     RBRACE = '}'
 
+    # Custom Function Syntax
+    FUNCTION_NAME = "FUNCTION_NAME"
+
 class Token:
     def __init__(self, type: TokenType, literal: Any, line_no: int, position: int) -> None:
         self.type = type
@@ -163,6 +166,9 @@ def lookup_ident(ident: str) -> TokenType:
     tt: TokenType | None = KEYWORDS.get(ident)
     if tt is not None:
         return tt
+    
+    if ident.startswith("@"):  # Check for function names starting with @
+        return TokenType.FUNCTION_NAME
     
     if ident in {"int", "flt", "bln", "str", "chr"}:
         return TokenType.TYPE

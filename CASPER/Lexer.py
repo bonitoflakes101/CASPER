@@ -112,6 +112,11 @@ class Lexer:
             case '{': return self.__consume_single_char_token(TokenType.LBRACE)
             case '}': return self.__consume_single_char_token(TokenType.RBRACE)
             case '"': return self.__new_token(TokenType.STR, self.__read_string())
+            case '@':
+                self.__read_char()  
+                identifier = self.__read_identifier()
+                return self.__new_token(TokenType.FUNCTION_NAME, f"@{identifier}")
+
             case _:
                 if self.__is_letter(self.current_char):  # Potential keyword or illegal token
                     identifier = self.__read_identifier()  # Read the full identifier
