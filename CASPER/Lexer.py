@@ -74,7 +74,7 @@ class Lexer:
         while self.current_char is not None and (
             self.__is_letter(self.current_char)
             or self.current_char.isdigit()
-            or self.current_char in ['_', '[', ']', '*']
+            or self.current_char in ['_', '[', ']']
         ):
             self.__read_char()
 
