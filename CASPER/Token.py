@@ -52,6 +52,8 @@ class TokenType(Enum):
     COMMENT = "COMMENT"
     DOUBLE_LT = "DOUBLE_LT"
 
+    COMMA = "COMMA"
+
     # Keywords
     BIRTH = "BIRTH"
     GHOST = "GHOST"
@@ -86,6 +88,8 @@ class TokenType(Enum):
     RPAREN = "RPAREN"
     LBRACE = '{'
     RBRACE = '}'
+    LBRACKET = '['
+    RBRACKET = ']'
 
     # Custom Function Syntax
     FUNCTION_NAME = "FUNCTION_NAME"

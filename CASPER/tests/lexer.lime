@@ -1,1 +1,2 @@
-2++3
+str[] $fruits = ["apple", "banana", "cherry"]    
+display ("My favorite fruit is: {$fruits[0]}")

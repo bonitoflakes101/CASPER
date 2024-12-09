@@ -149,7 +149,9 @@ class Lexer:
                     self.__read_char()
                     return self.__new_token(TokenType.GT_EQ, ">=")
                 return self.__consume_single_char_token(TokenType.GT)
-        
+            
+            case '[': return self.__consume_single_char_token(TokenType.LBRACKET)
+            case ']': return self.__consume_single_char_token(TokenType.RBRACKET)
             case ':': return self.__consume_single_char_token(TokenType.COLON)
             case ';': return self.__consume_single_char_token(TokenType.SEMICOLON)
             case ',': return self.__consume_single_char_token(TokenType.COMMA)
@@ -179,7 +181,7 @@ class Lexer:
                     else:  # Not a keyword, and doesn't have a `$`
                         return self.__new_token(TokenType.ILLEGAL, identifier)
 
-                elif self.current_char == '$':  # Valid     identifier starts with $
+                elif self.current_char == '$':  # Valid identifier starts with $
                     identifier = self.__read_identifier()
                     return self.__new_token(TokenType.IDENT, identifier)
 
