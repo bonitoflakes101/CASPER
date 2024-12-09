@@ -163,6 +163,8 @@ class Lexer:
             case ')': return self.__consume_single_char_token(TokenType.RPAREN)
             case '{': return self.__consume_single_char_token(TokenType.LBRACE)
             case '}': return self.__consume_single_char_token(TokenType.RBRACE)
+            case '~':  # Handle the tilde token
+                return self.__consume_single_char_token(TokenType.TILDE)
             case '"': return self.__new_token(TokenType.STR, self.__read_string())
             case '@':
                 self.__read_char()  
