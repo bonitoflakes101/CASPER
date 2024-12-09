@@ -179,9 +179,6 @@ class Lexer:
                     if len(identifier) > 16:
                         return self.__new_token(TokenType.ILLEGAL, identifier)
 
-                    if not identifier[1:].replace('_', '').isalnum():  # Check if valid characters after $
-                        return self.__new_token(TokenType.ILLEGAL, identifier)
-
                     # Handle array access like $fruits[0]
                     tokens = [self.__new_token(TokenType.IDENT, identifier)]
                     while self.__peek_char() == '[':

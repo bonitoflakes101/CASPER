@@ -1,1 +1,42 @@
-str[][] 
+birth 
+str $greetings = "Hello, World!"
+
+function_int @count(int $age){
+    revive  $age
+}
+
+function @person() {
+    int $age = 32
+    
+    check ($age > 0) {
+        display (@count($age))
+    }
+
+    otherwise {
+        display ("You are not born yet.")
+    }
+}
+
+int $count = 0
+repeat $count < 2 {
+    display ("While loop count: {$count}")
+    int $count += 1
+}
+
+str[] $fruits = ["apple", "banana", "cherry"]    
+display ("My favorite fruit is: {$fruits[0]}")
+
+
+
+@greet("Alice")
+@person()
+
+ghost
+
+int()
+int ()
+$hello ()
+$hello[] 
+$asdfk#sdg
+
+
