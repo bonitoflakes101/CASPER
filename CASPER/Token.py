@@ -113,6 +113,8 @@ KEYWORDS: dict[str, TokenType] = {
     "GLOBAL": TokenType.GLOBAL,
     "function": TokenType.FUNCTION,
     "structure": TokenType.STRUCTURE,
+    "Day": TokenType.DAY,
+    "Night": TokenType.NIGHT,
     "day": TokenType.DAY,
     "night": TokenType.NIGHT,
     "measure": TokenType.MEASURE,

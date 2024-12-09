@@ -55,12 +55,6 @@ class Lexer:
             return self.__new_token(TokenType.INT, int(output))
         return self.__new_token(TokenType.FLT, float(output))
 
-    # def __read_identifier(self) -> str:
-    #     """Reads an identifier or keyword."""
-    #     start_pos = self.position
-    #     while self.current_char is not None and (self.__is_letter(self.current_char) or self.current_char.isalnum()):
-    #         self.__read_char()
-    #     return self.source[start_pos:self.position]
     def __read_identifier(self) -> str:
         """Reads an identifier, including those starting with $."""
         start_pos = self.position
@@ -80,14 +74,17 @@ class Lexer:
         """Returns the next token."""
         self.__skip_whitespace()
 
+        # handles newline
         if self.current_char == '\n':
             self.line_no += 1
             self.__read_char()
             return self.__new_token(TokenType.NEWLINE, "\\n")
 
+        # Determines end of file
         if self.current_char is None:
             return self.__new_token(TokenType.EOF, "")
 
+        # handles symbols, identifiers and keywords
         match self.current_char:
             case '+': return self.__consume_single_char_token(TokenType.PLUS)
             case '-': return self.__consume_single_char_token(TokenType.MINUS)
@@ -108,6 +105,7 @@ class Lexer:
             case '}': return self.__consume_single_char_token(TokenType.RBRACE)
             case '"': return self.__new_token(TokenType.STRING, self.__read_string())
             case _:
+                # Checks if keyword or identifier
                 if self.__is_letter(self.current_char) or self.current_char == '$':
                     identifier = self.__read_identifier()
                     token_type = lookup_ident(identifier)
