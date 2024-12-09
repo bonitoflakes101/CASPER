@@ -84,6 +84,13 @@ class Lexer:
         """Skips characters after an illegal token."""
         while self.current_char not in [' ', '\n', None]:
             self.__read_char()
+
+    def __skip_single_line_comment(self) -> None:
+        """Skips a single-line comment."""
+        while self.current_char is not None and self.current_char != '\n':
+            self.__read_char()
+
+
     def next_token(self) -> Token:
         """Returns the next token."""
         self.__skip_whitespace()
@@ -100,6 +107,17 @@ class Lexer:
 
         # Handles symbols, identifiers, and keywords
         match self.current_char:
+            case '<':
+                if self.__peek_char() == '<':
+                    self.__read_char()  # Consume the first '<'
+                    self.__read_char()  # Consume the second '<'
+                    self.__skip_single_line_comment()
+                    return self.next_token()  # Skip and get the next token
+                elif self.__peek_char() == '=':
+                    self.__read_char()
+                    self.__read_char()
+                    return self.__new_token(TokenType.LT_EQ, "<=")
+                return self.__consume_single_char_token(TokenType.LT)
             case '+':
                 if self.__peek_char() == '=':
                     self.__read_char()  # Advance for '='
@@ -136,12 +154,6 @@ class Lexer:
                     self.__read_char()
                     return self.__new_token(TokenType.NOT_EQ, "!=")
                 return self.__consume_single_char_token(TokenType.BANG)
-            case '<':
-                if self.__peek_char() == '=':
-                    self.__read_char()
-                    self.__read_char()
-                    return self.__new_token(TokenType.LT_EQ, "<=")
-                return self.__consume_single_char_token(TokenType.LT)
             case '>':
                 if self.__peek_char() == '=':
                     self.__read_char()
