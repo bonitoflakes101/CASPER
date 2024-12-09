@@ -79,6 +79,7 @@ class TokenType(Enum):
     IN = "IN"
     NEWLINE = "NEWLINE"
     SEMICOLON = ";"
+    COLON = ":"
 
     # Typing
     TYPE = "TYPE"

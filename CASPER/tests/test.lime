@@ -2,37 +2,31 @@ birth
 str $greetings = "Hello, World!"
 << Single Line Comment
 
--- works
-function_str @greet(str $name){
-    revive "Hello, {$name}!"
+function_int @count(int $age){
+    revive  $age
 }
 
--- works
 function @person() {
-    str $name = "Alice"
+    int $age = 32
     
-    check measure ($name > 0) {
-        display ($greet ($name))
+    check ($age > 0) {
+        display (@count($age))
     }
 
-    otherwise {
-        display ("No name provided.")
+    otherwise{
+        display ("You are not born yet.")
     }
 }
    
--- works
 int $count = 0
 repeat $count < 2 {
     display ("While loop count: {$count}")
     int $count += 1
 }
 
-
 str[] $fruits = ["apple", "banana", "cherry"]    
-display("My favorite fruit is: {$fruits[0]}")
+display ("My favorite fruit is: {$fruits[0]}")
 
-for $person, $fruit in favorite_fruits.items():
-    display("{$person}'s favorite fruit is {$fruit}")
 
 @greet(“Alice”)
 --- 
@@ -41,3 +35,4 @@ Multi-Line Comment
 @person()
 
 ghost
+

@@ -84,7 +84,6 @@ class Lexer:
         """Skips characters after an illegal token."""
         while self.current_char not in [' ', '\n', None]:
             self.__read_char()
-
     def next_token(self) -> Token:
         """Returns the next token."""
         self.__skip_whitespace()
@@ -149,9 +148,14 @@ class Lexer:
                     self.__read_char()
                     return self.__new_token(TokenType.GT_EQ, ">=")
                 return self.__consume_single_char_token(TokenType.GT)
-            
-            case '[': return self.__consume_single_char_token(TokenType.LBRACKET)
-            case ']': return self.__consume_single_char_token(TokenType.RBRACKET)
+
+            # Handle other symbols
+            case '[':
+                self.__read_char()
+                return self.__new_token(TokenType.LBRACKET, "[")
+            case ']':
+                self.__read_char()
+                return self.__new_token(TokenType.RBRACKET, "]")
             case ':': return self.__consume_single_char_token(TokenType.COLON)
             case ';': return self.__consume_single_char_token(TokenType.SEMICOLON)
             case ',': return self.__consume_single_char_token(TokenType.COMMA)
@@ -166,25 +170,53 @@ class Lexer:
                 return self.__new_token(TokenType.FUNCTION_NAME, f"@{identifier}")
 
             case _:
-                if self.__is_letter(self.current_char):  # Potential keyword or illegal token
-                    identifier = self.__read_identifier()  # Read the full identifier
-                    token_type = lookup_ident(identifier)
+                # Handling identifiers starting with $
+                if self.current_char == '$':
+                    start_position = self.position
+                    identifier = self.__read_identifier()
 
+                    # Validate the identifier (check for length and allowed characters)
+                    if len(identifier) > 16:
+                        return self.__new_token(TokenType.ILLEGAL, identifier)
+
+                    if not identifier[1:].replace('_', '').isalnum():  # Check if valid characters after $
+                        return self.__new_token(TokenType.ILLEGAL, identifier)
+
+                    # Handle array access like $fruits[0]
+                    tokens = [self.__new_token(TokenType.IDENT, identifier)]
+                    while self.__peek_char() == '[':
+                        self.__read_char()  # Consume '['
+                        tokens.append(self.__new_token(TokenType.LBRACKET, "["))
+                        # Read number (array index)
+                        index = self.__read_number()
+                        tokens.append(index)
+                        self.__read_char()  # Consume ']'
+                        tokens.append(self.__new_token(TokenType.RBRACKET, "]"))
+                    return tokens
+
+                # Handle keywords and regular identifiers (that do not start with $)
+                elif self.__is_letter(self.current_char):
+                    identifier = self.__read_identifier()
+
+                    # Check for types like str[] (TokenType.TYPE)
+                    if self.__peek_char() == '[':
+                        self.__read_char()  
+                        if self.__peek_char() == ']':
+                            self.__read_char()  
+                            return self.__new_token(TokenType.TYPE, f"{identifier}[]")
+
+                    # Check if identifier is a keyword
+                    token_type = lookup_ident(identifier)
                     if token_type != TokenType.IDENT:  # It's a keyword
-                        # If the next character is not a space, square bracket, or newline, it's illegal
+                        # If next character is not space, square bracket, or newline, it's illegal
                         if self.current_char not in [' ', '[', '\n']:
                             self.__skip_invalid_characters()
                             return self.__new_token(TokenType.ILLEGAL, identifier)
-
-                        return self.__new_token(tt=token_type, literal=identifier)
-
-                    else:  # Not a keyword, and doesn't have a `$`
+                        return self.__new_token(token_type, identifier)
+                    else:  # Not a keyword
                         return self.__new_token(TokenType.ILLEGAL, identifier)
 
-                elif self.current_char == '$':  # Valid identifier starts with $
-                    identifier = self.__read_identifier()
-                    return self.__new_token(TokenType.IDENT, identifier)
-
+                # Handle numeric literals
                 elif self.__is_digit(self.current_char):
                     return self.__read_number()
 
@@ -193,6 +225,7 @@ class Lexer:
                     tok = self.__new_token(TokenType.ILLEGAL, self.current_char)
                     self.__read_char()  # Advance the position
                     return tok
+
 
     def __consume_single_char_token(self, token_type: TokenType) -> Token:
         """Helper to return a token for a single character."""
