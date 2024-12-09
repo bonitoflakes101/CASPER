@@ -24,6 +24,14 @@ class TokenType(Enum):
     MODULUS = "MODULUS"
     TILDE = "TILDE"
 
+    # Prefix Symbols
+    BANG = "BANG"
+    
+    # Postfix Symbols
+    PLUS_PLUS = "PLUS_PLUS"
+    MINUS_MINUS = "MINUS_MINUS"
+
+
     # Assignment Symbols
     EQ = "EQ"
     PLUS_EQ = "PLUS_EQ"

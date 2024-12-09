@@ -1,5 +1,1 @@
-int $count = 0
-repeat $count < 2 {
-    display ("While loop count: {$count}")
-    int $count += 1
-}
+2++3

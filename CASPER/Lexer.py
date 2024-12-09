@@ -54,6 +54,13 @@ class Lexer:
         if dot_count == 0:
             return self.__new_token(TokenType.INT, int(output))
         return self.__new_token(TokenType.FLT, float(output))
+    
+    def __peek_char(self) -> str | None:
+        """Peeks at the next character without advancing the lexer."""
+        if self.read_position >= len(self.source):
+            return None
+        return self.source[self.read_position]
+
 
     def __read_identifier(self) -> str:
         """Reads an identifier or keyword."""
@@ -94,16 +101,55 @@ class Lexer:
 
         # Handles symbols, identifiers, and keywords
         match self.current_char:
-            case '+': return self.__consume_single_char_token(TokenType.PLUS)
-            case '-': return self.__consume_single_char_token(TokenType.MINUS)
-            case '*': return self.__consume_single_char_token(TokenType.ASTERISK)
-            case '/': return self.__consume_single_char_token(TokenType.SLASH)
-            case '^': return self.__consume_single_char_token(TokenType.POW)
-            case '%': return self.__consume_single_char_token(TokenType.MODULUS)
-            case '<': return self.__consume_single_char_token(TokenType.LT)
-            case '>': return self.__consume_single_char_token(TokenType.GT)
-            case '=': return self.__consume_single_char_token(TokenType.EQ)
-            case '!': return self.__consume_single_char_token(TokenType.BANG)
+            case '+':
+                if self.__peek_char() == '=':
+                    self.__read_char()  # Advance for '='
+                    self.__read_char()  # Advance after creating token
+                    return self.__new_token(TokenType.PLUS_EQ, "+=")
+                elif self.__peek_char() == '+':
+                    self.__read_char()
+                    self.__read_char()
+                    return self.__new_token(TokenType.PLUS_PLUS, "++")
+                return self.__consume_single_char_token(TokenType.PLUS)
+            case '-':
+                if self.__peek_char() == '=':
+                    self.__read_char()
+                    self.__read_char()
+                    return self.__new_token(TokenType.MINUS_EQ, "-=")
+                elif self.__peek_char() == '-':
+                    self.__read_char()
+                    self.__read_char()
+                    return self.__new_token(TokenType.MINUS_MINUS, "--")
+                elif self.__peek_char() == '>':
+                    self.__read_char()
+                    self.__read_char()
+                    return self.__new_token(TokenType.ARROW, "->")
+                return self.__consume_single_char_token(TokenType.MINUS)
+            case '=':
+                if self.__peek_char() == '=':
+                    self.__read_char()
+                    self.__read_char()
+                    return self.__new_token(TokenType.EQ_EQ, "==")
+                return self.__consume_single_char_token(TokenType.EQ)
+            case '!':
+                if self.__peek_char() == '=':
+                    self.__read_char()
+                    self.__read_char()
+                    return self.__new_token(TokenType.NOT_EQ, "!=")
+                return self.__consume_single_char_token(TokenType.BANG)
+            case '<':
+                if self.__peek_char() == '=':
+                    self.__read_char()
+                    self.__read_char()
+                    return self.__new_token(TokenType.LT_EQ, "<=")
+                return self.__consume_single_char_token(TokenType.LT)
+            case '>':
+                if self.__peek_char() == '=':
+                    self.__read_char()
+                    self.__read_char()
+                    return self.__new_token(TokenType.GT_EQ, ">=")
+                return self.__consume_single_char_token(TokenType.GT)
+        
             case ':': return self.__consume_single_char_token(TokenType.COLON)
             case ';': return self.__consume_single_char_token(TokenType.SEMICOLON)
             case ',': return self.__consume_single_char_token(TokenType.COMMA)
@@ -133,7 +179,7 @@ class Lexer:
                     else:  # Not a keyword, and doesn't have a `$`
                         return self.__new_token(TokenType.ILLEGAL, identifier)
 
-                elif self.current_char == '$':  # Valid identifier starts with $
+                elif self.current_char == '$':  # Valid     identifier starts with $
                     identifier = self.__read_identifier()
                     return self.__new_token(TokenType.IDENT, identifier)
 
