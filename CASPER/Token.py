@@ -68,7 +68,7 @@ class TokenType(Enum):
     MEASURE = "MEASURE"
     IN = "IN"
     NEWLINE = "NEWLINE"
-    SEMICOLON = ";" 
+    SEMICOLON = ";"
 
     # Typing
     TYPE = "TYPE"
@@ -78,7 +78,6 @@ class TokenType(Enum):
     RPAREN = "RPAREN"
     LBRACE = '{'
     RBRACE = '}'
-
 
 class Token:
     def __init__(self, type: TokenType, literal: Any, line_no: int, position: int) -> None:
@@ -92,7 +91,6 @@ class Token:
     
     def __repr__(self) -> str:
         return str(self)
-
 
 KEYWORDS: dict[str, TokenType] = {
     "birth": TokenType.BIRTH,
@@ -122,8 +120,43 @@ KEYWORDS: dict[str, TokenType] = {
     "int": TokenType.INT,
     "flt": TokenType.FLT,
     "bln": TokenType.BLN,
-    "str": TokenType.STR,  # Ensure to use "STR" for string type
-    "chr": TokenType.CHR
+    "str": TokenType.STR,
+    "chr": TokenType.CHR,
+
+    # Function keywords
+    "function_int": TokenType.FUNCTION,
+    "function_str": TokenType.FUNCTION,
+    "function_bln": TokenType.FUNCTION,
+    "function_flt": TokenType.FUNCTION,
+    "function_chr": TokenType.FUNCTION,
+    "function_list_int[]": TokenType.FUNCTION,
+    "function_list_str[]": TokenType.FUNCTION,
+    "function_list_bln[]": TokenType.FUNCTION,
+    "function_list_flt[]": TokenType.FUNCTION,
+    "function_list_chr[]": TokenType.FUNCTION,
+    "function_list_int[][]": TokenType.FUNCTION,
+    "function_list_str[][]": TokenType.FUNCTION,
+    "function_list_bln[][]": TokenType.FUNCTION,
+    "function_list_flt[][]": TokenType.FUNCTION,
+    "function_list_chr[][]": TokenType.FUNCTION,
+
+    # Type conversion keywords
+    "to_int": TokenType.TYPE,
+    "to_str": TokenType.TYPE,
+    "to_bln": TokenType.TYPE,
+    "to_flt": TokenType.TYPE,
+
+    # List types
+    "int[]": TokenType.TYPE,
+    "str[]": TokenType.TYPE,
+    "bln[]": TokenType.TYPE,
+    "flt[]": TokenType.TYPE,
+    "chr[]": TokenType.TYPE,
+    "int[][]": TokenType.TYPE,
+    "str[][]": TokenType.TYPE,
+    "bln[][]": TokenType.TYPE,
+    "flt[][]": TokenType.TYPE,
+    "chr[][]": TokenType.TYPE,
 }
 
 def lookup_ident(ident: str) -> TokenType:
@@ -135,4 +168,3 @@ def lookup_ident(ident: str) -> TokenType:
         return TokenType.TYPE
     
     return TokenType.IDENT
-

@@ -28,8 +28,8 @@ class NodeType(Enum):
     IntegerLiteral = "IntegerLiteral"
     FloatLiteral = "FloatLiteral"
     IdentifierLiteral = "IdentifierLiteral"
-    # BooleanLiteral = "BooleanLiteral"
-    # StringLiteral = "StringLiteral"
+    BooleanLiteral = "BooleanLiteral"
+    StringLiteral = "StringLiteral"
 
     # Helper
     FunctionParameter = "FunctionParameter"

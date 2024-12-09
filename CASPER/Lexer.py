@@ -56,7 +56,7 @@ class Lexer:
         return self.__new_token(TokenType.FLT, float(output))
 
     def __read_identifier(self) -> str:
-        """Reads an identifier, including keywords and those starting with $."""
+        """Reads an identifier or keyword."""
         start_pos = self.position
 
         # Allow identifiers to start with $
@@ -64,21 +64,14 @@ class Lexer:
             self.__read_char()  # Consume the $
 
         # Continue reading valid identifier characters
-        while self.current_char is not None and (self.__is_letter(self.current_char) or self.current_char.isdigit()):
+        while self.current_char is not None and (
+            self.__is_letter(self.current_char)
+            or self.current_char.isdigit()
+            or self.current_char in ['_', '[', ']', '*']
+        ):
             self.__read_char()
 
-        # Extract the full identifier
-        identifier = self.source[start_pos:self.position]
-
-        # Check if it's a keyword
-        return identifier
-
-    def __is_boundary(self) -> bool:
-        """
-        Checks if the current character is a valid boundary for a keyword.
-        A valid boundary is one of these: space, newline, `(`, `{`, `)`, `}`, or EOF.
-        """
-        return self.current_char in [' ', '\n', '(', '{', ')', '}', None]
+        return self.source[start_pos:self.position]
 
     def next_token(self) -> Token:
         """Returns the next token."""
@@ -113,38 +106,30 @@ class Lexer:
             case ')': return self.__consume_single_char_token(TokenType.RPAREN)
             case '{': return self.__consume_single_char_token(TokenType.LBRACE)
             case '}': return self.__consume_single_char_token(TokenType.RBRACE)
-            case '"': return self.__new_token(TokenType.STRING, self.__read_string())
+            case '"': return self.__new_token(TokenType.STR, self.__read_string())
             case _:
-                # Check for keyword or identifier
-                if self.__is_letter(self.current_char) or self.current_char == '$':
-                    identifier = self.__read_identifier()
+                if self.__is_letter(self.current_char):  # Potential keyword or illegal token
+                    identifier = self.__read_identifier()  # Read the full identifier
                     token_type = lookup_ident(identifier)
-
-                    # Check if the identifier is a keyword and ensure it's followed by a space or newline
                     if token_type != TokenType.IDENT:  # It's a keyword
-                        # If the keyword is followed by anything other than a space or newline, it's illegal
-                        if self.current_char not in [' ', '\n']:
-                            self.__skip_invalid_characters()
-                            return self.__new_token(TokenType.ILLEGAL, identifier)
+                        return self.__new_token(tt=token_type, literal=identifier)
+                    else:  # Not a keyword, and doesn't have a `$`
+                        return self.__new_token(TokenType.ILLEGAL, identifier)
 
-                    # If it's valid (keyword or identifier), return the token
-                    return self.__new_token(tt=token_type, literal=identifier)
+                elif self.current_char == '$':  # Valid identifier starts with $
+                    identifier = self.__read_identifier()
+                    return self.__new_token(TokenType.IDENT, identifier)
 
                 elif self.__is_digit(self.current_char):
                     return self.__read_number()
+
                 else:
                     # Handle other illegal tokens
                     tok = self.__new_token(TokenType.ILLEGAL, self.current_char)
                     self.__read_char()  # Advance the position
                     return tok
-
-    def __skip_invalid_characters(self):
-        """Skips characters after an illegal token."""
-        while self.current_char not in [' ', '\n', None]:
-            self.__read_char()
-
-
-
+                
+                
 
     def __consume_single_char_token(self, token_type: TokenType) -> Token:
         """Helper to return a token for a single character."""
