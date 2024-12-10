@@ -18,6 +18,8 @@ class TokenType(Enum):
     PLUS = "PLUS"
     MINUS = "MINUS"
     ASTERISK = "ASTERISK"
+    DOUBLE_ASTERISK = "DOUBLE_ASTERISK"
+
     SLASH = "SLASH"
     DOUBLE_SLASH = "DOUBLE_SLASH"
     POW = "POW"
@@ -80,6 +82,9 @@ class TokenType(Enum):
     NEWLINE = "NEWLINE"
     SEMICOLON = ";"
     COLON = ":"
+    MOD = "%"
+    AND = "&&"
+    OR = "||"
 
     # Typing
     TYPE = "TYPE"

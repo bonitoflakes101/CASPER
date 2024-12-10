@@ -160,8 +160,32 @@ class Lexer:
                     self.__read_char()
                     return self.__new_token(TokenType.GT_EQ, ">=")
                 return self.__consume_single_char_token(TokenType.GT)
-
-            # Handle other symbols
+            case '/':
+                if self.__peek_char() == '/':
+                    self.__read_char()
+                    self.__read_char()
+                    return self.__new_token(TokenType.DOUBLE_SLASH, "//")
+                return self.__consume_single_char_token(TokenType.SLASH)
+            case '*':
+                if self.__peek_char() == '*':
+                    self.__read_char()
+                    self.__read_char()
+                    return self.__new_token(TokenType.DOUBLE_ASTERISK, "**")
+                return self.__consume_single_char_token(TokenType.ASTERISK)
+            case '&':
+                if self.__peek_char() == '&':
+                    self.__read_char()
+                    self.__read_char()
+                    return self.__new_token(TokenType.AND, "&&")
+                return self.__consume_single_char_token(TokenType.ILLEGAL)
+            
+            
+            case '|':
+                if self.__peek_char() == '|':
+                    self.__read_char()
+                    self.__read_char()
+                    return self.__new_token(TokenType.OR, "||")
+                return self.__consume_single_char_token(TokenType.ILLEGAL)
             case '[':
                 self.__read_char()
                 return self.__new_token(TokenType.LBRACKET, "[")
@@ -175,6 +199,8 @@ class Lexer:
             case ')': return self.__consume_single_char_token(TokenType.RPAREN)
             case '{': return self.__consume_single_char_token(TokenType.LBRACE)
             case '}': return self.__consume_single_char_token(TokenType.RBRACE)
+            case '%': return self.__consume_single_char_token(TokenType.MOD)
+            
             case '~':  # Handle the tilde token
                 return self.__consume_single_char_token(TokenType.TILDE)
             case '"': return self.__new_token(TokenType.STR, self.__read_string())
