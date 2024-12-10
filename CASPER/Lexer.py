@@ -207,7 +207,7 @@ class Lexer:
             case '@':
                 self.__read_char()  
                 identifier = self.__read_identifier()
-                return self.__new_token(TokenType.FUNCTION_NAME, f"@{identifier}")
+                return self.__new_token(TokenType.IDENT, f"@{identifier}")
 
             case _:
                 # Handling identifiers starting with $
