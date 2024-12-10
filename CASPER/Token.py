@@ -6,14 +6,18 @@ class TokenType(Enum):
     EOF = "EOF"
     ILLEGAL = "ILLEGAL"
 
-    # Data Types
+    # Data Types and Literals
     IDENT = "IDENT"
     INT = "INT"
+    INT_LIT = "INT_LIT"  # Integer literal
     FLT = "FLT"
+    FLT_LIT = "FLT_LIT"  # Float literal
     BLN = "BLN"
+    BLN_LIT = "BLN_LIT"  # Boolean literal
     STR = "STR"
+    STR_LIT = "STR_LIT"  # String literal
     CHR = "CHR"
-
+    CHR_LIT = "CHR_LIT"  # Character literal
     # Arithmetic Symbols
     PLUS = "PLUS"
     MINUS = "MINUS"
@@ -181,14 +185,21 @@ KEYWORDS: dict[str, TokenType] = {
 }
 
 def lookup_ident(ident: str) -> TokenType:
+    # Check for keywords
     tt: TokenType | None = KEYWORDS.get(ident)
     if tt is not None:
         return tt
     
-    if ident.startswith("@"):  # Check for function names starting with @
+    # Check for function names starting with "@"
+    if ident.startswith("@"):
         return TokenType.FUNCTION_NAME
-    
+
+    # Check for type keywords
     if ident in {"int", "flt", "bln", "str", "chr"}:
         return TokenType.TYPE
-    
+
+    # Handle boolean literals
+    if ident in {"Day", "Night"}:
+        return TokenType.BLN_LIT
+
     return TokenType.IDENT

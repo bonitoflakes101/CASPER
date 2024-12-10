@@ -52,8 +52,8 @@ class Lexer:
             self.__read_char()
 
         if dot_count == 0:
-            return self.__new_token(TokenType.INT, int(output))
-        return self.__new_token(TokenType.FLT, float(output))
+            return self.__new_token(TokenType.INT_LIT, int(output))
+        return self.__new_token(TokenType.FLT_LIT, float(output))
     
     def __peek_char(self) -> str | None:
         """Peeks at the next character without advancing the lexer."""
@@ -203,7 +203,7 @@ class Lexer:
             
             case '~':  # Handle the tilde token
                 return self.__consume_single_char_token(TokenType.TILDE)
-            case '"': return self.__new_token(TokenType.STR, self.__read_string())
+            case '"': return self.__new_token(TokenType.STR_LIT, self.__read_string())
             case '@':
                 self.__read_char()  
                 identifier = self.__read_identifier()
