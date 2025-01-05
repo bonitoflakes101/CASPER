@@ -18,6 +18,46 @@ class TokenType(Enum):
     STR_LIT = "STR_LIT"  # String literal
     CHR = "CHR"
     CHR_LIT = "CHR_LIT"  # Character literal
+
+
+
+    # Function Types
+    FUNCTION_INT = "FUNCTION_INT"
+    FUNCTION_STR = "FUNCTION_STR"
+    FUNCTION_BLN = "FUNCTION_BLN"
+    FUNCTION_FLT = "FUNCTION_FLT"
+    FUNCTION_CHR = "FUNCTION_CHR"
+    FUNCTION_LIST_INT = "FUNCTION_LIST_INT"
+    FUNCTION_LIST_STR = "FUNCTION_LIST_STR"
+    FUNCTION_LIST_BLN = "FUNCTION_LIST_BLN"
+    FUNCTION_LIST_FLT = "FUNCTION_LIST_FLT"
+    FUNCTION_LIST_CHR = "FUNCTION_LIST_CHR"
+    FUNCTION_LIST_INT2D = "FUNCTION_LIST_INT2D"
+    FUNCTION_LIST_STR2D = "FUNCTION_LIST_STR2D"
+    FUNCTION_LIST_BLN2D = "FUNCTION_LIST_BLN2D"
+    FUNCTION_LIST_FLT2D = "FUNCTION_LIST_FLT2D"
+    FUNCTION_LIST_CHR2D = "FUNCTION_LIST_CHR2D"
+
+    # Type Conversion
+    CONVERT_TO_INT = "CONVERT_TO_INT"
+    CONVERT_TO_STR = "CONVERT_TO_STR"
+    CONVERT_TO_BLN = "CONVERT_TO_BLN"
+    CONVERT_TO_FLT = "CONVERT_TO_FLT"
+
+    # List Types
+    LIST_INT = "LIST_INT"
+    LIST_STR = "LIST_STR"
+    LIST_BLN = "LIST_BLN"
+    LIST_FLT = "LIST_FLT"
+    LIST_CHR = "LIST_CHR"
+    LIST_INT2D = "LIST_INT2D"
+    LIST_STR2D = "LIST_STR2D"
+    LIST_BLN2D = "LIST_BLN2D"
+    LIST_FLT2D = "LIST_FLT2D"
+    LIST_CHR2D = "LIST_CHR2D"
+
+    # Other
+    FUNCTION_NAME = "FUNCTION_NAME"
     # Arithmetic Symbols
     PLUS = "PLUS"
     MINUS = "MINUS"
@@ -77,7 +117,6 @@ class TokenType(Enum):
     SHIFT = "SHIFT"
     REVIVE = "REVIVE"
     GLOBAL = "GLOBAL"
-    FUNCTION = "FUNCTION"
     STRUCTURE = "STRUCTURE"
     DAY = "DAY"
     NIGHT = "NIGHT"
@@ -101,8 +140,6 @@ class TokenType(Enum):
     LBRACKET = '['
     RBRACKET = ']'
 
-    # Custom Function Syntax
-    FUNCTION_NAME = "FUNCTION_NAME"
 
 class Token:
     def __init__(self, type: TokenType, literal: Any, line_no: int, position: int) -> None:
@@ -134,7 +171,6 @@ KEYWORDS: dict[str, TokenType] = {
     "shift": TokenType.SHIFT,
     "revive": TokenType.REVIVE,
     "GLOBAL": TokenType.GLOBAL,
-    "function": TokenType.FUNCTION,
     "structure": TokenType.STRUCTURE,
     "Day": TokenType.DAY,
     "Night": TokenType.NIGHT,
@@ -149,40 +185,40 @@ KEYWORDS: dict[str, TokenType] = {
     "chr": TokenType.CHR,
 
     # Function keywords
-    "function_int": TokenType.FUNCTION,
-    "function_str": TokenType.FUNCTION,
-    "function_bln": TokenType.FUNCTION,
-    "function_flt": TokenType.FUNCTION,
-    "function_chr": TokenType.FUNCTION,
-    "function_list_int[]": TokenType.FUNCTION,
-    "function_list_str[]": TokenType.FUNCTION,
-    "function_list_bln[]": TokenType.FUNCTION,
-    "function_list_flt[]": TokenType.FUNCTION,
-    "function_list_chr[]": TokenType.FUNCTION,
-    "function_list_int[][]": TokenType.FUNCTION,
-    "function_list_str[][]": TokenType.FUNCTION,
-    "function_list_bln[][]": TokenType.FUNCTION,
-    "function_list_flt[][]": TokenType.FUNCTION,
-    "function_list_chr[][]": TokenType.FUNCTION,
+    "function_int": TokenType.FUNCTION_INT,
+    "function_str": TokenType.FUNCTION_STR,
+    "function_bln": TokenType.FUNCTION_BLN,
+    "function_flt": TokenType.FUNCTION_FLT,
+    "function_chr": TokenType.FUNCTION_CHR,
+    "function_list_int[]": TokenType.FUNCTION_LIST_INT,
+    "function_list_str[]": TokenType.FUNCTION_LIST_STR,
+    "function_list_bln[]": TokenType.FUNCTION_LIST_BLN,
+    "function_list_flt[]": TokenType.FUNCTION_LIST_FLT,
+    "function_list_chr[]": TokenType.FUNCTION_LIST_CHR,
+    "function_list_int[][]": TokenType.FUNCTION_LIST_INT2D,
+    "function_list_str[][]": TokenType.FUNCTION_LIST_STR2D,
+    "function_list_bln[][]": TokenType.FUNCTION_LIST_BLN2D,
+    "function_list_flt[][]": TokenType.FUNCTION_LIST_FLT2D,
+    "function_list_chr[][]": TokenType.FUNCTION_LIST_CHR2D,
 
     # Type conversion keywords
-    "to_int": TokenType.TYPE,
-    "to_str": TokenType.TYPE,
-    "to_bln": TokenType.TYPE,
-    "to_flt": TokenType.TYPE,
+    "to_int": TokenType.CONVERT_TO_INT,
+    "to_str": TokenType.CONVERT_TO_STR,
+    "to_bln": TokenType.CONVERT_TO_BLN,
+    "to_flt": TokenType.CONVERT_TO_FLT,
 
     # List types
-    "int[]": TokenType.TYPE,
-    "str[]": TokenType.TYPE,
-    "bln[]": TokenType.TYPE,
-    "flt[]": TokenType.TYPE,
-    "chr[]": TokenType.TYPE,
-    "int[][]": TokenType.TYPE,
-    "str[][]": TokenType.TYPE,
-    "bln[][]": TokenType.TYPE,
-    "flt[][]": TokenType.TYPE,
-    "chr[][]": TokenType.TYPE,
-}
+    "int[]": TokenType.LIST_INT,
+    "str[]": TokenType.LIST_STR,
+    "bln[]": TokenType.LIST_BLN,
+    "flt[]": TokenType.LIST_FLT,
+    "chr[]": TokenType.LIST_CHR,
+    "int[][]": TokenType.LIST_INT2D,
+    "str[][]": TokenType.LIST_STR2D,
+    "bln[][]": TokenType.LIST_BLN2D,
+    "flt[][]": TokenType.LIST_FLT2D,
+    "chr[][]": TokenType.LIST_CHR2D,
+    }
 
 def lookup_ident(ident: str) -> TokenType:
     # Check for keywords

@@ -2,6 +2,7 @@ from Token import Token, TokenType, lookup_ident
 from typing import Any
 
 
+
 class Lexer:
     def __init__(self, source: str) -> None:
         self.source = source
@@ -74,7 +75,8 @@ class Lexer:
         while self.current_char is not None and (
             self.__is_letter(self.current_char)
             or self.current_char.isdigit()
-            or self.current_char in ['_', '[', ']','$','^']
+            or self.current_char in ['_', '[', ']','$']
+            #dapat chinecheck if asa dulo yung [] and dapat $ is only once, if meron ulit then error
         ):
             self.__read_char()
 
@@ -218,9 +220,11 @@ class Lexer:
                     if len(identifier) > 16:
                         return self.__new_token(TokenType.ILLEGAL, identifier)
                     
-                    if any(char in ['^','%'] for char in identifier):
+                    special_chars = set("!\"#%&'()*+,-./:;<=>?@\\^_`{|}~")
+                    if any(char in special_chars for char in identifier):
                         print("Hello")
                         return self.__new_token(TokenType.ILLEGAL, identifier)
+
 
                     # Handle array access like $fruits[0]
                     tokens = [self.__new_token(TokenType.IDENT, identifier)]
