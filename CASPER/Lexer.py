@@ -72,12 +72,15 @@ class Lexer:
             self.__read_char()  # Consume the $
 
         # Continue reading valid identifier characters
+        special_chars = "!\"#%&'()*+,-./:;<=>?@\\^_`{|}~"
+
         while self.current_char is not None and (
             self.__is_letter(self.current_char)
             or self.current_char.isdigit()
-            or self.current_char in ['_', '[', ']','$']
-            #dapat chinecheck if asa dulo yung [] and dapat $ is only once, if meron ulit then error
+            or self.current_char in ['_', '[', ']', '$']  # Adding allowed special characters
+            or self.current_char in special_chars  # Add all special characters here
         ):
+            
             self.__read_char()
 
         return self.source[start_pos:self.position]
@@ -219,12 +222,34 @@ class Lexer:
                     # Validate the identifier (check for length and allowed characters)
                     if len(identifier) > 16:
                         return self.__new_token(TokenType.ILLEGAL, identifier)
-                    
+
+                    # Set of special characters to avoid, excluding square brackets for now
                     special_chars = set("!\"#%&'()*+,-./:;<=>?@\\^_`{|}~")
-                    if any(char in special_chars for char in identifier):
-                        print("Hello")
+
+                    # Check for invalid special characters in the identifier (excluding '[]')
+                    if any(char in special_chars for char in identifier.replace('[]', '')):
                         return self.__new_token(TokenType.ILLEGAL, identifier)
 
+                    # Check for a second '$' anywhere in the identifier
+                    if "$" in identifier[1:]:
+                        return self.__new_token(TokenType.ILLEGAL, identifier)
+
+                    # Ensure that a single "$" is not the entire identifier
+                    if identifier == "$":
+                        return self.__new_token(TokenType.ILLEGAL, identifier)
+
+                   # Check for paired '[]' at the end and only allow that
+                    if '[]' in identifier:
+                        # Ensure '[]' appears at the very end of the identifier
+                        if identifier.endswith('[]'):
+                            # Make sure no other brackets appear before the last '[]'
+                            if '[' in identifier[:-2] or ']' in identifier[:-2]:
+                                return self.__new_token(TokenType.ILLEGAL, identifier)
+                        else:
+                            return self.__new_token(TokenType.ILLEGAL, identifier)
+                    # If there's a bracket but it doesn't form '[]' at the end, it's illegal
+                    elif '[' in identifier or ']' in identifier:
+                        return self.__new_token(TokenType.ILLEGAL, identifier)
 
                     # Handle array access like $fruits[0]
                     tokens = [self.__new_token(TokenType.IDENT, identifier)]
