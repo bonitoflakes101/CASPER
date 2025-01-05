@@ -223,43 +223,34 @@ class Lexer:
                     if len(identifier) > 16:
                         return self.__new_token(TokenType.ILLEGAL, identifier)
 
-                    # Set of special characters to avoid, excluding square brackets for now
                     special_chars = set("!\"#%&'()*+,-./:;<=>?@\\^_`{|}~")
 
-                    # Check for invalid special characters in the identifier (excluding '[]')
                     if any(char in special_chars for char in identifier.replace('[]', '')):
                         return self.__new_token(TokenType.ILLEGAL, identifier)
 
-                    # Check for a second '$' anywhere in the identifier
                     if "$" in identifier[1:]:
                         return self.__new_token(TokenType.ILLEGAL, identifier)
 
-                    # Ensure that a single "$" is not the entire identifier
                     if identifier == "$":
                         return self.__new_token(TokenType.ILLEGAL, identifier)
 
-                   # Check for paired '[]' at the end and only allow that
                     if '[]' in identifier:
-                        # Ensure '[]' appears at the very end of the identifier
                         if identifier.endswith('[]'):
-                            # Make sure no other brackets appear before the last '[]'
                             if '[' in identifier[:-2] or ']' in identifier[:-2]:
                                 return self.__new_token(TokenType.ILLEGAL, identifier)
                         else:
                             return self.__new_token(TokenType.ILLEGAL, identifier)
-                    # If there's a bracket but it doesn't form '[]' at the end, it's illegal
                     elif '[' in identifier or ']' in identifier:
                         return self.__new_token(TokenType.ILLEGAL, identifier)
 
                     # Handle array access like $fruits[0]
                     tokens = [self.__new_token(TokenType.IDENT, identifier)]
                     while self.__peek_char() == '[':
-                        self.__read_char()  # Consume '['
+                        self.__read_char()  
                         tokens.append(self.__new_token(TokenType.LBRACKET, "["))
-                        # Read number (array index)
                         index = self.__read_number()
                         tokens.append(index)
-                        self.__read_char()  # Consume ']'
+                        self.__read_char()  
                         tokens.append(self.__new_token(TokenType.RBRACKET, "]"))
                     return tokens
 
