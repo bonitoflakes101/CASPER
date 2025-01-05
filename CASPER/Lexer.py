@@ -74,7 +74,7 @@ class Lexer:
         while self.current_char is not None and (
             self.__is_letter(self.current_char)
             or self.current_char.isdigit()
-            or self.current_char in ['_', '[', ']']
+            or self.current_char in ['_', '[', ']','$','^']
         ):
             self.__read_char()
 
@@ -177,9 +177,7 @@ class Lexer:
                     self.__read_char()
                     self.__read_char()
                     return self.__new_token(TokenType.AND, "&&")
-                return self.__consume_single_char_token(TokenType.ILLEGAL)
-            
-            
+                return self.__consume_single_char_token(TokenType.ILLEGAL)        
             case '|':
                 if self.__peek_char() == '|':
                     self.__read_char()
@@ -214,9 +212,14 @@ class Lexer:
                 if self.current_char == '$':
                     start_position = self.position
                     identifier = self.__read_identifier()
+                    print(len(identifier))
 
                     # Validate the identifier (check for length and allowed characters)
                     if len(identifier) > 16:
+                        return self.__new_token(TokenType.ILLEGAL, identifier)
+                    
+                    if any(char in ['^','%'] for char in identifier):
+                        print("Hello")
                         return self.__new_token(TokenType.ILLEGAL, identifier)
 
                     # Handle array access like $fruits[0]
