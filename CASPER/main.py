@@ -63,10 +63,12 @@ LEXER_DEBUG: bool = True
 
 @app.route('/', methods=['GET', 'POST'])
 def home():
+    code = ""
     output = ""
+    
     if request.method == 'POST':
-        code = request.form.get('code_input', '')
-
+        code = request.form.get('code_input', '') 
+        
         if LEXER_DEBUG:
             output_lines = []
             debug_lex = Lexer(source=code)
@@ -74,7 +76,7 @@ def home():
                 output_lines.append(str(debug_lex.next_token()))
             output = "\n".join(output_lines)
 
-    return render_template('index.html', output=output)
+    return render_template('index.html', code=code, output=output)
 
 if __name__ == '__main__':
     app.run(debug=True)
