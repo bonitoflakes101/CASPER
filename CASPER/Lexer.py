@@ -68,7 +68,7 @@ class Lexer:
         start_pos = self.position
 
         # Allow identifiers to start with $
-        if self.current_char == '$':
+        if self.current_char == '$' or self.current_char == '@':
             self.__read_char()  # Consume the $
 
         # Continue reading valid identifier characters
@@ -208,9 +208,14 @@ class Lexer:
                 return self.__consume_single_char_token(TokenType.TILDE)
             case '"': return self.__new_token(TokenType.STR_LIT, self.__read_string())
             case '@':
-                self.__read_char()  
+            
                 identifier = self.__read_identifier()
-                return self.__new_token(TokenType.IDENT, f"@{identifier}")
+                if "@" in identifier[1:]:
+                        return self.__new_token(TokenType.ILLEGAL, identifier)
+
+                if identifier == "@":
+                    return self.__new_token(TokenType.ILLEGAL, identifier)
+                return self.__new_token(TokenType.IDENT, f"{identifier}")
 
             case _:
                 # Handling identifiers starting with $
