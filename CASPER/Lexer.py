@@ -142,10 +142,6 @@ class Lexer:
                     self.__read_char()
                     self.__read_char()
                     return self.__new_token(TokenType.MINUS_MINUS, "--")
-                elif self.__peek_char() == '>':
-                    self.__read_char()
-                    self.__read_char()
-                    return self.__new_token(TokenType.ARROW, "->")
                 return self.__consume_single_char_token(TokenType.MINUS)
             case '=':
                 if self.__peek_char() == '=':
