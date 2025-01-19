@@ -22,6 +22,7 @@ class TokenType(Enum):
 
 
     # Function Types
+    FUNCTION = "FUNCTION"
     FUNCTION_INT = "FUNCTION_INT"
     FUNCTION_STR = "FUNCTION_STR"
     FUNCTION_BLN = "FUNCTION_BLN"
@@ -185,6 +186,7 @@ KEYWORDS: dict[str, TokenType] = {
     "chr": TokenType.CHR,
 
     # Function keywords
+    "function": TokenType.FUNCTION,
     "function_int": TokenType.FUNCTION_INT,
     "function_str": TokenType.FUNCTION_STR,
     "function_bln": TokenType.FUNCTION_BLN,
