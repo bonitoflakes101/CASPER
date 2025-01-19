@@ -225,8 +225,23 @@ class Lexer:
                         return self.__new_token(TokenType.ILLEGAL, identifier)
 
                     special_chars = set("!\"#%&'()*+,-./:;<=>?@\\^_`{|}~")
+                    valid_trailing_symbols = {'(', ')', '{', '}'}
 
-                    if any(char in special_chars for char in identifier.replace('[]', '')):
+
+                    # Check for valid trailing symbols
+                    trailing_symbols = ""
+                    i = len(identifier) - 1
+                    while i >= 0 and identifier[i] in "({})[]":
+                        trailing_symbols = identifier[i] + trailing_symbols
+                        i -= 1
+
+                    # Check the rest of the identifier (excluding trailing symbols) for invalid characters
+                    main_identifier = identifier[:i + 1]
+                    if any(char in "!\"#%&'()*+,-./:;<=>?@\\^_`{|}~" for char in main_identifier):
+                        return self.__new_token(TokenType.ILLEGAL, identifier)
+
+                    # Ensure the trailing symbols are valid as a unit
+                    if trailing_symbols and trailing_symbols not in valid_trailing_symbols:
                         return self.__new_token(TokenType.ILLEGAL, identifier)
 
                     if "$" in identifier[1:]:
@@ -269,10 +284,11 @@ class Lexer:
                     # Check if identifier is a keyword
                     token_type = lookup_ident(identifier)
                     if token_type != TokenType.IDENT:  # It's a keyword
-                        # If next character is not space, square bracket, or newline, it's illegal
-                        if self.current_char not in [' ', '[', '\n']:
-                            self.__skip_invalid_characters()
-                            return self.__new_token(TokenType.ILLEGAL, identifier)
+                        if identifier not in ['birth', 'ghost']:
+                            # If the next character is not valid, mark it as illegal
+                            if self.current_char not in [' ', '[', '\n']:
+                                self.__skip_invalid_characters()
+                                return self.__new_token(TokenType.ILLEGAL, identifier)
                         return self.__new_token(token_type, identifier)
                     else:  # Not a keyword
                         return self.__new_token(TokenType.ILLEGAL, identifier)
