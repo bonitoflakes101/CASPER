@@ -206,12 +206,45 @@ class Lexer:
             case '@':
             
                 identifier = self.__read_identifier()
+
+
+                if len(identifier) > 16:
+                    return self.__new_token(TokenType.ILLEGAL, identifier)
+
+                special_chars = set("!\"#%&'()*+,-./:;<=>?\\^_{|}~")
+                valid_trailing_symbols = {"(", ")", "[", "]"}
+
+                main_identifier = identifier
+                trailing_symbols = ""
+
+                i = len(identifier) - 1
+                while i >= 0 and identifier[i] in valid_trailing_symbols:
+                    trailing_symbols = identifier[i] + trailing_symbols
+                    i -= 1
+                main_identifier = identifier[:i + 1]
+
+                # Check for invalid characters in the main identifier
+                if any(char in special_chars for char in main_identifier) or main_identifier == "@":
+                    return self.__new_token(TokenType.ILLEGAL, identifier)
+
                 if "@" in identifier[1:]:
-                        return self.__new_token(TokenType.ILLEGAL, identifier)
+                    return self.__new_token(TokenType.ILLEGAL, identifier)
 
                 if identifier == "@":
                     return self.__new_token(TokenType.ILLEGAL, identifier)
-                return self.__new_token(TokenType.IDENT, f"{identifier}")
+
+                tokens = [self.__new_token(TokenType.IDENT, main_identifier)]
+
+                for symbol in trailing_symbols:
+                    if symbol == "(":
+                        tokens.append(self.__new_token(TokenType.LPAREN, symbol))
+                    elif symbol == ")":
+                        tokens.append(self.__new_token(TokenType.RPAREN, symbol))
+                    elif symbol == "[":
+                        tokens.append(self.__new_token(TokenType.LBRACKET, symbol))
+                    elif symbol == "]":
+                        tokens.append(self.__new_token(TokenType.RBRACKET, symbol))
+                return tokens
 
             case _:
                 # Handling identifiers starting with $
@@ -240,10 +273,6 @@ class Lexer:
                     if any(char in special_chars for char in main_identifier) or main_identifier == "$":
                         return self.__new_token(TokenType.ILLEGAL, identifier)
 
-
-
-                    # if stack:  
-                    #     return self.__new_token(TokenType.ILLEGAL, identifier)
 
                     # Tokenize the main identifier
                     tokens = [self.__new_token(TokenType.IDENT, main_identifier)]
