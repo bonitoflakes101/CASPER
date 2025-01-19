@@ -218,57 +218,60 @@ class Lexer:
                 if self.current_char == '$':
                     start_position = self.position
                     identifier = self.__read_identifier()
-                    print(len(identifier))
 
                     # Validate the identifier (check for length and allowed characters)
                     if len(identifier) > 16:
                         return self.__new_token(TokenType.ILLEGAL, identifier)
 
                     special_chars = set("!\"#%&'()*+,-./:;<=>?@\\^_`{|}~")
-                    valid_trailing_symbols = {'(', ')', '{', '}'}
+                    valid_trailing_symbols = {"(", ")", "[", "]"}  
 
-
-                    # Check for valid trailing symbols
+                    main_identifier = identifier
                     trailing_symbols = ""
+
+                    # Extract trailing symbols at the end of the identifier
                     i = len(identifier) - 1
-                    while i >= 0 and identifier[i] in "({})[]":
+                    while i >= 0 and identifier[i] in valid_trailing_symbols:
                         trailing_symbols = identifier[i] + trailing_symbols
                         i -= 1
-
-                    # Check the rest of the identifier (excluding trailing symbols) for invalid characters
                     main_identifier = identifier[:i + 1]
-                    if any(char in "!\"#%&'()*+,-./:;<=>?@\\^_`{|}~" for char in main_identifier):
+
+                    # Check the main identifier for invalid characters
+                    if any(char in special_chars for char in main_identifier) or main_identifier == "$":
                         return self.__new_token(TokenType.ILLEGAL, identifier)
 
-                    # Ensure the trailing symbols are valid as a unit
-                    if trailing_symbols and trailing_symbols not in valid_trailing_symbols:
-                        return self.__new_token(TokenType.ILLEGAL, identifier)
 
-                    if "$" in identifier[1:]:
-                        return self.__new_token(TokenType.ILLEGAL, identifier)
 
-                    if identifier == "$":
-                        return self.__new_token(TokenType.ILLEGAL, identifier)
+                    # if stack:  
+                    #     return self.__new_token(TokenType.ILLEGAL, identifier)
 
-                    if '[]' in identifier:
-                        if identifier.endswith('[]'):
-                            if '[' in identifier[:-2] or ']' in identifier[:-2]:
-                                return self.__new_token(TokenType.ILLEGAL, identifier)
-                        else:
-                            return self.__new_token(TokenType.ILLEGAL, identifier)
-                    elif '[' in identifier or ']' in identifier:
-                        return self.__new_token(TokenType.ILLEGAL, identifier)
+                    # Tokenize the main identifier
+                    tokens = [self.__new_token(TokenType.IDENT, main_identifier)]
 
-                    # Handle array access like $fruits[0]
-                    tokens = [self.__new_token(TokenType.IDENT, identifier)]
-                    while self.__peek_char() == '[':
-                        self.__read_char()  
-                        tokens.append(self.__new_token(TokenType.LBRACKET, "["))
-                        index = self.__read_number()
-                        tokens.append(index)
-                        self.__read_char()  
-                        tokens.append(self.__new_token(TokenType.RBRACKET, "]"))
+                    # Tokenize trailing symbols (if any)
+                    for symbol in trailing_symbols:
+                        if symbol == "(":
+                            tokens.append(self.__new_token(TokenType.LPAREN, symbol))
+                        elif symbol == ")":
+                            tokens.append(self.__new_token(TokenType.RPAREN, symbol))
+                        elif symbol == "[":
+                            tokens.append(self.__new_token(TokenType.LBRACKET, symbol))
+                        elif symbol == "]":
+                            tokens.append(self.__new_token(TokenType.RBRACKET, symbol))
+
                     return tokens
+  # Uncomment if want balance
+                    # stack = []
+                    # for char in trailing_symbols:
+                    #     if char in {"(", "["}:
+                    #         stack.append(char)
+                    #     elif char == ")" and (not stack or stack[-1] != "("):
+                    #         return self.__new_token(TokenType.ILLEGAL, identifier)
+                    #     elif char == "]" and (not stack or stack[-1] != "["):
+                    #         return self.__new_token(TokenType.ILLEGAL, identifier)
+                    #     else:
+                    #         stack.pop()
+
 
                 # Handle keywords and regular identifiers (that do not start with $)
                 elif self.__is_letter(self.current_char):
@@ -276,22 +279,17 @@ class Lexer:
 
                     # Check for types like str[] (TokenType.TYPE)
                     if self.__peek_char() == '[':
-                        self.__read_char()  
+                        self.__read_char()  # Consume '['
                         if self.__peek_char() == ']':
-                            self.__read_char()  
+                            self.__read_char()  # Consume ']'
                             return self.__new_token(TokenType.TYPE, f"{identifier}[]")
 
-                    # Check if identifier is a keyword
+                    # Check if the identifier is a keyword
                     token_type = lookup_ident(identifier)
                     if token_type != TokenType.IDENT:  # It's a keyword
-                        if identifier not in ['birth', 'ghost']:
-                            # If the next character is not valid, mark it as illegal
-                            if self.current_char not in [' ', '[', '\n']:
-                                self.__skip_invalid_characters()
-                                return self.__new_token(TokenType.ILLEGAL, identifier)
                         return self.__new_token(token_type, identifier)
                     else:  # Not a keyword
-                        return self.__new_token(TokenType.ILLEGAL, identifier)
+                        return self.__new_token(TokenType.IDENT, identifier)
 
                 # Handle numeric literals
                 elif self.__is_digit(self.current_char):
@@ -302,6 +300,8 @@ class Lexer:
                     tok = self.__new_token(TokenType.ILLEGAL, self.current_char)
                     self.__read_char()  # Advance the position
                     return tok
+
+                
 
 
     def __consume_single_char_token(self, token_type: TokenType) -> Token:

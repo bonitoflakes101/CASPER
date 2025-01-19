@@ -1,7 +1,7 @@
 birth 
 str $greetings = "Hello, World!"
 
-function_int @count(int $age){
+function_int @count(int $age) {
     revive  $age
 }
 
