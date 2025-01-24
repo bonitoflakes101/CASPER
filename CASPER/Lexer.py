@@ -43,18 +43,39 @@ class Lexer:
         start_pos = self.position
         dot_count = 0
         output = ""
+        integer_part = ""
+        decimal_part = ""
+        is_decimal = False
 
         while self.current_char is not None and (self.__is_digit(self.current_char) or self.current_char == '.'):
             if self.current_char == '.':
                 dot_count += 1
                 if dot_count > 1:
+           
+                    self.__skip_invalid_characters()
                     return self.__new_token(TokenType.ILLEGAL, self.source[start_pos:self.position])
+                is_decimal = True  
+            else:
+                if not is_decimal:
+                    integer_part += self.current_char
+                    if len(integer_part) > 9:
+                        self.__skip_invalid_characters()
+                        return self.__new_token(TokenType.ILLEGAL, self.source[start_pos:self.position])
+                else:
+                    decimal_part += self.current_char
+                    if len(decimal_part) > 9:
+                        self.__skip_invalid_characters()
+                        return self.__new_token(TokenType.ILLEGAL, self.source[start_pos:self.position])
+
             output += self.current_char
             self.__read_char()
 
+        # Check if it's an integer or float based on the presence of a dot
         if dot_count == 0:
             return self.__new_token(TokenType.INT_LIT, int(output))
         return self.__new_token(TokenType.FLT_LIT, float(output))
+
+
     
     def __peek_char(self) -> str | None:
         """Peeks at the next character without advancing the lexer."""
@@ -256,11 +277,15 @@ class Lexer:
                     if len(identifier) > 16:
                         return self.__new_token(TokenType.ILLEGAL, identifier)
 
-                    special_chars = set("!\"#%&'()*+,-./:;<=>?@\\^_`{|}~")
-                    valid_trailing_symbols = {"(", ")", "[", "]"}  
+                    special_chars = set("!\"#%&'()*+,-./:;<=>?@\\^`{|}~")
+                    valid_trailing_symbols = {"(", ")", "[", "]"}
 
                     main_identifier = identifier
                     trailing_symbols = ""
+
+                    # Check for multiple '$' signs in the identifier
+                    if identifier.count('$') > 1:
+                        return self.__new_token(TokenType.ILLEGAL, identifier)
 
                     # Extract trailing symbols at the end of the identifier
                     i = len(identifier) - 1
@@ -272,7 +297,6 @@ class Lexer:
                     # Check the main identifier for invalid characters
                     if any(char in special_chars for char in main_identifier) or main_identifier == "$":
                         return self.__new_token(TokenType.ILLEGAL, identifier)
-
 
                     # Tokenize the main identifier
                     tokens = [self.__new_token(TokenType.IDENT, main_identifier)]
@@ -318,10 +342,11 @@ class Lexer:
                     if token_type != TokenType.IDENT:  # It's a keyword
                         return self.__new_token(token_type, identifier)
                     else:  # Not a keyword
-                        return self.__new_token(TokenType.IDENT, identifier)
+                        return self.__new_token(TokenType.ILLEGAL, identifier)
 
                 # Handle numeric literals
                 elif self.__is_digit(self.current_char):
+                
                     return self.__read_number()
 
                 else:
