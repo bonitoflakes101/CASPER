@@ -232,7 +232,7 @@ class Lexer:
                 if len(identifier) > 16:
                     return self.__new_token(TokenType.ILLEGAL, identifier)
 
-                special_chars = set("!\"#%&'()*+,-./:;<=>?\\^_{|}~")
+                special_chars = set("!\"#%&'$()*+,-./:;<=>?\\^_{|}~")
                 valid_trailing_symbols = {"(", ")", "[", "]"}
 
                 main_identifier = identifier
