@@ -18,12 +18,12 @@ class Delimiters:
     SPX_CHAR1 = {'!', '@', '#', '$', '%', '^', '&', '*'}
     SPX_CHAR2 = {'(', ')', '[', ']', '{', '}', '<', '>'}
     SPX_CHAR3 = {'.', ',', ':', ';', '-', '_', '=', '+'}
-    SPX_CHAR4 = {'`', '~', '|', '/', '?', '!', '“'}
+    SPX_CHAR4 = {'`', '~', '|', '/', '?', '!', '"'}
     SPX_CHAR5 = {'\''}
-    SPX_CHAR6 = {'\'', '“', '`', '~', '^', '_', '-'}
+    SPX_CHAR6 = {'\'', '"', '`', '~', '^', '_', '-'}
     SPECIAL = SPX_CHAR1 | SPX_CHAR2 | SPX_CHAR3 | SPX_CHAR4 | SPX_CHAR5 | SPX_CHAR6
     NEWLINE = {'\n'}
-    STRING_FORM = {'“', '”'}
+    STRING_FORM = {'"', '"'}
     SPACE = {' '}  
 
     # Delimiters
@@ -33,7 +33,7 @@ class Delimiters:
     DEL3 = {'{', '\n'}
     DEL4 = SPACE | NEWLINE | ALPHANUM
     DEL5 = SPACE | ALPHANUM
-    DEL6 = SPACE | ALPHANUM | {'“', '[', ']', '\''}
+    DEL6 = SPACE | ALPHANUM | {'"', '[', ']', '\''}
     DEL7 = SPACE | NEWLINE | {'+', '-', '*', '/', '.', '{', '(', ')', ']', '}', ','}
     DEL8 = ALPHANUM | {',', '+', '-', '*', '/'}
     DEL9 = SPACE | {'(', '{'} | ALPHANUM | {'}'}
@@ -42,8 +42,8 @@ class Delimiters:
     DEL12 = SPACE | NEWLINE | NULL
     DEL13 = SPACE | {')', '\n'}
     DEL14 = SPACE | ALPHA
-    DEL15 = SPACE | {')', '“'} | ALPHANUM | {'(', '[', '\''}
-    DEL16 = SPACE | {'}', '“', '\n'}
+    DEL15 = SPACE | {')', '"'} | ALPHANUM | {'(', '[', '\''}
+    DEL16 = SPACE | {'}', '"', '\n'}
     DEL17 = SPACE | {',', ')', ']'}
     DEL18 = {'('}
     DEL19 = {'['}
