@@ -35,6 +35,8 @@ class Lexer:
         """Creates and returns a new token."""
         return Token(type=tt, literal=literal, line_no=self.line_no, position=self.position)
 
+
+    # OKAY NA TO BAI
     def __read_identifier_or_keyword(self) -> Token:
         """Reads an identifier or keyword and validates its delimiter."""
         start_pos = self.position

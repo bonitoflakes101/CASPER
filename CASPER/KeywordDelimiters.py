@@ -14,7 +14,7 @@ DEFAULT_DELIMS = (
 # may "function_initiate" sa TD but wala sa reserved words, prolly just remove this sa TD
 KEYWORD_DELIMITERS = {
     # Reserved words for start/end
-    "BIRTH": Delimiters.NEWLINE,
+    "BIRTH": Delimiters.NEWLINE, # FIX
     "GHOST": Delimiters.NULL,
 
     # Global scope
@@ -109,11 +109,14 @@ KEYWORD_DELIMITERS = {
     "DOUBLE_SLASH":  Delimiters.DEL5,  # // not sure
     "DOUBLE_ASTERISK": Delimiters.DEL5, # ** not sure
     "EQ":            Delimiters.DEL6,  # =
+    
+    # WALA SA TD
     "PLUS_EQ":       DEFAULT_DELIMS,  # +=
     "MINUS_EQ":      DEFAULT_DELIMS,  # -=
     "MUL_EQ":        DEFAULT_DELIMS,  # *=
     "DIV_EQ":        DEFAULT_DELIMS,  # /=
     "MOD_EQ":        DEFAULT_DELIMS,  # %=
+
     "EQ_EQ":         Delimiters.DEL6,  # ==
     "NOT_EQ":        Delimiters.DEL6,  # !=
     "GT":            Delimiters.DEL9,  # >
