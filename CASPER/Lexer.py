@@ -75,7 +75,7 @@ class Lexer:
             return self.__new_token(TokenType.INT_LIT, int(output))
         return self.__new_token(TokenType.FLT_LIT, float(output))
 
-
+# LOOKAHEAD
     
     def __peek_char(self) -> str | None:
         """Peeks at the next character without advancing the lexer."""
@@ -144,6 +144,8 @@ class Lexer:
                     self.__read_char()
                     return self.__new_token(TokenType.LT_EQ, "<=")
                 return self.__consume_single_char_token(TokenType.LT)
+
+                # LOOK AHEAD FOR NEXT +SIGN
             case '+':
                 if self.__peek_char() == '=':
                     self.__read_char()  # Advance for '='
