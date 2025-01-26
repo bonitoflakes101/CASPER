@@ -239,3 +239,5 @@ def lookup_ident(ident: str) -> TokenType:
         return TokenType.BLN_LIT
 
     return TokenType.IDENT
+
+

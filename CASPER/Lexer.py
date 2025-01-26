@@ -38,25 +38,45 @@ class Lexer:
     def __read_identifier_or_keyword(self) -> Token:
         """Reads an identifier or keyword and validates its delimiter."""
         start_pos = self.position
-        next_char = None 
 
+        # Read the identifier or keyword
         while self.current_char and Delimiters.is_valid_identifier_char(self.current_char):
-            next_char = self.__peek_char() 
             self.__read_char()  # Advance to the next character
 
         identifier = self.source[start_pos:self.position]
         token_type = lookup_ident(identifier)
 
-        if token_type != TokenType.IDENT:  
+        # Specific logic for the "BIRTH" keyword
+        if token_type == TokenType.BIRTH or token_type == TokenType.SKIP or token_type == TokenType.STOP:
+            next_char = self.__peek_char()
+            valid_delims = KEYWORD_DELIMITERS.get("BIRTH", set())
 
-            valid_delims = KEYWORD_DELIMITERS.get(token_type.name, set())
-
-            if next_char in valid_delims:
+            # Allow both newline and other valid delimiters for BIRTH
+            if next_char == '\n':
                 return self.__new_token(token_type, identifier)
             else:
                 return self.__new_token(TokenType.ILLEGAL, identifier)
 
+        # General keyword validation for other keywords
+        if token_type != TokenType.IDENT:
+            valid_delims = KEYWORD_DELIMITERS.get(token_type.name, set())
+
+            # Do not use peek_char() for other keywords
+            if self.current_char in valid_delims:
+                return self.__new_token(token_type, identifier)
+            else:
+                return self.__new_token(TokenType.ILLEGAL, identifier)
+
+        # Handle as an illegal identifier if it doesn't start with $ or @
+        if not identifier.startswith(('$', '@')):
+            return self.__new_token(TokenType.ILLEGAL, identifier)
+
+        # Otherwise, return the identifier token
         return self.__new_token(TokenType.IDENT, identifier)
+
+
+
+
 
     def __read_number(self) -> Token:
         """Reads a number (integer or float) with up to 9 digits in each part."""
