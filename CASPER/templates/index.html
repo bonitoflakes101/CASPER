@@ -3,23 +3,71 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Casper Online Compiler</title>
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='index.css') }}"
+    />
+    <title>Casper Compiler</title>
   </head>
   <body>
-    <h1>Casper Online Compiler</h1>
-    <form method="POST">
-      <textarea
-        name="code_input"
-        rows="10"
-        cols="50"
-        placeholder="Enter your Casper code here"
-      >
-{{ code }}</textarea
-      >
-      <br /><br />
-      <button type="submit">Run</button>
-    </form>
-    <h2>Output:</h2>
-    <pre>{{ output }}</pre>
+    <header>
+      <div class="main-header">
+        <h1>CASPER</h1>
+      </div>
+    </header>
+
+    <section id="main">
+      <div class="main-container">
+        <div class="code-div">
+          <form method="POST" action="/">
+            <div class="label-container">
+              <label id="code-label">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 640 512"
+                  height="20"
+                  width="20"
+                >
+                  <path
+                    d="M392.8 1.2c-17-4.9-34.7 5-39.6 22l-128 448c-4.9 17 5 34.7 22 39.6s34.7-5 39.6-22l128-448c4.9-17-5-34.7-22-39.6zm80.6 120.1c-12.5 12.5-12.5 32.8 0 45.3L562.7 256l-89.4 89.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0l112-112c12.5-12.5 12.5-32.8 0-45.3l-112-112c-12.5-12.5-32.8-12.5-45.3 0zm-306.7 0c-12.5-12.5-32.8-12.5-45.3 0l-112 112c-12.5 12.5-12.5 32.8 0 45.3l112 112c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L77.3 256l89.4-89.4c12.5-12.5 12.5-32.8 0-45.3z"
+                  />
+                </svg>
+                main.casper
+              </label>
+
+              <button type="submit" class="run-button">Run Code</button>
+            </div>
+
+            <textarea name="code_input" id="code-area">{{ code }}</textarea>
+          </form>
+        </div>
+
+        <div class="lexer-div">
+          <div class="lexer-header">
+            <label id="lexer-label">Lexer</label>
+            <label id="token-label">Token</label>
+          </div>
+          <table class="lex-table">
+            <tbody>
+              <tr>
+                <td>Lexer here</td>
+                <td>Token Here</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="output-container">
+        <div class="terminal-container">
+          <div class="output-label-container">
+            <label id="output-label">Output Terminal</label>
+          </div>
+          <div class="output-terminal">
+            <pre id="output" class="main-output">{{ output }}</pre>
+          </div>
+        </div>
+      </div>
+    </section>
   </body>
 </html>

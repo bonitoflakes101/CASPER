@@ -33,7 +33,7 @@ body{
     max-width: 1500px;
     margin: 0 auto; 
     padding: 10px; 
-    height: 95vh;
+    height: 100%;
     overflow: hidden;
 }
 
@@ -48,7 +48,8 @@ svg{
     display: flex;
     gap: 20px;
     padding: 20px; 
-}
+    height: 300px;
+}   
 
 /* border-radius: top-left top-right bottom-right bottom-left; */
 
@@ -95,14 +96,25 @@ svg{
     background: transparent;
     border: none;
     border-radius: 0 0 10px 10px;
+    
 }
+
+#code-area {
+    font-family: 'Courier New', monospace; /* Use a monospace font for code */
+    font-size: 16px; /* Adjust the font size */
+    font-weight:bolder; /* Adjust the font weight */
+    line-height: 1.5; /* Adjust line height for better readability */
+    color: #333; /* Text color */
+}
+
+
 
 .code-div textarea:focus{
     outline: none;
 }
 
 .lexer-div{
-    height: 650px;
+
     width: 650px;
     outline: 0.5px solid rgb(209, 209, 209);
     border-radius: 10px;
