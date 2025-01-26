@@ -101,7 +101,7 @@ KEYWORD_DELIMITERS = {
     "PLUS":          Delimiters.DEL6,  # +
     "PLUS_PLUS":  Delimiters.DEL13,  # ++ (wala sa reserved symbols)
     "MINUS":         Delimiters.DEL6,  # -
-    "MINUS_MINUS":  Delimiters.DEL6,  # --
+    "MINUS_MINUS":  Delimiters.DEL13,  # --
    
     "SLASH":         Delimiters.DEL5,  # /
     "ASTERISK":      Delimiters.DEL5,  # * 
@@ -109,13 +109,13 @@ KEYWORD_DELIMITERS = {
     "DOUBLE_SLASH":  Delimiters.DEL5,  # // not sure
     "DOUBLE_ASTERISK": Delimiters.DEL5, # ** not sure
     "EQ":            Delimiters.DEL6,  # =
-    
-    # WALA SA TD
-    "PLUS_EQ":       DEFAULT_DELIMS,  # +=
-    "MINUS_EQ":      DEFAULT_DELIMS,  # -=
-    "MUL_EQ":        DEFAULT_DELIMS,  # *=
-    "DIV_EQ":        DEFAULT_DELIMS,  # /=
-    "MOD_EQ":        DEFAULT_DELIMS,  # %=
+
+    # WALA SA TD, mema delims muna
+    "PLUS_EQ":       Delimiters.DEL2,  # +=
+    "MINUS_EQ":      Delimiters.DEL2,  # -=
+    "MUL_EQ":        Delimiters.DEL2,  # *=
+    "DIV_EQ":        Delimiters.DEL2,  # /=
+    "MOD_EQ":        Delimiters.DEL2,  # %=
 
     "EQ_EQ":         Delimiters.DEL6,  # ==
     "NOT_EQ":        Delimiters.DEL6,  # !=
