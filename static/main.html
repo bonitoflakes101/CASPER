@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{{ url_for('static', filename='index.css') }}">
+    <title>Casper Programming Language
+    </title>
+</head>
+<body>
+    <section id="titleSection">
+        <h1 class="title">CASPER </h1>
+        <p>Compiler Language</p>
+    </section>
+    <section class="main-container">
+        <div class="container">
+            <div class="left">
+
+                <h2 id="title-1">main.cspr</h2>
+                <form method="POST">
+                
+                <textarea name="code_input" id="casper-code" placeholder="Enter Code Here"></textarea>
+
+                <button id="test-button">RUN</button>
+                </form>
+                
+                <h4 id="title-1">Terminal Output</h4>
+                <div class="output-div">
+                    <pre>{{ output }}</pre>
+                </div>
+                
+
+            </div>
+
+            <div class="middle">
+
+                <h3 id="title-1">Lexer</h3>
+                <div class="lexer-div" id="right-divs">
+                    <pre> {{ Lexer Ouput }} </pre>
+                </div>
+
+            </div>
+
+            <div class="right">
+
+                <h3 id="title-1">Token</h3>
+                <div class="token-div" id="right-divs">
+                    <pre> {{ Token Ouput }} </pre>
+                </div>
+
+            </div>
+
+
+
+        </div>
+    </section>
+
+</body>
+</html>
