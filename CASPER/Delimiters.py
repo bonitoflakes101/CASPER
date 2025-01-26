@@ -12,7 +12,7 @@ class Delimiters:
     OPERATORS = {'+', '-', '*', '/', '%'}
     LOGEXP = {'||', '&&'}
     COMPARATOR = {'==', '!', '!=', '<', '>', '<=', '>='}
-    NULL = {'λ'}
+    NULL = {None}
     COMMENT = {'<<', '---'}
     ASCII = {'ascii code'} # mema
     SPX_CHAR1 = {'!', '@', '#', '$', '%', '^', '&', '*'}
