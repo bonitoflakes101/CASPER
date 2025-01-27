@@ -40,14 +40,32 @@ class Lexer:
     def __read_identifier_or_keyword(self) -> Token:
         """Reads an identifier or keyword and validates its delimiter."""
         start_pos = self.position
+        is_valid = True  # Flag to track validity
 
-        # Read the identifier or keyword
-        while self.current_char and (
-        Delimiters.is_valid_identifier_char(self.current_char) or self.current_char in {'[', ']'}
-    ):
-            self.__read_char()  # Advance to the next character
+        # IDENTIFIERS - $ or @
+        if self.current_char in {'$', '@'}:
+            self.__read_char()  
+
+            # use VALID_ID_SYM
+            while self.current_char:
+                if self.current_char in Delimiters.VALID_ID_SYM or self.current_char in {'[', ']'}:
+                    self.__read_char()
+                else:
+                    is_valid = False  
+                    self.__read_char()  
+        else:
+            # KEYWORDS
+            while self.current_char and (
+                Delimiters.is_valid_identifier_char(self.current_char) or self.current_char in {'[', ']'}
+            ):
+                    self.__read_char()
 
         identifier = self.source[start_pos:self.position]
+
+        # invalid token = ILLEGAL
+        if not is_valid:
+            return self.__new_token(TokenType.ILLEGAL, identifier)
+
         token_type = lookup_ident(identifier)
 
         # Specific logic for the "BIRTH" keyword
@@ -60,20 +78,18 @@ class Lexer:
                 return self.__new_token(token_type, identifier)
             else:
                 return self.__new_token(TokenType.ILLEGAL, identifier)
-
+            
         # General keyword validation for other keywords
         if token_type != TokenType.IDENT:
             valid_delims = KEYWORD_DELIMITERS.get(token_type.name, set())
-
-            # Do not use peek_char() for other keywords
             if self.current_char in valid_delims:
-
                 return self.__new_token(token_type, identifier)
             else:
                 return self.__new_token(TokenType.ILLEGAL, identifier)
 
         # Handle as an illegal identifier if it doesn't start with $ or @
         if not identifier.startswith(('$', '@')):
+    
             return self.__new_token(TokenType.ILLEGAL, identifier)
 
         # Otherwise, return the identifier token
@@ -188,7 +204,8 @@ class Lexer:
                     self.__read_char()
                     self.__read_char()
                     return self.__new_token(TokenType.NOT_EQ, "!=")
-                return self.__new_token(TokenType.BANG, "!")
+                else:
+                    return self.__new_token(TokenType.BANG, "!")
 
             case '(': return self.__consume_single_char_token(TokenType.LPAREN)
             case ')': return self.__consume_single_char_token(TokenType.RPAREN)
@@ -210,3 +227,6 @@ class Lexer:
         tok = self.__new_token(token_type, self.current_char)
         self.__read_char()
         return tok
+
+
+    
