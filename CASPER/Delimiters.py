@@ -7,6 +7,7 @@ class Delimiters:
     NUM = ZERO | DIGITS
     ALPHANUM = ALPHA | NUM
     UNDERSCORE = {'_'}
+    SPACE = {' '}  
     VALID_ID_SYM = ALPHANUM | UNDERSCORE
     BOOLEAN = {'Day', 'Night'}
     OPERATORS = {'+', '-', '*', '/', '%'}
@@ -24,7 +25,7 @@ class Delimiters:
     SPECIAL = SPX_CHAR1 | SPX_CHAR2 | SPX_CHAR3 | SPX_CHAR4 | SPX_CHAR5 | SPX_CHAR6
     NEWLINE = {'\n'}
     STRING_FORM = {'"', '"'}
-    SPACE = {' '}  
+    
 
     # Delimiters
     DELIM_ID = OPERATORS | SPACE | NEWLINE | {'=', '!', '>', '<', '(', ')', '[', ']', ','}

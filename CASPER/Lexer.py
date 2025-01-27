@@ -48,14 +48,18 @@ class Lexer:
 
             # use VALID_ID_SYM
             while self.current_char:
-                if self.current_char in Delimiters.VALID_ID_SYM or self.current_char in {'[', ']'}:
+                # PROBLEM : may prob sa mga gumagamit ng [], gawan ng delimiter ang identifiers dapat kasama ang [] para ma tokenize separately
+                if self.current_char in Delimiters.VALID_ID_SYM:
                     self.__read_char()
                 else:
-                    is_valid = False  
-                    self.__read_char()  
+                    if self.current_char.isspace():
+                        break  
+                    is_valid = False
+                    self.__read_char()  # Consume the invalid character)  
         else:
             # KEYWORDS
             while self.current_char and (
+                # PROBLEM : may prob sa mga gumagamit ng [], hindi siya nacocount as delimiter
                 Delimiters.is_valid_identifier_char(self.current_char) or self.current_char in {'[', ']'}
             ):
                     self.__read_char()
@@ -131,6 +135,29 @@ class Lexer:
             self.__read_char()  # Consume closing quote
         return literal
 
+    def __read_char_literal(self) -> str:
+        """Reads a character literal enclosed in single quotes."""
+        self.__read_char()  # Skip the opening single quote
+        start_pos = self.position
+
+        # Read the character inside the single quotes
+        if self.current_char and self.current_char != "'":
+            self.__read_char()
+
+        literal = self.source[start_pos:self.position]
+
+        # Check and consume the closing single quote
+        if self.current_char == "'":
+            self.__read_char()
+        else:
+            # If no closing single quote, mark it as incomplete
+            return None
+
+        # Ensure the literal is only a single character
+        if len(literal) != 1:
+            return None
+
+        return literal
     def next_token(self) -> Token:
         """Returns the next token."""
         self.__skip_whitespace()
@@ -153,6 +180,10 @@ class Lexer:
         if self.current_char == '"':
             literal = self.__read_string()
             return self.__new_token(TokenType.STR_LIT, literal)
+        
+        if self.current_char == "'":
+            literal = self.__read_char_literal()
+            return self.__new_token(TokenType.CHR_LIT, literal)
 
         # Handle single-character tokens and illegal characters
         match self.current_char:
