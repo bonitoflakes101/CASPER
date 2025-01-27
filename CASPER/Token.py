@@ -209,36 +209,35 @@ KEYWORDS: dict[str, TokenType] = {
     "to_flt": TokenType.CONVERT_TO_FLT,
 
     # List types, MISSING TD
-    "int_1D": TokenType.LIST_INT,
-    "str_1D": TokenType.LIST_STR,
-    "bln_1D": TokenType.LIST_BLN,
-    "flt_1D": TokenType.LIST_FLT,
-    "chr_1D": TokenType.LIST_CHR,
-    "int_2D": TokenType.LIST_INT2D,
-    "str_2D": TokenType.LIST_STR2D,
-    "bln_2D": TokenType.LIST_BLN2D,
-    "flt_2D": TokenType.LIST_FLT2D,
-    "chr_2D": TokenType.LIST_CHR2D,
+    "int[]": TokenType.LIST_INT,
+    "str[]": TokenType.LIST_STR,
+    "bln[]": TokenType.LIST_BLN,
+    "flt[]": TokenType.LIST_FLT,
+    "chr[]": TokenType.LIST_CHR,
+    "int[][]": TokenType.LIST_INT2D,
+    "str[][]": TokenType.LIST_STR2D,
+    "bln[][]": TokenType.LIST_BLN2D,
+    "flt[][]": TokenType.LIST_FLT2D,
+    "chr[][]": TokenType.LIST_CHR2D,
     }
 
 def lookup_ident(ident: str) -> TokenType:
-    # Check for keywords
-    tt: TokenType | None = KEYWORDS.get(ident)
-    if tt is not None:
-        return tt
+    # Prioritize longer, exact matches (e.g., "int[]", "int[][]")
+    if ident in KEYWORDS:
+        return KEYWORDS[ident]
     
-    # Check for function names starting with "@"
+    if "[" in ident:  
+        base_ident = ident.split('[')[0]  
+        if base_ident in {"int", "flt", "bln", "str", "chr"}:
+            return TokenType.ILLEGAL  
+
     if ident.startswith("@"):
         return TokenType.FUNCTION_NAME
 
-    # Check for type keywords
     if ident in {"int", "flt", "bln", "str", "chr"}:
         return TokenType.TYPE
 
-    # Handle boolean literals
     if ident in {"Day", "Night"}:
         return TokenType.BLN_LIT
 
     return TokenType.IDENT
-
-

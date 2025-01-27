@@ -62,18 +62,18 @@ KEYWORD_DELIMITERS = {
     "FUNCTION_BLN": Delimiters.SPACE,
     "FUNCTION_FLT": Delimiters.SPACE,
     "FUNCTION_CHR": Delimiters.SPACE,
-    "FUNCTION_LIST_INT": Delimiters.NULL,
-    "FUNCTION_LIST_STR": Delimiters.NULL,
-    "FUNCTION_LIST_BLN": Delimiters.NULL,
-    "FUNCTION_LIST_FLT": Delimiters.NULL,
-    "FUNCTION_LIST_CHR": Delimiters.NULL,
+    "FUNCTION_LIST_INT": Delimiters.SPACE,
+    "FUNCTION_LIST_STR": Delimiters.SPACE,
+    "FUNCTION_LIST_BLN": Delimiters.SPACE,
+    "FUNCTION_LIST_FLT": Delimiters.SPACE,
+    "FUNCTION_LIST_CHR": Delimiters.SPACE,
 
     # Wala sa TD to, should be [][] yung delims
-    "FUNCTION_LIST_INT2D": Delimiters.NULL,
-    "FUNCTION_LIST_STR2D": Delimiters.NULL,
-    "FUNCTION_LIST_BLN2D": Delimiters.NULL,
-    "FUNCTION_LIST_FLT2D": Delimiters.NULL,
-    "FUNCTION_LIST_CHR2D": Delimiters.NULL,
+    "FUNCTION_LIST_INT2D": Delimiters.SPACE,
+    "FUNCTION_LIST_STR2D": Delimiters.SPACE,
+    "FUNCTION_LIST_BLN2D": Delimiters.SPACE,
+    "FUNCTION_LIST_FLT2D": Delimiters.SPACE,
+    "FUNCTION_LIST_CHR2D": Delimiters.SPACE,
 
     "IN": Delimiters.DEL2,
 
@@ -84,16 +84,16 @@ KEYWORD_DELIMITERS = {
     "CONVERT_TO_FLT": Delimiters.DEL18,
 
     # List types (1D, 2D), MISSING SA TD, IDK WHAT TO DO HERE, FIX NEXT TIME
-    "LIST_INT": DEFAULT_DELIMS,
-    "LIST_STR": DEFAULT_DELIMS,
-    "LIST_BLN": DEFAULT_DELIMS,
-    "LIST_FLT": DEFAULT_DELIMS,
-    "LIST_CHR": DEFAULT_DELIMS,
-    "LIST_INT2D": DEFAULT_DELIMS,
-    "LIST_STR2D": DEFAULT_DELIMS,
-    "LIST_BLN2D": DEFAULT_DELIMS,
-    "LIST_FLT2D": DEFAULT_DELIMS,
-    "LIST_CHR2D": DEFAULT_DELIMS,
+    "LIST_INT": Delimiters.SPACE,
+    "LIST_STR": Delimiters.SPACE,
+    "LIST_BLN": Delimiters.SPACE,
+    "LIST_FLT": Delimiters.SPACE,
+    "LIST_CHR": Delimiters.SPACE,
+    "LIST_INT2D": Delimiters.SPACE,
+    "LIST_STR2D": Delimiters.SPACE,
+    "LIST_BLN2D": Delimiters.SPACE,
+    "LIST_FLT2D": Delimiters.SPACE,
+    "LIST_CHR2D": Delimiters.SPACE,
 
     # --------------------------------------------------------
     # Operators (if you want to force them to have valid next chars)
