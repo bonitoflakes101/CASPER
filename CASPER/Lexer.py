@@ -25,7 +25,7 @@ class Lexer:
         while self.current_char in [' ', '\t', '\r']:
             self.__read_char()
 
-    def __new_token(self, tt: TokenType, literal: Any) -> Token:
+    def __new_token(self, tt: TokenType, literal: any) -> Token:
         """Creates and returns a new token."""
         return Token(type=tt, literal=literal, line_no=self.line_no, position=self.position)
 
