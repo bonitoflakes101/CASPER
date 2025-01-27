@@ -42,7 +42,9 @@ class Lexer:
         start_pos = self.position
 
         # Read the identifier or keyword
-        while self.current_char and Delimiters.is_valid_identifier_char(self.current_char):
+        while self.current_char and (
+        Delimiters.is_valid_identifier_char(self.current_char) or self.current_char in {'[', ']'}
+    ):
             self.__read_char()  # Advance to the next character
 
         identifier = self.source[start_pos:self.position]
@@ -65,6 +67,7 @@ class Lexer:
 
             # Do not use peek_char() for other keywords
             if self.current_char in valid_delims:
+
                 return self.__new_token(token_type, identifier)
             else:
                 return self.__new_token(TokenType.ILLEGAL, identifier)

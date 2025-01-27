@@ -62,18 +62,18 @@ KEYWORD_DELIMITERS = {
     "FUNCTION_BLN": Delimiters.SPACE,
     "FUNCTION_FLT": Delimiters.SPACE,
     "FUNCTION_CHR": Delimiters.SPACE,
-    "FUNCTION_LIST_INT": Delimiters.DEL19,
-    "FUNCTION_LIST_STR": Delimiters.DEL19,
-    "FUNCTION_LIST_BLN": Delimiters.DEL19,
-    "FUNCTION_LIST_FLT": Delimiters.DEL19,
-    "FUNCTION_LIST_CHR": Delimiters.DEL19,
+    "FUNCTION_LIST_INT": Delimiters.NULL,
+    "FUNCTION_LIST_STR": Delimiters.NULL,
+    "FUNCTION_LIST_BLN": Delimiters.NULL,
+    "FUNCTION_LIST_FLT": Delimiters.NULL,
+    "FUNCTION_LIST_CHR": Delimiters.NULL,
 
     # Wala sa TD to, should be [][] yung delims
-    "FUNCTION_LIST_INT2D": Delimiters.DEL19,
-    "FUNCTION_LIST_STR2D": Delimiters.DEL19,
-    "FUNCTION_LIST_BLN2D": Delimiters.DEL19,
-    "FUNCTION_LIST_FLT2D": Delimiters.DEL19,
-    "FUNCTION_LIST_CHR2D": Delimiters.DEL19,
+    "FUNCTION_LIST_INT2D": Delimiters.NULL,
+    "FUNCTION_LIST_STR2D": Delimiters.NULL,
+    "FUNCTION_LIST_BLN2D": Delimiters.NULL,
+    "FUNCTION_LIST_FLT2D": Delimiters.NULL,
+    "FUNCTION_LIST_CHR2D": Delimiters.NULL,
 
     "IN": Delimiters.DEL2,
 
