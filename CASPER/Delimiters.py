@@ -34,7 +34,7 @@ class Delimiters:
     DEL3 = {'{', '\n'}
     DEL4 = SPACE | NEWLINE | ALPHANUM
     DEL5 = SPACE | ALPHANUM
-    DEL6 = SPACE | ALPHANUM | {'"', '[', ']', '\''}
+    DEL6 = SPACE | NULL | ALPHANUM | {'"', '[', ']', '\''}
     DEL7 = SPACE | NEWLINE | {'+', '-', '*', '/', '.', '{', '(', ')', ']', '}', ','}
     DEL8 = ALPHANUM | {',', '+', '-', '*', '/'}
     DEL9 = SPACE | {'(', '{'} | ALPHANUM | {'}'}

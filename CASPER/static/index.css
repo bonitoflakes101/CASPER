@@ -1,0 +1,200 @@
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300..800;1,300..800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100..900;1,100..900&display=swap');
+
+*{
+    font-family: "Roboto", serif;
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    
+}
+
+body{
+    background: rgb(237,237,237);
+    background: linear-gradient(56deg, rgba(237,237,237,1) 0%, rgba(255,255,255,1) 50%, rgba(237,237,237,1) 100%);
+
+}
+
+.main-header{
+    background-color: #ffffff;
+    width: 100%;
+    outline: 0.5px solid rgb(209, 209, 209); 
+    
+}
+
+.main-header h1{
+    background-color: #ffffff;
+    padding: 10px 50px;
+    color: #4f46e5;
+}
+
+#main {
+    max-width: 1500px;
+    margin: 0 auto; 
+    padding: 10px; 
+    height: 100%;
+    overflow: hidden;
+}
+
+svg{
+    padding-top: 6px;
+    background: #ffffff;            /* Make the SVG behave like a block element */
+    margin: 0;
+}
+
+.main-container {
+    justify-content: start;
+    display: flex;
+    gap: 20px;
+    padding: 20px; 
+    height: 300px;
+}   
+
+/* border-radius: top-left top-right bottom-right bottom-left; */
+
+.label-container{
+    width: 100%;
+    background: #ffffff;
+    display: flex;
+    justify-content: space-between;
+    padding: 10px;
+    align-items: center;
+    border-radius: 10px 10px 0 0;
+}
+
+.run-button{
+    background: #4f46e5;
+    outline: none;
+    border: none;
+    padding: 10px 30px;
+    color: white;
+    font-weight: 500;
+    border-radius: 5px;
+    
+}
+
+#code-label{
+    font-weight: 500;
+    background: #ffffff;
+}
+
+.code-div{
+    max-width: 700px;
+    width: 100%;    
+    outline: 0.5px solid rgb(209, 209, 209); 
+    background-color: #f6f6f6;
+    border-radius: 10px;
+}
+
+.code-div textarea{
+    font-size: 1rem;
+    resize: none;
+    padding: 20px;
+    width: 100%;
+    height: 450px;
+    background: transparent;
+    border: none;
+    border-radius: 0 0 10px 10px;
+    
+}
+
+#code-area {
+    font-family: 'Courier New', monospace; /* Use a monospace font for code */
+    font-size: 16px; /* Adjust the font size */
+    font-weight:bolder; /* Adjust the font weight */
+    line-height: 1.5; /* Adjust line height for better readability */
+    color: #333; /* Text color */
+}
+
+
+
+.code-div textarea:focus{
+    outline: none;
+}
+
+.lexer-div{
+
+    width: 650px;
+    outline: 0.5px solid rgb(209, 209, 209);
+    border-radius: 10px;
+    background-color: #f6f6f6;
+    overflow-y: auto;
+}
+
+.lexer-header{
+    display: grid;
+    
+    width: 100%;
+    grid-template-columns: 1fr 1fr;
+    align-items: center;
+    text-align: center;
+    width: 100%;
+    background: #ffffff;
+    padding: 13px;
+    align-items: center;
+    border-radius: 10px 10px 0 0;
+    
+}
+
+.lexer-header label{
+    padding: 5px;
+    background: #ffffff;
+    font-weight: 500;
+}
+
+
+.lex-table {
+    width: 100%;  
+    border-collapse: collapse;
+    table-layout: fixed;  
+}
+
+.lex-table td {
+    font-size: 0.85rem;
+    padding: 10px; 
+    text-align: center;
+    vertical-align: top;
+    background-color: #f6f6f6;
+
+}
+
+.lex-table td{
+    width: 100%;                 
+}
+
+.output-container{
+    display: grid;
+    grid-template-columns: 1fr;
+    max-width: 1500px;
+    width: 100%;  
+    padding: 20px;
+}
+
+.terminal-container{
+    width: 60%;
+    border-radius: 10px;
+    outline: 0.5px solid rgb(209, 209, 209);
+}
+
+.output-label-container{
+    border-radius: 10px 10px 0 0;
+    padding: 15px;
+    background: #ffffff;
+}
+
+.output-label-container label{
+    background: #ffffff;
+    font-weight: 500;
+}
+
+.output-terminal{
+    background: #f6f6f6;
+    height: 150px;
+    padding: 10px;  
+    border-radius: 0 0 10px 10px;
+}
+
+.main-output{
+    background: #f6f6f6;
+}

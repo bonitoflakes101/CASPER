@@ -217,8 +217,35 @@ class Lexer:
         # Ensure the literal is only a single character
         if len(literal) != 1:
             return None
-
         return literal
+    
+    def __is_valid_delimiter(self, token_type: TokenType) -> bool:
+        """
+        Validates if the next character after a token is a valid delimiter.
+        
+        :param token_type: The type of the token being validated.
+        :return: True if the next character is a valid delimiter, False otherwise.
+        """
+        print("current token: " , self.current_char)
+        print("token type: ", token_type.name)
+        valid_delims = KEYWORD_DELIMITERS.get(token_type.name)
+        print("valid delims: ",valid_delims)
+        next_char = self.__peek_char()
+        print("next char: ",next_char)
+        return next_char in valid_delims
+    
+    def __skip_invalid_characters(self) -> None:
+        """Skips invalid characters until a valid delimiter is found."""
+        while self.current_char and not self.current_char.isspace():
+            self.__read_char()
+
+    def __return_illegal_token(self) -> Token:
+        """Returns an illegal token for invalid characters."""
+        self.__skip_invalid_characters()
+        self.__read_char()
+        return self.__new_token(TokenType.ILLEGAL, self.source)
+
+
     def next_token(self) -> Token:
         """Returns the next token."""
         self.__skip_whitespace()
@@ -226,6 +253,7 @@ class Lexer:
         if self.current_char is None:
             return self.__new_token(TokenType.EOF, "")
         
+        # NEW LINE TOKEN
         if self.current_char == '\n':
             self.line_no += 1  # Increment line number for tracking
             self.__read_char()  # Consume the newline character
@@ -248,56 +276,165 @@ class Lexer:
 
         # Handle single-character tokens and illegal characters
         match self.current_char:
-            case '+':
-                if self.__peek_char() == '+':
-                    self.__read_char()
-                    self.__read_char()
-                    return self.__new_token(TokenType.PLUS_PLUS, "++")
-                elif self.__peek_char() == '=':
-                    self.__read_char()
-                    self.__read_char()
-                    return self.__new_token(TokenType.PLUS_EQ, "+=")
-                return self.__new_token(TokenType.PLUS, "+")
 
+            # ARITHMETIC OPERATORS & ASSIGNMENT OPERATORS
+
+            # Token Creation for +, +=, ++
+            case '+':
+                if self.__peek_char() == '+':  # Handle '++'
+                    self.__read_char()  # Consume the first '+'
+                    
+                    print("after seconf read: ", self.current_char)  # Second '+'
+                    if self.__is_valid_delimiter(TokenType.PLUS_PLUS):  # Validate delimiter
+                        self.__read_char()  # Consume the second '+'
+                        return self.__new_token(TokenType.PLUS_PLUS, "++")
+                    
+                    # Skip the invalid character and consume until a valid point
+                    return self.__return_illegal_token()
+                
+                elif self.__peek_char() == '=':  # Handle '+='
+                    self.__read_char()  # Consume the first '+'
+                    
+                    if  self.__is_valid_delimiter(TokenType.PLUS_EQ):  # Validate delimiter
+                        self.__read_char() # Consume the '='
+                        return self.__new_token(TokenType.PLUS_EQ, "+=")
+                    return self.__return_illegal_token()
+                
+                # Handles single '+'
+                if self.__is_valid_delimiter(TokenType.PLUS):
+                    return self.__consume_single_char_token(TokenType.PLUS)
+                return self.__return_illegal_token()
+            
+            # Token Creation for -, -=, --
             case '-':
                 if self.__peek_char() == '-':
                     self.__read_char()
-                    self.__read_char()
-                    return self.__new_token(TokenType.MINUS_MINUS, "--")
+                    if self.__is_valid_delimiter(TokenType.MINUS_MINUS):
+                        self.__read_char()
+                        return self.__new_token(TokenType.MINUS_MINUS, "--")
+                    return self.__return_illegal_token()
                 elif self.__peek_char() == '=':
                     self.__read_char()
-                    self.__read_char()
-                    return self.__new_token(TokenType.MINUS_EQ, "-=")
-                return self.__new_token(TokenType.MINUS, "-")
+                    if self.__is_valid_delimiter(TokenType.MINUS_EQ):
+                        self.__read_char()
+                        return self.__new_token(TokenType.MINUS_EQ, "-=")
+                    return self.__return_illegal_token()
+                # Single -
+                if self.__is_valid_delimiter(TokenType.MINUS):
+                    return self.__consume_single_char_token(TokenType.MINUS)
+                return self.__return_illegal_token()
 
+            # Token Creation for *, *=, **
+            case '*':
+                if self.__peek_char() == '=':
+                    self.__read_char()
+                    if self.__is_valid_delimiter(TokenType.MUL_EQ):
+                        self.__read_char()
+                        return self.__new_token(TokenType.MUL_EQ, "*=")
+                    return self.__return_illegal_token()
+                elif self.__peek_char == '*':
+                    if self.__is_valid_delimiter(TokenType.EXPONENT):
+                        self.__read_char()
+                        return self.__new_token(TokenType.EXPONENT, "**")
+                    return self.__return_illegal_token()
+                if self.__is_valid_delimiter(TokenType.MULTIPLY):
+                    return self.__consume_single_char_token(TokenType.MULTIPLY)
+                return self.__return_illegal_token()          
+
+
+            # Token Creation for /, /=
+            case '/':
+                if self.__peek_char() == '=':
+                    self.__read_char()
+                    if self.__is_valid_delimiter(TokenType.DIV_EQ):
+                        self.__read_char()
+                        return self.__new_token(TokenType.DIV_EQ, "*/=")
+                    return self.__return_illegal_token()
+                if self.__is_valid_delimiter(TokenType.DIVISION):
+                    return self.__consume_single_char_token(TokenType.DIVISION)
+                return self.__return_illegal_token() 
+                   
+            # Token Creation for Modulo (%, %=)
+            case '%':
+                if self.__peek_char() == '=':
+                    self.__read_char()
+                    if self.__is_valid_delimiter(TokenType.MOD_EQ):
+                        self.__read_char()
+                        return self.__new_token(TokenType.MOD_EQ, "%=")
+                    return self.__return_illegal_token()
+                if self.__is_valid_delimiter(TokenType.MODULO):
+                    return self.__consume_single_char_token(TokenType.MODULO)
+                return self.__return_illegal_token()
+            
+
+            # Token Creation for =, ==
             case '=':
                 if self.__peek_char() == '=':
                     self.__read_char()
-                    self.__read_char()
-                    return self.__new_token(TokenType.EQ_EQ, "==")
-                return self.__new_token(TokenType.EQ, "=")
+                    if self.__is_valid_delimiter(TokenType.EQ_EQ):
+                        self.__read_char()
+                        return self.__new_token(TokenType.EQ_EQ, "==")
+                    return self.__return_illegal_token()
+                if self.__is_valid_delimiter(TokenType.EQ):
+                    return self.__consume_single_char_token(TokenType.EQ)
+                return self.__return_illegal_token()
 
+            # COMPARISON OPERATORS
+            
+            # Token Creation for Less than, Less than Equals (<, <=)
             case '<':
                 if self.__peek_char() == '=':
                     self.__read_char()
-                    self.__read_char()
-                    return self.__new_token(TokenType.LT_EQ, "<=")
-                return self.__new_token(TokenType.LT, "<")
-
+                    if self.__is_valid_delimiter(TokenType.LT_EQ):
+                        self.__read_char()
+                        return self.__new_token(TokenType.LT_EQ, "<=")
+                    return self.__return_illegal_token()
+                if self.__is_valid_delimiter(TokenType.LT):
+                    return self.__consume_single_char_token(TokenType.LT)
+                return self.__return_illegal_token()
+            
+            # Token Creation for Greater than, Greater than Equals (<, <=)
             case '>':
                 if self.__peek_char() == '=':
                     self.__read_char()
-                    self.__read_char()
-                    return self.__new_token(TokenType.GT_EQ, ">=")
-                return self.__new_token(TokenType.GT, ">")
-
+                    if self.__is_valid_delimiter(TokenType.GT_EQ):
+                        self.__read_char()
+                        return self.__new_token(TokenType.GT_EQ, ">=")
+                    return self.__return_illegal_token()
+                if self.__is_valid_delimiter(TokenType.GT):
+                    return self.__consume_single_char_token(TokenType.GT)
+                return self.__return_illegal_token()
+                       
+            # Token Creation for Not,  Not Equals (!, !=)
             case '!':
                 if self.__peek_char() == '=':
                     self.__read_char()
                     self.__read_char()
                     return self.__new_token(TokenType.NOT_EQ, "!=")
-                else:
-                    return self.__new_token(TokenType.BANG, "!")
+                return self.__consume_single_char_token(TokenType.NOT)
+                
+            # LOGICAL OPERATORS
+
+            # Token Creation for AND (&&)
+            case '&':
+                if self.__peek_char() == '&':
+                    self.__read_char()
+                    self.__read_char()
+                    return self.__new_token(TokenType.AND, "&&")   
+                return self.__consume_single_char_token(TokenType.ILLEGAL)
+            
+            # Token Creation for OR (||)
+            case '|':
+                if self.__peek_char() == '|':
+                    self.__read_char()
+                    self.__read_char()
+                    return self.__new_token(TokenType.OR, "||")   
+                return self.__consume_single_char_token(TokenType.ILLEGAL)
+            
+            # Token Creation NEGATIVE OP/TILDE
+            case '~':
+                return self.__consume_single_char_token(TokenType.TILDE)
+                
 
             case '(': return self.__consume_single_char_token(TokenType.LPAREN)
             case ')': return self.__consume_single_char_token(TokenType.RPAREN)
@@ -311,12 +448,6 @@ class Lexer:
 
             case _:
                 return self.__read_illegal_token()
-
-    def __consume_single_char_token(self, token_type: TokenType) -> Token:
-        """Helper to return a token for a single character."""
-        tok = self.__new_token(token_type, self.current_char)
-        self.__read_char()
-        return tok
     
  
     def __read_illegal_token(self) -> Token:
