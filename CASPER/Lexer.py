@@ -96,12 +96,36 @@ class Lexer:
     def __read_identifier_or_keyword(self) -> Token:
         """Reads an identifier or keyword and validates its delimiter."""
         start_pos = self.position
+        is_valid = True  # Flag to track validity
 
-        # Read the identifier or keyword
-        while self.current_char and Delimiters.is_valid_identifier_char(self.current_char):
-            self.__read_char()  # Advance to the next character
+        # IDENTIFIERS - $ or @
+        if self.current_char in {'$', '@'}:
+            self.__read_char()  
+
+            # use VALID_ID_SYM
+            while self.current_char:
+                # PROBLEM : may prob sa mga gumagamit ng [], gawan ng delimiter ang identifiers dapat kasama ang [] para ma tokenize separately
+                if self.current_char in Delimiters.VALID_ID_SYM:
+                    self.__read_char()
+                else:
+                    if self.current_char.isspace():
+                        break  
+                    is_valid = False
+                    self.__read_char()  # Consume the invalid character)  
+        else:
+            # KEYWORDS
+            while self.current_char and (
+                # PROBLEM : may prob sa mga gumagamit ng [], hindi siya nacocount as delimiter
+                Delimiters.is_valid_identifier_char(self.current_char) or self.current_char in {'[', ']'}
+            ):
+                    self.__read_char()
 
         identifier = self.source[start_pos:self.position]
+
+        # invalid token = ILLEGAL
+        if not is_valid:
+            return self.__new_token(TokenType.ILLEGAL, identifier)
+
         token_type = lookup_ident(identifier)
 
         # Specific logic for the "BIRTH" keyword
@@ -114,12 +138,10 @@ class Lexer:
                 return self.__new_token(token_type, identifier)
             else:
                 return self.__new_token(TokenType.ILLEGAL, identifier)
-
+            
         # General keyword validation for other keywords
         if token_type != TokenType.IDENT:
             valid_delims = KEYWORD_DELIMITERS.get(token_type.name, set())
-
-            # Do not use peek_char() for other keywords
             if self.current_char in valid_delims:
                 return self.__new_token(token_type, identifier)
             else:
@@ -127,6 +149,7 @@ class Lexer:
 
         # Handle as an illegal identifier if it doesn't start with $ or @
         if not identifier.startswith(('$', '@')):
+    
             return self.__new_token(TokenType.ILLEGAL, identifier)
 
         # Otherwise, return the identifier token
@@ -168,6 +191,29 @@ class Lexer:
             self.__read_char()  # Consume closing quote
         return literal
 
+    def __read_char_literal(self) -> str:
+        """Reads a character literal enclosed in single quotes."""
+        self.__read_char()  # Skip the opening single quote
+        start_pos = self.position
+
+        # Read the character inside the single quotes
+        if self.current_char and self.current_char != "'":
+            self.__read_char()
+
+        literal = self.source[start_pos:self.position]
+
+        # Check and consume the closing single quote
+        if self.current_char == "'":
+            self.__read_char()
+        else:
+            # If no closing single quote, mark it as incomplete
+            return None
+
+        # Ensure the literal is only a single character
+        if len(literal) != 1:
+            return None
+
+        return literal
     def next_token(self) -> Token:
         """Returns the next token."""
         self.__skip_whitespace()
@@ -190,6 +236,10 @@ class Lexer:
         if self.current_char == '"':
             literal = self.__read_string()
             return self.__new_token(TokenType.STR_LIT, literal)
+        
+        if self.current_char == "'":
+            literal = self.__read_char_literal()
+            return self.__new_token(TokenType.CHR_LIT, literal)
 
         # Handle single-character tokens and illegal characters
         match self.current_char:
@@ -254,7 +304,8 @@ class Lexer:
                     self.__read_char()
                     self.__read_char()
                     return self.__new_token(TokenType.NOT_EQ, "!=")
-                return self.__new_token(TokenType.BANG, "!")
+                else:
+                    return self.__new_token(TokenType.BANG, "!")
 
             case '(': return self.__consume_single_char_token(TokenType.LPAREN)
             case ')': return self.__consume_single_char_token(TokenType.RPAREN)
@@ -276,3 +327,6 @@ class Lexer:
         tok = self.__new_token(token_type, self.current_char)
         self.__read_char()
         return tok
+
+
+    
