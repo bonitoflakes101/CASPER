@@ -466,4 +466,8 @@ class Lexer:
         print("ILLEGAL",illegal_literal)
         return self.__new_token(TokenType.ILLEGAL, illegal_literal)
 
-    
+    def __consume_single_char_token(self, token_type: TokenType) -> Token:
+        """Helper to return a token for a single character."""
+        tok = self.__new_token(token_type, self.current_char)
+        self.__read_char()
+        return tok    
