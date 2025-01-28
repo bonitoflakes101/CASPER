@@ -34,14 +34,14 @@ class Delimiters:
     DEL3 = {'{', '\n'}
     DEL4 = SPACE | NEWLINE | ALPHANUM
     DEL5 = SPACE | ALPHANUM
-    DEL6 = SPACE | ALPHANUM | {'"', '[', ']', '\''}
+    DEL6 = SPACE | ALPHANUM | NULL | {'"', '[', ']', '\''}
     DEL7 = SPACE | NEWLINE | {'+', '-', '*', '/', '.', '{', '(', ')', ']', '}', ','}
     DEL8 = ALPHANUM | {',', '+', '-', '*', '/'}
     DEL9 = SPACE | {'(', '{'} | ALPHANUM | {'}'}
     DEL10 = SPACE | {',', '(', '{', '[', '+', '-', '*', '/', '<', '>', '=', ']', ')', '}'}
     DEL11 = SPACE | NEWLINE | {',', '(', '{', '[', '+'}
     DEL12 = SPACE | NEWLINE | NULL
-    DEL13 = SPACE | {')', '\n'}
+    DEL13 = SPACE | NULL | {')', '\n'}
     DEL14 = SPACE | ALPHA
     DEL15 = SPACE | {')', '"'} | ALPHANUM | {'(', '[', '\''}
     DEL16 = SPACE | {'}', '"', '\n'}

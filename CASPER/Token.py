@@ -59,13 +59,15 @@ class TokenType(Enum):
 
     # Other
     FUNCTION_NAME = "FUNCTION_NAME"
+
     # Arithmetic Symbols
     PLUS = "PLUS"
     MINUS = "MINUS"
-    ASTERISK = "ASTERISK"
-    DOUBLE_ASTERISK = "DOUBLE_ASTERISK"
+    MULTIPLY = "ASTERISK"
+    EXPONENT = "DOUBLE_ASTERISK"
+    MODULO = "%"
 
-    SLASH = "SLASH"
+    DIVISION = "SLASH"
     DOUBLE_SLASH = "DOUBLE_SLASH"
     POW = "POW"
     TILDE = "TILDE"
@@ -93,6 +95,10 @@ class TokenType(Enum):
     GT = "GT"
     LT_EQ = "LT_EQ"
     GT_EQ = "GT_EQ"
+
+    # Logical Symbols
+    AND = "&&"
+    OR = "||"    
 
     # Comments
     COMMENT = "COMMENT"
@@ -125,9 +131,7 @@ class TokenType(Enum):
     NEWLINE = "NEWLINE"
     SEMICOLON = ";"
     COLON = ":"
-    MOD = "%"
-    AND = "&&"
-    OR = "||"
+
 
     # Typing
     TYPE = "TYPE"
