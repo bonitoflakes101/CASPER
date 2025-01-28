@@ -76,7 +76,7 @@ def home():
                 output_lines.append(str(debug_lex.next_token()))
             output = "\n".join(output_lines)
 
-    return render_template('index2.html', code=code, output=output)
+    return render_template('index.html', code=code, output=output)
 
 if __name__ == '__main__':
     app.run(debug=True)
