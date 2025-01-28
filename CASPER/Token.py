@@ -73,7 +73,7 @@ class TokenType(Enum):
     TILDE = "TILDE"
 
     # Prefix Symbols
-    BANG = "BANG"
+    NOT = "NOT"
     
     # Postfix Symbols
     PLUS_PLUS = "PLUS_PLUS"
