@@ -38,39 +38,65 @@ class Lexer:
 
     # OKAY NA TO BAI
     def __read_identifier_or_keyword(self) -> Token:
-        """Reads an identifier or keyword and validates its delimiter."""
         start_pos = self.position
         is_valid = True  # Flag to track validity
 
         # IDENTIFIERS - $ or @
         if self.current_char in {'$', '@'}:
-            self.__read_char()  
+            self.__read_char()  # Consume $ or @
 
-            # use VALID_ID_SYM
-            while self.current_char:
-                # PROBLEM : may prob sa mga gumagamit ng [], gawan ng delimiter ang identifiers dapat kasama ang [] para ma tokenize separately
-                if self.current_char in Delimiters.VALID_ID_SYM:
+            # Ensure the identifier starts with a valid character
+            if self.current_char and not self.current_char.isalpha():
+                # If invalid character after $/@, read the whole sequence as ILLEGAL
+                while self.current_char and self.current_char not in Delimiters.DELIM_ID and self.current_char != '\n':
                     self.__read_char()
+                illegal_literal = self.source[start_pos:self.position]
+                return self.__new_token(TokenType.ILLEGAL, illegal_literal)
+
+            # Continue reading the identifier
+            while self.current_char:
+                if Delimiters.is_valid_identifier_char(self.current_char):
+                    self.__read_char()
+                elif self.current_char in {'$', '@'}:
+                    # If another $ or @ is encountered mid-identifier, read the whole sequence as ILLEGAL
+                    while self.current_char and self.current_char not in Delimiters.DELIM_ID and self.current_char != '\n':
+                        self.__read_char()
+                    illegal_literal = self.source[start_pos:self.position]
+                    return self.__new_token(TokenType.ILLEGAL, illegal_literal)
                 else:
-                    if self.current_char.isspace():
-                        break  
-                    is_valid = False
-                    self.__read_char()  # Consume the invalid character)  
+                    # Stop if a non-identifier character is encountered
+                    break
+
+            # After reading, validate delimiters for identifiers
+            identifier = self.source[start_pos:self.position]
+            valid_delims = Delimiters.DELIM_ID
+            if self.current_char in valid_delims:
+                return self.__new_token(TokenType.IDENT, identifier)
+            else:
+                # If no valid delimiter, read the rest of the string as ILLEGAL
+                while self.current_char and self.current_char not in Delimiters.DELIM_ID and self.current_char != '\n':
+                    self.__read_char()
+                illegal_literal = self.source[start_pos:self.position]
+                return self.__new_token(TokenType.ILLEGAL, illegal_literal)
         else:
             # KEYWORDS
             while self.current_char and (
                 # PROBLEM : may prob sa mga gumagamit ng [], hindi siya nacocount as delimiter
-                Delimiters.is_valid_identifier_char(self.current_char) or self.current_char in {'[', ']'}
+                Delimiters.is_valid_identifier_char(self.current_char) 
             ):
+                  
                     self.__read_char()
+                   
 
         identifier = self.source[start_pos:self.position]
+        
 
         # invalid token = ILLEGAL
         if not is_valid:
             return self.__new_token(TokenType.ILLEGAL, identifier)
 
         token_type = lookup_ident(identifier)
+        print(token_type)
 
         # Specific logic for the "BIRTH" keyword
         if token_type == TokenType.BIRTH or token_type == TokenType.SKIP or token_type == TokenType.STOP:
@@ -86,18 +112,34 @@ class Lexer:
         # General keyword validation for other keywords
         if token_type != TokenType.IDENT:
             valid_delims = KEYWORD_DELIMITERS.get(token_type.name, set())
+            print("Keyword: ", valid_delims)
             if self.current_char in valid_delims:
                 return self.__new_token(token_type, identifier)
             else:
                 return self.__new_token(TokenType.ILLEGAL, identifier)
+        
+        # For identifiers
+        if token_type == TokenType.IDENT:
+            valid_delims = KEYWORD_DELIMITERS.get(token_type.name, set())
+            print("Identifiers: ", valid_delims)
+            print(self.current_char) 
+            if self.current_char in valid_delims:
+                print(self.current_char)
+                return self.__new_token(token_type, identifier)
+            else:
+                return self.__new_token(TokenType.ILLEGAL, identifier)
+ 
 
         # Handle as an illegal identifier if it doesn't start with $ or @
         if not identifier.startswith(('$', '@')):
-    
             return self.__new_token(TokenType.ILLEGAL, identifier)
 
+        # Validate general delimiters for identifiers
+        if self.current_char not in Delimiters.DELIM_ID:
+            return self.__new_token(TokenType.ILLEGAL, identifier)
+        
         # Otherwise, return the identifier token
-        return self.__new_token(TokenType.IDENT, identifier)
+        return self.__new_token(TokenType.ILLEGAL, identifier)
 
 
 
@@ -249,15 +291,29 @@ class Lexer:
             case ':': return self.__consume_single_char_token(TokenType.COLON)
 
             case _:
-                tok = self.__new_token(TokenType.ILLEGAL, self.current_char)
-                self.__read_char()
-                return tok
+                return self.__read_illegal_token()
 
     def __consume_single_char_token(self, token_type: TokenType) -> Token:
         """Helper to return a token for a single character."""
         tok = self.__new_token(token_type, self.current_char)
         self.__read_char()
         return tok
+    
+ 
+    def __read_illegal_token(self) -> Token:
+        """
+        Reads characters starting from an illegal token and groups all subsequent
+        characters on the same line into a single ILLEGAL token.
+        """
+        start_pos = self.position  # Record the starting position of the illegal sequence
 
+        # Continue reading characters until a newline or end of input
+        while self.current_char and self.current_char != '\n':
+            self.__read_char()
+
+        # Create an ILLEGAL token for the entire invalid sequence
+        illegal_literal = self.source[start_pos:self.position]
+        print("ILLEGAL",illegal_literal)
+        return self.__new_token(TokenType.ILLEGAL, illegal_literal)
 
     

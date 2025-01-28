@@ -148,6 +148,7 @@ KEYWORD_DELIMITERS = {
 
     # $ -> validIDSym
     # @ -> validIDSym
-
+    "IDENT": Delimiters.DEL20,
+    "FUNCTION_NAME": Delimiters.DEL20,
 
 }
