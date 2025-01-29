@@ -195,16 +195,16 @@ KEYWORDS: dict[str, TokenType] = {
     "function_flt": TokenType.FUNCTION_FLT,
     "function_chr": TokenType.FUNCTION_CHR,
     # FIX
-    "function_list_int[]": TokenType.FUNCTION_LIST_INT,
-    "function_list_str[]": TokenType.FUNCTION_LIST_STR,
-    "function_list_bln[]": TokenType.FUNCTION_LIST_BLN,
-    "function_list_flt[]": TokenType.FUNCTION_LIST_FLT,
-    "function_list_chr[]": TokenType.FUNCTION_LIST_CHR,
-    "function_list_int[][]": TokenType.FUNCTION_LIST_INT2D,
-    "function_list_str[][]": TokenType.FUNCTION_LIST_STR2D,
-    "function_list_bln[][]": TokenType.FUNCTION_LIST_BLN2D,
-    "function_list_flt[][]": TokenType.FUNCTION_LIST_FLT2D,
-    "function_list_chr[][]": TokenType.FUNCTION_LIST_CHR2D,
+    "function_list_int": TokenType.FUNCTION_LIST_INT,
+    "function_list_str": TokenType.FUNCTION_LIST_STR,
+    "function_list_bln": TokenType.FUNCTION_LIST_BLN,
+    "function_list_flt": TokenType.FUNCTION_LIST_FLT,
+    "function_list_chr": TokenType.FUNCTION_LIST_CHR,
+    "function_list_int2d": TokenType.FUNCTION_LIST_INT2D,
+    "function_list_str2d": TokenType.FUNCTION_LIST_STR2D,
+    "function_list_bln2d": TokenType.FUNCTION_LIST_BLN2D,
+    "function_list_flt2d": TokenType.FUNCTION_LIST_FLT2D,
+    "function_list_chr2d": TokenType.FUNCTION_LIST_CHR2D,
 
     # Type conversion keywords
     "to_int": TokenType.CONVERT_TO_INT,
@@ -213,16 +213,16 @@ KEYWORDS: dict[str, TokenType] = {
     "to_flt": TokenType.CONVERT_TO_FLT,
 
     # List types, MISSING TD
-    "int[]": TokenType.LIST_INT,
-    "str[]": TokenType.LIST_STR,
-    "bln[]": TokenType.LIST_BLN,
-    "flt[]": TokenType.LIST_FLT,
-    "chr[]": TokenType.LIST_CHR,
-    "int[][]": TokenType.LIST_INT2D,
-    "str[][]": TokenType.LIST_STR2D,
-    "bln[][]": TokenType.LIST_BLN2D,
-    "flt[][]": TokenType.LIST_FLT2D,
-    "chr[][]": TokenType.LIST_CHR2D,
+    "int_list": TokenType.LIST_INT,
+    "str_list": TokenType.LIST_STR,
+    "bln_list": TokenType.LIST_BLN,
+    "flt_list": TokenType.LIST_FLT,
+    "chr_list": TokenType.LIST_CHR,
+    "int_list2d": TokenType.LIST_INT2D,
+    "str_list2d": TokenType.LIST_STR2D,
+    "bln_list2d": TokenType.LIST_BLN2D,
+    "flt_list2d": TokenType.LIST_FLT2D,
+    "chr_list2d": TokenType.LIST_CHR2D,
     }
 
 def lookup_ident(ident: str) -> TokenType:
@@ -237,6 +237,9 @@ def lookup_ident(ident: str) -> TokenType:
 
     if ident.startswith("@"):
         return TokenType.FUNCTION_NAME
+    
+    if ident.startswith("$"):
+        return TokenType.IDENT
 
     if ident in {"int", "flt", "bln", "str", "chr"}:
         return TokenType.TYPE
@@ -244,4 +247,5 @@ def lookup_ident(ident: str) -> TokenType:
     if ident in {"Day", "Night"}:
         return TokenType.BLN_LIT
 
-    return TokenType.IDENT
+    else:
+        return TokenType.ILLEGAL

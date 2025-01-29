@@ -48,7 +48,8 @@ class Delimiters:
     DEL17 = SPACE | {',', ')', ']'}
     DEL18 = {'('}
     DEL19 = {'['}
-    DEL20 = SPACE | {'\n', '\t', '<', '-', '+', '*', '/', '%', '=', '<', '>', '!', '(', ')', '[', ']', ',', ';', '{', '}'} | NULL
+    identifier_del = SPACE | {'<', '-', '+', '*', '/', '%', '=', '<', '>', '!', '(', ')', '[', ']', ',' , '{', '}'} 
+   
 
 
     # Check if a character is a valid delimiter
