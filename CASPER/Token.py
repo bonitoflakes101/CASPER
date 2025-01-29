@@ -66,13 +66,13 @@ class TokenType(Enum):
     MULTIPLY = "ASTERISK"
     EXPONENT = "DOUBLE_ASTERISK"
     MODULO = "%"
-
     DIVISION = "SLASH"
+
     DOUBLE_SLASH = "DOUBLE_SLASH"
     POW = "POW"
-    TILDE = "TILDE"
-
+    
     # Prefix Symbols
+    TILDE = "TILDE"
     NOT = "NOT"
     
     # Postfix Symbols
