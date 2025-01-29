@@ -59,19 +59,21 @@ class TokenType(Enum):
 
     # Other
     FUNCTION_NAME = "FUNCTION_NAME"
+
     # Arithmetic Symbols
     PLUS = "PLUS"
     MINUS = "MINUS"
-    ASTERISK = "ASTERISK"
-    DOUBLE_ASTERISK = "DOUBLE_ASTERISK"
+    MULTIPLY = "ASTERISK"
+    EXPONENT = "DOUBLE_ASTERISK"
+    MODULO = "%"
 
-    SLASH = "SLASH"
+    DIVISION = "SLASH"
     DOUBLE_SLASH = "DOUBLE_SLASH"
     POW = "POW"
     TILDE = "TILDE"
 
     # Prefix Symbols
-    BANG = "BANG"
+    NOT = "NOT"
     
     # Postfix Symbols
     PLUS_PLUS = "PLUS_PLUS"
@@ -93,6 +95,10 @@ class TokenType(Enum):
     GT = "GT"
     LT_EQ = "LT_EQ"
     GT_EQ = "GT_EQ"
+
+    # Logical Symbols
+    AND = "&&"
+    OR = "||"    
 
     # Comments
     COMMENT = "COMMENT"
@@ -125,9 +131,7 @@ class TokenType(Enum):
     NEWLINE = "NEWLINE"
     SEMICOLON = ";"
     COLON = ":"
-    MOD = "%"
-    AND = "&&"
-    OR = "||"
+
 
     # Typing
     TYPE = "TYPE"
@@ -190,17 +194,17 @@ KEYWORDS: dict[str, TokenType] = {
     "function_bln": TokenType.FUNCTION_BLN,
     "function_flt": TokenType.FUNCTION_FLT,
     "function_chr": TokenType.FUNCTION_CHR,
-    # FIX THIS, 
-    "function_list_int": TokenType.FUNCTION_LIST_INT,
-    "function_list_str": TokenType.FUNCTION_LIST_STR,
-    "function_list_bln": TokenType.FUNCTION_LIST_BLN,
-    "function_list_flt": TokenType.FUNCTION_LIST_FLT,
-    "function_list_chr": TokenType.FUNCTION_LIST_CHR,
-    "function_list_int2d": TokenType.FUNCTION_LIST_INT2D,
-    "function_list_str2d": TokenType.FUNCTION_LIST_STR2D,
-    "function_list_bln2d": TokenType.FUNCTION_LIST_BLN2D,
-    "function_list_flt2d": TokenType.FUNCTION_LIST_FLT2D,
-    "function_list_chr2d": TokenType.FUNCTION_LIST_CHR2D,
+    # FIX
+    "function_list_int[]": TokenType.FUNCTION_LIST_INT,
+    "function_list_str[]": TokenType.FUNCTION_LIST_STR,
+    "function_list_bln[]": TokenType.FUNCTION_LIST_BLN,
+    "function_list_flt[]": TokenType.FUNCTION_LIST_FLT,
+    "function_list_chr[]": TokenType.FUNCTION_LIST_CHR,
+    "function_list_int[][]": TokenType.FUNCTION_LIST_INT2D,
+    "function_list_str[][]": TokenType.FUNCTION_LIST_STR2D,
+    "function_list_bln[][]": TokenType.FUNCTION_LIST_BLN2D,
+    "function_list_flt[][]": TokenType.FUNCTION_LIST_FLT2D,
+    "function_list_chr[][]": TokenType.FUNCTION_LIST_CHR2D,
 
     # Type conversion keywords
     "to_int": TokenType.CONVERT_TO_INT,
@@ -233,16 +237,11 @@ def lookup_ident(ident: str) -> TokenType:
 
     if ident.startswith("@"):
         return TokenType.FUNCTION_NAME
-    
-    if ident.startswith("$"):
-        return TokenType.IDENT
 
     if ident in {"int", "flt", "bln", "str", "chr"}:
         return TokenType.TYPE
 
     if ident in {"Day", "Night"}:
         return TokenType.BLN_LIT
-    
-    else:
-        return TokenType.ILLEGAL 
-    # return TokenType.IDENT
+
+    return TokenType.IDENT

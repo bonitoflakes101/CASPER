@@ -98,7 +98,7 @@ KEYWORD_DELIMITERS = {
     # --------------------------------------------------------
     # Operators (if you want to force them to have valid next chars)
     # --------------------------------------------------------
-    "PLUS":          Delimiters.DEL6,  # +
+    "PLUS": Delimiters.DEL6,  # +
     "PLUS_PLUS":  Delimiters.DEL13,  # ++ (wala sa reserved symbols)
     "MINUS":         Delimiters.DEL6,  # -
     "MINUS_MINUS":  Delimiters.DEL13,  # --

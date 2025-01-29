@@ -1,0 +1,10 @@
+casperenv/
+
+# Ignore Python cache files
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Ignore other temporary files
+*.log
