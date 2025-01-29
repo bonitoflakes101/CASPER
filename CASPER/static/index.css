@@ -71,7 +71,13 @@ svg{
     color: white;
     font-weight: 500;
     border-radius: 5px;
-    
+    cursor: pointer;
+    transition: all 0.3s ease-in-out;
+}
+
+.run-button:hover{
+    background-color: #5c54ec;
+    transform: scale(1.05);
 }
 
 #code-label{
