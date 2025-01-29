@@ -65,18 +65,27 @@ LEXER_DEBUG: bool = True
 def home():
     code = ""
     output = ""
-    
+    lexer_results = []  # 
+
     if request.method == 'POST':
         code = request.form.get('code_input', '') 
-        
+
         if LEXER_DEBUG:
             output_lines = []
             debug_lex = Lexer(source=code)
             while debug_lex.current_char is not None:
-                output_lines.append(str(debug_lex.next_token()))
-            output = "\n".join(output_lines)
+                token = debug_lex.next_token()
+                token_type = str(token.type).split(".")[-1]  # token
 
-    return render_template('index.html', code=code, output=output)
+                if token_type == "ILLEGAL":  # terminal
+                    output_lines.append(str(token))
+                else:
+                    lexer_results.append((token.literal, token_type)) 
+
+            output = "\n".join(output_lines)  # illegal lng sa output
+            output = output.strip()  # panlinis lng ng output
+
+    return render_template('index.html', code=code, output=output, lexer_results=lexer_results)
 
 if __name__ == '__main__':
     app.run(debug=True)

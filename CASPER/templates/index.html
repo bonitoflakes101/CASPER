@@ -19,7 +19,7 @@
     <section id="main">
       <div class="main-container">
         <div class="code-div">
-          <form method="POST" action="/">
+          <form method="POST" action="/" class="form-div">
             <div class="label-container">
               <label id="code-label">
                 <svg
@@ -38,8 +38,13 @@
               <button type="submit" class="run-button">Run Code</button>
             </div>
 
-            <textarea name="code_input" id="code-area">{{ code }}</textarea>
+            <div class="text-area-div">
+              <textarea name="code_input" id="code-area">{{ code }}</textarea>
+            </div>
+
+            
           </form>
+          
         </div>
 
         <div class="lexer-div">
@@ -47,14 +52,18 @@
             <label id="lexer-label">Lexer</label>
             <label id="token-label">Token</label>
           </div>
-          <table class="lex-table">
-            <tbody>
-              <tr>
-                <td>Lexer here</td>
-                <td>Token Here</td>
-              </tr>
-            </tbody>
-          </table>
+          <div class="lex-table-container">
+            <table class="lex-table">
+              <tbody>
+                {% for lexeme, token_type in lexer_results %}
+                <tr>
+                  <td>{{ lexeme }}</td>
+                  <td>{{ token_type }}</td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
         </div>
       </div>
 
@@ -64,7 +73,7 @@
             <label id="output-label">Output Terminal</label>
           </div>
           <div class="output-terminal">
-            <pre id="output" class="main-output">{{ output }}</pre>
+            <pre id="output" class="main-output">{{output}}</pre>
           </div>
         </div>
       </div>
