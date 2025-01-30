@@ -213,16 +213,16 @@ KEYWORDS: dict[str, TokenType] = {
     "to_flt": TokenType.CONVERT_TO_FLT,
 
     # List types, MISSING TD
-    "int_list": TokenType.LIST_INT,
-    "str_list": TokenType.LIST_STR,
-    "bln_list": TokenType.LIST_BLN,
-    "flt_list": TokenType.LIST_FLT,
-    "chr_list": TokenType.LIST_CHR,
-    "int_list2d": TokenType.LIST_INT2D,
-    "str_list2d": TokenType.LIST_STR2D,
-    "bln_list2d": TokenType.LIST_BLN2D,
-    "flt_list2d": TokenType.LIST_FLT2D,
-    "chr_list2d": TokenType.LIST_CHR2D,
+    "list_int": TokenType.LIST_INT,
+    "list_str": TokenType.LIST_STR,
+    "list_bln": TokenType.LIST_BLN,
+    "list_flt": TokenType.LIST_FLT,
+    "list_chr": TokenType.LIST_CHR,
+    "list_int2d": TokenType.LIST_INT2D,
+    "list_str2d": TokenType.LIST_STR2D,
+    "list_bln2d": TokenType.LIST_BLN2D,
+    "list_flt2d": TokenType.LIST_FLT2D,
+    "list_chr2d": TokenType.LIST_CHR2D,
     }
 
 def lookup_ident(ident: str) -> TokenType:
