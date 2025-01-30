@@ -123,6 +123,9 @@ class Lexer:
                     return self.__new_token(TokenType.ILLEGAL, illegal_literal)
                 else:
                     # Stop if a non-identifier character is encountered
+                    if self.__checkIDforAfterBracketsError():
+                        illegal_literal = self.source[start_pos:self.position]
+                        return self.__new_token(TokenType.ILLEGAL, illegal_literal)
                     break
 
             # After reading, validate delimiters for identifiers
@@ -529,3 +532,39 @@ class Lexer:
         tok = self.__new_token(token_type, self.current_char)
         self.__read_char()
         return tok    
+    
+    def __checkIDforAfterBracketsError(self) -> bool:
+        """Checks if an identifier with brackets contains more characters after it. Example: $A[]B, if identifier is in this form, it returns True"""
+        #Lim-D:
+        #Save the original self variables, to make this function act like a look-ahead-function
+        original_self_position = self.position
+        original_read_position = self.read_position
+        original_line_no = self.line_no
+        original_current_char = self.current_char
+
+        if self.current_char == '[':
+            #i think we need to test this while loop a lot.
+            while self.current_char and self.current_char != ']':
+                self.__read_char()
+            if self.current_char == ']':
+                self.__read_char()
+                # If may continuation pa yung ']' mo, then make the whole sequence illegal.
+                #Recommended change sa IF: mas maganda all characters excluded sa valid delimiters ng ']' para goods.
+                if Delimiters.is_valid_identifier_char(self.current_char) or self.current_char == '$':
+                    while self.current_char and (self.current_char != ' ' or self.current_char != '\n'): #or current delimiters for identifiers, stop na rin dun.
+                        self.__read_char()
+                    # make the whole identifier illegal (True condition)
+                    return True
+                else:
+                    self.position = original_self_position
+                    self.read_position = original_read_position
+                    self.line_no = original_line_no
+                    self.current_char = original_current_char
+                    return False
+            else: #If it cannot find a ']' after everything. Then, revert back the self variables to their original form.
+                self.position = original_self_position
+                self.read_position = original_read_position
+                self.line_no = original_line_no
+                self.current_char = original_current_char
+                return False
+        return False
