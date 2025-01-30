@@ -98,40 +98,54 @@ KEYWORD_DELIMITERS = {
     # --------------------------------------------------------
     # Operators (if you want to force them to have valid next chars)
     # --------------------------------------------------------
-    "PLUS": Delimiters.DEL6,  # +
+
+    # Arithmetic OPs
+    "PLUS": Delimiters.DEL4,  # +
+    "MINUS": Delimiters.DEL5,  # -
+    "SLASH": Delimiters.DEL5,  # /
+    "ASTERISK": Delimiters.DEL5,  # * 
+    "MOD": Delimiters.DEL5,  # %
+
+    # Postfic OPs
     "PLUS_PLUS":  Delimiters.DEL13,  # ++ (wala sa reserved symbols)
-    "MINUS":         Delimiters.DEL6,  # -
     "MINUS_MINUS":  Delimiters.DEL13,  # --
+
    
-    "SLASH":         Delimiters.DEL5,  # /
-    "ASTERISK":      Delimiters.DEL5,  # * 
-    "MOD":           Delimiters.DEL5,  # %
-    "DOUBLE_SLASH":  Delimiters.DEL5,  # // not sure
-    "DOUBLE_ASTERISK": Delimiters.DEL5, # ** not sure
-    "EQ":            Delimiters.DEL6,  # =
+    # Prefix OPs
+    "TILDE":        Delimiters.DEL6,  # ~
+    
 
-    # WALA SA TD, mema delims muna
-    "PLUS_EQ":       Delimiters.DEL2,  # +=
-    "MINUS_EQ":      Delimiters.DEL2,  # -=
-    "MUL_EQ":        Delimiters.DEL2,  # *=
-    "DIV_EQ":        Delimiters.DEL2,  # /=
-    "MOD_EQ":        Delimiters.DEL2,  # %=
+    # Assignment OPs
+    "EQ":            Delimiters.DEL5,  # =
+    "PLUS_EQ":       Delimiters.DEL5,  # +=
+    "MINUS_EQ":      Delimiters.DEL5,  # -=
+    "MUL_EQ":        Delimiters.DEL5,  # *=
+    "DIV_EQ":        Delimiters.DEL5,  # /=
+    "MOD_EQ":        Delimiters.DEL5,  # %=
 
-    "EQ_EQ":         Delimiters.DEL6,  # ==
-    "NOT_EQ":        Delimiters.DEL6,  # !=
-    "GT":            Delimiters.DEL9,  # >
-    "LT":            Delimiters.DEL9,  # <
-    "GT_EQ":         Delimiters.DEL6,  # >=
-    "LT_EQ":         Delimiters.DEL6,  # <=
-    "AND":           Delimiters.DEL2,  # &&
-    "OR":            Delimiters.DEL2,  # ||
-    "BANG":          Delimiters.DEL8,  # !
-    "LBRACKET":      Delimiters.DEL6,  # [
-    "RBRACKET":      Delimiters.DEL7,  # ]
-    "LBRACE":        Delimiters.DEL16,  # {
-    "RBRACE":        Delimiters.DEL4,  # }
-    "LPAREN":        Delimiters.DEL15,  # (
-    "RPAREN":        Delimiters.DEL7,  # )
+    # Comparison OPs
+    "EQ_EQ":         Delimiters.DEL5,  # ==
+    "NOT_EQ":        Delimiters.DEL5,  # !=
+    "GT":            Delimiters.DEL5,  # >
+    "LT":            Delimiters.DEL5,  # <
+    "GT_EQ":         Delimiters.DEL5,  # >=
+    "LT_EQ":         Delimiters.DEL5,  # <=
+
+    # Logical OPs
+    "NOT":          Delimiters.DEL6,  # !
+    "AND":           Delimiters.DEL3,  # &&
+    "OR":            Delimiters.DEL3,  # ||
+ 
+    "DOUBLE_ASTERISK": Delimiters.DEL5, # 
+   
+
+    # Brackets, Braces, Parentheses
+    "LBRACKET":      Delimiters.DEL15,  # [
+    "RBRACKET":      Delimiters.DEL17,  # ]
+    "LBRACE":        Delimiters.DEL9,  # {
+    "RBRACE":        Delimiters.DEL10,  # }
+    "LPAREN":        Delimiters.DEL7,  # (
+    "RPAREN":        Delimiters.DEL8,  # )
     
     
     # seems wrong idk

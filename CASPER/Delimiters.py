@@ -31,20 +31,20 @@ class Delimiters:
     DELIM_ID = OPERATORS | SPACE | NEWLINE | {'=', '!', '>', '<', '(', ')', '[', ']', ','}
     DEL1 = SPACE | {'{'}
     DEL2 = SPACE | {'('}
-    DEL3 = {'{', '\n'}
-    DEL4 = SPACE | NEWLINE | ALPHANUM
-    DEL5 = SPACE | ALPHANUM
-    DEL6 = SPACE | NULL | ALPHANUM | {'"', '[', ']', '\''}
-    DEL7 = SPACE | NEWLINE | {'+', '-', '*', '/', '.', '{', '(', ')', ']', '}', ','}
-    DEL8 = ALPHANUM | {',', '+', '-', '*', '/'}
-    DEL9 = SPACE | {'(', '{'} | ALPHANUM | {'}'}
-    DEL10 = SPACE | {',', '(', '{', '[', '+', '-', '*', '/', '<', '>', '=', ']', ')', '}'}
+    DEL3 = SPACE | NUM | BOOLEAN | {'(', '$'} # logical ops
+    DEL4 = SPACE | NUM | {'(', '$', '\'', '"'} # plus delim
+    DEL5 = SPACE | NUM |{'$', '(', '\'', '@'}  # minus, multiply, divide, modulo delims, all assignment ops
+    DEL6 = NUM | {'$', '(', '\''} #prefix 
+    DEL7 =  SPACE | NUM | NEWLINE | {'$', '@', '"', '(', '{', '\''} # open LPAREN (
+    DEL8 = SPACE | NEWLINE | {'+', '-', '*', '/', '{', '(', ')', ']', '}', ','} # closing RPAREN )
+    DEL9 = SPACE | NEWLINE | {'(', '{', '$', '@', '"'} # opening LBRACE {
+    DEL10 = SPACE | NEWLINE | NULL | COMMENT | {'"', '(', '{', '[' } # closing RBRACE }
     DEL11 = SPACE | NEWLINE | {',', '(', '{', '[', '+'}
     DEL12 = SPACE | NEWLINE | NULL
-    DEL13 = SPACE | NULL | {')', '\n'}
+    DEL13 = SPACE | NULL | {')', '\''} # postfix
     DEL14 = SPACE | ALPHA
-    DEL15 = SPACE | {')', '"'} | ALPHANUM | {'(', '[', '\''}
-    DEL16 = SPACE | {'}', '"', '\n'}
+    DEL15 = SPACE | NEWLINE | ALPHANUM | {'[', ']', '"', '$'} # L bracket
+    DEL16 = SPACE | NEWLINE | {'[', ']', '$', '@', ',', '='} # R bracket
     DEL17 = SPACE | {',', ')', ']'}
     DEL18 = {'('}
     DEL19 = {'['}
