@@ -470,42 +470,76 @@ class Lexer:
             case '!':
                 if self.__peek_char() == '=':
                     self.__read_char()
-                    self.__read_char()
-                    return self.__new_token(TokenType.NOT_EQ, "!=")
-                return self.__consume_single_char_token(TokenType.NOT)
-                
+                    if self.__is_valid_delimiter(TokenType.NOT_EQ):
+                        self.__read_char()
+                        return self.__new_token(TokenType.NOT_EQ, "!=")
+                    return self.__return_illegal_token()
+                if self.__is_valid_delimiter(TokenType.NOT):
+                    return self.__consume_single_char_token(TokenType.NOT)
+                return self.__return_illegal_token()
+
             # LOGICAL OPERATORS
 
             # Token Creation for AND (&&)
             case '&':
                 if self.__peek_char() == '&':
                     self.__read_char()
-                    self.__read_char()
-                    return self.__new_token(TokenType.AND, "&&")   
-                return self.__consume_single_char_token(TokenType.ILLEGAL)
-            
+                    if self.__is_valid_delimiter(TokenType.AND):
+                        self.__read_char()
+                        return self.__new_token(TokenType.AND, "&&")
+                    return self.__return_illegal_token()
             # Token Creation for OR (||)
             case '|':
                 if self.__peek_char() == '|':
                     self.__read_char()
-                    self.__read_char()
-                    return self.__new_token(TokenType.OR, "||")   
-                return self.__consume_single_char_token(TokenType.ILLEGAL)
-            
+                    if self.__is_valid_delimiter(TokenType.OR):
+                        self.__read_char()
+                        return self.__new_token(TokenType.OR, "||")   
+                    return self.__consume_single_char_token(TokenType.ILLEGAL)
+                
             # Token Creation NEGATIVE OP/TILDE
             case '~':
-                return self.__consume_single_char_token(TokenType.TILDE)
+                if self.__is_valid_delimiter(TokenType.TILDE):
+                    return self.__consume_single_char_token(TokenType.TILDE)
+                return self.__return_illegal_token()
                 
 
-            case '(': return self.__consume_single_char_token(TokenType.LPAREN)
-            case ')': return self.__consume_single_char_token(TokenType.RPAREN)
-            case '[': return self.__consume_single_char_token(TokenType.LBRACKET)
-            case ']': return self.__consume_single_char_token(TokenType.RBRACKET)
-            case '{': return self.__consume_single_char_token(TokenType.LBRACE)
-            case '}': return self.__consume_single_char_token(TokenType.RBRACE)
-            case ',': return self.__consume_single_char_token(TokenType.COMMA)
-            case ';': return self.__consume_single_char_token(TokenType.SEMICOLON)
-            case ':': return self.__consume_single_char_token(TokenType.COLON)
+            case '(': 
+                if self.__is_valid_delimiter(TokenType.LPAREN):
+                    return self.__consume_single_char_token(TokenType.LPAREN)
+                return self.__return_illegal_token()
+            case ')': 
+                if self.__is_valid_delimiter(TokenType.RPAREN):
+                    return self.__consume_single_char_token(TokenType.RPAREN)
+                return self.__return_illegal_token()
+            case '[': 
+                if self.__is_valid_delimiter(TokenType.LBRACKET):
+                    return self.__consume_single_char_token(TokenType.LBRACKET)
+                return self.__return_illegal_token()
+            case ']': 
+                if self.__is_valid_delimiter(TokenType.RBRACKET):
+                    return self.__consume_single_char_token(TokenType.RBRACKET)
+                return self.__return_illegal_token()
+            case '{': 
+                if  self.__is_valid_delimiter(TokenType.LBRACE):
+                    return self.__consume_single_char_token(TokenType.LBRACE)
+                return self.__return_illegal_token()
+            case '}': 
+                if self.__is_valid_delimiter(TokenType.RBRACE):
+                    return self.__consume_single_char_token(TokenType.RBRACE)
+                return self.__return_illegal_token()
+            case ',': 
+                if self.__is_valid_delimiter(TokenType.COMMA):
+                    return self.__consume_single_char_token(TokenType.COMMA)
+                return self.__return_illegal_token()
+            case ';': 
+                if self.__is_valid_delimiter(TokenType.SEMICOLON):
+                    return self.__consume_single_char_token(TokenType.SEMICOLON)
+                return self.__return_illegal_token()
+            case ':': 
+                if self.__is_valid_delimiter(TokenType.COLON):
+                    return self.__consume_single_char_token(TokenType.COLON)
+                return self.__return_illegal_token()
 
             case _:
                 return self.__read_illegal_token()
