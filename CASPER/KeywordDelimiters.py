@@ -103,7 +103,7 @@ KEYWORD_DELIMITERS = {
     "PLUS": Delimiters.DEL4,  # +
     "MINUS": Delimiters.DEL5,  # -
     "SLASH": Delimiters.DEL5,  # /
-    "ASTERISK": Delimiters.DEL5,  # * 
+    "MULTIPLY": Delimiters.DEL5,  # * 
     "MOD": Delimiters.DEL5,  # %
 
     # Postfic OPs
@@ -136,7 +136,7 @@ KEYWORD_DELIMITERS = {
     "AND":           Delimiters.DEL3,  # &&
     "OR":            Delimiters.DEL3,  # ||
  
-    "DOUBLE_ASTERISK": Delimiters.DEL5, # 
+    "EXPONENT": Delimiters.DEL6, # 
    
 
     # Brackets, Braces, Parentheses
