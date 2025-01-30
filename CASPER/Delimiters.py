@@ -34,7 +34,7 @@ class Delimiters:
     DEL3 = SPACE | NUM | BOOLEAN | {'(', '$'} # logical ops
     DEL4 = SPACE | NUM | {'(', '$', '\'', '"'} # plus delim
     DEL5 = SPACE | NUM |{'$', '(', '@'}  # minus, multiply, divide, modulo delims, all assignment ops
-    DEL6 = NUM | {'$', '(', '\''} #prefix 
+    DEL6 = NUM | {'$', '(', '\''} #prefix | **
     DEL7 =  SPACE | NUM | NEWLINE | {'$', '@', '"', '(', '{', '\''} # open LPAREN (
     DEL8 = SPACE | NEWLINE | {'+', '-', '*', '/', '{', '(', ')', ']', '}', ','} # closing RPAREN )
     DEL9 = SPACE | NEWLINE | {'(', '{', '$', '@', '"'} # opening LBRACE {

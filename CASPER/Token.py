@@ -64,7 +64,7 @@ class TokenType(Enum):
     PLUS = "PLUS"
     MINUS = "MINUS"
     MULTIPLY = "ASTERISK"
-    EXPONENT = "DOUBLE_ASTERISK"
+    EXPONENT = "EXPONENT"
     MODULO = "%"
     DIVISION = "SLASH"
 

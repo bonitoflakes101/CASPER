@@ -287,6 +287,10 @@ class Lexer:
         :param token_type: The type of the token being validated.
         :return: True if the next character is a valid delimiter, False otherwise.
         """
+        # Debugging shit
+        prev = self.position-1
+        prevChar = self.source[prev]
+        print("Prev token: ", prevChar)
         print("current token: " , self.current_char)
         print("token type: ", token_type.name)
         valid_delims = KEYWORD_DELIMITERS.get(token_type.name)
@@ -393,14 +397,17 @@ class Lexer:
                         self.__read_char()
                         return self.__new_token(TokenType.MUL_EQ, "*=")
                     return self.__return_illegal_token()
-                elif self.__peek_char == '*':
-                    if self.__is_valid_delimiter(TokenType.EXPONENT):
+                elif self.current_char == '*':
+                    if self.__peek_char() == '*':
                         self.__read_char()
-                        return self.__new_token(TokenType.EXPONENT, "**")
+                        if self.__is_valid_delimiter(TokenType.EXPONENT):
+                            self.__read_char()
+                            return self.__new_token(TokenType.EXPONENT, "**")
+                        return self.__return_illegal_token()
+                    elif self.__is_valid_delimiter(TokenType.MULTIPLY):
+                        return self.__consume_single_char_token(TokenType.MULTIPLY)
                     return self.__return_illegal_token()
-                if self.__is_valid_delimiter(TokenType.MULTIPLY):
-                    return self.__consume_single_char_token(TokenType.MULTIPLY)
-                return self.__return_illegal_token()          
+                    
 
 
             # Token Creation for /, /=
