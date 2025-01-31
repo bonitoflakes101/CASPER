@@ -104,7 +104,7 @@ class Lexer:
             self.__read_char()  # Consume $ or @
 
             # Ensure the identifier starts with a valid character
-            if self.current_char and not (self.current_char.isalpha() or self.current_char == '_'):
+            if self.current_char and not (self.current_char.isalpha() or self.current_char == '_') or (self.current_char == None):
                 # If invalid character after $/@, read the whole sequence as ILLEGAL
                 while self.current_char and self.current_char not in Delimiters.DELIM_ID and self.current_char != '\n':
                     self.__read_char()
