@@ -25,10 +25,11 @@ class Delimiters:
     SPECIAL = SPX_CHAR1 | SPX_CHAR2 | SPX_CHAR3 | SPX_CHAR4 | SPX_CHAR5 | SPX_CHAR6
     NEWLINE = {'\n'}
     STRING_FORM = {'"', '"'}
+    CARRIAGE_RETURN = {'\r'}
     
 
     # Delimiters
-    DELIM_ID = OPERATORS | SPACE | NEWLINE | {'=', '!', '>', '<', '(', ')', '[', ']', ','}
+    DELIM_ID = OPERATORS | SPACE | NEWLINE | CARRIAGE_RETURN | NULL | {'=', '!', '>', '<', '(', ')', '[', ']', ','}
     DEL1 = SPACE | {'{'}
     DEL2 = SPACE | {'('}
     DEL3 = SPACE | NUM | BOOLEAN | {'(', '$'} # logical ops
