@@ -104,7 +104,7 @@ KEYWORD_DELIMITERS = {
     "MINUS": Delimiters.DEL5,  # -
     "SLASH": Delimiters.DEL5,  # /
     "MULTIPLY": Delimiters.DEL5,  # * 
-    "MOD": Delimiters.DEL5,  # %
+    "MODULO": Delimiters.DEL5,  # %
 
     # Postfic OPs
     "PLUS_PLUS":  Delimiters.DEL13,  # ++ (wala sa reserved symbols)
