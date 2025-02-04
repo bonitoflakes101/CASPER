@@ -457,8 +457,23 @@ class Lexer:
                         self.__read_char()
                         return self.__new_token(TokenType.LT_EQ, "<=")
                     return self.__return_illegal_token()
+                
+                if self.__peek_char() == '<':  
+                    self.__read_char()  
+                    if self.__is_valid_delimiter(TokenType.COMMENT):
+                        self.__read_char()  
+                        self.__skip_whitespace() 
+
+                        comment_content = ""
+                        while self.current_char and self.current_char != '\n':
+                            comment_content += self.current_char
+                            self.__read_char()
+
+                        return self.__new_token(TokenType.COMMENT, comment_content.strip())  
+                    return self.__return_illegal_token()
                 if self.__is_valid_delimiter(TokenType.LT):
                     return self.__consume_single_char_token(TokenType.LT)
+                
                 return self.__return_illegal_token()
             
             # Token Creation for Greater than, Greater than Equals (<, <=)

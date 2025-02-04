@@ -157,6 +157,7 @@ KEYWORD_DELIMITERS = {
     # MISSING
     # --- (for multi-line comments) 
     # << (for single-line comments)
+    "COMMENT": Delimiters.SPACE,
     # , = COMMA
     # missing "measure" sa keywords but asa TD
 
