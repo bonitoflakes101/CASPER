@@ -306,9 +306,9 @@ class Lexer:
 
     def __return_illegal_token(self) -> Token:
         """Returns an illegal token for invalid characters."""
-        self.__skip_invalid_characters()
+        invalid_token = self.current_char
         self.__read_char()
-        return self.__new_token(TokenType.ILLEGAL, self.source)
+        return self.__new_token(TokenType.ILLEGAL, invalid_token)
 
 
     def next_token(self) -> Token:
