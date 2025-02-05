@@ -315,8 +315,8 @@ class Lexer:
         """Returns the next token."""
         self.__skip_whitespace()
 
-        # if self.current_char is None:
-        #     return self.__new_token(TokenType.EOF, "")
+        if self.current_char is None:
+            return self.__new_token(TokenType.EOF, "")
         
         # NEW LINE TOKEN
         if self.current_char == '\n':
