@@ -135,7 +135,7 @@ class Lexer:
             # Check if the identifier starts with '@' for FUNCTION_NAME
             if identifier.startswith('@'):
                 if self.current_char in valid_delims:
-                    return self.__new_token(TokenType.FUNCTION_NAME, identifier)
+                    return self.__new_token(TokenType.IDENT, identifier) # can change into funciton_name if mas better
                 else:
                     # If no valid delimiter, treat as ILLEGAL
                     while self.current_char and self.current_char != '\n':
