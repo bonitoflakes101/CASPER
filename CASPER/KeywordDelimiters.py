@@ -158,7 +158,9 @@ KEYWORD_DELIMITERS = {
     # --- (for multi-line comments) 
     # << (for single-line comments)
     "COMMENT": Delimiters.SPACE,
+    
     # , = COMMA
+    "COMMA": Delimiters.DEL15,
     # missing "measure" sa keywords but asa TD
 
     # $ -> validIDSym

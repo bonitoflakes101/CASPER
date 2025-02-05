@@ -123,9 +123,9 @@ class Lexer:
                     return self.__new_token(TokenType.ILLEGAL, illegal_literal)
                 else:
                     # Stop if a non-identifier character is encountered
-                    if self.__checkIDforAfterBracketsError():
-                        illegal_literal = self.source[start_pos:self.position]
-                        return self.__new_token(TokenType.ILLEGAL, illegal_literal)
+                    # if self.__checkIDforAfterBracketsError():
+                    #     illegal_literal = self.source[start_pos:self.position]
+                    #     return self.__new_token(TokenType.ILLEGAL, illegal_literal)
                     break
 
             # After reading, validate delimiters for identifiers
@@ -592,6 +592,10 @@ class Lexer:
             case ':': 
                 if self.__is_valid_delimiter(TokenType.COLON):
                     return self.__consume_single_char_token(TokenType.COLON)
+                return self.__return_illegal_token()
+            case ',':
+                if self.__is_valid_delimiter(TokenType.COMMA):
+                    return self.__consume_single_char_token(TokenType.COMMA)
                 return self.__return_illegal_token()
 
             case _:
