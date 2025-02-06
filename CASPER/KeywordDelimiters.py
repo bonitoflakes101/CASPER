@@ -104,7 +104,7 @@ KEYWORD_DELIMITERS = {
     # Arithmetic OPs
     "PLUS": Delimiters.DEL4,  # +
     "MINUS": Delimiters.DEL5,  # -
-    "SLASH": Delimiters.DEL5,  # /
+    "DIVISION": Delimiters.DEL5,  # /
     "MULTIPLY": Delimiters.DEL5,  # * 
     "MODULO": Delimiters.DEL5,  # %
 
@@ -124,6 +124,7 @@ KEYWORD_DELIMITERS = {
     "MUL_EQ":        Delimiters.DEL5,  # *=
     "DIV_EQ":        Delimiters.DEL5,  # /=
     "MOD_EQ":        Delimiters.DEL5,  # %=
+    
 
     # Comparison OPs
     "EQ_EQ":         Delimiters.DEL5,  # ==

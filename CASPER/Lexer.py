@@ -450,7 +450,7 @@ class Lexer:
                     self.__read_char()
                     if self.__is_valid_delimiter(TokenType.DIV_EQ):
                         self.__read_char()
-                        return self.__new_token(TokenType.DIV_EQ, "*/=")
+                        return self.__new_token(TokenType.DIV_EQ, "/=")
                     return self.__return_illegal_token()
                 if self.__is_valid_delimiter(TokenType.DIVISION):
                     return self.__consume_single_char_token(TokenType.DIVISION)
