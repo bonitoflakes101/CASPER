@@ -544,6 +544,7 @@ class Lexer:
                         self.__read_char()
                         return self.__new_token(TokenType.AND, "&&")
                     return self.__return_illegal_token()
+                return self.__return_illegal_token()
             # Token Creation for OR (||)
             case '|':
                 if self.__peek_char() == '|':
@@ -552,6 +553,7 @@ class Lexer:
                         self.__read_char()
                         return self.__new_token(TokenType.OR, "||")   
                     return self.__consume_single_char_token(TokenType.ILLEGAL)
+                return self.__return_illegal_token()
                 
             # Token Creation NEGATIVE OP/TILDE
             case '~':
