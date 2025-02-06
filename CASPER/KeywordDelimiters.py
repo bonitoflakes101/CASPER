@@ -157,7 +157,7 @@ KEYWORD_DELIMITERS = {
     # MISSING
     # --- (for multi-line comments) 
     # << (for single-line comments)
-    "COMMENT": Delimiters.DEL3,
+    "COMMENT": Delimiters.SPACE,
 
     # , = COMMA
     "COMMA": Delimiters.DEL15,
