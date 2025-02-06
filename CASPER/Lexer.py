@@ -257,28 +257,32 @@ class Lexer:
             self.__read_char()  # Consume closing quote
         return literal
 
-    def __read_char_literal(self) -> str:
-        """Reads a character literal enclosed in single quotes."""
-        self.__read_char()  # Skip the opening single quote
-        start_pos = self.position
+    def __read_char_literal(self) -> str | None:
+        """Reads a character literal enclosed in single quotes and returns the character (or None if invalid)."""
+        start_pos = self.position  
+        self.__read_char()  
 
-        # Read the character inside the single quotes
-        if self.current_char and self.current_char != "'":
+        if self.current_char is None or self.current_char == "'":
+            return None
+
+        literal = ""  
+
+        while self.current_char is not None and self.current_char != "'":
+            literal += self.current_char
             self.__read_char()
 
-        literal = self.source[start_pos:self.position]
-
-        # Check and consume the closing single quote
         if self.current_char == "'":
             self.__read_char()
-        else:
-            # If no closing single quote, mark it as incomplete
-            return None
 
-        # Ensure the literal is only a single character
-        if len(literal) != 1:
-            return None
-        return literal
+            # If the literal contains more than one character, return None (illegal)
+            if len(literal) == 1:
+                return literal  
+            else:
+                return None  
+
+        return None
+
+
     
     def __is_valid_delimiter(self, token_type: TokenType) -> bool:
         """
@@ -339,8 +343,14 @@ class Lexer:
             return self.__new_token(TokenType.STR_LIT, literal)
         
         if self.current_char == "'":
+            start_pos = self.position  # Store the starting position
             literal = self.__read_char_literal()
-            return self.__new_token(TokenType.CHR_LIT, literal)
+
+            if literal is None:
+                return self.__new_token(TokenType.ILLEGAL, self.source[start_pos:self.position])
+
+            return self.__new_token(TokenType.CHR_LIT, literal)  # Return valid character literal
+
 
         # Handle single-character tokens and illegal characters
         match self.current_char:
