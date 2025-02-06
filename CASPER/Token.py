@@ -200,11 +200,13 @@ KEYWORDS: dict[str, TokenType] = {
     "function_list_bln": TokenType.FUNCTION_LIST_BLN,
     "function_list_flt": TokenType.FUNCTION_LIST_FLT,
     "function_list_chr": TokenType.FUNCTION_LIST_CHR,
-    "function_list_int2d": TokenType.FUNCTION_LIST_INT2D,
-    "function_list_str2d": TokenType.FUNCTION_LIST_STR2D,
-    "function_list_bln2d": TokenType.FUNCTION_LIST_BLN2D,
-    "function_list_flt2d": TokenType.FUNCTION_LIST_FLT2D,
-    "function_list_chr2d": TokenType.FUNCTION_LIST_CHR2D,
+
+    # REMOVED
+    # "function_list_int2d": TokenType.FUNCTION_LIST_INT2D,
+    # "function_list_str2d": TokenType.FUNCTION_LIST_STR2D,
+    # "function_list_bln2d": TokenType.FUNCTION_LIST_BLN2D,
+    # "function_list_flt2d": TokenType.FUNCTION_LIST_FLT2D,
+    # "function_list_chr2d": TokenType.FUNCTION_LIST_CHR2D,
 
     # Type conversion keywords
     "to_int": TokenType.CONVERT_TO_INT,
