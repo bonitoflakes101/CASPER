@@ -282,28 +282,39 @@ class Lexer:
 
     def __read_char_literal(self) -> str | None:
         """Reads a character literal enclosed in single quotes and returns the character (or None if invalid)."""
-        start_pos = self.position  
-        self.__read_char()  
+        start_pos = self.position  # Store starting position
+        self.__read_char()  # Consume the opening single quote
 
         if self.current_char is None or self.current_char == "'":
-            return None
+            return None  # Mark as ILLEGAL if empty or immediately closed
 
-        literal = ""  
+        literal = ""  # Store the character(s) inside the single quotes
 
         while self.current_char is not None and self.current_char != "'":
-            literal += self.current_char
-            self.__read_char()
-
-        if self.current_char == "'":
-            self.__read_char()
-
-            # If the literal contains more than one character, return None (illegal)
-            if len(literal) == 1:
-                return literal  
+            # Handle escaped single quote (\')
+            if self.current_char == "\\" and self.__peek_char() == "'":
+                self.__read_char()  # Skip past backslash
+                literal += "'"  # Append actual single quote
             else:
-                return None  
+                literal += self.current_char  # Append normal character
+            
+            self.__read_char()
 
-        return None
+        # If we correctly find a closing quote
+        if self.current_char == "'":
+            self.__read_char()  # Consume closing quote
+
+            # Check if the next character is a valid delimiter (DEL11)
+            if self.current_char in Delimiters.DEL11:
+                if len(literal) == 1:
+                    return literal  # Return valid single-character literal
+                else:
+                    return None  # Mark as ILLEGAL if more than one character is found
+            else:
+                return None  # Mark as ILLEGAL if no valid delimiter after closing quote
+
+        return None  # If no closing quote is found, mark as ILLEGAL
+
 
 
     
@@ -376,7 +387,7 @@ class Lexer:
             literal = self.__read_char_literal()
 
             if literal is None:
-                return self.__new_token(TokenType.ILLEGAL, self.source[start_pos:self.position])
+                return self.__new_token(TokenType.ILLEGAL, self.source[start_pos:self.position])  # Unclosed or invalid char literal
 
             return self.__new_token(TokenType.CHR_LIT, literal)  # Return valid character literal
 
