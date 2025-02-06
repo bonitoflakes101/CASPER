@@ -242,20 +242,43 @@ class Lexer:
             return self.__new_token(TokenType.INT_LIT, literal)
         return self.__new_token(TokenType.FLT_LIT, literal)
 
-    def __read_string(self) -> str:
-        """Reads a string literal enclosed in double quotes."""
-        self.__read_char()  # Skip the opening quote
+    def __read_string(self) -> str | None:
+        """Reads a string literal enclosed in double quotes and returns the string or None if invalid."""
+        self.__read_char()  # Consume the opening quote (")
         start_pos = self.position
-        
-        while self.current_char and self.current_char != '"':
-            if self.current_char == '\n':  # Strings cannot span multiple lines
-                break
+        literal = ""
+
+        # Read characters inside the string until a closing quote or an invalid case is found
+        while self.current_char is not None and self.current_char != '"':
+            if self.current_char == '\n':  # Newline inside string = INVALID
+                return None  # Mark as ILLEGAL
+
+            # Handle escaped quotes (\")
+            if self.current_char == "\\" and self.__peek_char() == '"':
+                self.__read_char()  # Skip past backslash
+                literal += '"'  # Append actual double quote
+            else:
+                literal += self.current_char  # Append normal character
+            
             self.__read_char()
 
-        literal = self.source[start_pos:self.position]
+        # If we correctly find a closing quote
         if self.current_char == '"':
             self.__read_char()  # Consume closing quote
-        return literal
+
+            # Check if the next character is a valid delimiter (DEL11)
+            if self.current_char in Delimiters.DEL11:
+                return literal  # Valid string
+
+            # If another unescaped double quote is found, mark as ILLEGAL
+            if self.current_char == '"':
+                return None  
+
+            return literal  # Return valid string
+
+        # If no closing quote found, return None (ILLEGAL STRING)
+        return None
+
 
     def __read_char_literal(self) -> str | None:
         """Reads a character literal enclosed in single quotes and returns the character (or None if invalid)."""
@@ -339,9 +362,15 @@ class Lexer:
             return self.__read_number()
 
         if self.current_char == '"':
+            start_pos = self.position  # Store the starting position
             literal = self.__read_string()
-            return self.__new_token(TokenType.STR_LIT, literal)
-        
+
+            if literal is None:
+                return self.__new_token(TokenType.ILLEGAL, self.source[start_pos:self.position])  # Unclosed or invalid string
+
+            return self.__new_token(TokenType.STR_LIT, literal)  # Return valid string literal
+
+            
         if self.current_char == "'":
             start_pos = self.position  # Store the starting position
             literal = self.__read_char_literal()
