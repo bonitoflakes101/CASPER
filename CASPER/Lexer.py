@@ -104,9 +104,9 @@ class Lexer:
             self.__read_char()  # Consume $ or @
 
             # Ensure the identifier starts with a valid character
-            if self.current_char and not (self.current_char.isalpha() or self.current_char == '_') or (self.current_char == None):
+            if self.current_char and not (self.current_char.isalpha() or self.current_char == '_' or self.current_char.isnumeric()) or (self.current_char == None):
                 # If invalid character after $/@, read the whole sequence as ILLEGAL
-                while self.current_char and self.current_char not in Delimiters.DELIM_ID and self.current_char != '\n':
+                while self.current_char and self.current_char not in Delimiters.identifier_del and self.current_char != '\n':
                     self.__read_char()
                 illegal_literal = self.source[start_pos:self.position]
                 return self.__new_token(TokenType.ILLEGAL, illegal_literal)
@@ -117,7 +117,7 @@ class Lexer:
                     self.__read_char()
                 elif self.current_char in {'$', '@'}:
                     # If another $ or @ is encountered mid-identifier, read the whole sequence as ILLEGAL
-                    while self.current_char and self.current_char not in Delimiters.DELIM_ID and self.current_char != '\n':
+                    while self.current_char and self.current_char not in Delimiters.identifier_del and self.current_char != '\n':
                         self.__read_char()
                     illegal_literal = self.source[start_pos:self.position]
                     return self.__new_token(TokenType.ILLEGAL, illegal_literal)
@@ -130,7 +130,7 @@ class Lexer:
 
             # After reading, validate delimiters for identifiers
             identifier = self.source[start_pos:self.position]
-            valid_delims = Delimiters.DELIM_ID
+            valid_delims = Delimiters.identifier_del 
 
             # Check if the identifier starts with '@' for FUNCTION_NAME
             if identifier.startswith('@'):
@@ -215,7 +215,7 @@ class Lexer:
             return self.__new_token(TokenType.ILLEGAL, identifier)
 
         # Validate general delimiters for identifiers
-        if self.current_char not in Delimiters.DELIM_ID:
+        if self.current_char not in Delimiters.identifier_del:
             return self.__new_token(TokenType.ILLEGAL, identifier)
         
         # Otherwise, return the identifier token
