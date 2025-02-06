@@ -46,7 +46,7 @@ class Delimiters:
     DEL14 = SPACE | ALPHA
     DEL15 = SPACE | NEWLINE | ALPHANUM | {'[', ']', '"', '$'} # L bracket
     DEL16 = SPACE | NEWLINE | {'[', ']', '$', '@', ',', '='} 
-    DEL17 = SPACE | NULL | {',', ')', ']'} # R bracket
+    DEL17 = SPACE | NEWLINE | NULL | {',', ')', ']'} # R bracket
     DEL18 = {'('}
     DEL19 = {'['}
     identifier_del = SPACE | {'<', '-', '+', '*', '/', '%', '=', '<', '>', '!', '(', ')', '[', ']', ',' , '{', '}'} 
