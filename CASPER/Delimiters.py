@@ -23,7 +23,7 @@ class Delimiters:
     SPX_CHAR5 = {'\''}
     SPX_CHAR6 = {'\'', '"', '`', '~', '^', '_', '-'}
     SPECIAL = SPX_CHAR1 | SPX_CHAR2 | SPX_CHAR3 | SPX_CHAR4 | SPX_CHAR5 | SPX_CHAR6
-    NEWLINE = {'\n'}
+    NEWLINE = {'\r'}
     STRING_FORM = {'"', '"'}
     CARRIAGE_RETURN = {'\r'}
     
@@ -41,7 +41,7 @@ class Delimiters:
     DEL9 = SPACE | NEWLINE | {'(', '{', '$', '@', '"'} # opening LBRACE {
     DEL10 = SPACE | NEWLINE | NULL | {'"', '(', '{', '[' } # closing RBRACE }
     DEL11 = SPACE | NEWLINE | NULL | {',', '(', '{', '[', '+'}
-    DEL12 = SPACE | NEWLINE | NULL
+    DEL12 = SPACE | NEWLINE | NULL | {'\r'}
     DEL13 = SPACE | NULL | {')', '\''} # postfix
     DEL14 = SPACE | ALPHA
     DEL15 = SPACE | NEWLINE | ALPHANUM | {'[', ']', '"', '$'} # L bracket

@@ -287,24 +287,19 @@ class Lexer:
         :param token_type: The type of the token being validated.
         :return: True if the next character is a valid delimiter, False otherwise.
         """
-        prev = self.position - 1
-        prevChar = self.source[prev] if prev >= 0 else None
+        # Debugging shit
+        prev = self.position-1
+        prevChar = self.source[prev]
         print("Prev token: ", prevChar)
-        print("current token: ", self.current_char)
+        print("current token: " , self.current_char)
         print("token type: ", token_type.name)
-        
-        valid_delims = KEYWORD_DELIMITERS.get(token_type.name, set())
-        if '\n' in valid_delims:
-            valid_delims = valid_delims.union({'\n'})  # Ensure newline is only added if already valid
-        print("valid delims: ", valid_delims)
-        
+        valid_delims = KEYWORD_DELIMITERS.get(token_type.name)
+        print("valid delims: ",valid_delims)
+
+
         next_char = self.__peek_char()
-        print("next char: ", next_char)
-        
-        if next_char is None:
-            return self.current_char in valid_delims and None in valid_delims  # Ensure None isn't automatically valid
-        
-        return self.current_char in valid_delims or next_char in valid_delims
+        print("next char: ",next_char)
+        return next_char in valid_delims
 
     def __skip_invalid_characters(self) -> None:
         """Skips invalid characters until a valid delimiter is found."""

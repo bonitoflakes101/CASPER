@@ -163,6 +163,7 @@ KEYWORD_DELIMITERS = {
 
     # , = COMMA
     "COMMA": Delimiters.DEL15,
+    "SEMICOLON": Delimiters.DEL12,
     # missing "measure" sa keywords but asa TD
 
     # $ -> validIDSym
