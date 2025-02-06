@@ -68,12 +68,12 @@ KEYWORD_DELIMITERS = {
     "FUNCTION_LIST_FLT": Delimiters.SPACE,
     "FUNCTION_LIST_CHR": Delimiters.SPACE,
 
-    # Wala sa TD to, should be [][] yung delims
-    "FUNCTION_LIST_INT2D": Delimiters.SPACE,
-    "FUNCTION_LIST_STR2D": Delimiters.SPACE,
-    "FUNCTION_LIST_BLN2D": Delimiters.SPACE,
-    "FUNCTION_LIST_FLT2D": Delimiters.SPACE,
-    "FUNCTION_LIST_CHR2D": Delimiters.SPACE,
+    # REMOVED
+    # "FUNCTION_LIST_INT2D": Delimiters.SPACE,
+    # "FUNCTION_LIST_STR2D": Delimiters.SPACE,
+    # "FUNCTION_LIST_BLN2D": Delimiters.SPACE,
+    # "FUNCTION_LIST_FLT2D": Delimiters.SPACE,
+    # "FUNCTION_LIST_CHR2D": Delimiters.SPACE,
 
     "IN": Delimiters.DEL2,
 
@@ -89,11 +89,13 @@ KEYWORD_DELIMITERS = {
     "LIST_BLN": Delimiters.SPACE,
     "LIST_FLT": Delimiters.SPACE,
     "LIST_CHR": Delimiters.SPACE,
-    "LIST_INT2D": Delimiters.SPACE,
-    "LIST_STR2D": Delimiters.SPACE,
-    "LIST_BLN2D": Delimiters.SPACE,
-    "LIST_FLT2D": Delimiters.SPACE,
-    "LIST_CHR2D": Delimiters.SPACE,
+
+    # REMOVED 
+    # "LIST_INT2D": Delimiters.SPACE,
+    # "LIST_STR2D": Delimiters.SPACE,
+    # "LIST_BLN2D": Delimiters.SPACE,
+    # "LIST_FLT2D": Delimiters.SPACE,
+    # "LIST_CHR2D": Delimiters.SPACE,
 
     # --------------------------------------------------------
     # Operators (if you want to force them to have valid next chars)
