@@ -8,7 +8,7 @@ class Delimiters:
     ALPHANUM = ALPHA | NUM
     UNDERSCORE = {'_'}
     SPACE = {' '}  
-    VALID_ID_SYM = ALPHANUM | UNDERSCORE
+    VALID_ID_SYM = ALPHA | UNDERSCORE
     BOOLEAN = {'Day', 'Night'}
     OPERATORS = {'+', '-', '*', '/', '%'}
     LOGEXP = {'||', '&&'}
@@ -39,8 +39,8 @@ class Delimiters:
     DEL7 =  SPACE | NUM | NEWLINE | {'$', '@', '"', '(', '{', '\''} # open LPAREN (
     DEL8 = SPACE | NEWLINE | {'+', '-', '*', '/', '{', '(', ')', ']', '}', ','} # closing RPAREN )
     DEL9 = SPACE | NEWLINE | {'(', '{', '$', '@', '"'} # opening LBRACE {
-    DEL10 = SPACE | NEWLINE | NULL | COMMENT | {'"', '(', '{', '[' } # closing RBRACE }
-    DEL11 = SPACE | NEWLINE | {',', '(', '{', '[', '+'}
+    DEL10 = SPACE | NEWLINE | NULL | {'"', '(', '{', '[' } # closing RBRACE }
+    DEL11 = SPACE | NEWLINE | NULL | {',', '(', '{', '[', '+'}
     DEL12 = SPACE | NEWLINE | NULL
     DEL13 = SPACE | NULL | {')', '\''} # postfix
     DEL14 = SPACE | ALPHA

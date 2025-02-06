@@ -218,11 +218,13 @@ KEYWORDS: dict[str, TokenType] = {
     "list_bln": TokenType.LIST_BLN,
     "list_flt": TokenType.LIST_FLT,
     "list_chr": TokenType.LIST_CHR,
-    "list_int2d": TokenType.LIST_INT2D,
-    "list_str2d": TokenType.LIST_STR2D,
-    "list_bln2d": TokenType.LIST_BLN2D,
-    "list_flt2d": TokenType.LIST_FLT2D,
-    "list_chr2d": TokenType.LIST_CHR2D,
+
+    # REMOVED
+    # "list_int2d": TokenType.LIST_INT2D,
+    # "list_str2d": TokenType.LIST_STR2D,
+    # "list_bln2d": TokenType.LIST_BLN2D,
+    # "list_flt2d": TokenType.LIST_FLT2D,
+    # "list_chr2d": TokenType.LIST_CHR2D,
     }
 
 def lookup_ident(ident: str) -> TokenType:
