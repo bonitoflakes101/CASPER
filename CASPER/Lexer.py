@@ -201,7 +201,15 @@ class Lexer:
             if self.current_char in valid_delims:
                 return self.__new_token(token_type, identifier)
             else:
-                return self.__new_token(TokenType.ILLEGAL, identifier)
+                print("HEL12OO")
+                # Continue reading until a space is found
+                while self.current_char and self.current_char != ' ':
+                    self.__read_char()
+
+                illegal_literal = self.source[start_pos:self.position]
+                print(illegal_literal)
+
+                return self.__new_token(TokenType.ILLEGAL, illegal_literal)
         
         # For identifiers
         if token_type == TokenType.IDENT:
