@@ -104,15 +104,15 @@ class Lexer:
             self.__read_char()  # Consume $ or @
 
             # Ensure the identifier starts with a valid character
-            if self.current_char and not (self.current_char.isalpha() or self.current_char == '_' or self.current_char.isnumeric()) or (self.current_char == None):
-                # If invalid character after $/@, read the whole sequence as ILLEGAL
+            if self.current_char is None or not (self.current_char.isalpha() or self.current_char == '_'):
+                # If the first character after $ is invalid, treat it as ILLEGAL
                 while self.current_char and self.current_char not in Delimiters.identifier_del and self.current_char != '\n':
                     self.__read_char()
                 illegal_literal = self.source[start_pos:self.position]
                 return self.__new_token(TokenType.ILLEGAL, illegal_literal)
 
             # Continue reading the identifier
-            while self.current_char:
+            while self.current_char and (self.current_char.isalnum() or self.current_char == '_'):
                 if Delimiters.is_valid_identifier_char(self.current_char):
                     self.__read_char()
                 elif self.current_char in {'$', '@'}:

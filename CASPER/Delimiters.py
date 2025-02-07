@@ -8,7 +8,7 @@ class Delimiters:
     ALPHANUM = ALPHA | NUM
     UNDERSCORE = {'_'}
     SPACE = {' '}  
-    VALID_ID_SYM = ALPHA | UNDERSCORE
+    VALID_ID_SYM = ALPHANUM | UNDERSCORE
     BOOLEAN = {'Day', 'Night'}
     OPERATORS = {'+', '-', '*', '/', '%'}
     LOGEXP = {'||', '&&'}
