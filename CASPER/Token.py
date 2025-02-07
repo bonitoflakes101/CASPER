@@ -177,8 +177,8 @@ KEYWORDS: dict[str, TokenType] = {
     "GLOBAL": TokenType.GLOBAL,
     "Day": TokenType.DAY,
     "Night": TokenType.NIGHT,
-    "day": TokenType.DAY,
-    "night": TokenType.NIGHT,
+    # "day": TokenType.DAY,
+    # "night": TokenType.NIGHT,
     "measure": TokenType.MEASURE, # wala pang delims
     "in": TokenType.IN,
     "int": TokenType.INT,
