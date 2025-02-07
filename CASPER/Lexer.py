@@ -109,6 +109,8 @@ class Lexer:
                 while self.current_char and self.current_char not in Delimiters.identifier_del and self.current_char != '\n':
                     self.__read_char()
                 illegal_literal = self.source[start_pos:self.position]
+            
+                # TAMA LANG TO
                 return self.__new_token(TokenType.ILLEGAL, illegal_literal)
 
             # Continue reading the identifier
@@ -116,6 +118,7 @@ class Lexer:
                 if Delimiters.is_valid_identifier_char(self.current_char):
                     self.__read_char()
                 elif self.current_char in {'$', '@'}:
+               
                     # If another $ or @ is encountered mid-identifier, read the whole sequence as ILLEGAL
                     while self.current_char and self.current_char not in Delimiters.identifier_del and self.current_char != '\n':
                         self.__read_char()
@@ -126,6 +129,7 @@ class Lexer:
                     # if self.__checkIDforAfterBracketsError():
                     #     illegal_literal = self.source[start_pos:self.position]
                     #     return self.__new_token(TokenType.ILLEGAL, illegal_literal)
+              
                     break
 
             # After reading, validate delimiters for identifiers
@@ -145,11 +149,12 @@ class Lexer:
 
             # Check if the identifier starts with '$' for IDENT
             elif identifier.startswith('$'):
+            
                 if self.current_char in valid_delims:
                     return self.__new_token(TokenType.IDENT, identifier)
                 else:
                     # If no valid delimiter, treat as ILLEGAL
-                    while self.current_char and self.current_char != '\n':
+                    while self.current_char and self.current_char != ' ':
                         self.__read_char()
                     illegal_literal = self.source[start_pos:self.position]
                     return self.__new_token(TokenType.ILLEGAL, illegal_literal)
@@ -226,7 +231,7 @@ class Lexer:
 
 
     def __read_number(self) -> Token:
-        """Reads a number (integer or float) with up to 9 digits in each part."""
+        """Reads a number (integer or float) with up to 9 digits in each part, enforcing DEL10 as a delimiter."""
         start_pos = self.position
         dot_count = 0
 
@@ -238,9 +243,17 @@ class Lexer:
             self.__read_char()
 
         literal = self.source[start_pos:self.position]
+
+        if self.current_char not in Delimiters.DEL10:
+            while self.current_char and self.current_char not in Delimiters.DEL10 and self.current_char != '\n':
+                self.__read_char()
+            illegal_literal = self.source[start_pos:self.position]
+            return self.__new_token(TokenType.ILLEGAL, illegal_literal)
+        
         if dot_count == 0:
             return self.__new_token(TokenType.INT_LIT, literal)
         return self.__new_token(TokenType.FLT_LIT, literal)
+
 
     def __read_string(self) -> str | None:
         """Reads a string literal enclosed in double quotes and returns the string or None if invalid."""
