@@ -678,7 +678,7 @@ class Lexer:
         start_pos = self.position  # Record the starting position of the illegal sequence
 
         # Continue reading characters until a newline or end of input
-        while self.current_char and self.current_char != '\n':
+        while self.current_char and self.current_char != ' ':
             self.__read_char()
 
         # Create an ILLEGAL token for the entire invalid sequence
