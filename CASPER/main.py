@@ -1,91 +1,58 @@
-# from Lexer import Lexer
-# from Parser import Parser
-# from AST import Program
-# from Compiler import Compiler
-# import json
-
-
-# from llvmlite import ir
-# import llvmlite.binding as llvm
-# from ctypes import CFUNCTYPE, c_int, c_float
-
-# LEXER_DEBUG: bool = True
-# PARSER_DEBUG: bool = False
-# COMPILER_DEBUG: bool = False
-
-# if __name__ == '__main__':
-#     with open("tests/lexer.lime", "r") as f:
-#         code: str = f.read()
-
-
-#     if LEXER_DEBUG:
-#         print("===== LEXER DEBUG =====")
-#         debug_lex: Lexer = Lexer(source=code)
-#         while debug_lex.current_char is not None:
-#             print(debug_lex.next_token())
-
-    # l: Lexer = Lexer(source=code)
-    # p: Parser = Parser(lexer=l)
-
-    # program: Program = p.parse_program()
-    # if len(p.errors) > 0:
-    #     # for parser
-    #     # for err in p.errors: 
-    #     #     print(err)
-    #     exit(1)
-
-    # if PARSER_DEBUG:
-    #     print("===== PARSER DEBUG =====")
-    
-
-    #     with open("debug/ast.json", "w") as f:
-    #         json.dump(program.json(), f, indent=4)
-    #     print("Wrote AST to debug/ast.json successfully")
-
-    # c: Compiler = Compiler()
-    # c.compile(node=program)
-
-    # # output steps
-    # module: ir.Module = c.module
-    # module.triple = llvm.get_default_triple()
-
-    # if COMPILER_DEBUG: 
-    #     with open("debug/ir.ll", "w") as f:
-    #         f.write(str(module))
-
-
 from flask import Flask, request, render_template
 from Lexer import Lexer
+from Parser import Parser
 
 app = Flask(__name__)
 
 LEXER_DEBUG: bool = True
+PARSER_DEBUG: bool = True  # Enable Parser Debugging
 
 @app.route('/', methods=['GET', 'POST'])
 def home():
     code = ""
     output = ""
-    lexer_results = []  # 
+    lexer_results = []  
+    parser_output = ""
+    symbol_table_output = ""
 
     if request.method == 'POST':
-        code = request.form.get('code_input', '') 
+        code = request.form.get('code_input', '')
 
+        # 1. Run the Lexer
         if LEXER_DEBUG:
             output_lines = []
             debug_lex = Lexer(source=code)
+            tokens = []
+            
             while debug_lex.current_char is not None:
                 token = debug_lex.next_token()
-                token_type = str(token.type).split(".")[-1]  # token
+                token_type = str(token.type).split(".")[-1]
 
-                if token_type == "ILLEGAL":  # terminal
-                    output_lines.append(str(token))
+                if token_type == "ILLEGAL":
+                    output_lines.append(str(token))  # Capture illegal tokens
                 else:
-                    lexer_results.append((token.literal, token_type)) 
+                    lexer_results.append((token.literal, token_type))
+                    tokens.append(token)  # Store tokens for parsing
 
-            output = "\n".join(output_lines)  # illegal lng sa output
-            output = output.strip()  # panlinis lng ng output
+            output = "\n".join(output_lines).strip()
 
-    return render_template('index.html', code=code, output=output, lexer_results=lexer_results)
+        # 2. Run the Parser (Without Removing Lexer)
+        if PARSER_DEBUG and tokens:
+            parser = Parser(tokens)  # Pass the list of tokens to the parser
+            parse_result = parser.parse_program()  # Parse and get results
+
+            if isinstance(parse_result, list):
+                parser_output = "\n".join(parse_result)  # Show errors if any
+            else:
+                parser_output = parse_result
+                symbol_table_output = str(parser.symbol_table)  # Display symbol table
+
+    return render_template('index.html', 
+                           code=code, 
+                           output=output, 
+                           lexer_results=lexer_results, 
+                           parser_output=parser_output,
+                           symbol_table_output=symbol_table_output)
 
 if __name__ == '__main__':
     app.run(debug=True)

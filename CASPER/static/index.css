@@ -25,7 +25,7 @@ body{
 .main-header h1{
     background-color: #ffffff;
     padding: 10px 50px;
-    color: #4f46e5;
+    color: #856c59;
 }
 
 #main {
@@ -176,9 +176,11 @@ form {
 }
 
 
-.output-container{
-    display: grid;
-    grid-template-columns: 1fr;
+.output-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
     max-width: 1500px;
     width: 100%;  
     padding: 20px;
@@ -212,4 +214,46 @@ form {
 .main-output{
     margin: 0;
     background: #f6f6f6;
+}
+
+
+/* Parser Output and Symbol Table Containers */
+.parser-container, .symbol-table-container {
+    width: 80%; /* Adjust width to align better */
+    border-radius: 10px;
+    outline: 0.5px solid rgb(209, 209, 209);
+    background: #ffffff;
+    padding-bottom: 10px;
+}
+
+/* Ensure proper spacing above the parser output */
+.parser-container {
+    margin-top: 20px;
+}
+
+/* Labels for parser and symbol table */
+.parser-label-container, .symbol-table-label-container {
+    border-radius: 10px 10px 0 0;
+    padding: 15px;
+    background: #ffffff;
+    text-align: left;
+}
+
+/* Ensure text inside parser output box is visible */
+.parser-terminal, .symbol-table-terminal {
+    background: #f6f6f6;
+    height: 200px;  /* Increased height */
+    min-height: 200px; /* Prevent cutoff */
+    padding: 10px;
+    border-radius: 0 0 10px 10px;
+    overflow-y: auto; /* Enables scrolling */
+}
+
+/* Ensures text wraps correctly inside terminals */
+.parser-output, .symbol-table-output {
+    margin: 0;
+    font-family: 'Courier New', monospace;
+    font-size: 14px;
+    white-space: pre-wrap;
+    word-wrap: break-word;
 }

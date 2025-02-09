@@ -199,9 +199,10 @@ class Lexer:
             valid_delims = KEYWORD_DELIMITERS.get(token_type.name, set())
             print("Keyword: ", valid_delims)
             if self.current_char in valid_delims:
+                print("HEL12O23O")
                 return self.__new_token(token_type, identifier)
             else:
-                print("HEL12OO")
+                print("HEL12OO436")
                 # Continue reading until a space is found
                 while self.current_char and self.current_char != ' ':
                     self.__read_char()

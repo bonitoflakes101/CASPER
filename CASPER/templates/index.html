@@ -3,8 +3,16 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="stylesheet" href="{{ url_for('static', filename='index.css') }}" /> <!-- CSS file -->
-    <script src="{{ url_for('static', filename='js/index.js') }}" defer></script> <!-- JS file -->
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='index.css') }}"
+    />
+    <!-- CSS file -->
+    <script
+      src="{{ url_for('static', filename='js/index.js') }}"
+      defer
+    ></script>
+    <!-- JS file -->
     <title>Casper Compiler</title>
   </head>
   <body>
@@ -39,10 +47,7 @@
             <div class="text-area-div">
               <textarea name="code_input" id="code-area">{{ code }}</textarea>
             </div>
-
-            
           </form>
-          
         </div>
 
         <div class="lexer-div">
@@ -71,7 +76,22 @@
             <label id="output-label">Output Terminal</label>
           </div>
           <div class="output-terminal">
-            <pre id="output" class="main-output">{{output}}</pre>
+            <pre id="output" class="main-output">
+              {% if output %}
+              Lexer Errors:
+              {{ output }}
+              {% endif %}
+
+              {% if parser_output %}
+              Parser Output:
+              {{ parser_output }}
+              {% endif %}
+
+              {% if symbol_table_output %}
+              Symbol Table:
+              {{ symbol_table_output }}
+              {% endif %}
+            </pre>
           </div>
         </div>
       </div>
