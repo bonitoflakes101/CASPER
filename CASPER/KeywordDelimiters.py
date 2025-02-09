@@ -33,7 +33,7 @@ KEYWORD_DELIMITERS = {
 
     # I/O statements
     "INPUT": Delimiters.DEL18,
-    "DISPLAY": Delimiters.SPACE,
+    "DISPLAY": Delimiters.DEL2, # Changed from SPACE to DEL2
 
     # Conditionals
     "CHECK": Delimiters.DEL2,
