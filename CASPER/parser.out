@@ -1,0 +1,1325 @@
+Created by PLY version 3.11 (http://www.dabeaz.com/ply)
+
+Unused terminals:
+
+    AND
+    BLN
+    BLN_LIT
+    CHR
+    CHR_LIT
+    COLON
+    COMMENT
+    CONVERT_TO_BLN
+    CONVERT_TO_FLT
+    CONVERT_TO_INT
+    CONVERT_TO_STR
+    DAY
+    DIVISION
+    DIV_EQ
+    DOUBLE_LT
+    DOUBLE_SLASH
+    EOF
+    EQ_EQ
+    EXPONENT
+    FLT
+    FOR
+    FUNCTION
+    FUNCTION_BLN
+    FUNCTION_CHR
+    FUNCTION_FLT
+    FUNCTION_INT
+    FUNCTION_LIST_BLN
+    FUNCTION_LIST_BLN2D
+    FUNCTION_LIST_CHR
+    FUNCTION_LIST_CHR2D
+    FUNCTION_LIST_FLT
+    FUNCTION_LIST_FLT2D
+    FUNCTION_LIST_INT
+    FUNCTION_LIST_INT2D
+    FUNCTION_LIST_STR
+    FUNCTION_LIST_STR2D
+    FUNCTION_STR
+    GLOBAL
+    GT
+    GT_EQ
+    ILLEGAL
+    IN
+    INPUT
+    INT
+    LBRACE
+    LBRACKET
+    LIST_BLN
+    LIST_BLN2D
+    LIST_CHR
+    LIST_CHR2D
+    LIST_FLT
+    LIST_FLT2D
+    LIST_INT
+    LIST_INT2D
+    LIST_STR
+    LIST_STR2D
+    LT
+    LT_EQ
+    MEASURE
+    MINUS
+    MINUS_EQ
+    MINUS_MINUS
+    MODULO
+    MOD_EQ
+    MULTIPLY
+    MUL_EQ
+    NIGHT
+    NOT
+    NOT_EQ
+    OR
+    PLUS
+    PLUS_EQ
+    PLUS_PLUS
+    POW
+    RBRACE
+    RBRACKET
+    REVIVE
+    SEMICOLON
+    SHIFT
+    SKIP
+    STOP
+    STR
+    SWAP
+    TILDE
+
+Grammar
+
+Rule 0     S' -> program
+Rule 1     program -> BIRTH statement_list GHOST
+Rule 2     statement_list -> statement
+Rule 3     statement_list -> statement_list statement
+Rule 4     statement_list -> statement_list NEWLINE
+Rule 5     statement_list -> empty
+Rule 6     statement -> variable_declaration
+Rule 7     statement -> assignment
+Rule 8     statement -> function_call
+Rule 9     statement -> loop
+Rule 10    statement -> conditional
+Rule 11    statement -> io_statement
+Rule 12    variable_declaration -> TYPE IDENT EQ expression
+Rule 13    assignment -> IDENT EQ expression
+Rule 14    function_call -> FUNCTION_NAME LPAREN arguments RPAREN
+Rule 15    loop -> REPEAT LPAREN expression RPAREN statement_list UNTIL LPAREN expression RPAREN
+Rule 16    conditional -> CHECK LPAREN expression RPAREN statement_list OTHERWISE statement_list OTHERWISE_CHECK LPAREN expression RPAREN
+Rule 17    io_statement -> DISPLAY LPAREN expression RPAREN
+Rule 18    expression -> IDENT
+Rule 19    expression -> INT_LIT
+Rule 20    expression -> FLT_LIT
+Rule 21    expression -> STR_LIT
+Rule 22    expression -> function_call
+Rule 23    arguments -> expression COMMA arguments
+Rule 24    arguments -> expression
+Rule 25    arguments -> empty
+Rule 26    empty -> <empty>
+
+Terminals, with rules where they appear
+
+AND                  : 
+BIRTH                : 1
+BLN                  : 
+BLN_LIT              : 
+CHECK                : 16
+CHR                  : 
+CHR_LIT              : 
+COLON                : 
+COMMA                : 23
+COMMENT              : 
+CONVERT_TO_BLN       : 
+CONVERT_TO_FLT       : 
+CONVERT_TO_INT       : 
+CONVERT_TO_STR       : 
+DAY                  : 
+DISPLAY              : 17
+DIVISION             : 
+DIV_EQ               : 
+DOUBLE_LT            : 
+DOUBLE_SLASH         : 
+EOF                  : 
+EQ                   : 12 13
+EQ_EQ                : 
+EXPONENT             : 
+FLT                  : 
+FLT_LIT              : 20
+FOR                  : 
+FUNCTION             : 
+FUNCTION_BLN         : 
+FUNCTION_CHR         : 
+FUNCTION_FLT         : 
+FUNCTION_INT         : 
+FUNCTION_LIST_BLN    : 
+FUNCTION_LIST_BLN2D  : 
+FUNCTION_LIST_CHR    : 
+FUNCTION_LIST_CHR2D  : 
+FUNCTION_LIST_FLT    : 
+FUNCTION_LIST_FLT2D  : 
+FUNCTION_LIST_INT    : 
+FUNCTION_LIST_INT2D  : 
+FUNCTION_LIST_STR    : 
+FUNCTION_LIST_STR2D  : 
+FUNCTION_NAME        : 14
+FUNCTION_STR         : 
+GHOST                : 1
+GLOBAL               : 
+GT                   : 
+GT_EQ                : 
+IDENT                : 12 13 18
+ILLEGAL              : 
+IN                   : 
+INPUT                : 
+INT                  : 
+INT_LIT              : 19
+LBRACE               : 
+LBRACKET             : 
+LIST_BLN             : 
+LIST_BLN2D           : 
+LIST_CHR             : 
+LIST_CHR2D           : 
+LIST_FLT             : 
+LIST_FLT2D           : 
+LIST_INT             : 
+LIST_INT2D           : 
+LIST_STR             : 
+LIST_STR2D           : 
+LPAREN               : 14 15 15 16 16 17
+LT                   : 
+LT_EQ                : 
+MEASURE              : 
+MINUS                : 
+MINUS_EQ             : 
+MINUS_MINUS          : 
+MODULO               : 
+MOD_EQ               : 
+MULTIPLY             : 
+MUL_EQ               : 
+NEWLINE              : 4
+NIGHT                : 
+NOT                  : 
+NOT_EQ               : 
+OR                   : 
+OTHERWISE            : 16
+OTHERWISE_CHECK      : 16
+PLUS                 : 
+PLUS_EQ              : 
+PLUS_PLUS            : 
+POW                  : 
+RBRACE               : 
+RBRACKET             : 
+REPEAT               : 15
+REVIVE               : 
+RPAREN               : 14 15 15 16 16 17
+SEMICOLON            : 
+SHIFT                : 
+SKIP                 : 
+STOP                 : 
+STR                  : 
+STR_LIT              : 21
+SWAP                 : 
+TILDE                : 
+TYPE                 : 12
+UNTIL                : 15
+error                : 
+
+Nonterminals, with rules where they appear
+
+arguments            : 14 23
+assignment           : 7
+conditional          : 10
+empty                : 5 25
+expression           : 12 13 15 15 16 16 17 23 24
+function_call        : 8 22
+io_statement         : 11
+loop                 : 9
+program              : 0
+statement            : 2 3
+statement_list       : 1 3 4 15 16 16
+variable_declaration : 6
+
+Parsing method: LALR
+
+state 0
+
+    (0) S' -> . program
+    (1) program -> . BIRTH statement_list GHOST
+
+    BIRTH           shift and go to state 2
+
+    program                        shift and go to state 1
+
+state 1
+
+    (0) S' -> program .
+
+
+
+state 2
+
+    (1) program -> BIRTH . statement_list GHOST
+    (2) statement_list -> . statement
+    (3) statement_list -> . statement_list statement
+    (4) statement_list -> . statement_list NEWLINE
+    (5) statement_list -> . empty
+    (6) statement -> . variable_declaration
+    (7) statement -> . assignment
+    (8) statement -> . function_call
+    (9) statement -> . loop
+    (10) statement -> . conditional
+    (11) statement -> . io_statement
+    (26) empty -> .
+    (12) variable_declaration -> . TYPE IDENT EQ expression
+    (13) assignment -> . IDENT EQ expression
+    (14) function_call -> . FUNCTION_NAME LPAREN arguments RPAREN
+    (15) loop -> . REPEAT LPAREN expression RPAREN statement_list UNTIL LPAREN expression RPAREN
+    (16) conditional -> . CHECK LPAREN expression RPAREN statement_list OTHERWISE statement_list OTHERWISE_CHECK LPAREN expression RPAREN
+    (17) io_statement -> . DISPLAY LPAREN expression RPAREN
+
+  ! shift/reduce conflict for TYPE resolved as shift
+  ! shift/reduce conflict for IDENT resolved as shift
+  ! shift/reduce conflict for FUNCTION_NAME resolved as shift
+  ! shift/reduce conflict for REPEAT resolved as shift
+  ! shift/reduce conflict for CHECK resolved as shift
+  ! shift/reduce conflict for DISPLAY resolved as shift
+    GHOST           reduce using rule 26 (empty -> .)
+    NEWLINE         reduce using rule 26 (empty -> .)
+    TYPE            shift and go to state 12
+    IDENT           shift and go to state 13
+    FUNCTION_NAME   shift and go to state 14
+    REPEAT          shift and go to state 15
+    CHECK           shift and go to state 16
+    DISPLAY         shift and go to state 17
+
+  ! TYPE            [ reduce using rule 26 (empty -> .) ]
+  ! IDENT           [ reduce using rule 26 (empty -> .) ]
+  ! FUNCTION_NAME   [ reduce using rule 26 (empty -> .) ]
+  ! REPEAT          [ reduce using rule 26 (empty -> .) ]
+  ! CHECK           [ reduce using rule 26 (empty -> .) ]
+  ! DISPLAY         [ reduce using rule 26 (empty -> .) ]
+
+    statement_list                 shift and go to state 3
+    statement                      shift and go to state 4
+    empty                          shift and go to state 5
+    variable_declaration           shift and go to state 6
+    assignment                     shift and go to state 7
+    function_call                  shift and go to state 8
+    loop                           shift and go to state 9
+    conditional                    shift and go to state 10
+    io_statement                   shift and go to state 11
+
+state 3
+
+    (1) program -> BIRTH statement_list . GHOST
+    (3) statement_list -> statement_list . statement
+    (4) statement_list -> statement_list . NEWLINE
+    (6) statement -> . variable_declaration
+    (7) statement -> . assignment
+    (8) statement -> . function_call
+    (9) statement -> . loop
+    (10) statement -> . conditional
+    (11) statement -> . io_statement
+    (12) variable_declaration -> . TYPE IDENT EQ expression
+    (13) assignment -> . IDENT EQ expression
+    (14) function_call -> . FUNCTION_NAME LPAREN arguments RPAREN
+    (15) loop -> . REPEAT LPAREN expression RPAREN statement_list UNTIL LPAREN expression RPAREN
+    (16) conditional -> . CHECK LPAREN expression RPAREN statement_list OTHERWISE statement_list OTHERWISE_CHECK LPAREN expression RPAREN
+    (17) io_statement -> . DISPLAY LPAREN expression RPAREN
+
+    GHOST           shift and go to state 18
+    NEWLINE         shift and go to state 20
+    TYPE            shift and go to state 12
+    IDENT           shift and go to state 13
+    FUNCTION_NAME   shift and go to state 14
+    REPEAT          shift and go to state 15
+    CHECK           shift and go to state 16
+    DISPLAY         shift and go to state 17
+
+    statement                      shift and go to state 19
+    variable_declaration           shift and go to state 6
+    assignment                     shift and go to state 7
+    function_call                  shift and go to state 8
+    loop                           shift and go to state 9
+    conditional                    shift and go to state 10
+    io_statement                   shift and go to state 11
+
+state 4
+
+    (2) statement_list -> statement .
+
+    GHOST           reduce using rule 2 (statement_list -> statement .)
+    NEWLINE         reduce using rule 2 (statement_list -> statement .)
+    TYPE            reduce using rule 2 (statement_list -> statement .)
+    IDENT           reduce using rule 2 (statement_list -> statement .)
+    FUNCTION_NAME   reduce using rule 2 (statement_list -> statement .)
+    REPEAT          reduce using rule 2 (statement_list -> statement .)
+    CHECK           reduce using rule 2 (statement_list -> statement .)
+    DISPLAY         reduce using rule 2 (statement_list -> statement .)
+    UNTIL           reduce using rule 2 (statement_list -> statement .)
+    OTHERWISE       reduce using rule 2 (statement_list -> statement .)
+    OTHERWISE_CHECK reduce using rule 2 (statement_list -> statement .)
+
+
+state 5
+
+    (5) statement_list -> empty .
+
+    GHOST           reduce using rule 5 (statement_list -> empty .)
+    NEWLINE         reduce using rule 5 (statement_list -> empty .)
+    TYPE            reduce using rule 5 (statement_list -> empty .)
+    IDENT           reduce using rule 5 (statement_list -> empty .)
+    FUNCTION_NAME   reduce using rule 5 (statement_list -> empty .)
+    REPEAT          reduce using rule 5 (statement_list -> empty .)
+    CHECK           reduce using rule 5 (statement_list -> empty .)
+    DISPLAY         reduce using rule 5 (statement_list -> empty .)
+    UNTIL           reduce using rule 5 (statement_list -> empty .)
+    OTHERWISE       reduce using rule 5 (statement_list -> empty .)
+    OTHERWISE_CHECK reduce using rule 5 (statement_list -> empty .)
+
+
+state 6
+
+    (6) statement -> variable_declaration .
+
+    GHOST           reduce using rule 6 (statement -> variable_declaration .)
+    NEWLINE         reduce using rule 6 (statement -> variable_declaration .)
+    TYPE            reduce using rule 6 (statement -> variable_declaration .)
+    IDENT           reduce using rule 6 (statement -> variable_declaration .)
+    FUNCTION_NAME   reduce using rule 6 (statement -> variable_declaration .)
+    REPEAT          reduce using rule 6 (statement -> variable_declaration .)
+    CHECK           reduce using rule 6 (statement -> variable_declaration .)
+    DISPLAY         reduce using rule 6 (statement -> variable_declaration .)
+    UNTIL           reduce using rule 6 (statement -> variable_declaration .)
+    OTHERWISE       reduce using rule 6 (statement -> variable_declaration .)
+    OTHERWISE_CHECK reduce using rule 6 (statement -> variable_declaration .)
+
+
+state 7
+
+    (7) statement -> assignment .
+
+    GHOST           reduce using rule 7 (statement -> assignment .)
+    NEWLINE         reduce using rule 7 (statement -> assignment .)
+    TYPE            reduce using rule 7 (statement -> assignment .)
+    IDENT           reduce using rule 7 (statement -> assignment .)
+    FUNCTION_NAME   reduce using rule 7 (statement -> assignment .)
+    REPEAT          reduce using rule 7 (statement -> assignment .)
+    CHECK           reduce using rule 7 (statement -> assignment .)
+    DISPLAY         reduce using rule 7 (statement -> assignment .)
+    UNTIL           reduce using rule 7 (statement -> assignment .)
+    OTHERWISE       reduce using rule 7 (statement -> assignment .)
+    OTHERWISE_CHECK reduce using rule 7 (statement -> assignment .)
+
+
+state 8
+
+    (8) statement -> function_call .
+
+    GHOST           reduce using rule 8 (statement -> function_call .)
+    NEWLINE         reduce using rule 8 (statement -> function_call .)
+    TYPE            reduce using rule 8 (statement -> function_call .)
+    IDENT           reduce using rule 8 (statement -> function_call .)
+    FUNCTION_NAME   reduce using rule 8 (statement -> function_call .)
+    REPEAT          reduce using rule 8 (statement -> function_call .)
+    CHECK           reduce using rule 8 (statement -> function_call .)
+    DISPLAY         reduce using rule 8 (statement -> function_call .)
+    UNTIL           reduce using rule 8 (statement -> function_call .)
+    OTHERWISE       reduce using rule 8 (statement -> function_call .)
+    OTHERWISE_CHECK reduce using rule 8 (statement -> function_call .)
+
+
+state 9
+
+    (9) statement -> loop .
+
+    GHOST           reduce using rule 9 (statement -> loop .)
+    NEWLINE         reduce using rule 9 (statement -> loop .)
+    TYPE            reduce using rule 9 (statement -> loop .)
+    IDENT           reduce using rule 9 (statement -> loop .)
+    FUNCTION_NAME   reduce using rule 9 (statement -> loop .)
+    REPEAT          reduce using rule 9 (statement -> loop .)
+    CHECK           reduce using rule 9 (statement -> loop .)
+    DISPLAY         reduce using rule 9 (statement -> loop .)
+    UNTIL           reduce using rule 9 (statement -> loop .)
+    OTHERWISE       reduce using rule 9 (statement -> loop .)
+    OTHERWISE_CHECK reduce using rule 9 (statement -> loop .)
+
+
+state 10
+
+    (10) statement -> conditional .
+
+    GHOST           reduce using rule 10 (statement -> conditional .)
+    NEWLINE         reduce using rule 10 (statement -> conditional .)
+    TYPE            reduce using rule 10 (statement -> conditional .)
+    IDENT           reduce using rule 10 (statement -> conditional .)
+    FUNCTION_NAME   reduce using rule 10 (statement -> conditional .)
+    REPEAT          reduce using rule 10 (statement -> conditional .)
+    CHECK           reduce using rule 10 (statement -> conditional .)
+    DISPLAY         reduce using rule 10 (statement -> conditional .)
+    UNTIL           reduce using rule 10 (statement -> conditional .)
+    OTHERWISE       reduce using rule 10 (statement -> conditional .)
+    OTHERWISE_CHECK reduce using rule 10 (statement -> conditional .)
+
+
+state 11
+
+    (11) statement -> io_statement .
+
+    GHOST           reduce using rule 11 (statement -> io_statement .)
+    NEWLINE         reduce using rule 11 (statement -> io_statement .)
+    TYPE            reduce using rule 11 (statement -> io_statement .)
+    IDENT           reduce using rule 11 (statement -> io_statement .)
+    FUNCTION_NAME   reduce using rule 11 (statement -> io_statement .)
+    REPEAT          reduce using rule 11 (statement -> io_statement .)
+    CHECK           reduce using rule 11 (statement -> io_statement .)
+    DISPLAY         reduce using rule 11 (statement -> io_statement .)
+    UNTIL           reduce using rule 11 (statement -> io_statement .)
+    OTHERWISE       reduce using rule 11 (statement -> io_statement .)
+    OTHERWISE_CHECK reduce using rule 11 (statement -> io_statement .)
+
+
+state 12
+
+    (12) variable_declaration -> TYPE . IDENT EQ expression
+
+    IDENT           shift and go to state 21
+
+
+state 13
+
+    (13) assignment -> IDENT . EQ expression
+
+    EQ              shift and go to state 22
+
+
+state 14
+
+    (14) function_call -> FUNCTION_NAME . LPAREN arguments RPAREN
+
+    LPAREN          shift and go to state 23
+
+
+state 15
+
+    (15) loop -> REPEAT . LPAREN expression RPAREN statement_list UNTIL LPAREN expression RPAREN
+
+    LPAREN          shift and go to state 24
+
+
+state 16
+
+    (16) conditional -> CHECK . LPAREN expression RPAREN statement_list OTHERWISE statement_list OTHERWISE_CHECK LPAREN expression RPAREN
+
+    LPAREN          shift and go to state 25
+
+
+state 17
+
+    (17) io_statement -> DISPLAY . LPAREN expression RPAREN
+
+    LPAREN          shift and go to state 26
+
+
+state 18
+
+    (1) program -> BIRTH statement_list GHOST .
+
+    $end            reduce using rule 1 (program -> BIRTH statement_list GHOST .)
+
+
+state 19
+
+    (3) statement_list -> statement_list statement .
+
+    GHOST           reduce using rule 3 (statement_list -> statement_list statement .)
+    NEWLINE         reduce using rule 3 (statement_list -> statement_list statement .)
+    TYPE            reduce using rule 3 (statement_list -> statement_list statement .)
+    IDENT           reduce using rule 3 (statement_list -> statement_list statement .)
+    FUNCTION_NAME   reduce using rule 3 (statement_list -> statement_list statement .)
+    REPEAT          reduce using rule 3 (statement_list -> statement_list statement .)
+    CHECK           reduce using rule 3 (statement_list -> statement_list statement .)
+    DISPLAY         reduce using rule 3 (statement_list -> statement_list statement .)
+    UNTIL           reduce using rule 3 (statement_list -> statement_list statement .)
+    OTHERWISE       reduce using rule 3 (statement_list -> statement_list statement .)
+    OTHERWISE_CHECK reduce using rule 3 (statement_list -> statement_list statement .)
+
+
+state 20
+
+    (4) statement_list -> statement_list NEWLINE .
+
+    GHOST           reduce using rule 4 (statement_list -> statement_list NEWLINE .)
+    NEWLINE         reduce using rule 4 (statement_list -> statement_list NEWLINE .)
+    TYPE            reduce using rule 4 (statement_list -> statement_list NEWLINE .)
+    IDENT           reduce using rule 4 (statement_list -> statement_list NEWLINE .)
+    FUNCTION_NAME   reduce using rule 4 (statement_list -> statement_list NEWLINE .)
+    REPEAT          reduce using rule 4 (statement_list -> statement_list NEWLINE .)
+    CHECK           reduce using rule 4 (statement_list -> statement_list NEWLINE .)
+    DISPLAY         reduce using rule 4 (statement_list -> statement_list NEWLINE .)
+    UNTIL           reduce using rule 4 (statement_list -> statement_list NEWLINE .)
+    OTHERWISE       reduce using rule 4 (statement_list -> statement_list NEWLINE .)
+    OTHERWISE_CHECK reduce using rule 4 (statement_list -> statement_list NEWLINE .)
+
+
+state 21
+
+    (12) variable_declaration -> TYPE IDENT . EQ expression
+
+    EQ              shift and go to state 27
+
+
+state 22
+
+    (13) assignment -> IDENT EQ . expression
+    (18) expression -> . IDENT
+    (19) expression -> . INT_LIT
+    (20) expression -> . FLT_LIT
+    (21) expression -> . STR_LIT
+    (22) expression -> . function_call
+    (14) function_call -> . FUNCTION_NAME LPAREN arguments RPAREN
+
+    IDENT           shift and go to state 28
+    INT_LIT         shift and go to state 30
+    FLT_LIT         shift and go to state 31
+    STR_LIT         shift and go to state 32
+    FUNCTION_NAME   shift and go to state 14
+
+    expression                     shift and go to state 29
+    function_call                  shift and go to state 33
+
+state 23
+
+    (14) function_call -> FUNCTION_NAME LPAREN . arguments RPAREN
+    (23) arguments -> . expression COMMA arguments
+    (24) arguments -> . expression
+    (25) arguments -> . empty
+    (18) expression -> . IDENT
+    (19) expression -> . INT_LIT
+    (20) expression -> . FLT_LIT
+    (21) expression -> . STR_LIT
+    (22) expression -> . function_call
+    (26) empty -> .
+    (14) function_call -> . FUNCTION_NAME LPAREN arguments RPAREN
+
+    IDENT           shift and go to state 28
+    INT_LIT         shift and go to state 30
+    FLT_LIT         shift and go to state 31
+    STR_LIT         shift and go to state 32
+    RPAREN          reduce using rule 26 (empty -> .)
+    FUNCTION_NAME   shift and go to state 14
+
+    arguments                      shift and go to state 34
+    expression                     shift and go to state 35
+    empty                          shift and go to state 36
+    function_call                  shift and go to state 33
+
+state 24
+
+    (15) loop -> REPEAT LPAREN . expression RPAREN statement_list UNTIL LPAREN expression RPAREN
+    (18) expression -> . IDENT
+    (19) expression -> . INT_LIT
+    (20) expression -> . FLT_LIT
+    (21) expression -> . STR_LIT
+    (22) expression -> . function_call
+    (14) function_call -> . FUNCTION_NAME LPAREN arguments RPAREN
+
+    IDENT           shift and go to state 28
+    INT_LIT         shift and go to state 30
+    FLT_LIT         shift and go to state 31
+    STR_LIT         shift and go to state 32
+    FUNCTION_NAME   shift and go to state 14
+
+    expression                     shift and go to state 37
+    function_call                  shift and go to state 33
+
+state 25
+
+    (16) conditional -> CHECK LPAREN . expression RPAREN statement_list OTHERWISE statement_list OTHERWISE_CHECK LPAREN expression RPAREN
+    (18) expression -> . IDENT
+    (19) expression -> . INT_LIT
+    (20) expression -> . FLT_LIT
+    (21) expression -> . STR_LIT
+    (22) expression -> . function_call
+    (14) function_call -> . FUNCTION_NAME LPAREN arguments RPAREN
+
+    IDENT           shift and go to state 28
+    INT_LIT         shift and go to state 30
+    FLT_LIT         shift and go to state 31
+    STR_LIT         shift and go to state 32
+    FUNCTION_NAME   shift and go to state 14
+
+    expression                     shift and go to state 38
+    function_call                  shift and go to state 33
+
+state 26
+
+    (17) io_statement -> DISPLAY LPAREN . expression RPAREN
+    (18) expression -> . IDENT
+    (19) expression -> . INT_LIT
+    (20) expression -> . FLT_LIT
+    (21) expression -> . STR_LIT
+    (22) expression -> . function_call
+    (14) function_call -> . FUNCTION_NAME LPAREN arguments RPAREN
+
+    IDENT           shift and go to state 28
+    INT_LIT         shift and go to state 30
+    FLT_LIT         shift and go to state 31
+    STR_LIT         shift and go to state 32
+    FUNCTION_NAME   shift and go to state 14
+
+    expression                     shift and go to state 39
+    function_call                  shift and go to state 33
+
+state 27
+
+    (12) variable_declaration -> TYPE IDENT EQ . expression
+    (18) expression -> . IDENT
+    (19) expression -> . INT_LIT
+    (20) expression -> . FLT_LIT
+    (21) expression -> . STR_LIT
+    (22) expression -> . function_call
+    (14) function_call -> . FUNCTION_NAME LPAREN arguments RPAREN
+
+    IDENT           shift and go to state 28
+    INT_LIT         shift and go to state 30
+    FLT_LIT         shift and go to state 31
+    STR_LIT         shift and go to state 32
+    FUNCTION_NAME   shift and go to state 14
+
+    expression                     shift and go to state 40
+    function_call                  shift and go to state 33
+
+state 28
+
+    (18) expression -> IDENT .
+
+    GHOST           reduce using rule 18 (expression -> IDENT .)
+    NEWLINE         reduce using rule 18 (expression -> IDENT .)
+    TYPE            reduce using rule 18 (expression -> IDENT .)
+    IDENT           reduce using rule 18 (expression -> IDENT .)
+    FUNCTION_NAME   reduce using rule 18 (expression -> IDENT .)
+    REPEAT          reduce using rule 18 (expression -> IDENT .)
+    CHECK           reduce using rule 18 (expression -> IDENT .)
+    DISPLAY         reduce using rule 18 (expression -> IDENT .)
+    UNTIL           reduce using rule 18 (expression -> IDENT .)
+    OTHERWISE       reduce using rule 18 (expression -> IDENT .)
+    OTHERWISE_CHECK reduce using rule 18 (expression -> IDENT .)
+    COMMA           reduce using rule 18 (expression -> IDENT .)
+    RPAREN          reduce using rule 18 (expression -> IDENT .)
+
+
+state 29
+
+    (13) assignment -> IDENT EQ expression .
+
+    GHOST           reduce using rule 13 (assignment -> IDENT EQ expression .)
+    NEWLINE         reduce using rule 13 (assignment -> IDENT EQ expression .)
+    TYPE            reduce using rule 13 (assignment -> IDENT EQ expression .)
+    IDENT           reduce using rule 13 (assignment -> IDENT EQ expression .)
+    FUNCTION_NAME   reduce using rule 13 (assignment -> IDENT EQ expression .)
+    REPEAT          reduce using rule 13 (assignment -> IDENT EQ expression .)
+    CHECK           reduce using rule 13 (assignment -> IDENT EQ expression .)
+    DISPLAY         reduce using rule 13 (assignment -> IDENT EQ expression .)
+    UNTIL           reduce using rule 13 (assignment -> IDENT EQ expression .)
+    OTHERWISE       reduce using rule 13 (assignment -> IDENT EQ expression .)
+    OTHERWISE_CHECK reduce using rule 13 (assignment -> IDENT EQ expression .)
+
+
+state 30
+
+    (19) expression -> INT_LIT .
+
+    GHOST           reduce using rule 19 (expression -> INT_LIT .)
+    NEWLINE         reduce using rule 19 (expression -> INT_LIT .)
+    TYPE            reduce using rule 19 (expression -> INT_LIT .)
+    IDENT           reduce using rule 19 (expression -> INT_LIT .)
+    FUNCTION_NAME   reduce using rule 19 (expression -> INT_LIT .)
+    REPEAT          reduce using rule 19 (expression -> INT_LIT .)
+    CHECK           reduce using rule 19 (expression -> INT_LIT .)
+    DISPLAY         reduce using rule 19 (expression -> INT_LIT .)
+    UNTIL           reduce using rule 19 (expression -> INT_LIT .)
+    OTHERWISE       reduce using rule 19 (expression -> INT_LIT .)
+    OTHERWISE_CHECK reduce using rule 19 (expression -> INT_LIT .)
+    COMMA           reduce using rule 19 (expression -> INT_LIT .)
+    RPAREN          reduce using rule 19 (expression -> INT_LIT .)
+
+
+state 31
+
+    (20) expression -> FLT_LIT .
+
+    GHOST           reduce using rule 20 (expression -> FLT_LIT .)
+    NEWLINE         reduce using rule 20 (expression -> FLT_LIT .)
+    TYPE            reduce using rule 20 (expression -> FLT_LIT .)
+    IDENT           reduce using rule 20 (expression -> FLT_LIT .)
+    FUNCTION_NAME   reduce using rule 20 (expression -> FLT_LIT .)
+    REPEAT          reduce using rule 20 (expression -> FLT_LIT .)
+    CHECK           reduce using rule 20 (expression -> FLT_LIT .)
+    DISPLAY         reduce using rule 20 (expression -> FLT_LIT .)
+    UNTIL           reduce using rule 20 (expression -> FLT_LIT .)
+    OTHERWISE       reduce using rule 20 (expression -> FLT_LIT .)
+    OTHERWISE_CHECK reduce using rule 20 (expression -> FLT_LIT .)
+    COMMA           reduce using rule 20 (expression -> FLT_LIT .)
+    RPAREN          reduce using rule 20 (expression -> FLT_LIT .)
+
+
+state 32
+
+    (21) expression -> STR_LIT .
+
+    GHOST           reduce using rule 21 (expression -> STR_LIT .)
+    NEWLINE         reduce using rule 21 (expression -> STR_LIT .)
+    TYPE            reduce using rule 21 (expression -> STR_LIT .)
+    IDENT           reduce using rule 21 (expression -> STR_LIT .)
+    FUNCTION_NAME   reduce using rule 21 (expression -> STR_LIT .)
+    REPEAT          reduce using rule 21 (expression -> STR_LIT .)
+    CHECK           reduce using rule 21 (expression -> STR_LIT .)
+    DISPLAY         reduce using rule 21 (expression -> STR_LIT .)
+    UNTIL           reduce using rule 21 (expression -> STR_LIT .)
+    OTHERWISE       reduce using rule 21 (expression -> STR_LIT .)
+    OTHERWISE_CHECK reduce using rule 21 (expression -> STR_LIT .)
+    COMMA           reduce using rule 21 (expression -> STR_LIT .)
+    RPAREN          reduce using rule 21 (expression -> STR_LIT .)
+
+
+state 33
+
+    (22) expression -> function_call .
+
+    GHOST           reduce using rule 22 (expression -> function_call .)
+    NEWLINE         reduce using rule 22 (expression -> function_call .)
+    TYPE            reduce using rule 22 (expression -> function_call .)
+    IDENT           reduce using rule 22 (expression -> function_call .)
+    FUNCTION_NAME   reduce using rule 22 (expression -> function_call .)
+    REPEAT          reduce using rule 22 (expression -> function_call .)
+    CHECK           reduce using rule 22 (expression -> function_call .)
+    DISPLAY         reduce using rule 22 (expression -> function_call .)
+    UNTIL           reduce using rule 22 (expression -> function_call .)
+    OTHERWISE       reduce using rule 22 (expression -> function_call .)
+    OTHERWISE_CHECK reduce using rule 22 (expression -> function_call .)
+    COMMA           reduce using rule 22 (expression -> function_call .)
+    RPAREN          reduce using rule 22 (expression -> function_call .)
+
+
+state 34
+
+    (14) function_call -> FUNCTION_NAME LPAREN arguments . RPAREN
+
+    RPAREN          shift and go to state 41
+
+
+state 35
+
+    (23) arguments -> expression . COMMA arguments
+    (24) arguments -> expression .
+
+    COMMA           shift and go to state 42
+    RPAREN          reduce using rule 24 (arguments -> expression .)
+
+
+state 36
+
+    (25) arguments -> empty .
+
+    RPAREN          reduce using rule 25 (arguments -> empty .)
+
+
+state 37
+
+    (15) loop -> REPEAT LPAREN expression . RPAREN statement_list UNTIL LPAREN expression RPAREN
+
+    RPAREN          shift and go to state 43
+
+
+state 38
+
+    (16) conditional -> CHECK LPAREN expression . RPAREN statement_list OTHERWISE statement_list OTHERWISE_CHECK LPAREN expression RPAREN
+
+    RPAREN          shift and go to state 44
+
+
+state 39
+
+    (17) io_statement -> DISPLAY LPAREN expression . RPAREN
+
+    RPAREN          shift and go to state 45
+
+
+state 40
+
+    (12) variable_declaration -> TYPE IDENT EQ expression .
+
+    GHOST           reduce using rule 12 (variable_declaration -> TYPE IDENT EQ expression .)
+    NEWLINE         reduce using rule 12 (variable_declaration -> TYPE IDENT EQ expression .)
+    TYPE            reduce using rule 12 (variable_declaration -> TYPE IDENT EQ expression .)
+    IDENT           reduce using rule 12 (variable_declaration -> TYPE IDENT EQ expression .)
+    FUNCTION_NAME   reduce using rule 12 (variable_declaration -> TYPE IDENT EQ expression .)
+    REPEAT          reduce using rule 12 (variable_declaration -> TYPE IDENT EQ expression .)
+    CHECK           reduce using rule 12 (variable_declaration -> TYPE IDENT EQ expression .)
+    DISPLAY         reduce using rule 12 (variable_declaration -> TYPE IDENT EQ expression .)
+    UNTIL           reduce using rule 12 (variable_declaration -> TYPE IDENT EQ expression .)
+    OTHERWISE       reduce using rule 12 (variable_declaration -> TYPE IDENT EQ expression .)
+    OTHERWISE_CHECK reduce using rule 12 (variable_declaration -> TYPE IDENT EQ expression .)
+
+
+state 41
+
+    (14) function_call -> FUNCTION_NAME LPAREN arguments RPAREN .
+
+    GHOST           reduce using rule 14 (function_call -> FUNCTION_NAME LPAREN arguments RPAREN .)
+    NEWLINE         reduce using rule 14 (function_call -> FUNCTION_NAME LPAREN arguments RPAREN .)
+    TYPE            reduce using rule 14 (function_call -> FUNCTION_NAME LPAREN arguments RPAREN .)
+    IDENT           reduce using rule 14 (function_call -> FUNCTION_NAME LPAREN arguments RPAREN .)
+    FUNCTION_NAME   reduce using rule 14 (function_call -> FUNCTION_NAME LPAREN arguments RPAREN .)
+    REPEAT          reduce using rule 14 (function_call -> FUNCTION_NAME LPAREN arguments RPAREN .)
+    CHECK           reduce using rule 14 (function_call -> FUNCTION_NAME LPAREN arguments RPAREN .)
+    DISPLAY         reduce using rule 14 (function_call -> FUNCTION_NAME LPAREN arguments RPAREN .)
+    UNTIL           reduce using rule 14 (function_call -> FUNCTION_NAME LPAREN arguments RPAREN .)
+    OTHERWISE       reduce using rule 14 (function_call -> FUNCTION_NAME LPAREN arguments RPAREN .)
+    OTHERWISE_CHECK reduce using rule 14 (function_call -> FUNCTION_NAME LPAREN arguments RPAREN .)
+    COMMA           reduce using rule 14 (function_call -> FUNCTION_NAME LPAREN arguments RPAREN .)
+    RPAREN          reduce using rule 14 (function_call -> FUNCTION_NAME LPAREN arguments RPAREN .)
+
+
+state 42
+
+    (23) arguments -> expression COMMA . arguments
+    (23) arguments -> . expression COMMA arguments
+    (24) arguments -> . expression
+    (25) arguments -> . empty
+    (18) expression -> . IDENT
+    (19) expression -> . INT_LIT
+    (20) expression -> . FLT_LIT
+    (21) expression -> . STR_LIT
+    (22) expression -> . function_call
+    (26) empty -> .
+    (14) function_call -> . FUNCTION_NAME LPAREN arguments RPAREN
+
+    IDENT           shift and go to state 28
+    INT_LIT         shift and go to state 30
+    FLT_LIT         shift and go to state 31
+    STR_LIT         shift and go to state 32
+    RPAREN          reduce using rule 26 (empty -> .)
+    FUNCTION_NAME   shift and go to state 14
+
+    expression                     shift and go to state 35
+    arguments                      shift and go to state 46
+    empty                          shift and go to state 36
+    function_call                  shift and go to state 33
+
+state 43
+
+    (15) loop -> REPEAT LPAREN expression RPAREN . statement_list UNTIL LPAREN expression RPAREN
+    (2) statement_list -> . statement
+    (3) statement_list -> . statement_list statement
+    (4) statement_list -> . statement_list NEWLINE
+    (5) statement_list -> . empty
+    (6) statement -> . variable_declaration
+    (7) statement -> . assignment
+    (8) statement -> . function_call
+    (9) statement -> . loop
+    (10) statement -> . conditional
+    (11) statement -> . io_statement
+    (26) empty -> .
+    (12) variable_declaration -> . TYPE IDENT EQ expression
+    (13) assignment -> . IDENT EQ expression
+    (14) function_call -> . FUNCTION_NAME LPAREN arguments RPAREN
+    (15) loop -> . REPEAT LPAREN expression RPAREN statement_list UNTIL LPAREN expression RPAREN
+    (16) conditional -> . CHECK LPAREN expression RPAREN statement_list OTHERWISE statement_list OTHERWISE_CHECK LPAREN expression RPAREN
+    (17) io_statement -> . DISPLAY LPAREN expression RPAREN
+
+  ! shift/reduce conflict for TYPE resolved as shift
+  ! shift/reduce conflict for IDENT resolved as shift
+  ! shift/reduce conflict for FUNCTION_NAME resolved as shift
+  ! shift/reduce conflict for REPEAT resolved as shift
+  ! shift/reduce conflict for CHECK resolved as shift
+  ! shift/reduce conflict for DISPLAY resolved as shift
+    UNTIL           reduce using rule 26 (empty -> .)
+    NEWLINE         reduce using rule 26 (empty -> .)
+    TYPE            shift and go to state 12
+    IDENT           shift and go to state 13
+    FUNCTION_NAME   shift and go to state 14
+    REPEAT          shift and go to state 15
+    CHECK           shift and go to state 16
+    DISPLAY         shift and go to state 17
+
+  ! TYPE            [ reduce using rule 26 (empty -> .) ]
+  ! IDENT           [ reduce using rule 26 (empty -> .) ]
+  ! FUNCTION_NAME   [ reduce using rule 26 (empty -> .) ]
+  ! REPEAT          [ reduce using rule 26 (empty -> .) ]
+  ! CHECK           [ reduce using rule 26 (empty -> .) ]
+  ! DISPLAY         [ reduce using rule 26 (empty -> .) ]
+
+    statement_list                 shift and go to state 47
+    statement                      shift and go to state 4
+    empty                          shift and go to state 5
+    variable_declaration           shift and go to state 6
+    assignment                     shift and go to state 7
+    function_call                  shift and go to state 8
+    loop                           shift and go to state 9
+    conditional                    shift and go to state 10
+    io_statement                   shift and go to state 11
+
+state 44
+
+    (16) conditional -> CHECK LPAREN expression RPAREN . statement_list OTHERWISE statement_list OTHERWISE_CHECK LPAREN expression RPAREN
+    (2) statement_list -> . statement
+    (3) statement_list -> . statement_list statement
+    (4) statement_list -> . statement_list NEWLINE
+    (5) statement_list -> . empty
+    (6) statement -> . variable_declaration
+    (7) statement -> . assignment
+    (8) statement -> . function_call
+    (9) statement -> . loop
+    (10) statement -> . conditional
+    (11) statement -> . io_statement
+    (26) empty -> .
+    (12) variable_declaration -> . TYPE IDENT EQ expression
+    (13) assignment -> . IDENT EQ expression
+    (14) function_call -> . FUNCTION_NAME LPAREN arguments RPAREN
+    (15) loop -> . REPEAT LPAREN expression RPAREN statement_list UNTIL LPAREN expression RPAREN
+    (16) conditional -> . CHECK LPAREN expression RPAREN statement_list OTHERWISE statement_list OTHERWISE_CHECK LPAREN expression RPAREN
+    (17) io_statement -> . DISPLAY LPAREN expression RPAREN
+
+  ! shift/reduce conflict for TYPE resolved as shift
+  ! shift/reduce conflict for IDENT resolved as shift
+  ! shift/reduce conflict for FUNCTION_NAME resolved as shift
+  ! shift/reduce conflict for REPEAT resolved as shift
+  ! shift/reduce conflict for CHECK resolved as shift
+  ! shift/reduce conflict for DISPLAY resolved as shift
+    OTHERWISE       reduce using rule 26 (empty -> .)
+    NEWLINE         reduce using rule 26 (empty -> .)
+    TYPE            shift and go to state 12
+    IDENT           shift and go to state 13
+    FUNCTION_NAME   shift and go to state 14
+    REPEAT          shift and go to state 15
+    CHECK           shift and go to state 16
+    DISPLAY         shift and go to state 17
+
+  ! TYPE            [ reduce using rule 26 (empty -> .) ]
+  ! IDENT           [ reduce using rule 26 (empty -> .) ]
+  ! FUNCTION_NAME   [ reduce using rule 26 (empty -> .) ]
+  ! REPEAT          [ reduce using rule 26 (empty -> .) ]
+  ! CHECK           [ reduce using rule 26 (empty -> .) ]
+  ! DISPLAY         [ reduce using rule 26 (empty -> .) ]
+
+    statement_list                 shift and go to state 48
+    statement                      shift and go to state 4
+    empty                          shift and go to state 5
+    variable_declaration           shift and go to state 6
+    assignment                     shift and go to state 7
+    function_call                  shift and go to state 8
+    loop                           shift and go to state 9
+    conditional                    shift and go to state 10
+    io_statement                   shift and go to state 11
+
+state 45
+
+    (17) io_statement -> DISPLAY LPAREN expression RPAREN .
+
+    GHOST           reduce using rule 17 (io_statement -> DISPLAY LPAREN expression RPAREN .)
+    NEWLINE         reduce using rule 17 (io_statement -> DISPLAY LPAREN expression RPAREN .)
+    TYPE            reduce using rule 17 (io_statement -> DISPLAY LPAREN expression RPAREN .)
+    IDENT           reduce using rule 17 (io_statement -> DISPLAY LPAREN expression RPAREN .)
+    FUNCTION_NAME   reduce using rule 17 (io_statement -> DISPLAY LPAREN expression RPAREN .)
+    REPEAT          reduce using rule 17 (io_statement -> DISPLAY LPAREN expression RPAREN .)
+    CHECK           reduce using rule 17 (io_statement -> DISPLAY LPAREN expression RPAREN .)
+    DISPLAY         reduce using rule 17 (io_statement -> DISPLAY LPAREN expression RPAREN .)
+    UNTIL           reduce using rule 17 (io_statement -> DISPLAY LPAREN expression RPAREN .)
+    OTHERWISE       reduce using rule 17 (io_statement -> DISPLAY LPAREN expression RPAREN .)
+    OTHERWISE_CHECK reduce using rule 17 (io_statement -> DISPLAY LPAREN expression RPAREN .)
+
+
+state 46
+
+    (23) arguments -> expression COMMA arguments .
+
+    RPAREN          reduce using rule 23 (arguments -> expression COMMA arguments .)
+
+
+state 47
+
+    (15) loop -> REPEAT LPAREN expression RPAREN statement_list . UNTIL LPAREN expression RPAREN
+    (3) statement_list -> statement_list . statement
+    (4) statement_list -> statement_list . NEWLINE
+    (6) statement -> . variable_declaration
+    (7) statement -> . assignment
+    (8) statement -> . function_call
+    (9) statement -> . loop
+    (10) statement -> . conditional
+    (11) statement -> . io_statement
+    (12) variable_declaration -> . TYPE IDENT EQ expression
+    (13) assignment -> . IDENT EQ expression
+    (14) function_call -> . FUNCTION_NAME LPAREN arguments RPAREN
+    (15) loop -> . REPEAT LPAREN expression RPAREN statement_list UNTIL LPAREN expression RPAREN
+    (16) conditional -> . CHECK LPAREN expression RPAREN statement_list OTHERWISE statement_list OTHERWISE_CHECK LPAREN expression RPAREN
+    (17) io_statement -> . DISPLAY LPAREN expression RPAREN
+
+    UNTIL           shift and go to state 49
+    NEWLINE         shift and go to state 20
+    TYPE            shift and go to state 12
+    IDENT           shift and go to state 13
+    FUNCTION_NAME   shift and go to state 14
+    REPEAT          shift and go to state 15
+    CHECK           shift and go to state 16
+    DISPLAY         shift and go to state 17
+
+    statement                      shift and go to state 19
+    variable_declaration           shift and go to state 6
+    assignment                     shift and go to state 7
+    function_call                  shift and go to state 8
+    loop                           shift and go to state 9
+    conditional                    shift and go to state 10
+    io_statement                   shift and go to state 11
+
+state 48
+
+    (16) conditional -> CHECK LPAREN expression RPAREN statement_list . OTHERWISE statement_list OTHERWISE_CHECK LPAREN expression RPAREN
+    (3) statement_list -> statement_list . statement
+    (4) statement_list -> statement_list . NEWLINE
+    (6) statement -> . variable_declaration
+    (7) statement -> . assignment
+    (8) statement -> . function_call
+    (9) statement -> . loop
+    (10) statement -> . conditional
+    (11) statement -> . io_statement
+    (12) variable_declaration -> . TYPE IDENT EQ expression
+    (13) assignment -> . IDENT EQ expression
+    (14) function_call -> . FUNCTION_NAME LPAREN arguments RPAREN
+    (15) loop -> . REPEAT LPAREN expression RPAREN statement_list UNTIL LPAREN expression RPAREN
+    (16) conditional -> . CHECK LPAREN expression RPAREN statement_list OTHERWISE statement_list OTHERWISE_CHECK LPAREN expression RPAREN
+    (17) io_statement -> . DISPLAY LPAREN expression RPAREN
+
+    OTHERWISE       shift and go to state 50
+    NEWLINE         shift and go to state 20
+    TYPE            shift and go to state 12
+    IDENT           shift and go to state 13
+    FUNCTION_NAME   shift and go to state 14
+    REPEAT          shift and go to state 15
+    CHECK           shift and go to state 16
+    DISPLAY         shift and go to state 17
+
+    statement                      shift and go to state 19
+    variable_declaration           shift and go to state 6
+    assignment                     shift and go to state 7
+    function_call                  shift and go to state 8
+    loop                           shift and go to state 9
+    conditional                    shift and go to state 10
+    io_statement                   shift and go to state 11
+
+state 49
+
+    (15) loop -> REPEAT LPAREN expression RPAREN statement_list UNTIL . LPAREN expression RPAREN
+
+    LPAREN          shift and go to state 51
+
+
+state 50
+
+    (16) conditional -> CHECK LPAREN expression RPAREN statement_list OTHERWISE . statement_list OTHERWISE_CHECK LPAREN expression RPAREN
+    (2) statement_list -> . statement
+    (3) statement_list -> . statement_list statement
+    (4) statement_list -> . statement_list NEWLINE
+    (5) statement_list -> . empty
+    (6) statement -> . variable_declaration
+    (7) statement -> . assignment
+    (8) statement -> . function_call
+    (9) statement -> . loop
+    (10) statement -> . conditional
+    (11) statement -> . io_statement
+    (26) empty -> .
+    (12) variable_declaration -> . TYPE IDENT EQ expression
+    (13) assignment -> . IDENT EQ expression
+    (14) function_call -> . FUNCTION_NAME LPAREN arguments RPAREN
+    (15) loop -> . REPEAT LPAREN expression RPAREN statement_list UNTIL LPAREN expression RPAREN
+    (16) conditional -> . CHECK LPAREN expression RPAREN statement_list OTHERWISE statement_list OTHERWISE_CHECK LPAREN expression RPAREN
+    (17) io_statement -> . DISPLAY LPAREN expression RPAREN
+
+  ! shift/reduce conflict for TYPE resolved as shift
+  ! shift/reduce conflict for IDENT resolved as shift
+  ! shift/reduce conflict for FUNCTION_NAME resolved as shift
+  ! shift/reduce conflict for REPEAT resolved as shift
+  ! shift/reduce conflict for CHECK resolved as shift
+  ! shift/reduce conflict for DISPLAY resolved as shift
+    OTHERWISE_CHECK reduce using rule 26 (empty -> .)
+    NEWLINE         reduce using rule 26 (empty -> .)
+    TYPE            shift and go to state 12
+    IDENT           shift and go to state 13
+    FUNCTION_NAME   shift and go to state 14
+    REPEAT          shift and go to state 15
+    CHECK           shift and go to state 16
+    DISPLAY         shift and go to state 17
+
+  ! TYPE            [ reduce using rule 26 (empty -> .) ]
+  ! IDENT           [ reduce using rule 26 (empty -> .) ]
+  ! FUNCTION_NAME   [ reduce using rule 26 (empty -> .) ]
+  ! REPEAT          [ reduce using rule 26 (empty -> .) ]
+  ! CHECK           [ reduce using rule 26 (empty -> .) ]
+  ! DISPLAY         [ reduce using rule 26 (empty -> .) ]
+
+    statement_list                 shift and go to state 52
+    statement                      shift and go to state 4
+    empty                          shift and go to state 5
+    variable_declaration           shift and go to state 6
+    assignment                     shift and go to state 7
+    function_call                  shift and go to state 8
+    loop                           shift and go to state 9
+    conditional                    shift and go to state 10
+    io_statement                   shift and go to state 11
+
+state 51
+
+    (15) loop -> REPEAT LPAREN expression RPAREN statement_list UNTIL LPAREN . expression RPAREN
+    (18) expression -> . IDENT
+    (19) expression -> . INT_LIT
+    (20) expression -> . FLT_LIT
+    (21) expression -> . STR_LIT
+    (22) expression -> . function_call
+    (14) function_call -> . FUNCTION_NAME LPAREN arguments RPAREN
+
+    IDENT           shift and go to state 28
+    INT_LIT         shift and go to state 30
+    FLT_LIT         shift and go to state 31
+    STR_LIT         shift and go to state 32
+    FUNCTION_NAME   shift and go to state 14
+
+    expression                     shift and go to state 53
+    function_call                  shift and go to state 33
+
+state 52
+
+    (16) conditional -> CHECK LPAREN expression RPAREN statement_list OTHERWISE statement_list . OTHERWISE_CHECK LPAREN expression RPAREN
+    (3) statement_list -> statement_list . statement
+    (4) statement_list -> statement_list . NEWLINE
+    (6) statement -> . variable_declaration
+    (7) statement -> . assignment
+    (8) statement -> . function_call
+    (9) statement -> . loop
+    (10) statement -> . conditional
+    (11) statement -> . io_statement
+    (12) variable_declaration -> . TYPE IDENT EQ expression
+    (13) assignment -> . IDENT EQ expression
+    (14) function_call -> . FUNCTION_NAME LPAREN arguments RPAREN
+    (15) loop -> . REPEAT LPAREN expression RPAREN statement_list UNTIL LPAREN expression RPAREN
+    (16) conditional -> . CHECK LPAREN expression RPAREN statement_list OTHERWISE statement_list OTHERWISE_CHECK LPAREN expression RPAREN
+    (17) io_statement -> . DISPLAY LPAREN expression RPAREN
+
+    OTHERWISE_CHECK shift and go to state 54
+    NEWLINE         shift and go to state 20
+    TYPE            shift and go to state 12
+    IDENT           shift and go to state 13
+    FUNCTION_NAME   shift and go to state 14
+    REPEAT          shift and go to state 15
+    CHECK           shift and go to state 16
+    DISPLAY         shift and go to state 17
+
+    statement                      shift and go to state 19
+    variable_declaration           shift and go to state 6
+    assignment                     shift and go to state 7
+    function_call                  shift and go to state 8
+    loop                           shift and go to state 9
+    conditional                    shift and go to state 10
+    io_statement                   shift and go to state 11
+
+state 53
+
+    (15) loop -> REPEAT LPAREN expression RPAREN statement_list UNTIL LPAREN expression . RPAREN
+
+    RPAREN          shift and go to state 55
+
+
+state 54
+
+    (16) conditional -> CHECK LPAREN expression RPAREN statement_list OTHERWISE statement_list OTHERWISE_CHECK . LPAREN expression RPAREN
+
+    LPAREN          shift and go to state 56
+
+
+state 55
+
+    (15) loop -> REPEAT LPAREN expression RPAREN statement_list UNTIL LPAREN expression RPAREN .
+
+    GHOST           reduce using rule 15 (loop -> REPEAT LPAREN expression RPAREN statement_list UNTIL LPAREN expression RPAREN .)
+    NEWLINE         reduce using rule 15 (loop -> REPEAT LPAREN expression RPAREN statement_list UNTIL LPAREN expression RPAREN .)
+    TYPE            reduce using rule 15 (loop -> REPEAT LPAREN expression RPAREN statement_list UNTIL LPAREN expression RPAREN .)
+    IDENT           reduce using rule 15 (loop -> REPEAT LPAREN expression RPAREN statement_list UNTIL LPAREN expression RPAREN .)
+    FUNCTION_NAME   reduce using rule 15 (loop -> REPEAT LPAREN expression RPAREN statement_list UNTIL LPAREN expression RPAREN .)
+    REPEAT          reduce using rule 15 (loop -> REPEAT LPAREN expression RPAREN statement_list UNTIL LPAREN expression RPAREN .)
+    CHECK           reduce using rule 15 (loop -> REPEAT LPAREN expression RPAREN statement_list UNTIL LPAREN expression RPAREN .)
+    DISPLAY         reduce using rule 15 (loop -> REPEAT LPAREN expression RPAREN statement_list UNTIL LPAREN expression RPAREN .)
+    UNTIL           reduce using rule 15 (loop -> REPEAT LPAREN expression RPAREN statement_list UNTIL LPAREN expression RPAREN .)
+    OTHERWISE       reduce using rule 15 (loop -> REPEAT LPAREN expression RPAREN statement_list UNTIL LPAREN expression RPAREN .)
+    OTHERWISE_CHECK reduce using rule 15 (loop -> REPEAT LPAREN expression RPAREN statement_list UNTIL LPAREN expression RPAREN .)
+
+
+state 56
+
+    (16) conditional -> CHECK LPAREN expression RPAREN statement_list OTHERWISE statement_list OTHERWISE_CHECK LPAREN . expression RPAREN
+    (18) expression -> . IDENT
+    (19) expression -> . INT_LIT
+    (20) expression -> . FLT_LIT
+    (21) expression -> . STR_LIT
+    (22) expression -> . function_call
+    (14) function_call -> . FUNCTION_NAME LPAREN arguments RPAREN
+
+    IDENT           shift and go to state 28
+    INT_LIT         shift and go to state 30
+    FLT_LIT         shift and go to state 31
+    STR_LIT         shift and go to state 32
+    FUNCTION_NAME   shift and go to state 14
+
+    expression                     shift and go to state 57
+    function_call                  shift and go to state 33
+
+state 57
+
+    (16) conditional -> CHECK LPAREN expression RPAREN statement_list OTHERWISE statement_list OTHERWISE_CHECK LPAREN expression . RPAREN
+
+    RPAREN          shift and go to state 58
+
+
+state 58
+
+    (16) conditional -> CHECK LPAREN expression RPAREN statement_list OTHERWISE statement_list OTHERWISE_CHECK LPAREN expression RPAREN .
+
+    GHOST           reduce using rule 16 (conditional -> CHECK LPAREN expression RPAREN statement_list OTHERWISE statement_list OTHERWISE_CHECK LPAREN expression RPAREN .)
+    NEWLINE         reduce using rule 16 (conditional -> CHECK LPAREN expression RPAREN statement_list OTHERWISE statement_list OTHERWISE_CHECK LPAREN expression RPAREN .)
+    TYPE            reduce using rule 16 (conditional -> CHECK LPAREN expression RPAREN statement_list OTHERWISE statement_list OTHERWISE_CHECK LPAREN expression RPAREN .)
+    IDENT           reduce using rule 16 (conditional -> CHECK LPAREN expression RPAREN statement_list OTHERWISE statement_list OTHERWISE_CHECK LPAREN expression RPAREN .)
+    FUNCTION_NAME   reduce using rule 16 (conditional -> CHECK LPAREN expression RPAREN statement_list OTHERWISE statement_list OTHERWISE_CHECK LPAREN expression RPAREN .)
+    REPEAT          reduce using rule 16 (conditional -> CHECK LPAREN expression RPAREN statement_list OTHERWISE statement_list OTHERWISE_CHECK LPAREN expression RPAREN .)
+    CHECK           reduce using rule 16 (conditional -> CHECK LPAREN expression RPAREN statement_list OTHERWISE statement_list OTHERWISE_CHECK LPAREN expression RPAREN .)
+    DISPLAY         reduce using rule 16 (conditional -> CHECK LPAREN expression RPAREN statement_list OTHERWISE statement_list OTHERWISE_CHECK LPAREN expression RPAREN .)
+    UNTIL           reduce using rule 16 (conditional -> CHECK LPAREN expression RPAREN statement_list OTHERWISE statement_list OTHERWISE_CHECK LPAREN expression RPAREN .)
+    OTHERWISE       reduce using rule 16 (conditional -> CHECK LPAREN expression RPAREN statement_list OTHERWISE statement_list OTHERWISE_CHECK LPAREN expression RPAREN .)
+    OTHERWISE_CHECK reduce using rule 16 (conditional -> CHECK LPAREN expression RPAREN statement_list OTHERWISE statement_list OTHERWISE_CHECK LPAREN expression RPAREN .)
+
+WARNING: 
+WARNING: Conflicts:
+WARNING: 
+WARNING: shift/reduce conflict for TYPE in state 2 resolved as shift
+WARNING: shift/reduce conflict for IDENT in state 2 resolved as shift
+WARNING: shift/reduce conflict for FUNCTION_NAME in state 2 resolved as shift
+WARNING: shift/reduce conflict for REPEAT in state 2 resolved as shift
+WARNING: shift/reduce conflict for CHECK in state 2 resolved as shift
+WARNING: shift/reduce conflict for DISPLAY in state 2 resolved as shift
+WARNING: shift/reduce conflict for TYPE in state 43 resolved as shift
+WARNING: shift/reduce conflict for IDENT in state 43 resolved as shift
+WARNING: shift/reduce conflict for FUNCTION_NAME in state 43 resolved as shift
+WARNING: shift/reduce conflict for REPEAT in state 43 resolved as shift
+WARNING: shift/reduce conflict for CHECK in state 43 resolved as shift
+WARNING: shift/reduce conflict for DISPLAY in state 43 resolved as shift
+WARNING: shift/reduce conflict for TYPE in state 44 resolved as shift
+WARNING: shift/reduce conflict for IDENT in state 44 resolved as shift
+WARNING: shift/reduce conflict for FUNCTION_NAME in state 44 resolved as shift
+WARNING: shift/reduce conflict for REPEAT in state 44 resolved as shift
+WARNING: shift/reduce conflict for CHECK in state 44 resolved as shift
+WARNING: shift/reduce conflict for DISPLAY in state 44 resolved as shift
+WARNING: shift/reduce conflict for TYPE in state 50 resolved as shift
+WARNING: shift/reduce conflict for IDENT in state 50 resolved as shift
+WARNING: shift/reduce conflict for FUNCTION_NAME in state 50 resolved as shift
+WARNING: shift/reduce conflict for REPEAT in state 50 resolved as shift
+WARNING: shift/reduce conflict for CHECK in state 50 resolved as shift
+WARNING: shift/reduce conflict for DISPLAY in state 50 resolved as shift

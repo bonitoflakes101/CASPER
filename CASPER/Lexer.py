@@ -2,6 +2,8 @@ from Token import Token, TokenType, lookup_ident
 from Delimiters import Delimiters
 from KeywordDelimiters import KEYWORD_DELIMITERS
 
+tokens = [token.name for token in TokenType] 
+
 class Lexer:
     def __init__(self, source: str) -> None:
         self.source = source  # current code
@@ -735,3 +737,16 @@ class Lexer:
                 self.current_char = original_current_char
                 return False
         return False
+
+    def token(self):
+        """Returns the next valid token for PLY, skipping ILLEGAL tokens"""
+        while True:
+            tok = self.next_token()  
+            if tok.type == TokenType.EOF:
+                return None  
+            if tok.type != TokenType.ILLEGAL:
+                tok.type = tok.type.name  # PLY requires token type as a string
+                tok.value = tok.literal  # Ensure PLY gets `.value`
+                tok.lineno = tok.line_no  # Rename `.line_no` to `.lineno` for PLY
+                return tok
+
