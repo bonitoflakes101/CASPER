@@ -44,18 +44,25 @@ def p_statements(p):
                    | switch_statement statements_tail
                    | output_statement statements_tail
                    | assignment_statement statements_tail
-                   | expression
-                   | declarations
+                   | expression statements_tail
+                   | declarations statements_tail
                    | empty"""
     if len(p) == 3:
-        p[0] = ASTNode("statements", [p[1], p[2]])
-    elif len(p) == 2:
-        p[0] = ASTNode("statements", [p[1]])
+        p[0] = ASTNode("statements", [p[1]] + (p[2].children if isinstance(p[2], ASTNode) else []))
+    else:
+        p[0] = ASTNode("statements", [p[1]]) if p[1] else ASTNode("statements", [])
 
 def p_statements_tail(p):
-    """statements_tail : statements
+    """statements_tail : NEWLINE statements_tail
+                        | statements
                         | empty"""
-    p[0] = ASTNode("statements_tail", [p[1]]) if p[1] else ASTNode("statements_tail", [])
+    if len(p) == 3 and p[1] == "\n":  # Ignore NEWLINE tokens
+        p[0] = p[2]
+    elif len(p) == 2:
+        p[0] = p[1]  
+    else:
+        p[0] = ASTNode("statements_tail", [])  
+
 
 def p_global_declarations(p):
     """global_declarations : declarations"""
