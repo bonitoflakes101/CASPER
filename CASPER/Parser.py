@@ -255,7 +255,8 @@ def p_var_call(p):
 
 def p_list_dec(p):
     """list_dec : list_dtype IDENT listdec_tail"""
-    p[0] = ASTNode("list_dec", [p[1], p[4], p[5]])
+    p[0] = ASTNode("list_dec", [p[1], p[2], p[3]])
+
 
 def p_listdec_tail(p):
     """listdec_tail : COMMA IDENT listdec_tail
@@ -267,7 +268,8 @@ def p_listdec_tail(p):
 
 def p_list_init(p):
     """list_init : list_dtype IDENT LBRACKET index RBRACKET EQ LBRACKET list_element RBRACKET listinit_tail"""
-    p[0] = ASTNode("list_init", [p[1], p[2], p[4], p[8], p[9]])
+    p[0] = ASTNode("list_init", [p[1], p[2], p[4], p[8], p[10]])
+
 
 def p_listinit_tail(p):
     """listinit_tail : COMMA IDENT LBRACKET index RBRACKET EQ LBRACKET list_element RBRACKET listinit_tail
@@ -424,19 +426,23 @@ def p_function_dtype(p):
     p[0] = ASTNode("function_dtype", value=p[1])
 
 def p_parameters(p):
-    """parameters : var_dec
-                  | var_dec next_parameters
+    """parameters : data_type IDENT parameters_tail
                   | empty"""
-    if len(p) == 2:
-        p[0] = ASTNode("parameters", [p[1]])
-    elif len(p) == 3:
-        p[0] = ASTNode("parameters", [p[1]] + (p[2].children if isinstance(p[2], ASTNode) else []))
+    if len(p) == 4:
+        p[0] = ASTNode("parameters", [p[1], p[2]] + (p[3].children if isinstance(p[3], ASTNode) else []))
     else:
         p[0] = ASTNode("parameters", [])
 
-def p_next_parameters(p):
-    """next_parameters : COMMA parameters"""
-    p[0] = ASTNode("next_parameters", [p[2]])
+
+def p_parameters_tail(p):
+    """parameters_tail : COMMA data_type IDENT parameters_tail
+                        | empty"""
+    if len(p) == 5:
+        p[0] = ASTNode("parameters_tail", [p[2], p[3]] + (p[4].children if isinstance(p[4], ASTNode) else []))
+    else:
+        p[0] = ASTNode("parameters_tail", [])
+
+
 
 def p_revive(p):
     """revive : REVIVE value

@@ -190,10 +190,10 @@ Rule 156   function_dtype -> FUNCTION_LIST_FLT
 Rule 157   function_dtype -> FUNCTION_LIST_CHR
 Rule 158   function_dtype -> FUNCTION_LIST_STR
 Rule 159   function_dtype -> FUNCTION_LIST_BLN
-Rule 160   parameters -> var_dec
-Rule 161   parameters -> var_dec next_parameters
-Rule 162   parameters -> empty
-Rule 163   next_parameters -> COMMA parameters
+Rule 160   parameters -> data_type IDENT parameters_tail
+Rule 161   parameters -> empty
+Rule 162   parameters_tail -> COMMA data_type IDENT parameters_tail
+Rule 163   parameters_tail -> empty
 Rule 164   revive -> REVIVE value
 Rule 165   revive -> empty
 Rule 166   output_statement -> DISPLAY value
@@ -225,7 +225,7 @@ CHECK                : 112
 CHR                  : 30
 CHR_LIT              : 44
 COLON                : 117
-COMMA                : 22 25 98 101 109 163
+COMMA                : 22 25 98 101 109 162
 COMMENT              : 
 CONVERT_TO_BLN       : 170
 CONVERT_TO_FLT       : 169
@@ -265,7 +265,7 @@ GHOST                : 1
 GLOBAL               : 15
 GT                   : 74
 GT_EQ                : 78
-IDENT                : 21 22 24 25 95 96 97 98 100 101 111 116 128
+IDENT                : 21 22 24 25 95 96 97 98 100 101 111 116 128 160 162
 ILLEGAL              : 
 IN                   : 
 INPUT                : 167
@@ -337,9 +337,9 @@ condition            : 112 113
 conditional_statement : 2
 conditional_tail     : 112
 control_variable     : 125
-data_type            : 21 24
+data_type            : 21 24 160 162
 declarations         : 9 14
-empty                : 10 13 20 23 26 62 65 80 92 99 102 115 119 162 165 175
+empty                : 10 13 20 23 26 62 65 80 92 99 102 115 119 161 163 165 175
 expression           : 8 33
 for_loop             : 122
 function_call        : 35 142
@@ -362,10 +362,10 @@ literal              : 32 147
 logical_expression   : 48 121
 loop_statement       : 3
 negative_val         : 38
-next_parameters      : 161
 not_op               : 37
 output_statement     : 6 144
-parameters           : 141 163
+parameters           : 141
+parameters_tail      : 160 162
 program              : 0
 re_factor            : 67 68
 re_tail              : 81
@@ -391,7 +391,7 @@ until_loop           : 123
 update               : 125
 value                : 24 25 108 109 117 132 135 164 166 168 169 170 171 177
 var_call             : 15 34 55 73 88 129 135 146
-var_dec              : 16 160 161
+var_dec              : 16
 var_initialization   : 17
 vardec_tail          : 21 22
 varinit_tail         : 24 25
@@ -11902,7 +11902,6 @@ state 174
     REVIVE          reduce using rule 21 (var_dec -> data_type IDENT vardec_tail .)
     SHIFT           reduce using rule 21 (var_dec -> data_type IDENT vardec_tail .)
     OTHERWISE       reduce using rule 21 (var_dec -> data_type IDENT vardec_tail .)
-    COMMA           reduce using rule 21 (var_dec -> data_type IDENT vardec_tail .)
 
 
 state 175
@@ -12053,7 +12052,6 @@ state 177
     REVIVE          reduce using rule 23 (vardec_tail -> empty .)
     SHIFT           reduce using rule 23 (vardec_tail -> empty .)
     OTHERWISE       reduce using rule 23 (vardec_tail -> empty .)
-    COMMA           reduce using rule 23 (vardec_tail -> empty .)
 
 
 state 178
@@ -12477,34 +12475,31 @@ state 191
 state 192
 
     (141) function_statement -> ret_type FUNCTION_NAME LPAREN . parameters RPAREN LBRACE statements revive RBRACE
-    (160) parameters -> . var_dec
-    (161) parameters -> . var_dec next_parameters
-    (162) parameters -> . empty
-    (21) var_dec -> . data_type IDENT vardec_tail
-    (183) empty -> .
+    (160) parameters -> . data_type IDENT parameters_tail
+    (161) parameters -> . empty
     (27) data_type -> . INT
     (28) data_type -> . FLT
     (29) data_type -> . BLN
     (30) data_type -> . CHR
     (31) data_type -> . STR
+    (183) empty -> .
 
-    RPAREN          reduce using rule 183 (empty -> .)
     INT             shift and go to state 13
     FLT             shift and go to state 14
     BLN             shift and go to state 15
     CHR             shift and go to state 16
     STR             shift and go to state 17
+    RPAREN          reduce using rule 183 (empty -> .)
 
     parameters                     shift and go to state 244
-    var_dec                        shift and go to state 245
+    data_type                      shift and go to state 245
     empty                          shift and go to state 246
-    data_type                      shift and go to state 247
 
 state 193
 
     (143) function_call -> FUNCTION_NAME LPAREN arguments . RPAREN
 
-    RPAREN          shift and go to state 248
+    RPAREN          shift and go to state 247
 
 
 state 194
@@ -12553,7 +12548,7 @@ state 200
 
     (116) switch_statement -> SWAP LPAREN IDENT . RPAREN LBRACE switch_condition OTHERWISE statements RBRACE
 
-    RPAREN          shift and go to state 249
+    RPAREN          shift and go to state 248
 
 
 state 201
@@ -12567,7 +12562,7 @@ state 202
 
     (96) var_call -> IDENT LBRACKET index . RBRACKET
 
-    RBRACKET        shift and go to state 250
+    RBRACKET        shift and go to state 249
 
 
 state 203
@@ -12650,7 +12645,7 @@ state 204
     INPUT           shift and go to state 69
     LPAREN          shift and go to state 34
 
-    value                          shift and go to state 251
+    value                          shift and go to state 250
     literal                        shift and go to state 104
     expression                     shift and go to state 105
     var_call                       shift and go to state 106
@@ -12745,7 +12740,7 @@ state 205
     INPUT           shift and go to state 69
     LPAREN          shift and go to state 34
 
-    value                          shift and go to state 252
+    value                          shift and go to state 251
     literal                        shift and go to state 104
     expression                     shift and go to state 105
     var_call                       shift and go to state 106
@@ -12840,7 +12835,7 @@ state 206
     INPUT           shift and go to state 69
     LPAREN          shift and go to state 34
 
-    value                          shift and go to state 253
+    value                          shift and go to state 252
     literal                        shift and go to state 104
     expression                     shift and go to state 105
     var_call                       shift and go to state 106
@@ -12935,7 +12930,7 @@ state 207
     INPUT           shift and go to state 69
     LPAREN          shift and go to state 34
 
-    value                          shift and go to state 254
+    value                          shift and go to state 253
     literal                        shift and go to state 104
     expression                     shift and go to state 105
     var_call                       shift and go to state 106
@@ -13168,7 +13163,7 @@ state 212
 
     (125) for_loop -> FOR LPAREN control_variable . SEMICOLON relational_expression SEMICOLON update RPAREN LBRACE statements RBRACE
 
-    SEMICOLON       shift and go to state 255
+    SEMICOLON       shift and go to state 254
 
 
 state 213
@@ -13177,7 +13172,7 @@ state 213
     (95) var_call -> IDENT .
     (96) var_call -> IDENT . LBRACKET index RBRACKET
 
-    EQ              shift and go to state 256
+    EQ              shift and go to state 255
     SEMICOLON       reduce using rule 95 (var_call -> IDENT .)
     LBRACKET        shift and go to state 102
 
@@ -13193,14 +13188,14 @@ state 215
 
     (126) until_loop -> UNTIL LPAREN relational_expression . RPAREN LBRACE statements RBRACE
 
-    RPAREN          shift and go to state 257
+    RPAREN          shift and go to state 256
 
 
 state 216
 
     (127) repeat_until -> REPEAT LBRACE statements . RBRACE UNTIL LPAREN relational_expression RPAREN
 
-    RBRACE          shift and go to state 258
+    RBRACE          shift and go to state 257
 
 
 state 217
@@ -13260,15 +13255,15 @@ state 217
     MINUS_MINUS     reduce using rule 183 (empty -> .)
     RBRACKET        reduce using rule 183 (empty -> .)
 
-    stringcon_tail2                shift and go to state 259
-    stringcon_tail                 shift and go to state 260
-    empty                          shift and go to state 261
+    stringcon_tail2                shift and go to state 258
+    stringcon_tail                 shift and go to state 259
+    empty                          shift and go to state 260
 
 state 218
 
     (167) input_statement -> INPUT LPAREN statements . RPAREN
 
-    RPAREN          shift and go to state 262
+    RPAREN          shift and go to state 261
 
 
 state 219
@@ -13306,7 +13301,7 @@ state 219
     IDENT           shift and go to state 42
 
     ae_factor                      shift and go to state 70
-    ae_tail2                       shift and go to state 263
+    ae_tail2                       shift and go to state 262
     ae_term                        shift and go to state 136
     ae_tail                        shift and go to state 137
     empty                          shift and go to state 138
@@ -13401,8 +13396,8 @@ state 220
   ! MODULO          [ reduce using rule 183 (empty -> .) ]
   ! EXPONENT        [ reduce using rule 183 (empty -> .) ]
 
-    ae_tail                        shift and go to state 264
-    empty                          shift and go to state 265
+    ae_tail                        shift and go to state 263
+    empty                          shift and go to state 264
 
 state 221
 
@@ -13493,8 +13488,8 @@ state 221
   ! MODULO          [ reduce using rule 183 (empty -> .) ]
   ! EXPONENT        [ reduce using rule 183 (empty -> .) ]
 
-    ae_tail                        shift and go to state 266
-    empty                          shift and go to state 265
+    ae_tail                        shift and go to state 265
+    empty                          shift and go to state 264
 
 state 222
 
@@ -13585,8 +13580,8 @@ state 222
   ! MODULO          [ reduce using rule 183 (empty -> .) ]
   ! EXPONENT        [ reduce using rule 183 (empty -> .) ]
 
-    ae_tail                        shift and go to state 267
-    empty                          shift and go to state 265
+    ae_tail                        shift and go to state 266
+    empty                          shift and go to state 264
 
 state 223
 
@@ -13677,8 +13672,8 @@ state 223
   ! MODULO          [ reduce using rule 183 (empty -> .) ]
   ! EXPONENT        [ reduce using rule 183 (empty -> .) ]
 
-    ae_tail                        shift and go to state 268
-    empty                          shift and go to state 265
+    ae_tail                        shift and go to state 267
+    empty                          shift and go to state 264
 
 state 224
 
@@ -13769,8 +13764,8 @@ state 224
   ! MODULO          [ reduce using rule 183 (empty -> .) ]
   ! EXPONENT        [ reduce using rule 183 (empty -> .) ]
 
-    ae_tail                        shift and go to state 269
-    empty                          shift and go to state 265
+    ae_tail                        shift and go to state 268
+    empty                          shift and go to state 264
 
 state 225
 
@@ -13861,8 +13856,8 @@ state 225
   ! MODULO          [ reduce using rule 183 (empty -> .) ]
   ! EXPONENT        [ reduce using rule 183 (empty -> .) ]
 
-    ae_tail                        shift and go to state 270
-    empty                          shift and go to state 265
+    ae_tail                        shift and go to state 269
+    empty                          shift and go to state 264
 
 state 226
 
@@ -13975,7 +13970,7 @@ state 226
   ! LT_EQ           [ reduce using rule 183 (empty -> .) ]
 
     re_term                        shift and go to state 152
-    re_tail2                       shift and go to state 271
+    re_tail2                       shift and go to state 270
     empty                          shift and go to state 150
     re_tail                        shift and go to state 151
     re_factor                      shift and go to state 71
@@ -14095,7 +14090,7 @@ state 227
   ! LT_EQ           [ reduce using rule 183 (empty -> .) ]
 
     re_term                        shift and go to state 152
-    re_tail2                       shift and go to state 272
+    re_tail2                       shift and go to state 271
     empty                          shift and go to state 150
     re_tail                        shift and go to state 151
     re_factor                      shift and go to state 71
@@ -14215,7 +14210,7 @@ state 228
   ! LT_EQ           [ reduce using rule 183 (empty -> .) ]
 
     re_term                        shift and go to state 152
-    re_tail2                       shift and go to state 273
+    re_tail2                       shift and go to state 272
     empty                          shift and go to state 150
     re_tail                        shift and go to state 151
     re_factor                      shift and go to state 71
@@ -14335,7 +14330,7 @@ state 229
   ! LT_EQ           [ reduce using rule 183 (empty -> .) ]
 
     re_term                        shift and go to state 152
-    re_tail2                       shift and go to state 274
+    re_tail2                       shift and go to state 273
     empty                          shift and go to state 150
     re_tail                        shift and go to state 151
     re_factor                      shift and go to state 71
@@ -14455,7 +14450,7 @@ state 230
   ! LT_EQ           [ reduce using rule 183 (empty -> .) ]
 
     re_term                        shift and go to state 152
-    re_tail2                       shift and go to state 275
+    re_tail2                       shift and go to state 274
     empty                          shift and go to state 150
     re_tail                        shift and go to state 151
     re_factor                      shift and go to state 71
@@ -14575,7 +14570,7 @@ state 231
   ! LT_EQ           [ reduce using rule 183 (empty -> .) ]
 
     re_term                        shift and go to state 152
-    re_tail2                       shift and go to state 276
+    re_tail2                       shift and go to state 275
     empty                          shift and go to state 150
     re_tail                        shift and go to state 151
     re_factor                      shift and go to state 71
@@ -14750,7 +14745,7 @@ state 235
     (26) varinit_tail -> . empty
     (183) empty -> .
 
-    COMMA           shift and go to state 278
+    COMMA           shift and go to state 277
     CHECK           reduce using rule 183 (empty -> .)
     SWAP            reduce using rule 183 (empty -> .)
     DISPLAY         reduce using rule 183 (empty -> .)
@@ -14794,8 +14789,8 @@ state 235
     SHIFT           reduce using rule 183 (empty -> .)
     OTHERWISE       reduce using rule 183 (empty -> .)
 
-    varinit_tail                   shift and go to state 277
-    empty                          shift and go to state 279
+    varinit_tail                   shift and go to state 276
+    empty                          shift and go to state 278
 
 state 236
 
@@ -14804,7 +14799,6 @@ state 236
     (23) vardec_tail -> . empty
     (183) empty -> .
 
-  ! shift/reduce conflict for COMMA resolved as shift
     COMMA           shift and go to state 176
     CHECK           reduce using rule 183 (empty -> .)
     SWAP            reduce using rule 183 (empty -> .)
@@ -14849,16 +14843,14 @@ state 236
     SHIFT           reduce using rule 183 (empty -> .)
     OTHERWISE       reduce using rule 183 (empty -> .)
 
-  ! COMMA           [ reduce using rule 183 (empty -> .) ]
-
-    vardec_tail                    shift and go to state 280
+    vardec_tail                    shift and go to state 279
     empty                          shift and go to state 177
 
 state 237
 
     (100) list_init -> list_dtype IDENT LBRACKET index . RBRACKET EQ LBRACKET list_element RBRACKET listinit_tail
 
-    RBRACKET        shift and go to state 281
+    RBRACKET        shift and go to state 280
 
 
 state 238
@@ -14912,14 +14904,14 @@ state 238
     SHIFT           reduce using rule 183 (empty -> .)
     OTHERWISE       reduce using rule 183 (empty -> .)
 
-    listdec_tail                   shift and go to state 282
+    listdec_tail                   shift and go to state 281
     empty                          shift and go to state 181
 
 state 239
 
     (112) conditional_statement -> CHECK LPAREN condition RPAREN . LBRACE statements RBRACE conditional_tail
 
-    LBRACE          shift and go to state 283
+    LBRACE          shift and go to state 282
 
 
 state 240
@@ -15037,7 +15029,7 @@ state 241
   ! EXPONENT        [ reduce using rule 183 (empty -> .) ]
 
     ae_factor                      shift and go to state 70
-    ae_tail2                       shift and go to state 284
+    ae_tail2                       shift and go to state 283
     ae_term                        shift and go to state 136
     ae_tail                        shift and go to state 137
     empty                          shift and go to state 138
@@ -15154,7 +15146,7 @@ state 242
   ! LT_EQ           [ reduce using rule 183 (empty -> .) ]
 
     re_factor                      shift and go to state 71
-    re_tail2                       shift and go to state 285
+    re_tail2                       shift and go to state 284
     empty                          shift and go to state 150
     re_tail                        shift and go to state 151
     re_term                        shift and go to state 152
@@ -15258,7 +15250,7 @@ state 243
   ! BLN_LIT         [ reduce using rule 183 (empty -> .) ]
 
     le_factor                      shift and go to state 72
-    le_tail2                       shift and go to state 286
+    le_tail2                       shift and go to state 285
     empty                          shift and go to state 165
     le_tail                        shift and go to state 166
     le_term                        shift and go to state 167
@@ -15274,35 +15266,24 @@ state 244
 
     (141) function_statement -> ret_type FUNCTION_NAME LPAREN parameters . RPAREN LBRACE statements revive RBRACE
 
-    RPAREN          shift and go to state 287
+    RPAREN          shift and go to state 286
 
 
 state 245
 
-    (160) parameters -> var_dec .
-    (161) parameters -> var_dec . next_parameters
-    (163) next_parameters -> . COMMA parameters
+    (160) parameters -> data_type . IDENT parameters_tail
 
-    RPAREN          reduce using rule 160 (parameters -> var_dec .)
-    COMMA           shift and go to state 289
+    IDENT           shift and go to state 287
 
-    next_parameters                shift and go to state 288
 
 state 246
 
-    (162) parameters -> empty .
+    (161) parameters -> empty .
 
-    RPAREN          reduce using rule 162 (parameters -> empty .)
+    RPAREN          reduce using rule 161 (parameters -> empty .)
 
 
 state 247
-
-    (21) var_dec -> data_type . IDENT vardec_tail
-
-    IDENT           shift and go to state 290
-
-
-state 248
 
     (143) function_call -> FUNCTION_NAME LPAREN arguments RPAREN .
 
@@ -15355,14 +15336,14 @@ state 248
     RBRACKET        reduce using rule 143 (function_call -> FUNCTION_NAME LPAREN arguments RPAREN .)
 
 
-state 249
+state 248
 
     (116) switch_statement -> SWAP LPAREN IDENT RPAREN . LBRACE switch_condition OTHERWISE statements RBRACE
 
-    LBRACE          shift and go to state 291
+    LBRACE          shift and go to state 288
 
 
-state 250
+state 249
 
     (96) var_call -> IDENT LBRACKET index RBRACKET .
 
@@ -15436,35 +15417,35 @@ state 250
     SEMICOLON       reduce using rule 96 (var_call -> IDENT LBRACKET index RBRACKET .)
 
 
-state 251
+state 250
 
     (168) type_cast -> CONVERT_TO_INT LPAREN value . RPAREN
 
-    RPAREN          shift and go to state 292
+    RPAREN          shift and go to state 289
+
+
+state 251
+
+    (169) type_cast -> CONVERT_TO_FLT LPAREN value . RPAREN
+
+    RPAREN          shift and go to state 290
 
 
 state 252
 
-    (169) type_cast -> CONVERT_TO_FLT LPAREN value . RPAREN
+    (170) type_cast -> CONVERT_TO_BLN LPAREN value . RPAREN
 
-    RPAREN          shift and go to state 293
+    RPAREN          shift and go to state 291
 
 
 state 253
 
-    (170) type_cast -> CONVERT_TO_BLN LPAREN value . RPAREN
+    (171) type_cast -> CONVERT_TO_STR LPAREN value . RPAREN
 
-    RPAREN          shift and go to state 294
+    RPAREN          shift and go to state 292
 
 
 state 254
-
-    (171) type_cast -> CONVERT_TO_STR LPAREN value . RPAREN
-
-    RPAREN          shift and go to state 295
-
-
-state 255
 
     (125) for_loop -> FOR LPAREN control_variable SEMICOLON . relational_expression SEMICOLON update RPAREN LBRACE statements RBRACE
     (66) relational_expression -> . re_term
@@ -15490,7 +15471,7 @@ state 255
     BLN_LIT         shift and go to state 162
     IDENT           shift and go to state 42
 
-    relational_expression          shift and go to state 296
+    relational_expression          shift and go to state 293
     re_term                        shift and go to state 56
     re_factor                      shift and go to state 71
     arithmetic_expression          shift and go to state 97
@@ -15498,28 +15479,28 @@ state 255
     ae_term                        shift and go to state 55
     ae_factor                      shift and go to state 70
 
-state 256
+state 255
 
     (128) control_variable -> IDENT EQ . INT_LIT
 
-    INT_LIT         shift and go to state 297
+    INT_LIT         shift and go to state 294
+
+
+state 256
+
+    (126) until_loop -> UNTIL LPAREN relational_expression RPAREN . LBRACE statements RBRACE
+
+    LBRACE          shift and go to state 295
 
 
 state 257
 
-    (126) until_loop -> UNTIL LPAREN relational_expression RPAREN . LBRACE statements RBRACE
+    (127) repeat_until -> REPEAT LBRACE statements RBRACE . UNTIL LPAREN relational_expression RPAREN
 
-    LBRACE          shift and go to state 298
+    UNTIL           shift and go to state 296
 
 
 state 258
-
-    (127) repeat_until -> REPEAT LBRACE statements RBRACE . UNTIL LPAREN relational_expression RPAREN
-
-    UNTIL           shift and go to state 299
-
-
-state 259
 
     (173) stringcon_tail -> PLUS string_lit stringcon_tail2 .
 
@@ -15572,7 +15553,7 @@ state 259
     RBRACKET        reduce using rule 173 (stringcon_tail -> PLUS string_lit stringcon_tail2 .)
 
 
-state 260
+state 259
 
     (174) stringcon_tail2 -> stringcon_tail .
 
@@ -15625,7 +15606,7 @@ state 260
     RBRACKET        reduce using rule 174 (stringcon_tail2 -> stringcon_tail .)
 
 
-state 261
+state 260
 
     (175) stringcon_tail2 -> empty .
 
@@ -15678,7 +15659,7 @@ state 261
     RBRACKET        reduce using rule 175 (stringcon_tail2 -> empty .)
 
 
-state 262
+state 261
 
     (167) input_statement -> INPUT LPAREN statements RPAREN .
 
@@ -15731,14 +15712,14 @@ state 262
     RBRACKET        reduce using rule 167 (input_statement -> INPUT LPAREN statements RPAREN .)
 
 
-state 263
+state 262
 
     (52) ae_term -> LPAREN ae_factor ae_tail2 . RPAREN ae_tail2
 
     RPAREN          shift and go to state 241
 
 
-state 264
+state 263
 
     (56) ae_tail -> PLUS ae_term ae_tail .
 
@@ -15807,7 +15788,7 @@ state 264
     EXPONENT        reduce using rule 56 (ae_tail -> PLUS ae_term ae_tail .)
 
 
-state 265
+state 264
 
     (62) ae_tail -> empty .
 
@@ -15876,7 +15857,7 @@ state 265
     EXPONENT        reduce using rule 62 (ae_tail -> empty .)
 
 
-state 266
+state 265
 
     (57) ae_tail -> MINUS ae_term ae_tail .
 
@@ -15945,7 +15926,7 @@ state 266
     EXPONENT        reduce using rule 57 (ae_tail -> MINUS ae_term ae_tail .)
 
 
-state 267
+state 266
 
     (58) ae_tail -> DIVISION ae_term ae_tail .
 
@@ -16014,7 +15995,7 @@ state 267
     EXPONENT        reduce using rule 58 (ae_tail -> DIVISION ae_term ae_tail .)
 
 
-state 268
+state 267
 
     (59) ae_tail -> MULTIPLY ae_term ae_tail .
 
@@ -16083,7 +16064,7 @@ state 268
     EXPONENT        reduce using rule 59 (ae_tail -> MULTIPLY ae_term ae_tail .)
 
 
-state 269
+state 268
 
     (60) ae_tail -> MODULO ae_term ae_tail .
 
@@ -16152,7 +16133,7 @@ state 269
     EXPONENT        reduce using rule 60 (ae_tail -> MODULO ae_term ae_tail .)
 
 
-state 270
+state 269
 
     (61) ae_tail -> EXPONENT ae_term ae_tail .
 
@@ -16221,7 +16202,7 @@ state 270
     EXPONENT        reduce using rule 61 (ae_tail -> EXPONENT ae_term ae_tail .)
 
 
-state 271
+state 270
 
     (74) re_tail -> GT re_term re_tail2 .
 
@@ -16284,7 +16265,7 @@ state 271
     SEMICOLON       reduce using rule 74 (re_tail -> GT re_term re_tail2 .)
 
 
-state 272
+state 271
 
     (75) re_tail -> LT re_term re_tail2 .
 
@@ -16347,7 +16328,7 @@ state 272
     SEMICOLON       reduce using rule 75 (re_tail -> LT re_term re_tail2 .)
 
 
-state 273
+state 272
 
     (76) re_tail -> EQ re_term re_tail2 .
 
@@ -16410,7 +16391,7 @@ state 273
     SEMICOLON       reduce using rule 76 (re_tail -> EQ re_term re_tail2 .)
 
 
-state 274
+state 273
 
     (77) re_tail -> NOT_EQ re_term re_tail2 .
 
@@ -16473,7 +16454,7 @@ state 274
     SEMICOLON       reduce using rule 77 (re_tail -> NOT_EQ re_term re_tail2 .)
 
 
-state 275
+state 274
 
     (78) re_tail -> GT_EQ re_term re_tail2 .
 
@@ -16536,7 +16517,7 @@ state 275
     SEMICOLON       reduce using rule 78 (re_tail -> GT_EQ re_term re_tail2 .)
 
 
-state 276
+state 275
 
     (79) re_tail -> LT_EQ re_term re_tail2 .
 
@@ -16599,7 +16580,7 @@ state 276
     SEMICOLON       reduce using rule 79 (re_tail -> LT_EQ re_term re_tail2 .)
 
 
-state 277
+state 276
 
     (24) var_initialization -> data_type IDENT EQ value varinit_tail .
 
@@ -16647,14 +16628,14 @@ state 277
     OTHERWISE       reduce using rule 24 (var_initialization -> data_type IDENT EQ value varinit_tail .)
 
 
-state 278
+state 277
 
     (25) varinit_tail -> COMMA . IDENT EQ value varinit_tail
 
-    IDENT           shift and go to state 300
+    IDENT           shift and go to state 297
 
 
-state 279
+state 278
 
     (26) varinit_tail -> empty .
 
@@ -16702,7 +16683,7 @@ state 279
     OTHERWISE       reduce using rule 26 (varinit_tail -> empty .)
 
 
-state 280
+state 279
 
     (22) vardec_tail -> COMMA IDENT vardec_tail .
 
@@ -16748,17 +16729,16 @@ state 280
     REVIVE          reduce using rule 22 (vardec_tail -> COMMA IDENT vardec_tail .)
     SHIFT           reduce using rule 22 (vardec_tail -> COMMA IDENT vardec_tail .)
     OTHERWISE       reduce using rule 22 (vardec_tail -> COMMA IDENT vardec_tail .)
-    COMMA           reduce using rule 22 (vardec_tail -> COMMA IDENT vardec_tail .)
 
 
-state 281
+state 280
 
     (100) list_init -> list_dtype IDENT LBRACKET index RBRACKET . EQ LBRACKET list_element RBRACKET listinit_tail
 
-    EQ              shift and go to state 301
+    EQ              shift and go to state 298
 
 
-state 282
+state 281
 
     (98) listdec_tail -> COMMA IDENT listdec_tail .
 
@@ -16806,7 +16786,7 @@ state 282
     OTHERWISE       reduce using rule 98 (listdec_tail -> COMMA IDENT listdec_tail .)
 
 
-state 283
+state 282
 
     (112) conditional_statement -> CHECK LPAREN condition RPAREN LBRACE . statements RBRACE conditional_tail
     (2) statements -> . conditional_statement statements_tail
@@ -17007,7 +16987,7 @@ state 283
   ! FLT_LIT         [ reduce using rule 183 (empty -> .) ]
   ! BLN_LIT         [ reduce using rule 183 (empty -> .) ]
 
-    statements                     shift and go to state 302
+    statements                     shift and go to state 299
     conditional_statement          shift and go to state 24
     loop_statement                 shift and go to state 25
     function_statement             shift and go to state 26
@@ -17043,7 +17023,7 @@ state 283
     re_factor                      shift and go to state 71
     le_factor                      shift and go to state 72
 
-state 284
+state 283
 
     (52) ae_term -> LPAREN ae_factor ae_tail2 RPAREN ae_tail2 .
 
@@ -17112,7 +17092,7 @@ state 284
     EXPONENT        reduce using rule 52 (ae_term -> LPAREN ae_factor ae_tail2 RPAREN ae_tail2 .)
 
 
-state 285
+state 284
 
     (68) re_term -> LPAREN re_factor re_tail2 RPAREN re_tail2 .
 
@@ -17175,7 +17155,7 @@ state 285
     SEMICOLON       reduce using rule 68 (re_term -> LPAREN re_factor re_tail2 RPAREN re_tail2 .)
 
 
-state 286
+state 285
 
     (85) le_term -> LPAREN le_factor le_tail2 RPAREN le_tail2 .
 
@@ -17228,72 +17208,36 @@ state 286
     RBRACKET        reduce using rule 85 (le_term -> LPAREN le_factor le_tail2 RPAREN le_tail2 .)
 
 
-state 287
+state 286
 
     (141) function_statement -> ret_type FUNCTION_NAME LPAREN parameters RPAREN . LBRACE statements revive RBRACE
 
-    LBRACE          shift and go to state 303
+    LBRACE          shift and go to state 300
 
+
+state 287
+
+    (160) parameters -> data_type IDENT . parameters_tail
+    (162) parameters_tail -> . COMMA data_type IDENT parameters_tail
+    (163) parameters_tail -> . empty
+    (183) empty -> .
+
+    COMMA           shift and go to state 302
+    RPAREN          reduce using rule 183 (empty -> .)
+
+    parameters_tail                shift and go to state 301
+    empty                          shift and go to state 303
 
 state 288
-
-    (161) parameters -> var_dec next_parameters .
-
-    RPAREN          reduce using rule 161 (parameters -> var_dec next_parameters .)
-
-
-state 289
-
-    (163) next_parameters -> COMMA . parameters
-    (160) parameters -> . var_dec
-    (161) parameters -> . var_dec next_parameters
-    (162) parameters -> . empty
-    (21) var_dec -> . data_type IDENT vardec_tail
-    (183) empty -> .
-    (27) data_type -> . INT
-    (28) data_type -> . FLT
-    (29) data_type -> . BLN
-    (30) data_type -> . CHR
-    (31) data_type -> . STR
-
-    RPAREN          reduce using rule 183 (empty -> .)
-    INT             shift and go to state 13
-    FLT             shift and go to state 14
-    BLN             shift and go to state 15
-    CHR             shift and go to state 16
-    STR             shift and go to state 17
-
-    parameters                     shift and go to state 304
-    var_dec                        shift and go to state 245
-    empty                          shift and go to state 246
-    data_type                      shift and go to state 247
-
-state 290
-
-    (21) var_dec -> data_type IDENT . vardec_tail
-    (22) vardec_tail -> . COMMA IDENT vardec_tail
-    (23) vardec_tail -> . empty
-    (183) empty -> .
-
-  ! shift/reduce conflict for COMMA resolved as shift
-    COMMA           shift and go to state 176
-    RPAREN          reduce using rule 183 (empty -> .)
-
-  ! COMMA           [ reduce using rule 183 (empty -> .) ]
-
-    vardec_tail                    shift and go to state 174
-    empty                          shift and go to state 177
-
-state 291
 
     (116) switch_statement -> SWAP LPAREN IDENT RPAREN LBRACE . switch_condition OTHERWISE statements RBRACE
     (117) switch_condition -> . SHIFT value COLON statements switch_cond_tail
 
-    SHIFT           shift and go to state 306
+    SHIFT           shift and go to state 305
 
-    switch_condition               shift and go to state 305
+    switch_condition               shift and go to state 304
 
-state 292
+state 289
 
     (168) type_cast -> CONVERT_TO_INT LPAREN value RPAREN .
 
@@ -17346,7 +17290,7 @@ state 292
     RBRACKET        reduce using rule 168 (type_cast -> CONVERT_TO_INT LPAREN value RPAREN .)
 
 
-state 293
+state 290
 
     (169) type_cast -> CONVERT_TO_FLT LPAREN value RPAREN .
 
@@ -17399,7 +17343,7 @@ state 293
     RBRACKET        reduce using rule 169 (type_cast -> CONVERT_TO_FLT LPAREN value RPAREN .)
 
 
-state 294
+state 291
 
     (170) type_cast -> CONVERT_TO_BLN LPAREN value RPAREN .
 
@@ -17452,7 +17396,7 @@ state 294
     RBRACKET        reduce using rule 170 (type_cast -> CONVERT_TO_BLN LPAREN value RPAREN .)
 
 
-state 295
+state 292
 
     (171) type_cast -> CONVERT_TO_STR LPAREN value RPAREN .
 
@@ -17505,21 +17449,21 @@ state 295
     RBRACKET        reduce using rule 171 (type_cast -> CONVERT_TO_STR LPAREN value RPAREN .)
 
 
-state 296
+state 293
 
     (125) for_loop -> FOR LPAREN control_variable SEMICOLON relational_expression . SEMICOLON update RPAREN LBRACE statements RBRACE
 
-    SEMICOLON       shift and go to state 307
+    SEMICOLON       shift and go to state 306
 
 
-state 297
+state 294
 
     (128) control_variable -> IDENT EQ INT_LIT .
 
     SEMICOLON       reduce using rule 128 (control_variable -> IDENT EQ INT_LIT .)
 
 
-state 298
+state 295
 
     (126) until_loop -> UNTIL LPAREN relational_expression RPAREN LBRACE . statements RBRACE
     (2) statements -> . conditional_statement statements_tail
@@ -17721,7 +17665,7 @@ state 298
   ! BLN_LIT         [ reduce using rule 183 (empty -> .) ]
 
     relational_expression          shift and go to state 46
-    statements                     shift and go to state 308
+    statements                     shift and go to state 307
     conditional_statement          shift and go to state 24
     loop_statement                 shift and go to state 25
     function_statement             shift and go to state 26
@@ -17756,35 +17700,35 @@ state 298
     re_factor                      shift and go to state 71
     le_factor                      shift and go to state 72
 
-state 299
+state 296
 
     (127) repeat_until -> REPEAT LBRACE statements RBRACE UNTIL . LPAREN relational_expression RPAREN
 
-    LPAREN          shift and go to state 309
+    LPAREN          shift and go to state 308
 
 
-state 300
+state 297
 
     (25) varinit_tail -> COMMA IDENT . EQ value varinit_tail
 
-    EQ              shift and go to state 310
+    EQ              shift and go to state 309
 
 
-state 301
+state 298
 
     (100) list_init -> list_dtype IDENT LBRACKET index RBRACKET EQ . LBRACKET list_element RBRACKET listinit_tail
 
-    LBRACKET        shift and go to state 311
+    LBRACKET        shift and go to state 310
 
 
-state 302
+state 299
 
     (112) conditional_statement -> CHECK LPAREN condition RPAREN LBRACE statements . RBRACE conditional_tail
 
-    RBRACE          shift and go to state 312
+    RBRACE          shift and go to state 311
 
 
-state 303
+state 300
 
     (141) function_statement -> ret_type FUNCTION_NAME LPAREN parameters RPAREN LBRACE . statements revive RBRACE
     (2) statements -> . conditional_statement statements_tail
@@ -17987,7 +17931,7 @@ state 303
   ! BLN_LIT         [ reduce using rule 183 (empty -> .) ]
 
     ret_type                       shift and go to state 38
-    statements                     shift and go to state 313
+    statements                     shift and go to state 312
     conditional_statement          shift and go to state 24
     loop_statement                 shift and go to state 25
     function_statement             shift and go to state 26
@@ -18022,21 +17966,45 @@ state 303
     re_factor                      shift and go to state 71
     le_factor                      shift and go to state 72
 
+state 301
+
+    (160) parameters -> data_type IDENT parameters_tail .
+
+    RPAREN          reduce using rule 160 (parameters -> data_type IDENT parameters_tail .)
+
+
+state 302
+
+    (162) parameters_tail -> COMMA . data_type IDENT parameters_tail
+    (27) data_type -> . INT
+    (28) data_type -> . FLT
+    (29) data_type -> . BLN
+    (30) data_type -> . CHR
+    (31) data_type -> . STR
+
+    INT             shift and go to state 13
+    FLT             shift and go to state 14
+    BLN             shift and go to state 15
+    CHR             shift and go to state 16
+    STR             shift and go to state 17
+
+    data_type                      shift and go to state 313
+
+state 303
+
+    (163) parameters_tail -> empty .
+
+    RPAREN          reduce using rule 163 (parameters_tail -> empty .)
+
+
 state 304
-
-    (163) next_parameters -> COMMA parameters .
-
-    RPAREN          reduce using rule 163 (next_parameters -> COMMA parameters .)
-
-
-state 305
 
     (116) switch_statement -> SWAP LPAREN IDENT RPAREN LBRACE switch_condition . OTHERWISE statements RBRACE
 
     OTHERWISE       shift and go to state 314
 
 
-state 306
+state 305
 
     (117) switch_condition -> SHIFT . value COLON statements switch_cond_tail
     (32) value -> . literal
@@ -18131,7 +18099,7 @@ state 306
     re_factor                      shift and go to state 71
     le_factor                      shift and go to state 72
 
-state 307
+state 306
 
     (125) for_loop -> FOR LPAREN control_variable SEMICOLON relational_expression SEMICOLON . update RPAREN LBRACE statements RBRACE
     (130) update -> . unary
@@ -18233,14 +18201,14 @@ state 307
     re_factor                      shift and go to state 71
     le_factor                      shift and go to state 72
 
-state 308
+state 307
 
     (126) until_loop -> UNTIL LPAREN relational_expression RPAREN LBRACE statements . RBRACE
 
     RBRACE          shift and go to state 321
 
 
-state 309
+state 308
 
     (127) repeat_until -> REPEAT LBRACE statements RBRACE UNTIL LPAREN . relational_expression RPAREN
     (66) relational_expression -> . re_term
@@ -18274,7 +18242,7 @@ state 309
     ae_term                        shift and go to state 55
     ae_factor                      shift and go to state 70
 
-state 310
+state 309
 
     (25) varinit_tail -> COMMA IDENT EQ . value varinit_tail
     (32) value -> . literal
@@ -18369,7 +18337,7 @@ state 310
     re_factor                      shift and go to state 71
     le_factor                      shift and go to state 72
 
-state 311
+state 310
 
     (100) list_init -> list_dtype IDENT LBRACKET index RBRACKET EQ LBRACKET . list_element RBRACKET listinit_tail
     (108) list_element -> . value
@@ -18467,7 +18435,7 @@ state 311
     re_factor                      shift and go to state 71
     le_factor                      shift and go to state 72
 
-state 312
+state 311
 
     (112) conditional_statement -> CHECK LPAREN condition RPAREN LBRACE statements RBRACE . conditional_tail
     (113) conditional_tail -> . OTHERWISE_CHECK LPAREN condition RPAREN LBRACE statements RBRACE
@@ -18525,7 +18493,7 @@ state 312
     conditional_tail               shift and go to state 326
     empty                          shift and go to state 329
 
-state 313
+state 312
 
     (141) function_statement -> ret_type FUNCTION_NAME LPAREN parameters RPAREN LBRACE statements . revive RBRACE
     (164) revive -> . REVIVE value
@@ -18537,6 +18505,13 @@ state 313
 
     revive                         shift and go to state 330
     empty                          shift and go to state 332
+
+state 313
+
+    (162) parameters_tail -> COMMA data_type . IDENT parameters_tail
+
+    IDENT           shift and go to state 333
+
 
 state 314
 
@@ -18739,7 +18714,7 @@ state 314
   ! FLT_LIT         [ reduce using rule 183 (empty -> .) ]
   ! BLN_LIT         [ reduce using rule 183 (empty -> .) ]
 
-    statements                     shift and go to state 333
+    statements                     shift and go to state 334
     conditional_statement          shift and go to state 24
     loop_statement                 shift and go to state 25
     function_statement             shift and go to state 26
@@ -18779,14 +18754,14 @@ state 315
 
     (117) switch_condition -> SHIFT value . COLON statements switch_cond_tail
 
-    COLON           shift and go to state 334
+    COLON           shift and go to state 335
 
 
 state 316
 
     (125) for_loop -> FOR LPAREN control_variable SEMICOLON relational_expression SEMICOLON update . RPAREN LBRACE statements RBRACE
 
-    RPAREN          shift and go to state 335
+    RPAREN          shift and go to state 336
 
 
 state 317
@@ -18809,10 +18784,10 @@ state 319
     (133) unary_op -> . PLUS_PLUS
     (134) unary_op -> . MINUS_MINUS
 
-    PLUS_PLUS       shift and go to state 337
-    MINUS_MINUS     shift and go to state 338
+    PLUS_PLUS       shift and go to state 338
+    MINUS_MINUS     shift and go to state 339
 
-    unary_op                       shift and go to state 336
+    unary_op                       shift and go to state 337
 
 state 320
 
@@ -18966,7 +18941,7 @@ state 322
 
     (127) repeat_until -> REPEAT LBRACE statements RBRACE UNTIL LPAREN relational_expression . RPAREN
 
-    RPAREN          shift and go to state 339
+    RPAREN          shift and go to state 340
 
 
 state 323
@@ -18976,7 +18951,7 @@ state 323
     (26) varinit_tail -> . empty
     (183) empty -> .
 
-    COMMA           shift and go to state 278
+    COMMA           shift and go to state 277
     CHECK           reduce using rule 183 (empty -> .)
     SWAP            reduce using rule 183 (empty -> .)
     DISPLAY         reduce using rule 183 (empty -> .)
@@ -19020,14 +18995,14 @@ state 323
     SHIFT           reduce using rule 183 (empty -> .)
     OTHERWISE       reduce using rule 183 (empty -> .)
 
-    varinit_tail                   shift and go to state 340
-    empty                          shift and go to state 279
+    varinit_tail                   shift and go to state 341
+    empty                          shift and go to state 278
 
 state 324
 
     (100) list_init -> list_dtype IDENT LBRACKET index RBRACKET EQ LBRACKET list_element . RBRACKET listinit_tail
 
-    RBRACKET        shift and go to state 341
+    RBRACKET        shift and go to state 342
 
 
 state 325
@@ -19036,7 +19011,7 @@ state 325
     (109) list_element -> value . COMMA list_element
 
     RBRACKET        reduce using rule 108 (list_element -> value .)
-    COMMA           shift and go to state 342
+    COMMA           shift and go to state 343
 
 
 state 326
@@ -19091,14 +19066,14 @@ state 327
 
     (113) conditional_tail -> OTHERWISE_CHECK . LPAREN condition RPAREN LBRACE statements RBRACE
 
-    LPAREN          shift and go to state 343
+    LPAREN          shift and go to state 344
 
 
 state 328
 
     (114) conditional_tail -> OTHERWISE . LBRACE statements RBRACE
 
-    LBRACE          shift and go to state 344
+    LBRACE          shift and go to state 345
 
 
 state 329
@@ -19153,7 +19128,7 @@ state 330
 
     (141) function_statement -> ret_type FUNCTION_NAME LPAREN parameters RPAREN LBRACE statements revive . RBRACE
 
-    RBRACE          shift and go to state 345
+    RBRACE          shift and go to state 346
 
 
 state 331
@@ -19229,7 +19204,7 @@ state 331
     INPUT           shift and go to state 69
     LPAREN          shift and go to state 34
 
-    value                          shift and go to state 346
+    value                          shift and go to state 347
     literal                        shift and go to state 104
     expression                     shift and go to state 105
     var_call                       shift and go to state 106
@@ -19260,12 +19235,25 @@ state 332
 
 state 333
 
-    (116) switch_statement -> SWAP LPAREN IDENT RPAREN LBRACE switch_condition OTHERWISE statements . RBRACE
+    (162) parameters_tail -> COMMA data_type IDENT . parameters_tail
+    (162) parameters_tail -> . COMMA data_type IDENT parameters_tail
+    (163) parameters_tail -> . empty
+    (183) empty -> .
 
-    RBRACE          shift and go to state 347
+    COMMA           shift and go to state 302
+    RPAREN          reduce using rule 183 (empty -> .)
 
+    parameters_tail                shift and go to state 348
+    empty                          shift and go to state 303
 
 state 334
+
+    (116) switch_statement -> SWAP LPAREN IDENT RPAREN LBRACE switch_condition OTHERWISE statements . RBRACE
+
+    RBRACE          shift and go to state 349
+
+
+state 335
 
     (117) switch_condition -> SHIFT value COLON . statements switch_cond_tail
     (2) statements -> . conditional_statement statements_tail
@@ -19467,7 +19455,7 @@ state 334
   ! FLT_LIT         [ reduce using rule 183 (empty -> .) ]
   ! BLN_LIT         [ reduce using rule 183 (empty -> .) ]
 
-    statements                     shift and go to state 348
+    statements                     shift and go to state 350
     conditional_statement          shift and go to state 24
     loop_statement                 shift and go to state 25
     function_statement             shift and go to state 26
@@ -19503,35 +19491,35 @@ state 334
     re_factor                      shift and go to state 71
     le_factor                      shift and go to state 72
 
-state 335
+state 336
 
     (125) for_loop -> FOR LPAREN control_variable SEMICOLON relational_expression SEMICOLON update RPAREN . LBRACE statements RBRACE
 
-    LBRACE          shift and go to state 349
+    LBRACE          shift and go to state 351
 
 
-state 336
+state 337
 
     (132) unary -> value unary_op .
 
     RPAREN          reduce using rule 132 (unary -> value unary_op .)
 
 
-state 337
+state 338
 
     (133) unary_op -> PLUS_PLUS .
 
     RPAREN          reduce using rule 133 (unary_op -> PLUS_PLUS .)
 
 
-state 338
+state 339
 
     (134) unary_op -> MINUS_MINUS .
 
     RPAREN          reduce using rule 134 (unary_op -> MINUS_MINUS .)
 
 
-state 339
+state 340
 
     (127) repeat_until -> REPEAT LBRACE statements RBRACE UNTIL LPAREN relational_expression RPAREN .
 
@@ -19579,7 +19567,7 @@ state 339
     OTHERWISE       reduce using rule 127 (repeat_until -> REPEAT LBRACE statements RBRACE UNTIL LPAREN relational_expression RPAREN .)
 
 
-state 340
+state 341
 
     (25) varinit_tail -> COMMA IDENT EQ value varinit_tail .
 
@@ -19627,14 +19615,14 @@ state 340
     OTHERWISE       reduce using rule 25 (varinit_tail -> COMMA IDENT EQ value varinit_tail .)
 
 
-state 341
+state 342
 
     (100) list_init -> list_dtype IDENT LBRACKET index RBRACKET EQ LBRACKET list_element RBRACKET . listinit_tail
     (101) listinit_tail -> . COMMA IDENT LBRACKET index RBRACKET EQ LBRACKET list_element RBRACKET listinit_tail
     (102) listinit_tail -> . empty
     (183) empty -> .
 
-    COMMA           shift and go to state 351
+    COMMA           shift and go to state 353
     CHECK           reduce using rule 183 (empty -> .)
     SWAP            reduce using rule 183 (empty -> .)
     DISPLAY         reduce using rule 183 (empty -> .)
@@ -19678,10 +19666,10 @@ state 341
     SHIFT           reduce using rule 183 (empty -> .)
     OTHERWISE       reduce using rule 183 (empty -> .)
 
-    listinit_tail                  shift and go to state 350
-    empty                          shift and go to state 352
+    listinit_tail                  shift and go to state 352
+    empty                          shift and go to state 354
 
-state 342
+state 343
 
     (109) list_element -> value COMMA . list_element
     (108) list_element -> . value
@@ -19757,7 +19745,7 @@ state 342
     LPAREN          shift and go to state 34
 
     value                          shift and go to state 325
-    list_element                   shift and go to state 353
+    list_element                   shift and go to state 355
     literal                        shift and go to state 104
     expression                     shift and go to state 105
     var_call                       shift and go to state 106
@@ -19779,7 +19767,7 @@ state 342
     re_factor                      shift and go to state 71
     le_factor                      shift and go to state 72
 
-state 343
+state 344
 
     (113) conditional_tail -> OTHERWISE_CHECK LPAREN . condition RPAREN LBRACE statements RBRACE
     (120) condition -> . relational_expression
@@ -19813,7 +19801,7 @@ state 343
     BLN_LIT         shift and go to state 76
     IDENT           shift and go to state 42
 
-    condition                      shift and go to state 354
+    condition                      shift and go to state 356
     relational_expression          shift and go to state 184
     logical_expression             shift and go to state 185
     re_term                        shift and go to state 56
@@ -19825,7 +19813,7 @@ state 343
     ae_term                        shift and go to state 55
     ae_factor                      shift and go to state 70
 
-state 344
+state 345
 
     (114) conditional_tail -> OTHERWISE LBRACE . statements RBRACE
     (2) statements -> . conditional_statement statements_tail
@@ -20026,7 +20014,7 @@ state 344
   ! FLT_LIT         [ reduce using rule 183 (empty -> .) ]
   ! BLN_LIT         [ reduce using rule 183 (empty -> .) ]
 
-    statements                     shift and go to state 355
+    statements                     shift and go to state 357
     conditional_statement          shift and go to state 24
     loop_statement                 shift and go to state 25
     function_statement             shift and go to state 26
@@ -20062,7 +20050,7 @@ state 344
     re_factor                      shift and go to state 71
     le_factor                      shift and go to state 72
 
-state 345
+state 346
 
     (141) function_statement -> ret_type FUNCTION_NAME LPAREN parameters RPAREN LBRACE statements revive RBRACE .
 
@@ -20110,14 +20098,21 @@ state 345
     OTHERWISE       reduce using rule 141 (function_statement -> ret_type FUNCTION_NAME LPAREN parameters RPAREN LBRACE statements revive RBRACE .)
 
 
-state 346
+state 347
 
     (164) revive -> REVIVE value .
 
     RBRACE          reduce using rule 164 (revive -> REVIVE value .)
 
 
-state 347
+state 348
+
+    (162) parameters_tail -> COMMA data_type IDENT parameters_tail .
+
+    RPAREN          reduce using rule 162 (parameters_tail -> COMMA data_type IDENT parameters_tail .)
+
+
+state 349
 
     (116) switch_statement -> SWAP LPAREN IDENT RPAREN LBRACE switch_condition OTHERWISE statements RBRACE .
 
@@ -20165,7 +20160,7 @@ state 347
     OTHERWISE       reduce using rule 116 (switch_statement -> SWAP LPAREN IDENT RPAREN LBRACE switch_condition OTHERWISE statements RBRACE .)
 
 
-state 348
+state 350
 
     (117) switch_condition -> SHIFT value COLON statements . switch_cond_tail
     (118) switch_cond_tail -> . switch_condition
@@ -20173,14 +20168,14 @@ state 348
     (117) switch_condition -> . SHIFT value COLON statements switch_cond_tail
     (183) empty -> .
 
-    SHIFT           shift and go to state 306
+    SHIFT           shift and go to state 305
     OTHERWISE       reduce using rule 183 (empty -> .)
 
-    switch_cond_tail               shift and go to state 356
-    switch_condition               shift and go to state 357
-    empty                          shift and go to state 358
+    switch_cond_tail               shift and go to state 358
+    switch_condition               shift and go to state 359
+    empty                          shift and go to state 360
 
-state 349
+state 351
 
     (125) for_loop -> FOR LPAREN control_variable SEMICOLON relational_expression SEMICOLON update RPAREN LBRACE . statements RBRACE
     (2) statements -> . conditional_statement statements_tail
@@ -20382,7 +20377,7 @@ state 349
   ! BLN_LIT         [ reduce using rule 183 (empty -> .) ]
 
     relational_expression          shift and go to state 46
-    statements                     shift and go to state 359
+    statements                     shift and go to state 361
     conditional_statement          shift and go to state 24
     loop_statement                 shift and go to state 25
     function_statement             shift and go to state 26
@@ -20417,7 +20412,7 @@ state 349
     re_factor                      shift and go to state 71
     le_factor                      shift and go to state 72
 
-state 350
+state 352
 
     (100) list_init -> list_dtype IDENT LBRACKET index RBRACKET EQ LBRACKET list_element RBRACKET listinit_tail .
 
@@ -20465,14 +20460,14 @@ state 350
     OTHERWISE       reduce using rule 100 (list_init -> list_dtype IDENT LBRACKET index RBRACKET EQ LBRACKET list_element RBRACKET listinit_tail .)
 
 
-state 351
+state 353
 
     (101) listinit_tail -> COMMA . IDENT LBRACKET index RBRACKET EQ LBRACKET list_element RBRACKET listinit_tail
 
-    IDENT           shift and go to state 360
+    IDENT           shift and go to state 362
 
 
-state 352
+state 354
 
     (102) listinit_tail -> empty .
 
@@ -20520,70 +20515,70 @@ state 352
     OTHERWISE       reduce using rule 102 (listinit_tail -> empty .)
 
 
-state 353
+state 355
 
     (109) list_element -> value COMMA list_element .
 
     RBRACKET        reduce using rule 109 (list_element -> value COMMA list_element .)
 
 
-state 354
+state 356
 
     (113) conditional_tail -> OTHERWISE_CHECK LPAREN condition . RPAREN LBRACE statements RBRACE
 
-    RPAREN          shift and go to state 361
+    RPAREN          shift and go to state 363
 
 
-state 355
+state 357
 
     (114) conditional_tail -> OTHERWISE LBRACE statements . RBRACE
 
-    RBRACE          shift and go to state 362
+    RBRACE          shift and go to state 364
 
 
-state 356
+state 358
 
     (117) switch_condition -> SHIFT value COLON statements switch_cond_tail .
 
     OTHERWISE       reduce using rule 117 (switch_condition -> SHIFT value COLON statements switch_cond_tail .)
 
 
-state 357
+state 359
 
     (118) switch_cond_tail -> switch_condition .
 
     OTHERWISE       reduce using rule 118 (switch_cond_tail -> switch_condition .)
 
 
-state 358
+state 360
 
     (119) switch_cond_tail -> empty .
 
     OTHERWISE       reduce using rule 119 (switch_cond_tail -> empty .)
 
 
-state 359
+state 361
 
     (125) for_loop -> FOR LPAREN control_variable SEMICOLON relational_expression SEMICOLON update RPAREN LBRACE statements . RBRACE
 
-    RBRACE          shift and go to state 363
-
-
-state 360
-
-    (101) listinit_tail -> COMMA IDENT . LBRACKET index RBRACKET EQ LBRACKET list_element RBRACKET listinit_tail
-
-    LBRACKET        shift and go to state 364
-
-
-state 361
-
-    (113) conditional_tail -> OTHERWISE_CHECK LPAREN condition RPAREN . LBRACE statements RBRACE
-
-    LBRACE          shift and go to state 365
+    RBRACE          shift and go to state 365
 
 
 state 362
+
+    (101) listinit_tail -> COMMA IDENT . LBRACKET index RBRACKET EQ LBRACKET list_element RBRACKET listinit_tail
+
+    LBRACKET        shift and go to state 366
+
+
+state 363
+
+    (113) conditional_tail -> OTHERWISE_CHECK LPAREN condition RPAREN . LBRACE statements RBRACE
+
+    LBRACE          shift and go to state 367
+
+
+state 364
 
     (114) conditional_tail -> OTHERWISE LBRACE statements RBRACE .
 
@@ -20631,7 +20626,7 @@ state 362
     OTHERWISE       reduce using rule 114 (conditional_tail -> OTHERWISE LBRACE statements RBRACE .)
 
 
-state 363
+state 365
 
     (125) for_loop -> FOR LPAREN control_variable SEMICOLON relational_expression SEMICOLON update RPAREN LBRACE statements RBRACE .
 
@@ -20679,7 +20674,7 @@ state 363
     OTHERWISE       reduce using rule 125 (for_loop -> FOR LPAREN control_variable SEMICOLON relational_expression SEMICOLON update RPAREN LBRACE statements RBRACE .)
 
 
-state 364
+state 366
 
     (101) listinit_tail -> COMMA IDENT LBRACKET . index RBRACKET EQ LBRACKET list_element RBRACKET listinit_tail
     (110) index -> . INT_LIT
@@ -20688,9 +20683,9 @@ state 364
     INT_LIT         shift and go to state 203
     IDENT           shift and go to state 201
 
-    index                          shift and go to state 366
+    index                          shift and go to state 368
 
-state 365
+state 367
 
     (113) conditional_tail -> OTHERWISE_CHECK LPAREN condition RPAREN LBRACE . statements RBRACE
     (2) statements -> . conditional_statement statements_tail
@@ -20891,7 +20886,7 @@ state 365
   ! FLT_LIT         [ reduce using rule 183 (empty -> .) ]
   ! BLN_LIT         [ reduce using rule 183 (empty -> .) ]
 
-    statements                     shift and go to state 367
+    statements                     shift and go to state 369
     conditional_statement          shift and go to state 24
     loop_statement                 shift and go to state 25
     function_statement             shift and go to state 26
@@ -20927,28 +20922,28 @@ state 365
     re_factor                      shift and go to state 71
     le_factor                      shift and go to state 72
 
-state 366
+state 368
 
     (101) listinit_tail -> COMMA IDENT LBRACKET index . RBRACKET EQ LBRACKET list_element RBRACKET listinit_tail
 
-    RBRACKET        shift and go to state 368
-
-
-state 367
-
-    (113) conditional_tail -> OTHERWISE_CHECK LPAREN condition RPAREN LBRACE statements . RBRACE
-
-    RBRACE          shift and go to state 369
-
-
-state 368
-
-    (101) listinit_tail -> COMMA IDENT LBRACKET index RBRACKET . EQ LBRACKET list_element RBRACKET listinit_tail
-
-    EQ              shift and go to state 370
+    RBRACKET        shift and go to state 370
 
 
 state 369
+
+    (113) conditional_tail -> OTHERWISE_CHECK LPAREN condition RPAREN LBRACE statements . RBRACE
+
+    RBRACE          shift and go to state 371
+
+
+state 370
+
+    (101) listinit_tail -> COMMA IDENT LBRACKET index RBRACKET . EQ LBRACKET list_element RBRACKET listinit_tail
+
+    EQ              shift and go to state 372
+
+
+state 371
 
     (113) conditional_tail -> OTHERWISE_CHECK LPAREN condition RPAREN LBRACE statements RBRACE .
 
@@ -20996,14 +20991,14 @@ state 369
     OTHERWISE       reduce using rule 113 (conditional_tail -> OTHERWISE_CHECK LPAREN condition RPAREN LBRACE statements RBRACE .)
 
 
-state 370
+state 372
 
     (101) listinit_tail -> COMMA IDENT LBRACKET index RBRACKET EQ . LBRACKET list_element RBRACKET listinit_tail
 
-    LBRACKET        shift and go to state 371
+    LBRACKET        shift and go to state 373
 
 
-state 371
+state 373
 
     (101) listinit_tail -> COMMA IDENT LBRACKET index RBRACKET EQ LBRACKET . list_element RBRACKET listinit_tail
     (108) list_element -> . value
@@ -21078,7 +21073,7 @@ state 371
     INPUT           shift and go to state 69
     LPAREN          shift and go to state 34
 
-    list_element                   shift and go to state 372
+    list_element                   shift and go to state 374
     value                          shift and go to state 325
     literal                        shift and go to state 104
     expression                     shift and go to state 105
@@ -21101,21 +21096,21 @@ state 371
     re_factor                      shift and go to state 71
     le_factor                      shift and go to state 72
 
-state 372
+state 374
 
     (101) listinit_tail -> COMMA IDENT LBRACKET index RBRACKET EQ LBRACKET list_element . RBRACKET listinit_tail
 
-    RBRACKET        shift and go to state 373
+    RBRACKET        shift and go to state 375
 
 
-state 373
+state 375
 
     (101) listinit_tail -> COMMA IDENT LBRACKET index RBRACKET EQ LBRACKET list_element RBRACKET . listinit_tail
     (101) listinit_tail -> . COMMA IDENT LBRACKET index RBRACKET EQ LBRACKET list_element RBRACKET listinit_tail
     (102) listinit_tail -> . empty
     (183) empty -> .
 
-    COMMA           shift and go to state 351
+    COMMA           shift and go to state 353
     CHECK           reduce using rule 183 (empty -> .)
     SWAP            reduce using rule 183 (empty -> .)
     DISPLAY         reduce using rule 183 (empty -> .)
@@ -21159,10 +21154,10 @@ state 373
     SHIFT           reduce using rule 183 (empty -> .)
     OTHERWISE       reduce using rule 183 (empty -> .)
 
-    listinit_tail                  shift and go to state 374
-    empty                          shift and go to state 352
+    listinit_tail                  shift and go to state 376
+    empty                          shift and go to state 354
 
-state 374
+state 376
 
     (101) listinit_tail -> COMMA IDENT LBRACKET index RBRACKET EQ LBRACKET list_element RBRACKET listinit_tail .
 
@@ -21758,7 +21753,6 @@ WARNING: shift/reduce conflict for INT_LIT in state 231 resolved as shift
 WARNING: shift/reduce conflict for FLT_LIT in state 231 resolved as shift
 WARNING: shift/reduce conflict for BLN_LIT in state 231 resolved as shift
 WARNING: shift/reduce conflict for IDENT in state 231 resolved as shift
-WARNING: shift/reduce conflict for COMMA in state 236 resolved as shift
 WARNING: shift/reduce conflict for LPAREN in state 241 resolved as shift
 WARNING: shift/reduce conflict for PLUS in state 241 resolved as shift
 WARNING: shift/reduce conflict for MINUS in state 241 resolved as shift
@@ -21785,116 +21779,115 @@ WARNING: shift/reduce conflict for BLN_LIT in state 243 resolved as shift
 WARNING: shift/reduce conflict for IDENT in state 243 resolved as shift
 WARNING: shift/reduce conflict for INT_LIT in state 243 resolved as shift
 WARNING: shift/reduce conflict for FLT_LIT in state 243 resolved as shift
-WARNING: shift/reduce conflict for CHECK in state 283 resolved as shift
-WARNING: shift/reduce conflict for SWAP in state 283 resolved as shift
-WARNING: shift/reduce conflict for DISPLAY in state 283 resolved as shift
-WARNING: shift/reduce conflict for GLOBAL in state 283 resolved as shift
-WARNING: shift/reduce conflict for FOR in state 283 resolved as shift
-WARNING: shift/reduce conflict for UNTIL in state 283 resolved as shift
-WARNING: shift/reduce conflict for REPEAT in state 283 resolved as shift
-WARNING: shift/reduce conflict for FUNCTION in state 283 resolved as shift
-WARNING: shift/reduce conflict for FUNCTION_NAME in state 283 resolved as shift
-WARNING: shift/reduce conflict for IDENT in state 283 resolved as shift
-WARNING: shift/reduce conflict for FUNCTION_INT in state 283 resolved as shift
-WARNING: shift/reduce conflict for FUNCTION_FLT in state 283 resolved as shift
-WARNING: shift/reduce conflict for FUNCTION_CHR in state 283 resolved as shift
-WARNING: shift/reduce conflict for FUNCTION_STR in state 283 resolved as shift
-WARNING: shift/reduce conflict for FUNCTION_BLN in state 283 resolved as shift
-WARNING: shift/reduce conflict for FUNCTION_LIST_INT in state 283 resolved as shift
-WARNING: shift/reduce conflict for FUNCTION_LIST_FLT in state 283 resolved as shift
-WARNING: shift/reduce conflict for FUNCTION_LIST_CHR in state 283 resolved as shift
-WARNING: shift/reduce conflict for FUNCTION_LIST_STR in state 283 resolved as shift
-WARNING: shift/reduce conflict for FUNCTION_LIST_BLN in state 283 resolved as shift
-WARNING: shift/reduce conflict for INPUT in state 283 resolved as shift
-WARNING: shift/reduce conflict for LPAREN in state 283 resolved as shift
-WARNING: shift/reduce conflict for STR_LIT in state 283 resolved as shift
-WARNING: shift/reduce conflict for INT in state 283 resolved as shift
-WARNING: shift/reduce conflict for FLT in state 283 resolved as shift
-WARNING: shift/reduce conflict for BLN in state 283 resolved as shift
-WARNING: shift/reduce conflict for CHR in state 283 resolved as shift
-WARNING: shift/reduce conflict for STR in state 283 resolved as shift
-WARNING: shift/reduce conflict for LIST_INT in state 283 resolved as shift
-WARNING: shift/reduce conflict for LIST_FLT in state 283 resolved as shift
-WARNING: shift/reduce conflict for LIST_BLN in state 283 resolved as shift
-WARNING: shift/reduce conflict for LIST_STR in state 283 resolved as shift
-WARNING: shift/reduce conflict for LIST_CHR in state 283 resolved as shift
-WARNING: shift/reduce conflict for INT_LIT in state 283 resolved as shift
-WARNING: shift/reduce conflict for FLT_LIT in state 283 resolved as shift
-WARNING: shift/reduce conflict for BLN_LIT in state 283 resolved as shift
-WARNING: shift/reduce conflict for COMMA in state 290 resolved as shift
-WARNING: shift/reduce conflict for CHECK in state 298 resolved as shift
-WARNING: shift/reduce conflict for SWAP in state 298 resolved as shift
-WARNING: shift/reduce conflict for DISPLAY in state 298 resolved as shift
-WARNING: shift/reduce conflict for GLOBAL in state 298 resolved as shift
-WARNING: shift/reduce conflict for FOR in state 298 resolved as shift
-WARNING: shift/reduce conflict for UNTIL in state 298 resolved as shift
-WARNING: shift/reduce conflict for REPEAT in state 298 resolved as shift
-WARNING: shift/reduce conflict for FUNCTION in state 298 resolved as shift
-WARNING: shift/reduce conflict for FUNCTION_NAME in state 298 resolved as shift
-WARNING: shift/reduce conflict for IDENT in state 298 resolved as shift
-WARNING: shift/reduce conflict for FUNCTION_INT in state 298 resolved as shift
-WARNING: shift/reduce conflict for FUNCTION_FLT in state 298 resolved as shift
-WARNING: shift/reduce conflict for FUNCTION_CHR in state 298 resolved as shift
-WARNING: shift/reduce conflict for FUNCTION_STR in state 298 resolved as shift
-WARNING: shift/reduce conflict for FUNCTION_BLN in state 298 resolved as shift
-WARNING: shift/reduce conflict for FUNCTION_LIST_INT in state 298 resolved as shift
-WARNING: shift/reduce conflict for FUNCTION_LIST_FLT in state 298 resolved as shift
-WARNING: shift/reduce conflict for FUNCTION_LIST_CHR in state 298 resolved as shift
-WARNING: shift/reduce conflict for FUNCTION_LIST_STR in state 298 resolved as shift
-WARNING: shift/reduce conflict for FUNCTION_LIST_BLN in state 298 resolved as shift
-WARNING: shift/reduce conflict for INPUT in state 298 resolved as shift
-WARNING: shift/reduce conflict for LPAREN in state 298 resolved as shift
-WARNING: shift/reduce conflict for STR_LIT in state 298 resolved as shift
-WARNING: shift/reduce conflict for INT in state 298 resolved as shift
-WARNING: shift/reduce conflict for FLT in state 298 resolved as shift
-WARNING: shift/reduce conflict for BLN in state 298 resolved as shift
-WARNING: shift/reduce conflict for CHR in state 298 resolved as shift
-WARNING: shift/reduce conflict for STR in state 298 resolved as shift
-WARNING: shift/reduce conflict for LIST_INT in state 298 resolved as shift
-WARNING: shift/reduce conflict for LIST_FLT in state 298 resolved as shift
-WARNING: shift/reduce conflict for LIST_BLN in state 298 resolved as shift
-WARNING: shift/reduce conflict for LIST_STR in state 298 resolved as shift
-WARNING: shift/reduce conflict for LIST_CHR in state 298 resolved as shift
-WARNING: shift/reduce conflict for INT_LIT in state 298 resolved as shift
-WARNING: shift/reduce conflict for FLT_LIT in state 298 resolved as shift
-WARNING: shift/reduce conflict for BLN_LIT in state 298 resolved as shift
-WARNING: shift/reduce conflict for CHECK in state 303 resolved as shift
-WARNING: shift/reduce conflict for SWAP in state 303 resolved as shift
-WARNING: shift/reduce conflict for DISPLAY in state 303 resolved as shift
-WARNING: shift/reduce conflict for GLOBAL in state 303 resolved as shift
-WARNING: shift/reduce conflict for FOR in state 303 resolved as shift
-WARNING: shift/reduce conflict for UNTIL in state 303 resolved as shift
-WARNING: shift/reduce conflict for REPEAT in state 303 resolved as shift
-WARNING: shift/reduce conflict for FUNCTION in state 303 resolved as shift
-WARNING: shift/reduce conflict for FUNCTION_NAME in state 303 resolved as shift
-WARNING: shift/reduce conflict for IDENT in state 303 resolved as shift
-WARNING: shift/reduce conflict for FUNCTION_INT in state 303 resolved as shift
-WARNING: shift/reduce conflict for FUNCTION_FLT in state 303 resolved as shift
-WARNING: shift/reduce conflict for FUNCTION_CHR in state 303 resolved as shift
-WARNING: shift/reduce conflict for FUNCTION_STR in state 303 resolved as shift
-WARNING: shift/reduce conflict for FUNCTION_BLN in state 303 resolved as shift
-WARNING: shift/reduce conflict for FUNCTION_LIST_INT in state 303 resolved as shift
-WARNING: shift/reduce conflict for FUNCTION_LIST_FLT in state 303 resolved as shift
-WARNING: shift/reduce conflict for FUNCTION_LIST_CHR in state 303 resolved as shift
-WARNING: shift/reduce conflict for FUNCTION_LIST_STR in state 303 resolved as shift
-WARNING: shift/reduce conflict for FUNCTION_LIST_BLN in state 303 resolved as shift
-WARNING: shift/reduce conflict for INPUT in state 303 resolved as shift
-WARNING: shift/reduce conflict for LPAREN in state 303 resolved as shift
-WARNING: shift/reduce conflict for STR_LIT in state 303 resolved as shift
-WARNING: shift/reduce conflict for INT in state 303 resolved as shift
-WARNING: shift/reduce conflict for FLT in state 303 resolved as shift
-WARNING: shift/reduce conflict for BLN in state 303 resolved as shift
-WARNING: shift/reduce conflict for CHR in state 303 resolved as shift
-WARNING: shift/reduce conflict for STR in state 303 resolved as shift
-WARNING: shift/reduce conflict for LIST_INT in state 303 resolved as shift
-WARNING: shift/reduce conflict for LIST_FLT in state 303 resolved as shift
-WARNING: shift/reduce conflict for LIST_BLN in state 303 resolved as shift
-WARNING: shift/reduce conflict for LIST_STR in state 303 resolved as shift
-WARNING: shift/reduce conflict for LIST_CHR in state 303 resolved as shift
-WARNING: shift/reduce conflict for INT_LIT in state 303 resolved as shift
-WARNING: shift/reduce conflict for FLT_LIT in state 303 resolved as shift
-WARNING: shift/reduce conflict for BLN_LIT in state 303 resolved as shift
-WARNING: shift/reduce conflict for OTHERWISE in state 312 resolved as shift
+WARNING: shift/reduce conflict for CHECK in state 282 resolved as shift
+WARNING: shift/reduce conflict for SWAP in state 282 resolved as shift
+WARNING: shift/reduce conflict for DISPLAY in state 282 resolved as shift
+WARNING: shift/reduce conflict for GLOBAL in state 282 resolved as shift
+WARNING: shift/reduce conflict for FOR in state 282 resolved as shift
+WARNING: shift/reduce conflict for UNTIL in state 282 resolved as shift
+WARNING: shift/reduce conflict for REPEAT in state 282 resolved as shift
+WARNING: shift/reduce conflict for FUNCTION in state 282 resolved as shift
+WARNING: shift/reduce conflict for FUNCTION_NAME in state 282 resolved as shift
+WARNING: shift/reduce conflict for IDENT in state 282 resolved as shift
+WARNING: shift/reduce conflict for FUNCTION_INT in state 282 resolved as shift
+WARNING: shift/reduce conflict for FUNCTION_FLT in state 282 resolved as shift
+WARNING: shift/reduce conflict for FUNCTION_CHR in state 282 resolved as shift
+WARNING: shift/reduce conflict for FUNCTION_STR in state 282 resolved as shift
+WARNING: shift/reduce conflict for FUNCTION_BLN in state 282 resolved as shift
+WARNING: shift/reduce conflict for FUNCTION_LIST_INT in state 282 resolved as shift
+WARNING: shift/reduce conflict for FUNCTION_LIST_FLT in state 282 resolved as shift
+WARNING: shift/reduce conflict for FUNCTION_LIST_CHR in state 282 resolved as shift
+WARNING: shift/reduce conflict for FUNCTION_LIST_STR in state 282 resolved as shift
+WARNING: shift/reduce conflict for FUNCTION_LIST_BLN in state 282 resolved as shift
+WARNING: shift/reduce conflict for INPUT in state 282 resolved as shift
+WARNING: shift/reduce conflict for LPAREN in state 282 resolved as shift
+WARNING: shift/reduce conflict for STR_LIT in state 282 resolved as shift
+WARNING: shift/reduce conflict for INT in state 282 resolved as shift
+WARNING: shift/reduce conflict for FLT in state 282 resolved as shift
+WARNING: shift/reduce conflict for BLN in state 282 resolved as shift
+WARNING: shift/reduce conflict for CHR in state 282 resolved as shift
+WARNING: shift/reduce conflict for STR in state 282 resolved as shift
+WARNING: shift/reduce conflict for LIST_INT in state 282 resolved as shift
+WARNING: shift/reduce conflict for LIST_FLT in state 282 resolved as shift
+WARNING: shift/reduce conflict for LIST_BLN in state 282 resolved as shift
+WARNING: shift/reduce conflict for LIST_STR in state 282 resolved as shift
+WARNING: shift/reduce conflict for LIST_CHR in state 282 resolved as shift
+WARNING: shift/reduce conflict for INT_LIT in state 282 resolved as shift
+WARNING: shift/reduce conflict for FLT_LIT in state 282 resolved as shift
+WARNING: shift/reduce conflict for BLN_LIT in state 282 resolved as shift
+WARNING: shift/reduce conflict for CHECK in state 295 resolved as shift
+WARNING: shift/reduce conflict for SWAP in state 295 resolved as shift
+WARNING: shift/reduce conflict for DISPLAY in state 295 resolved as shift
+WARNING: shift/reduce conflict for GLOBAL in state 295 resolved as shift
+WARNING: shift/reduce conflict for FOR in state 295 resolved as shift
+WARNING: shift/reduce conflict for UNTIL in state 295 resolved as shift
+WARNING: shift/reduce conflict for REPEAT in state 295 resolved as shift
+WARNING: shift/reduce conflict for FUNCTION in state 295 resolved as shift
+WARNING: shift/reduce conflict for FUNCTION_NAME in state 295 resolved as shift
+WARNING: shift/reduce conflict for IDENT in state 295 resolved as shift
+WARNING: shift/reduce conflict for FUNCTION_INT in state 295 resolved as shift
+WARNING: shift/reduce conflict for FUNCTION_FLT in state 295 resolved as shift
+WARNING: shift/reduce conflict for FUNCTION_CHR in state 295 resolved as shift
+WARNING: shift/reduce conflict for FUNCTION_STR in state 295 resolved as shift
+WARNING: shift/reduce conflict for FUNCTION_BLN in state 295 resolved as shift
+WARNING: shift/reduce conflict for FUNCTION_LIST_INT in state 295 resolved as shift
+WARNING: shift/reduce conflict for FUNCTION_LIST_FLT in state 295 resolved as shift
+WARNING: shift/reduce conflict for FUNCTION_LIST_CHR in state 295 resolved as shift
+WARNING: shift/reduce conflict for FUNCTION_LIST_STR in state 295 resolved as shift
+WARNING: shift/reduce conflict for FUNCTION_LIST_BLN in state 295 resolved as shift
+WARNING: shift/reduce conflict for INPUT in state 295 resolved as shift
+WARNING: shift/reduce conflict for LPAREN in state 295 resolved as shift
+WARNING: shift/reduce conflict for STR_LIT in state 295 resolved as shift
+WARNING: shift/reduce conflict for INT in state 295 resolved as shift
+WARNING: shift/reduce conflict for FLT in state 295 resolved as shift
+WARNING: shift/reduce conflict for BLN in state 295 resolved as shift
+WARNING: shift/reduce conflict for CHR in state 295 resolved as shift
+WARNING: shift/reduce conflict for STR in state 295 resolved as shift
+WARNING: shift/reduce conflict for LIST_INT in state 295 resolved as shift
+WARNING: shift/reduce conflict for LIST_FLT in state 295 resolved as shift
+WARNING: shift/reduce conflict for LIST_BLN in state 295 resolved as shift
+WARNING: shift/reduce conflict for LIST_STR in state 295 resolved as shift
+WARNING: shift/reduce conflict for LIST_CHR in state 295 resolved as shift
+WARNING: shift/reduce conflict for INT_LIT in state 295 resolved as shift
+WARNING: shift/reduce conflict for FLT_LIT in state 295 resolved as shift
+WARNING: shift/reduce conflict for BLN_LIT in state 295 resolved as shift
+WARNING: shift/reduce conflict for CHECK in state 300 resolved as shift
+WARNING: shift/reduce conflict for SWAP in state 300 resolved as shift
+WARNING: shift/reduce conflict for DISPLAY in state 300 resolved as shift
+WARNING: shift/reduce conflict for GLOBAL in state 300 resolved as shift
+WARNING: shift/reduce conflict for FOR in state 300 resolved as shift
+WARNING: shift/reduce conflict for UNTIL in state 300 resolved as shift
+WARNING: shift/reduce conflict for REPEAT in state 300 resolved as shift
+WARNING: shift/reduce conflict for FUNCTION in state 300 resolved as shift
+WARNING: shift/reduce conflict for FUNCTION_NAME in state 300 resolved as shift
+WARNING: shift/reduce conflict for IDENT in state 300 resolved as shift
+WARNING: shift/reduce conflict for FUNCTION_INT in state 300 resolved as shift
+WARNING: shift/reduce conflict for FUNCTION_FLT in state 300 resolved as shift
+WARNING: shift/reduce conflict for FUNCTION_CHR in state 300 resolved as shift
+WARNING: shift/reduce conflict for FUNCTION_STR in state 300 resolved as shift
+WARNING: shift/reduce conflict for FUNCTION_BLN in state 300 resolved as shift
+WARNING: shift/reduce conflict for FUNCTION_LIST_INT in state 300 resolved as shift
+WARNING: shift/reduce conflict for FUNCTION_LIST_FLT in state 300 resolved as shift
+WARNING: shift/reduce conflict for FUNCTION_LIST_CHR in state 300 resolved as shift
+WARNING: shift/reduce conflict for FUNCTION_LIST_STR in state 300 resolved as shift
+WARNING: shift/reduce conflict for FUNCTION_LIST_BLN in state 300 resolved as shift
+WARNING: shift/reduce conflict for INPUT in state 300 resolved as shift
+WARNING: shift/reduce conflict for LPAREN in state 300 resolved as shift
+WARNING: shift/reduce conflict for STR_LIT in state 300 resolved as shift
+WARNING: shift/reduce conflict for INT in state 300 resolved as shift
+WARNING: shift/reduce conflict for FLT in state 300 resolved as shift
+WARNING: shift/reduce conflict for BLN in state 300 resolved as shift
+WARNING: shift/reduce conflict for CHR in state 300 resolved as shift
+WARNING: shift/reduce conflict for STR in state 300 resolved as shift
+WARNING: shift/reduce conflict for LIST_INT in state 300 resolved as shift
+WARNING: shift/reduce conflict for LIST_FLT in state 300 resolved as shift
+WARNING: shift/reduce conflict for LIST_BLN in state 300 resolved as shift
+WARNING: shift/reduce conflict for LIST_STR in state 300 resolved as shift
+WARNING: shift/reduce conflict for LIST_CHR in state 300 resolved as shift
+WARNING: shift/reduce conflict for INT_LIT in state 300 resolved as shift
+WARNING: shift/reduce conflict for FLT_LIT in state 300 resolved as shift
+WARNING: shift/reduce conflict for BLN_LIT in state 300 resolved as shift
+WARNING: shift/reduce conflict for OTHERWISE in state 311 resolved as shift
 WARNING: shift/reduce conflict for CHECK in state 314 resolved as shift
 WARNING: shift/reduce conflict for SWAP in state 314 resolved as shift
 WARNING: shift/reduce conflict for DISPLAY in state 314 resolved as shift
@@ -21931,150 +21924,150 @@ WARNING: shift/reduce conflict for LIST_CHR in state 314 resolved as shift
 WARNING: shift/reduce conflict for INT_LIT in state 314 resolved as shift
 WARNING: shift/reduce conflict for FLT_LIT in state 314 resolved as shift
 WARNING: shift/reduce conflict for BLN_LIT in state 314 resolved as shift
-WARNING: shift/reduce conflict for CHECK in state 334 resolved as shift
-WARNING: shift/reduce conflict for SWAP in state 334 resolved as shift
-WARNING: shift/reduce conflict for DISPLAY in state 334 resolved as shift
-WARNING: shift/reduce conflict for GLOBAL in state 334 resolved as shift
-WARNING: shift/reduce conflict for FOR in state 334 resolved as shift
-WARNING: shift/reduce conflict for UNTIL in state 334 resolved as shift
-WARNING: shift/reduce conflict for REPEAT in state 334 resolved as shift
-WARNING: shift/reduce conflict for FUNCTION in state 334 resolved as shift
-WARNING: shift/reduce conflict for FUNCTION_NAME in state 334 resolved as shift
-WARNING: shift/reduce conflict for IDENT in state 334 resolved as shift
-WARNING: shift/reduce conflict for FUNCTION_INT in state 334 resolved as shift
-WARNING: shift/reduce conflict for FUNCTION_FLT in state 334 resolved as shift
-WARNING: shift/reduce conflict for FUNCTION_CHR in state 334 resolved as shift
-WARNING: shift/reduce conflict for FUNCTION_STR in state 334 resolved as shift
-WARNING: shift/reduce conflict for FUNCTION_BLN in state 334 resolved as shift
-WARNING: shift/reduce conflict for FUNCTION_LIST_INT in state 334 resolved as shift
-WARNING: shift/reduce conflict for FUNCTION_LIST_FLT in state 334 resolved as shift
-WARNING: shift/reduce conflict for FUNCTION_LIST_CHR in state 334 resolved as shift
-WARNING: shift/reduce conflict for FUNCTION_LIST_STR in state 334 resolved as shift
-WARNING: shift/reduce conflict for FUNCTION_LIST_BLN in state 334 resolved as shift
-WARNING: shift/reduce conflict for INPUT in state 334 resolved as shift
-WARNING: shift/reduce conflict for LPAREN in state 334 resolved as shift
-WARNING: shift/reduce conflict for STR_LIT in state 334 resolved as shift
-WARNING: shift/reduce conflict for INT in state 334 resolved as shift
-WARNING: shift/reduce conflict for FLT in state 334 resolved as shift
-WARNING: shift/reduce conflict for BLN in state 334 resolved as shift
-WARNING: shift/reduce conflict for CHR in state 334 resolved as shift
-WARNING: shift/reduce conflict for STR in state 334 resolved as shift
-WARNING: shift/reduce conflict for LIST_INT in state 334 resolved as shift
-WARNING: shift/reduce conflict for LIST_FLT in state 334 resolved as shift
-WARNING: shift/reduce conflict for LIST_BLN in state 334 resolved as shift
-WARNING: shift/reduce conflict for LIST_STR in state 334 resolved as shift
-WARNING: shift/reduce conflict for LIST_CHR in state 334 resolved as shift
-WARNING: shift/reduce conflict for INT_LIT in state 334 resolved as shift
-WARNING: shift/reduce conflict for FLT_LIT in state 334 resolved as shift
-WARNING: shift/reduce conflict for BLN_LIT in state 334 resolved as shift
-WARNING: shift/reduce conflict for CHECK in state 344 resolved as shift
-WARNING: shift/reduce conflict for SWAP in state 344 resolved as shift
-WARNING: shift/reduce conflict for DISPLAY in state 344 resolved as shift
-WARNING: shift/reduce conflict for GLOBAL in state 344 resolved as shift
-WARNING: shift/reduce conflict for FOR in state 344 resolved as shift
-WARNING: shift/reduce conflict for UNTIL in state 344 resolved as shift
-WARNING: shift/reduce conflict for REPEAT in state 344 resolved as shift
-WARNING: shift/reduce conflict for FUNCTION in state 344 resolved as shift
-WARNING: shift/reduce conflict for FUNCTION_NAME in state 344 resolved as shift
-WARNING: shift/reduce conflict for IDENT in state 344 resolved as shift
-WARNING: shift/reduce conflict for FUNCTION_INT in state 344 resolved as shift
-WARNING: shift/reduce conflict for FUNCTION_FLT in state 344 resolved as shift
-WARNING: shift/reduce conflict for FUNCTION_CHR in state 344 resolved as shift
-WARNING: shift/reduce conflict for FUNCTION_STR in state 344 resolved as shift
-WARNING: shift/reduce conflict for FUNCTION_BLN in state 344 resolved as shift
-WARNING: shift/reduce conflict for FUNCTION_LIST_INT in state 344 resolved as shift
-WARNING: shift/reduce conflict for FUNCTION_LIST_FLT in state 344 resolved as shift
-WARNING: shift/reduce conflict for FUNCTION_LIST_CHR in state 344 resolved as shift
-WARNING: shift/reduce conflict for FUNCTION_LIST_STR in state 344 resolved as shift
-WARNING: shift/reduce conflict for FUNCTION_LIST_BLN in state 344 resolved as shift
-WARNING: shift/reduce conflict for INPUT in state 344 resolved as shift
-WARNING: shift/reduce conflict for LPAREN in state 344 resolved as shift
-WARNING: shift/reduce conflict for STR_LIT in state 344 resolved as shift
-WARNING: shift/reduce conflict for INT in state 344 resolved as shift
-WARNING: shift/reduce conflict for FLT in state 344 resolved as shift
-WARNING: shift/reduce conflict for BLN in state 344 resolved as shift
-WARNING: shift/reduce conflict for CHR in state 344 resolved as shift
-WARNING: shift/reduce conflict for STR in state 344 resolved as shift
-WARNING: shift/reduce conflict for LIST_INT in state 344 resolved as shift
-WARNING: shift/reduce conflict for LIST_FLT in state 344 resolved as shift
-WARNING: shift/reduce conflict for LIST_BLN in state 344 resolved as shift
-WARNING: shift/reduce conflict for LIST_STR in state 344 resolved as shift
-WARNING: shift/reduce conflict for LIST_CHR in state 344 resolved as shift
-WARNING: shift/reduce conflict for INT_LIT in state 344 resolved as shift
-WARNING: shift/reduce conflict for FLT_LIT in state 344 resolved as shift
-WARNING: shift/reduce conflict for BLN_LIT in state 344 resolved as shift
-WARNING: shift/reduce conflict for CHECK in state 349 resolved as shift
-WARNING: shift/reduce conflict for SWAP in state 349 resolved as shift
-WARNING: shift/reduce conflict for DISPLAY in state 349 resolved as shift
-WARNING: shift/reduce conflict for GLOBAL in state 349 resolved as shift
-WARNING: shift/reduce conflict for FOR in state 349 resolved as shift
-WARNING: shift/reduce conflict for UNTIL in state 349 resolved as shift
-WARNING: shift/reduce conflict for REPEAT in state 349 resolved as shift
-WARNING: shift/reduce conflict for FUNCTION in state 349 resolved as shift
-WARNING: shift/reduce conflict for FUNCTION_NAME in state 349 resolved as shift
-WARNING: shift/reduce conflict for IDENT in state 349 resolved as shift
-WARNING: shift/reduce conflict for FUNCTION_INT in state 349 resolved as shift
-WARNING: shift/reduce conflict for FUNCTION_FLT in state 349 resolved as shift
-WARNING: shift/reduce conflict for FUNCTION_CHR in state 349 resolved as shift
-WARNING: shift/reduce conflict for FUNCTION_STR in state 349 resolved as shift
-WARNING: shift/reduce conflict for FUNCTION_BLN in state 349 resolved as shift
-WARNING: shift/reduce conflict for FUNCTION_LIST_INT in state 349 resolved as shift
-WARNING: shift/reduce conflict for FUNCTION_LIST_FLT in state 349 resolved as shift
-WARNING: shift/reduce conflict for FUNCTION_LIST_CHR in state 349 resolved as shift
-WARNING: shift/reduce conflict for FUNCTION_LIST_STR in state 349 resolved as shift
-WARNING: shift/reduce conflict for FUNCTION_LIST_BLN in state 349 resolved as shift
-WARNING: shift/reduce conflict for INPUT in state 349 resolved as shift
-WARNING: shift/reduce conflict for LPAREN in state 349 resolved as shift
-WARNING: shift/reduce conflict for STR_LIT in state 349 resolved as shift
-WARNING: shift/reduce conflict for INT in state 349 resolved as shift
-WARNING: shift/reduce conflict for FLT in state 349 resolved as shift
-WARNING: shift/reduce conflict for BLN in state 349 resolved as shift
-WARNING: shift/reduce conflict for CHR in state 349 resolved as shift
-WARNING: shift/reduce conflict for STR in state 349 resolved as shift
-WARNING: shift/reduce conflict for LIST_INT in state 349 resolved as shift
-WARNING: shift/reduce conflict for LIST_FLT in state 349 resolved as shift
-WARNING: shift/reduce conflict for LIST_BLN in state 349 resolved as shift
-WARNING: shift/reduce conflict for LIST_STR in state 349 resolved as shift
-WARNING: shift/reduce conflict for LIST_CHR in state 349 resolved as shift
-WARNING: shift/reduce conflict for INT_LIT in state 349 resolved as shift
-WARNING: shift/reduce conflict for FLT_LIT in state 349 resolved as shift
-WARNING: shift/reduce conflict for BLN_LIT in state 349 resolved as shift
-WARNING: shift/reduce conflict for CHECK in state 365 resolved as shift
-WARNING: shift/reduce conflict for SWAP in state 365 resolved as shift
-WARNING: shift/reduce conflict for DISPLAY in state 365 resolved as shift
-WARNING: shift/reduce conflict for GLOBAL in state 365 resolved as shift
-WARNING: shift/reduce conflict for FOR in state 365 resolved as shift
-WARNING: shift/reduce conflict for UNTIL in state 365 resolved as shift
-WARNING: shift/reduce conflict for REPEAT in state 365 resolved as shift
-WARNING: shift/reduce conflict for FUNCTION in state 365 resolved as shift
-WARNING: shift/reduce conflict for FUNCTION_NAME in state 365 resolved as shift
-WARNING: shift/reduce conflict for IDENT in state 365 resolved as shift
-WARNING: shift/reduce conflict for FUNCTION_INT in state 365 resolved as shift
-WARNING: shift/reduce conflict for FUNCTION_FLT in state 365 resolved as shift
-WARNING: shift/reduce conflict for FUNCTION_CHR in state 365 resolved as shift
-WARNING: shift/reduce conflict for FUNCTION_STR in state 365 resolved as shift
-WARNING: shift/reduce conflict for FUNCTION_BLN in state 365 resolved as shift
-WARNING: shift/reduce conflict for FUNCTION_LIST_INT in state 365 resolved as shift
-WARNING: shift/reduce conflict for FUNCTION_LIST_FLT in state 365 resolved as shift
-WARNING: shift/reduce conflict for FUNCTION_LIST_CHR in state 365 resolved as shift
-WARNING: shift/reduce conflict for FUNCTION_LIST_STR in state 365 resolved as shift
-WARNING: shift/reduce conflict for FUNCTION_LIST_BLN in state 365 resolved as shift
-WARNING: shift/reduce conflict for INPUT in state 365 resolved as shift
-WARNING: shift/reduce conflict for LPAREN in state 365 resolved as shift
-WARNING: shift/reduce conflict for STR_LIT in state 365 resolved as shift
-WARNING: shift/reduce conflict for INT in state 365 resolved as shift
-WARNING: shift/reduce conflict for FLT in state 365 resolved as shift
-WARNING: shift/reduce conflict for BLN in state 365 resolved as shift
-WARNING: shift/reduce conflict for CHR in state 365 resolved as shift
-WARNING: shift/reduce conflict for STR in state 365 resolved as shift
-WARNING: shift/reduce conflict for LIST_INT in state 365 resolved as shift
-WARNING: shift/reduce conflict for LIST_FLT in state 365 resolved as shift
-WARNING: shift/reduce conflict for LIST_BLN in state 365 resolved as shift
-WARNING: shift/reduce conflict for LIST_STR in state 365 resolved as shift
-WARNING: shift/reduce conflict for LIST_CHR in state 365 resolved as shift
-WARNING: shift/reduce conflict for INT_LIT in state 365 resolved as shift
-WARNING: shift/reduce conflict for FLT_LIT in state 365 resolved as shift
-WARNING: shift/reduce conflict for BLN_LIT in state 365 resolved as shift
+WARNING: shift/reduce conflict for CHECK in state 335 resolved as shift
+WARNING: shift/reduce conflict for SWAP in state 335 resolved as shift
+WARNING: shift/reduce conflict for DISPLAY in state 335 resolved as shift
+WARNING: shift/reduce conflict for GLOBAL in state 335 resolved as shift
+WARNING: shift/reduce conflict for FOR in state 335 resolved as shift
+WARNING: shift/reduce conflict for UNTIL in state 335 resolved as shift
+WARNING: shift/reduce conflict for REPEAT in state 335 resolved as shift
+WARNING: shift/reduce conflict for FUNCTION in state 335 resolved as shift
+WARNING: shift/reduce conflict for FUNCTION_NAME in state 335 resolved as shift
+WARNING: shift/reduce conflict for IDENT in state 335 resolved as shift
+WARNING: shift/reduce conflict for FUNCTION_INT in state 335 resolved as shift
+WARNING: shift/reduce conflict for FUNCTION_FLT in state 335 resolved as shift
+WARNING: shift/reduce conflict for FUNCTION_CHR in state 335 resolved as shift
+WARNING: shift/reduce conflict for FUNCTION_STR in state 335 resolved as shift
+WARNING: shift/reduce conflict for FUNCTION_BLN in state 335 resolved as shift
+WARNING: shift/reduce conflict for FUNCTION_LIST_INT in state 335 resolved as shift
+WARNING: shift/reduce conflict for FUNCTION_LIST_FLT in state 335 resolved as shift
+WARNING: shift/reduce conflict for FUNCTION_LIST_CHR in state 335 resolved as shift
+WARNING: shift/reduce conflict for FUNCTION_LIST_STR in state 335 resolved as shift
+WARNING: shift/reduce conflict for FUNCTION_LIST_BLN in state 335 resolved as shift
+WARNING: shift/reduce conflict for INPUT in state 335 resolved as shift
+WARNING: shift/reduce conflict for LPAREN in state 335 resolved as shift
+WARNING: shift/reduce conflict for STR_LIT in state 335 resolved as shift
+WARNING: shift/reduce conflict for INT in state 335 resolved as shift
+WARNING: shift/reduce conflict for FLT in state 335 resolved as shift
+WARNING: shift/reduce conflict for BLN in state 335 resolved as shift
+WARNING: shift/reduce conflict for CHR in state 335 resolved as shift
+WARNING: shift/reduce conflict for STR in state 335 resolved as shift
+WARNING: shift/reduce conflict for LIST_INT in state 335 resolved as shift
+WARNING: shift/reduce conflict for LIST_FLT in state 335 resolved as shift
+WARNING: shift/reduce conflict for LIST_BLN in state 335 resolved as shift
+WARNING: shift/reduce conflict for LIST_STR in state 335 resolved as shift
+WARNING: shift/reduce conflict for LIST_CHR in state 335 resolved as shift
+WARNING: shift/reduce conflict for INT_LIT in state 335 resolved as shift
+WARNING: shift/reduce conflict for FLT_LIT in state 335 resolved as shift
+WARNING: shift/reduce conflict for BLN_LIT in state 335 resolved as shift
+WARNING: shift/reduce conflict for CHECK in state 345 resolved as shift
+WARNING: shift/reduce conflict for SWAP in state 345 resolved as shift
+WARNING: shift/reduce conflict for DISPLAY in state 345 resolved as shift
+WARNING: shift/reduce conflict for GLOBAL in state 345 resolved as shift
+WARNING: shift/reduce conflict for FOR in state 345 resolved as shift
+WARNING: shift/reduce conflict for UNTIL in state 345 resolved as shift
+WARNING: shift/reduce conflict for REPEAT in state 345 resolved as shift
+WARNING: shift/reduce conflict for FUNCTION in state 345 resolved as shift
+WARNING: shift/reduce conflict for FUNCTION_NAME in state 345 resolved as shift
+WARNING: shift/reduce conflict for IDENT in state 345 resolved as shift
+WARNING: shift/reduce conflict for FUNCTION_INT in state 345 resolved as shift
+WARNING: shift/reduce conflict for FUNCTION_FLT in state 345 resolved as shift
+WARNING: shift/reduce conflict for FUNCTION_CHR in state 345 resolved as shift
+WARNING: shift/reduce conflict for FUNCTION_STR in state 345 resolved as shift
+WARNING: shift/reduce conflict for FUNCTION_BLN in state 345 resolved as shift
+WARNING: shift/reduce conflict for FUNCTION_LIST_INT in state 345 resolved as shift
+WARNING: shift/reduce conflict for FUNCTION_LIST_FLT in state 345 resolved as shift
+WARNING: shift/reduce conflict for FUNCTION_LIST_CHR in state 345 resolved as shift
+WARNING: shift/reduce conflict for FUNCTION_LIST_STR in state 345 resolved as shift
+WARNING: shift/reduce conflict for FUNCTION_LIST_BLN in state 345 resolved as shift
+WARNING: shift/reduce conflict for INPUT in state 345 resolved as shift
+WARNING: shift/reduce conflict for LPAREN in state 345 resolved as shift
+WARNING: shift/reduce conflict for STR_LIT in state 345 resolved as shift
+WARNING: shift/reduce conflict for INT in state 345 resolved as shift
+WARNING: shift/reduce conflict for FLT in state 345 resolved as shift
+WARNING: shift/reduce conflict for BLN in state 345 resolved as shift
+WARNING: shift/reduce conflict for CHR in state 345 resolved as shift
+WARNING: shift/reduce conflict for STR in state 345 resolved as shift
+WARNING: shift/reduce conflict for LIST_INT in state 345 resolved as shift
+WARNING: shift/reduce conflict for LIST_FLT in state 345 resolved as shift
+WARNING: shift/reduce conflict for LIST_BLN in state 345 resolved as shift
+WARNING: shift/reduce conflict for LIST_STR in state 345 resolved as shift
+WARNING: shift/reduce conflict for LIST_CHR in state 345 resolved as shift
+WARNING: shift/reduce conflict for INT_LIT in state 345 resolved as shift
+WARNING: shift/reduce conflict for FLT_LIT in state 345 resolved as shift
+WARNING: shift/reduce conflict for BLN_LIT in state 345 resolved as shift
+WARNING: shift/reduce conflict for CHECK in state 351 resolved as shift
+WARNING: shift/reduce conflict for SWAP in state 351 resolved as shift
+WARNING: shift/reduce conflict for DISPLAY in state 351 resolved as shift
+WARNING: shift/reduce conflict for GLOBAL in state 351 resolved as shift
+WARNING: shift/reduce conflict for FOR in state 351 resolved as shift
+WARNING: shift/reduce conflict for UNTIL in state 351 resolved as shift
+WARNING: shift/reduce conflict for REPEAT in state 351 resolved as shift
+WARNING: shift/reduce conflict for FUNCTION in state 351 resolved as shift
+WARNING: shift/reduce conflict for FUNCTION_NAME in state 351 resolved as shift
+WARNING: shift/reduce conflict for IDENT in state 351 resolved as shift
+WARNING: shift/reduce conflict for FUNCTION_INT in state 351 resolved as shift
+WARNING: shift/reduce conflict for FUNCTION_FLT in state 351 resolved as shift
+WARNING: shift/reduce conflict for FUNCTION_CHR in state 351 resolved as shift
+WARNING: shift/reduce conflict for FUNCTION_STR in state 351 resolved as shift
+WARNING: shift/reduce conflict for FUNCTION_BLN in state 351 resolved as shift
+WARNING: shift/reduce conflict for FUNCTION_LIST_INT in state 351 resolved as shift
+WARNING: shift/reduce conflict for FUNCTION_LIST_FLT in state 351 resolved as shift
+WARNING: shift/reduce conflict for FUNCTION_LIST_CHR in state 351 resolved as shift
+WARNING: shift/reduce conflict for FUNCTION_LIST_STR in state 351 resolved as shift
+WARNING: shift/reduce conflict for FUNCTION_LIST_BLN in state 351 resolved as shift
+WARNING: shift/reduce conflict for INPUT in state 351 resolved as shift
+WARNING: shift/reduce conflict for LPAREN in state 351 resolved as shift
+WARNING: shift/reduce conflict for STR_LIT in state 351 resolved as shift
+WARNING: shift/reduce conflict for INT in state 351 resolved as shift
+WARNING: shift/reduce conflict for FLT in state 351 resolved as shift
+WARNING: shift/reduce conflict for BLN in state 351 resolved as shift
+WARNING: shift/reduce conflict for CHR in state 351 resolved as shift
+WARNING: shift/reduce conflict for STR in state 351 resolved as shift
+WARNING: shift/reduce conflict for LIST_INT in state 351 resolved as shift
+WARNING: shift/reduce conflict for LIST_FLT in state 351 resolved as shift
+WARNING: shift/reduce conflict for LIST_BLN in state 351 resolved as shift
+WARNING: shift/reduce conflict for LIST_STR in state 351 resolved as shift
+WARNING: shift/reduce conflict for LIST_CHR in state 351 resolved as shift
+WARNING: shift/reduce conflict for INT_LIT in state 351 resolved as shift
+WARNING: shift/reduce conflict for FLT_LIT in state 351 resolved as shift
+WARNING: shift/reduce conflict for BLN_LIT in state 351 resolved as shift
+WARNING: shift/reduce conflict for CHECK in state 367 resolved as shift
+WARNING: shift/reduce conflict for SWAP in state 367 resolved as shift
+WARNING: shift/reduce conflict for DISPLAY in state 367 resolved as shift
+WARNING: shift/reduce conflict for GLOBAL in state 367 resolved as shift
+WARNING: shift/reduce conflict for FOR in state 367 resolved as shift
+WARNING: shift/reduce conflict for UNTIL in state 367 resolved as shift
+WARNING: shift/reduce conflict for REPEAT in state 367 resolved as shift
+WARNING: shift/reduce conflict for FUNCTION in state 367 resolved as shift
+WARNING: shift/reduce conflict for FUNCTION_NAME in state 367 resolved as shift
+WARNING: shift/reduce conflict for IDENT in state 367 resolved as shift
+WARNING: shift/reduce conflict for FUNCTION_INT in state 367 resolved as shift
+WARNING: shift/reduce conflict for FUNCTION_FLT in state 367 resolved as shift
+WARNING: shift/reduce conflict for FUNCTION_CHR in state 367 resolved as shift
+WARNING: shift/reduce conflict for FUNCTION_STR in state 367 resolved as shift
+WARNING: shift/reduce conflict for FUNCTION_BLN in state 367 resolved as shift
+WARNING: shift/reduce conflict for FUNCTION_LIST_INT in state 367 resolved as shift
+WARNING: shift/reduce conflict for FUNCTION_LIST_FLT in state 367 resolved as shift
+WARNING: shift/reduce conflict for FUNCTION_LIST_CHR in state 367 resolved as shift
+WARNING: shift/reduce conflict for FUNCTION_LIST_STR in state 367 resolved as shift
+WARNING: shift/reduce conflict for FUNCTION_LIST_BLN in state 367 resolved as shift
+WARNING: shift/reduce conflict for INPUT in state 367 resolved as shift
+WARNING: shift/reduce conflict for LPAREN in state 367 resolved as shift
+WARNING: shift/reduce conflict for STR_LIT in state 367 resolved as shift
+WARNING: shift/reduce conflict for INT in state 367 resolved as shift
+WARNING: shift/reduce conflict for FLT in state 367 resolved as shift
+WARNING: shift/reduce conflict for BLN in state 367 resolved as shift
+WARNING: shift/reduce conflict for CHR in state 367 resolved as shift
+WARNING: shift/reduce conflict for STR in state 367 resolved as shift
+WARNING: shift/reduce conflict for LIST_INT in state 367 resolved as shift
+WARNING: shift/reduce conflict for LIST_FLT in state 367 resolved as shift
+WARNING: shift/reduce conflict for LIST_BLN in state 367 resolved as shift
+WARNING: shift/reduce conflict for LIST_STR in state 367 resolved as shift
+WARNING: shift/reduce conflict for LIST_CHR in state 367 resolved as shift
+WARNING: shift/reduce conflict for INT_LIT in state 367 resolved as shift
+WARNING: shift/reduce conflict for FLT_LIT in state 367 resolved as shift
+WARNING: shift/reduce conflict for BLN_LIT in state 367 resolved as shift
 WARNING: reduce/reduce conflict in state 28 resolved using rule (function_call -> output_statement)
 WARNING: rejected rule (empty -> <empty>) in state 28
 WARNING: reduce/reduce conflict in state 32 resolved using rule (statements -> empty)
