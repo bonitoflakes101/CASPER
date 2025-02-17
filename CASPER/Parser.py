@@ -237,7 +237,64 @@ def p_le_tail2(p):
                 | le_term"""
     if len(p) == 2:
         p[0] = ASTNode("le_tail2", [p[1]]) if p[1] else ASTNode("le_tail2", [])
-        
+
+def p_var_call(p):
+    """var_call : IDENTIFIER
+                | IDENTIFIER LBRACKET index RBRACKET"""
+    if len(p) == 2:
+        p[0] = ASTNode("var_call", value=p[1])
+    else:
+        p[0] = ASTNode("var_call", [p[3]], p[1])
+
+def p_list_dec(p):
+    """list_dec : list_dtype IDENTIFIER listdec_tail"""
+    p[0] = ASTNode("list_dec", [p[1], p[4], p[5]])
+
+def p_listdec_tail(p):
+    """listdec_tail : COMMA IDENTIFIER listdec_tail
+                     | empty"""
+    if len(p) == 4:
+        p[0] = ASTNode("listdec_tail", [p[2], p[3]])
+    else:
+        p[0] = ASTNode("listdec_tail", [])
+
+def p_list_init(p):
+    """list_init : list_dtype IDENTIFIER LBRACKET index RBRACKET EQ LBRACKET list_element RBRACKET listinit_tail"""
+    p[0] = ASTNode("list_init", [p[1], p[2], p[4], p[8], p[9]])
+
+def p_listinit_tail(p):
+    """listinit_tail : COMMA IDENTIFIER LBRACKET index RBRACKET EQ LBRACKET list_element RBRACKET listinit_tail
+                      | empty"""
+    if len(p) == 11:
+        p[0] = ASTNode("listinit_tail", [p[2], p[4], p[8], p[10]])
+    else:
+        p[0] = ASTNode("listinit_tail", [])
+
+def p_list_dtype(p):
+    """list_dtype : LIST_INT
+                  | LIST_FLT
+                  | LIST_BLN
+                  | LIST_STR
+                  | LIST_CHR"""
+    p[0] = ASTNode("list_dtype", value=p[1])
+
+def p_list_element(p):
+    """list_element : value
+                     | value COMMA list_element"""
+    if len(p) == 2:
+        p[0] = ASTNode("list_element", [p[1]])
+    else:
+        p[0] = ASTNode("list_element", [p[1], p[3]])
+
+def p_index(p):
+    """index : INT_LIT
+              | IDENTIFIER"""
+    p[0] = ASTNode("index", value=p[1])
+
+def p_conditional_statement(p):
+    """conditional_statement : CHECK LPAREN condition RPAREN LBRACE statements RBRACE conditional_tail"""
+    p[0] = ASTNode("conditional_statement", [p[3], p[6], p[8]])
+
 def p_empty(p):
     """empty :"""
     p[0] = None
