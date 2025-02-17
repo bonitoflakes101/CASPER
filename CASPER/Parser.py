@@ -115,6 +115,97 @@ def p_value(p):
               | negative_val"""
     p[0] = ASTNode("value", [p[1]])
 
+def p_negative_val(p):
+    """negative_val : TILDE INT_LIT
+                     | TILDE FLT_LIT"""
+    p[0] = ASTNode("negative_val", [p[2]])
+
+def p_literal(p):
+    """literal : INT_LIT
+                | FLT_LIT
+                | BLN_LIT
+                | CHR_LIT
+                | STR_LIT"""
+    p[0] = ASTNode("literal", value=p[1])
+
+def p_expression(p):
+    """expression : arithmetic_expression
+                   | relational_expression
+                   | logical_expression
+                   | string_concat"""
+    p[0] = ASTNode("expression", [p[1]])
+
+def p_arithmetic_expression(p):
+    """arithmetic_expression : ae_term"""
+    p[0] = ASTNode("arithmetic_expression", [p[1]])
+
+def p_ae_term(p):
+    """ae_term : ae_factor ae_tail2
+                | LPAREN ae_factor ae_tail2 RPAREN ae_tail2"""
+    if len(p) == 3:
+        p[0] = ASTNode("ae_term", [p[1], p[2]])
+    else:
+        p[0] = ASTNode("ae_term", [p[2], p[3], p[5]])
+
+def p_ae_factor(p):
+    """ae_factor : INT_LIT
+                  | FLT_LIT
+                  | var_call"""
+    p[0] = ASTNode("ae_factor", value=p[1])
+
+def p_ae_tail(p):
+    """ae_tail : PLUS ae_term ae_tail
+                | MINUS ae_term ae_tail
+                | DIVIDE ae_term ae_tail
+                | MULTIPLY ae_term ae_tail
+                | MODULO ae_term ae_tail
+                | EXPONENT ae_term ae_tail
+                | empty"""
+    if len(p) == 4:
+        p[0] = ASTNode("ae_tail", [p[2], p[3]], p[1])
+    else:
+        p[0] = ASTNode("ae_tail", [])
+
+def p_ae_tail2(p):
+    """ae_tail2 : ae_term
+                 | ae_tail
+                 | empty """
+    p[0] = ASTNode("ae_tail2", [p[1]])
+
+def p_relational_expression(p):
+    """relational_expression : re_term"""
+    p[0] = ASTNode("relational_expression", [p[1]])
+
+def p_re_term(p):
+    """re_term : re_factor re_tail2
+                | LPAREN re_factor re_tail2 RPAREN re_tail2"""
+    if len(p) == 3:
+        p[0] = ASTNode("re_term", [p[1], p[2]])
+    else:
+        p[0] = ASTNode("re_term", [p[2], p[3], p[5]])
+
+def p_re_factor(p):
+    """re_factor : arithmetic_expression
+                  | INT_LIT
+                  | FLT_LIT
+                  | BLN_LIT
+                  | var_call"""
+    p[0] = ASTNode("re_factor", value=p[1])
+
+def p_re_tail(p):
+    """re_tail : GT re_term re_tail2
+                | LT re_term re_tail2
+                | EQ re_term re_tail2
+                | NEQ re_term re_tail2
+                | GE re_term re_tail2
+                | LE re_term re_tail2"""
+    p[0] = ASTNode("re_tail", [p[2], p[3]], p[1])
+
+def p_re_tail2(p):
+    """re_tail2 : empty
+                 | re_tail
+                 | re_term"""
+    p[0] = ASTNode("re_tail2", [p[1]]) if p[1] else ASTNode("re_tail2", [])
 
 def p_empty(p):
     """empty :"""
