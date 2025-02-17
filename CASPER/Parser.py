@@ -73,13 +73,17 @@ def p_global_declarations(p):
 
 def p_statements(p):
     """statements : statement
-                   | statements statement
-                   | statements NEWLINE
-                   | empty"""
+                  | statements statement
+                  | statements NEWLINE
+                  | empty"""
     if len(p) == 2:
         p[0] = ASTNode("statements", [p[1]]) if p[1] else ASTNode("statements", [])
     elif len(p) == 3:
-        p[0] = ASTNode("statements", p[1].children + [p[2]])
+        if isinstance(p[2], ASTNode):  # ✅ Ignore NEWLINE tokens
+            p[0] = ASTNode("statements", p[1].children + [p[2]])
+        else:
+            p[0] = p[1]  # ✅ Ignore newlines in AST
+
 
 
 def p_statement(p):
@@ -146,9 +150,62 @@ def p_function_call(p):
 
 
 def p_loop(p):
-    """loop : REPEAT LPAREN expression RPAREN LBRACE statements RBRACE UNTIL LPAREN expression RPAREN"""
-    p[0] = ASTNode("loop", [p[3], p[6], p[10]])
+    """loop : FOR LPAREN control_variable SEMICOLON relational_expression SEMICOLON update RPAREN LBRACE statements RBRACE"""
+    p[0] = ASTNode("loop", [p[3], p[5], p[7], p[10]])
 
+def p_control_variable(p):
+    """control_variable : INT IDENT EQ INT_LIT
+                        | FLT IDENT EQ FLT_LIT
+                        | STR IDENT EQ STR_LIT
+                        | CHR IDENT EQ CHR_LIT
+                        | BLN IDENT EQ BLN_LIT
+                        | var_call"""
+    if len(p) == 5:
+        p[0] = ASTNode("control_variable", [p[1], p[2], p[4]])  # Ensuring type, identifier, and value are stored
+    else:
+        p[0] = ASTNode("control_variable", [p[1]])
+
+def p_relational_expression(p):
+    """relational_expression : expression"""
+    p[0] = ASTNode("relational_expression", [p[1]])
+
+def p_update(p):
+    """update : unary
+              | assignment_statement"""
+    p[0] = ASTNode("update", [p[1]])
+
+def p_unary(p):
+    """unary : IDENT unary_op"""
+    p[0] = ASTNode("unary", [p[1], p[2]])
+
+def p_unary_op(p):
+    """unary_op : PLUS_PLUS
+                | MINUS_MINUS"""
+    p[0] = p[1]  # Just store the operator
+
+def p_assignment_statement(p):
+    """assignment_statement : var_call assign_op value"""
+    p[0] = ASTNode("assignment_statement", [p[1], p[2], p[3]])
+
+def p_value(p):
+    """value : literal
+             | expression
+             | var_call
+             | function_call
+             | type_cast
+             | not_op
+             | negative_val"""
+    p[0] = ASTNode("value", [p[1]])
+
+
+def p_assign_op(p):
+    """assign_op : EQ
+                 | PLUS_EQ
+                 | MINUS_EQ
+                 | MUL_EQ
+                 | DIV_EQ
+                 | MOD_EQ"""
+    p[0] = p[1]
 
 def p_conditional(p):
     """conditional : CHECK LPAREN expression RPAREN LBRACE statements RBRACE OTHERWISE LBRACE statements RBRACE OTHERWISE_CHECK LPAREN expression RPAREN"""
@@ -285,6 +342,29 @@ def p_error(p):
     else:
         print("Syntax error at EOF")
 
+# Define parsing rules for missing symbols
+def p_literal(p):
+    """literal : INT_LIT
+               | FLT_LIT
+               | STR_LIT
+               | BLN_LIT
+               | CHR_LIT"""
+    p[0] = ASTNode("literal", value=p[1])
+
+def p_type_cast(p):
+    """type_cast : CONVERT_TO_INT LPAREN value RPAREN
+                 | CONVERT_TO_FLT LPAREN value RPAREN
+                 | CONVERT_TO_STR LPAREN value RPAREN
+                 | CONVERT_TO_BLN LPAREN value RPAREN"""
+    p[0] = ASTNode("type_cast", [p[1], p[3]])
+
+def p_not_op(p):
+    """not_op : NOT value"""
+    p[0] = ASTNode("not_op", [p[2]])
+
+def p_negative_val(p):
+    """negative_val : MINUS value"""
+    p[0] = ASTNode("negative_val", [p[2]])
 
 # Build Parser
 def build_parser():

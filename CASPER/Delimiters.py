@@ -39,7 +39,7 @@ class Delimiters:
     DEL7 =  SPACE | ALPHANUM | NEWLINE | {'$', '@', '"', '(', '{', '\''} # open LPAREN (
     DEL8 = SPACE | NEWLINE | {'+', '-', '*', '/', '{', '(', ')', ']', '}', ','} # closing RPAREN )
     DEL9 = SPACE | NEWLINE | {'(', '{', '$', '@', '"'} # opening LBRACE {
-    DEL10 = SPACE | NEWLINE | NULL | {'"', '(', '{', '[',']',')', ',', ':' } # closing RBRACE }
+    DEL10 = SPACE | NEWLINE | NULL | {'"', '(', '{', '[',']',')', ',', ':' ,';'} # closing RBRACE }
     DEL11 = SPACE | NEWLINE | NULL | {',', '(', '{', '[', '+', ')'}
     DEL12 = SPACE | NEWLINE | NULL | {'\r'}
     DEL13 = SPACE | NULL | {')', '\''} # postfix
