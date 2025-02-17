@@ -3855,20 +3855,7 @@ state 135
     (83) expression -> expression . AND expression
     (84) expression -> expression . OR expression
 
-  ! shift/reduce conflict for PLUS resolved as shift
-  ! shift/reduce conflict for MINUS resolved as shift
-  ! shift/reduce conflict for MULTIPLY resolved as shift
-  ! shift/reduce conflict for DIVISION resolved as shift
-  ! shift/reduce conflict for MODULO resolved as shift
-  ! shift/reduce conflict for EXPONENT resolved as shift
-  ! shift/reduce conflict for EQ_EQ resolved as shift
-  ! shift/reduce conflict for NOT_EQ resolved as shift
-  ! shift/reduce conflict for LT resolved as shift
-  ! shift/reduce conflict for GT resolved as shift
-  ! shift/reduce conflict for LT_EQ resolved as shift
-  ! shift/reduce conflict for GT_EQ resolved as shift
-  ! shift/reduce conflict for AND resolved as shift
-  ! shift/reduce conflict for OR resolved as shift
+    EXPONENT        reduce using rule 85 (expression -> NOT expression .)
     GHOST           reduce using rule 85 (expression -> NOT expression .)
     NEWLINE         reduce using rule 85 (expression -> NOT expression .)
     INT             reduce using rule 85 (expression -> NOT expression .)
@@ -3903,7 +3890,6 @@ state 135
     MULTIPLY        shift and go to state 123
     DIVISION        shift and go to state 124
     MODULO          shift and go to state 125
-    EXPONENT        shift and go to state 126
     EQ_EQ           shift and go to state 127
     NOT_EQ          shift and go to state 128
     LT              shift and go to state 129
@@ -3918,7 +3904,6 @@ state 135
   ! MULTIPLY        [ reduce using rule 85 (expression -> NOT expression .) ]
   ! DIVISION        [ reduce using rule 85 (expression -> NOT expression .) ]
   ! MODULO          [ reduce using rule 85 (expression -> NOT expression .) ]
-  ! EXPONENT        [ reduce using rule 85 (expression -> NOT expression .) ]
   ! EQ_EQ           [ reduce using rule 85 (expression -> NOT expression .) ]
   ! NOT_EQ          [ reduce using rule 85 (expression -> NOT expression .) ]
   ! LT              [ reduce using rule 85 (expression -> NOT expression .) ]
@@ -3927,6 +3912,7 @@ state 135
   ! GT_EQ           [ reduce using rule 85 (expression -> NOT expression .) ]
   ! AND             [ reduce using rule 85 (expression -> NOT expression .) ]
   ! OR              [ reduce using rule 85 (expression -> NOT expression .) ]
+  ! EXPONENT        [ shift and go to state 126 ]
 
 
 state 136
@@ -4736,20 +4722,12 @@ state 167
     (83) expression -> expression . AND expression
     (84) expression -> expression . OR expression
 
-  ! shift/reduce conflict for PLUS resolved as shift
-  ! shift/reduce conflict for MINUS resolved as shift
-  ! shift/reduce conflict for MULTIPLY resolved as shift
-  ! shift/reduce conflict for DIVISION resolved as shift
-  ! shift/reduce conflict for MODULO resolved as shift
-  ! shift/reduce conflict for EXPONENT resolved as shift
-  ! shift/reduce conflict for EQ_EQ resolved as shift
-  ! shift/reduce conflict for NOT_EQ resolved as shift
-  ! shift/reduce conflict for LT resolved as shift
-  ! shift/reduce conflict for GT resolved as shift
-  ! shift/reduce conflict for LT_EQ resolved as shift
-  ! shift/reduce conflict for GT_EQ resolved as shift
-  ! shift/reduce conflict for AND resolved as shift
-  ! shift/reduce conflict for OR resolved as shift
+    PLUS            reduce using rule 71 (expression -> expression PLUS expression .)
+    MINUS           reduce using rule 71 (expression -> expression PLUS expression .)
+    MULTIPLY        reduce using rule 71 (expression -> expression PLUS expression .)
+    DIVISION        reduce using rule 71 (expression -> expression PLUS expression .)
+    MODULO          reduce using rule 71 (expression -> expression PLUS expression .)
+    EXPONENT        reduce using rule 71 (expression -> expression PLUS expression .)
     GHOST           reduce using rule 71 (expression -> expression PLUS expression .)
     NEWLINE         reduce using rule 71 (expression -> expression PLUS expression .)
     INT             reduce using rule 71 (expression -> expression PLUS expression .)
@@ -4779,12 +4757,6 @@ state 167
     COMMA           reduce using rule 71 (expression -> expression PLUS expression .)
     RPAREN          reduce using rule 71 (expression -> expression PLUS expression .)
     COLON           reduce using rule 71 (expression -> expression PLUS expression .)
-    PLUS            shift and go to state 121
-    MINUS           shift and go to state 122
-    MULTIPLY        shift and go to state 123
-    DIVISION        shift and go to state 124
-    MODULO          shift and go to state 125
-    EXPONENT        shift and go to state 126
     EQ_EQ           shift and go to state 127
     NOT_EQ          shift and go to state 128
     LT              shift and go to state 129
@@ -4794,12 +4766,6 @@ state 167
     AND             shift and go to state 133
     OR              shift and go to state 134
 
-  ! PLUS            [ reduce using rule 71 (expression -> expression PLUS expression .) ]
-  ! MINUS           [ reduce using rule 71 (expression -> expression PLUS expression .) ]
-  ! MULTIPLY        [ reduce using rule 71 (expression -> expression PLUS expression .) ]
-  ! DIVISION        [ reduce using rule 71 (expression -> expression PLUS expression .) ]
-  ! MODULO          [ reduce using rule 71 (expression -> expression PLUS expression .) ]
-  ! EXPONENT        [ reduce using rule 71 (expression -> expression PLUS expression .) ]
   ! EQ_EQ           [ reduce using rule 71 (expression -> expression PLUS expression .) ]
   ! NOT_EQ          [ reduce using rule 71 (expression -> expression PLUS expression .) ]
   ! LT              [ reduce using rule 71 (expression -> expression PLUS expression .) ]
@@ -4808,6 +4774,12 @@ state 167
   ! GT_EQ           [ reduce using rule 71 (expression -> expression PLUS expression .) ]
   ! AND             [ reduce using rule 71 (expression -> expression PLUS expression .) ]
   ! OR              [ reduce using rule 71 (expression -> expression PLUS expression .) ]
+  ! PLUS            [ shift and go to state 121 ]
+  ! MINUS           [ shift and go to state 122 ]
+  ! MULTIPLY        [ shift and go to state 123 ]
+  ! DIVISION        [ shift and go to state 124 ]
+  ! MODULO          [ shift and go to state 125 ]
+  ! EXPONENT        [ shift and go to state 126 ]
 
 
 state 168
@@ -4828,20 +4800,7 @@ state 168
     (83) expression -> expression . AND expression
     (84) expression -> expression . OR expression
 
-  ! shift/reduce conflict for PLUS resolved as shift
-  ! shift/reduce conflict for MINUS resolved as shift
-  ! shift/reduce conflict for MULTIPLY resolved as shift
-  ! shift/reduce conflict for DIVISION resolved as shift
-  ! shift/reduce conflict for MODULO resolved as shift
-  ! shift/reduce conflict for EXPONENT resolved as shift
-  ! shift/reduce conflict for EQ_EQ resolved as shift
-  ! shift/reduce conflict for NOT_EQ resolved as shift
-  ! shift/reduce conflict for LT resolved as shift
-  ! shift/reduce conflict for GT resolved as shift
-  ! shift/reduce conflict for LT_EQ resolved as shift
-  ! shift/reduce conflict for GT_EQ resolved as shift
-  ! shift/reduce conflict for AND resolved as shift
-  ! shift/reduce conflict for OR resolved as shift
+    EXPONENT        reduce using rule 72 (expression -> expression MINUS expression .)
     GHOST           reduce using rule 72 (expression -> expression MINUS expression .)
     NEWLINE         reduce using rule 72 (expression -> expression MINUS expression .)
     INT             reduce using rule 72 (expression -> expression MINUS expression .)
@@ -4876,7 +4835,6 @@ state 168
     MULTIPLY        shift and go to state 123
     DIVISION        shift and go to state 124
     MODULO          shift and go to state 125
-    EXPONENT        shift and go to state 126
     EQ_EQ           shift and go to state 127
     NOT_EQ          shift and go to state 128
     LT              shift and go to state 129
@@ -4891,7 +4849,6 @@ state 168
   ! MULTIPLY        [ reduce using rule 72 (expression -> expression MINUS expression .) ]
   ! DIVISION        [ reduce using rule 72 (expression -> expression MINUS expression .) ]
   ! MODULO          [ reduce using rule 72 (expression -> expression MINUS expression .) ]
-  ! EXPONENT        [ reduce using rule 72 (expression -> expression MINUS expression .) ]
   ! EQ_EQ           [ reduce using rule 72 (expression -> expression MINUS expression .) ]
   ! NOT_EQ          [ reduce using rule 72 (expression -> expression MINUS expression .) ]
   ! LT              [ reduce using rule 72 (expression -> expression MINUS expression .) ]
@@ -4900,6 +4857,7 @@ state 168
   ! GT_EQ           [ reduce using rule 72 (expression -> expression MINUS expression .) ]
   ! AND             [ reduce using rule 72 (expression -> expression MINUS expression .) ]
   ! OR              [ reduce using rule 72 (expression -> expression MINUS expression .) ]
+  ! EXPONENT        [ shift and go to state 126 ]
 
 
 state 169
@@ -4920,20 +4878,11 @@ state 169
     (83) expression -> expression . AND expression
     (84) expression -> expression . OR expression
 
-  ! shift/reduce conflict for PLUS resolved as shift
-  ! shift/reduce conflict for MINUS resolved as shift
-  ! shift/reduce conflict for MULTIPLY resolved as shift
-  ! shift/reduce conflict for DIVISION resolved as shift
-  ! shift/reduce conflict for MODULO resolved as shift
-  ! shift/reduce conflict for EXPONENT resolved as shift
-  ! shift/reduce conflict for EQ_EQ resolved as shift
-  ! shift/reduce conflict for NOT_EQ resolved as shift
-  ! shift/reduce conflict for LT resolved as shift
-  ! shift/reduce conflict for GT resolved as shift
-  ! shift/reduce conflict for LT_EQ resolved as shift
-  ! shift/reduce conflict for GT_EQ resolved as shift
-  ! shift/reduce conflict for AND resolved as shift
-  ! shift/reduce conflict for OR resolved as shift
+    MINUS           reduce using rule 73 (expression -> expression MULTIPLY expression .)
+    MULTIPLY        reduce using rule 73 (expression -> expression MULTIPLY expression .)
+    DIVISION        reduce using rule 73 (expression -> expression MULTIPLY expression .)
+    MODULO          reduce using rule 73 (expression -> expression MULTIPLY expression .)
+    EXPONENT        reduce using rule 73 (expression -> expression MULTIPLY expression .)
     GHOST           reduce using rule 73 (expression -> expression MULTIPLY expression .)
     NEWLINE         reduce using rule 73 (expression -> expression MULTIPLY expression .)
     INT             reduce using rule 73 (expression -> expression MULTIPLY expression .)
@@ -4964,11 +4913,6 @@ state 169
     RPAREN          reduce using rule 73 (expression -> expression MULTIPLY expression .)
     COLON           reduce using rule 73 (expression -> expression MULTIPLY expression .)
     PLUS            shift and go to state 121
-    MINUS           shift and go to state 122
-    MULTIPLY        shift and go to state 123
-    DIVISION        shift and go to state 124
-    MODULO          shift and go to state 125
-    EXPONENT        shift and go to state 126
     EQ_EQ           shift and go to state 127
     NOT_EQ          shift and go to state 128
     LT              shift and go to state 129
@@ -4979,11 +4923,6 @@ state 169
     OR              shift and go to state 134
 
   ! PLUS            [ reduce using rule 73 (expression -> expression MULTIPLY expression .) ]
-  ! MINUS           [ reduce using rule 73 (expression -> expression MULTIPLY expression .) ]
-  ! MULTIPLY        [ reduce using rule 73 (expression -> expression MULTIPLY expression .) ]
-  ! DIVISION        [ reduce using rule 73 (expression -> expression MULTIPLY expression .) ]
-  ! MODULO          [ reduce using rule 73 (expression -> expression MULTIPLY expression .) ]
-  ! EXPONENT        [ reduce using rule 73 (expression -> expression MULTIPLY expression .) ]
   ! EQ_EQ           [ reduce using rule 73 (expression -> expression MULTIPLY expression .) ]
   ! NOT_EQ          [ reduce using rule 73 (expression -> expression MULTIPLY expression .) ]
   ! LT              [ reduce using rule 73 (expression -> expression MULTIPLY expression .) ]
@@ -4992,6 +4931,11 @@ state 169
   ! GT_EQ           [ reduce using rule 73 (expression -> expression MULTIPLY expression .) ]
   ! AND             [ reduce using rule 73 (expression -> expression MULTIPLY expression .) ]
   ! OR              [ reduce using rule 73 (expression -> expression MULTIPLY expression .) ]
+  ! MINUS           [ shift and go to state 122 ]
+  ! MULTIPLY        [ shift and go to state 123 ]
+  ! DIVISION        [ shift and go to state 124 ]
+  ! MODULO          [ shift and go to state 125 ]
+  ! EXPONENT        [ shift and go to state 126 ]
 
 
 state 170
@@ -5012,20 +4956,11 @@ state 170
     (83) expression -> expression . AND expression
     (84) expression -> expression . OR expression
 
-  ! shift/reduce conflict for PLUS resolved as shift
-  ! shift/reduce conflict for MINUS resolved as shift
-  ! shift/reduce conflict for MULTIPLY resolved as shift
-  ! shift/reduce conflict for DIVISION resolved as shift
-  ! shift/reduce conflict for MODULO resolved as shift
-  ! shift/reduce conflict for EXPONENT resolved as shift
-  ! shift/reduce conflict for EQ_EQ resolved as shift
-  ! shift/reduce conflict for NOT_EQ resolved as shift
-  ! shift/reduce conflict for LT resolved as shift
-  ! shift/reduce conflict for GT resolved as shift
-  ! shift/reduce conflict for LT_EQ resolved as shift
-  ! shift/reduce conflict for GT_EQ resolved as shift
-  ! shift/reduce conflict for AND resolved as shift
-  ! shift/reduce conflict for OR resolved as shift
+    MINUS           reduce using rule 74 (expression -> expression DIVISION expression .)
+    MULTIPLY        reduce using rule 74 (expression -> expression DIVISION expression .)
+    DIVISION        reduce using rule 74 (expression -> expression DIVISION expression .)
+    MODULO          reduce using rule 74 (expression -> expression DIVISION expression .)
+    EXPONENT        reduce using rule 74 (expression -> expression DIVISION expression .)
     GHOST           reduce using rule 74 (expression -> expression DIVISION expression .)
     NEWLINE         reduce using rule 74 (expression -> expression DIVISION expression .)
     INT             reduce using rule 74 (expression -> expression DIVISION expression .)
@@ -5056,11 +4991,6 @@ state 170
     RPAREN          reduce using rule 74 (expression -> expression DIVISION expression .)
     COLON           reduce using rule 74 (expression -> expression DIVISION expression .)
     PLUS            shift and go to state 121
-    MINUS           shift and go to state 122
-    MULTIPLY        shift and go to state 123
-    DIVISION        shift and go to state 124
-    MODULO          shift and go to state 125
-    EXPONENT        shift and go to state 126
     EQ_EQ           shift and go to state 127
     NOT_EQ          shift and go to state 128
     LT              shift and go to state 129
@@ -5071,11 +5001,6 @@ state 170
     OR              shift and go to state 134
 
   ! PLUS            [ reduce using rule 74 (expression -> expression DIVISION expression .) ]
-  ! MINUS           [ reduce using rule 74 (expression -> expression DIVISION expression .) ]
-  ! MULTIPLY        [ reduce using rule 74 (expression -> expression DIVISION expression .) ]
-  ! DIVISION        [ reduce using rule 74 (expression -> expression DIVISION expression .) ]
-  ! MODULO          [ reduce using rule 74 (expression -> expression DIVISION expression .) ]
-  ! EXPONENT        [ reduce using rule 74 (expression -> expression DIVISION expression .) ]
   ! EQ_EQ           [ reduce using rule 74 (expression -> expression DIVISION expression .) ]
   ! NOT_EQ          [ reduce using rule 74 (expression -> expression DIVISION expression .) ]
   ! LT              [ reduce using rule 74 (expression -> expression DIVISION expression .) ]
@@ -5084,6 +5009,11 @@ state 170
   ! GT_EQ           [ reduce using rule 74 (expression -> expression DIVISION expression .) ]
   ! AND             [ reduce using rule 74 (expression -> expression DIVISION expression .) ]
   ! OR              [ reduce using rule 74 (expression -> expression DIVISION expression .) ]
+  ! MINUS           [ shift and go to state 122 ]
+  ! MULTIPLY        [ shift and go to state 123 ]
+  ! DIVISION        [ shift and go to state 124 ]
+  ! MODULO          [ shift and go to state 125 ]
+  ! EXPONENT        [ shift and go to state 126 ]
 
 
 state 171
@@ -5104,20 +5034,11 @@ state 171
     (83) expression -> expression . AND expression
     (84) expression -> expression . OR expression
 
-  ! shift/reduce conflict for PLUS resolved as shift
-  ! shift/reduce conflict for MINUS resolved as shift
-  ! shift/reduce conflict for MULTIPLY resolved as shift
-  ! shift/reduce conflict for DIVISION resolved as shift
-  ! shift/reduce conflict for MODULO resolved as shift
-  ! shift/reduce conflict for EXPONENT resolved as shift
-  ! shift/reduce conflict for EQ_EQ resolved as shift
-  ! shift/reduce conflict for NOT_EQ resolved as shift
-  ! shift/reduce conflict for LT resolved as shift
-  ! shift/reduce conflict for GT resolved as shift
-  ! shift/reduce conflict for LT_EQ resolved as shift
-  ! shift/reduce conflict for GT_EQ resolved as shift
-  ! shift/reduce conflict for AND resolved as shift
-  ! shift/reduce conflict for OR resolved as shift
+    MINUS           reduce using rule 75 (expression -> expression MODULO expression .)
+    MULTIPLY        reduce using rule 75 (expression -> expression MODULO expression .)
+    DIVISION        reduce using rule 75 (expression -> expression MODULO expression .)
+    MODULO          reduce using rule 75 (expression -> expression MODULO expression .)
+    EXPONENT        reduce using rule 75 (expression -> expression MODULO expression .)
     GHOST           reduce using rule 75 (expression -> expression MODULO expression .)
     NEWLINE         reduce using rule 75 (expression -> expression MODULO expression .)
     INT             reduce using rule 75 (expression -> expression MODULO expression .)
@@ -5148,11 +5069,6 @@ state 171
     RPAREN          reduce using rule 75 (expression -> expression MODULO expression .)
     COLON           reduce using rule 75 (expression -> expression MODULO expression .)
     PLUS            shift and go to state 121
-    MINUS           shift and go to state 122
-    MULTIPLY        shift and go to state 123
-    DIVISION        shift and go to state 124
-    MODULO          shift and go to state 125
-    EXPONENT        shift and go to state 126
     EQ_EQ           shift and go to state 127
     NOT_EQ          shift and go to state 128
     LT              shift and go to state 129
@@ -5163,11 +5079,6 @@ state 171
     OR              shift and go to state 134
 
   ! PLUS            [ reduce using rule 75 (expression -> expression MODULO expression .) ]
-  ! MINUS           [ reduce using rule 75 (expression -> expression MODULO expression .) ]
-  ! MULTIPLY        [ reduce using rule 75 (expression -> expression MODULO expression .) ]
-  ! DIVISION        [ reduce using rule 75 (expression -> expression MODULO expression .) ]
-  ! MODULO          [ reduce using rule 75 (expression -> expression MODULO expression .) ]
-  ! EXPONENT        [ reduce using rule 75 (expression -> expression MODULO expression .) ]
   ! EQ_EQ           [ reduce using rule 75 (expression -> expression MODULO expression .) ]
   ! NOT_EQ          [ reduce using rule 75 (expression -> expression MODULO expression .) ]
   ! LT              [ reduce using rule 75 (expression -> expression MODULO expression .) ]
@@ -5176,6 +5087,11 @@ state 171
   ! GT_EQ           [ reduce using rule 75 (expression -> expression MODULO expression .) ]
   ! AND             [ reduce using rule 75 (expression -> expression MODULO expression .) ]
   ! OR              [ reduce using rule 75 (expression -> expression MODULO expression .) ]
+  ! MINUS           [ shift and go to state 122 ]
+  ! MULTIPLY        [ shift and go to state 123 ]
+  ! DIVISION        [ shift and go to state 124 ]
+  ! MODULO          [ shift and go to state 125 ]
+  ! EXPONENT        [ shift and go to state 126 ]
 
 
 state 172
@@ -5196,20 +5112,6 @@ state 172
     (83) expression -> expression . AND expression
     (84) expression -> expression . OR expression
 
-  ! shift/reduce conflict for PLUS resolved as shift
-  ! shift/reduce conflict for MINUS resolved as shift
-  ! shift/reduce conflict for MULTIPLY resolved as shift
-  ! shift/reduce conflict for DIVISION resolved as shift
-  ! shift/reduce conflict for MODULO resolved as shift
-  ! shift/reduce conflict for EXPONENT resolved as shift
-  ! shift/reduce conflict for EQ_EQ resolved as shift
-  ! shift/reduce conflict for NOT_EQ resolved as shift
-  ! shift/reduce conflict for LT resolved as shift
-  ! shift/reduce conflict for GT resolved as shift
-  ! shift/reduce conflict for LT_EQ resolved as shift
-  ! shift/reduce conflict for GT_EQ resolved as shift
-  ! shift/reduce conflict for AND resolved as shift
-  ! shift/reduce conflict for OR resolved as shift
     GHOST           reduce using rule 76 (expression -> expression EXPONENT expression .)
     NEWLINE         reduce using rule 76 (expression -> expression EXPONENT expression .)
     INT             reduce using rule 76 (expression -> expression EXPONENT expression .)
@@ -5288,20 +5190,18 @@ state 173
     (83) expression -> expression . AND expression
     (84) expression -> expression . OR expression
 
-  ! shift/reduce conflict for PLUS resolved as shift
-  ! shift/reduce conflict for MINUS resolved as shift
-  ! shift/reduce conflict for MULTIPLY resolved as shift
-  ! shift/reduce conflict for DIVISION resolved as shift
-  ! shift/reduce conflict for MODULO resolved as shift
-  ! shift/reduce conflict for EXPONENT resolved as shift
-  ! shift/reduce conflict for EQ_EQ resolved as shift
-  ! shift/reduce conflict for NOT_EQ resolved as shift
-  ! shift/reduce conflict for LT resolved as shift
-  ! shift/reduce conflict for GT resolved as shift
-  ! shift/reduce conflict for LT_EQ resolved as shift
-  ! shift/reduce conflict for GT_EQ resolved as shift
-  ! shift/reduce conflict for AND resolved as shift
-  ! shift/reduce conflict for OR resolved as shift
+    PLUS            reduce using rule 77 (expression -> expression EQ_EQ expression .)
+    MINUS           reduce using rule 77 (expression -> expression EQ_EQ expression .)
+    MULTIPLY        reduce using rule 77 (expression -> expression EQ_EQ expression .)
+    DIVISION        reduce using rule 77 (expression -> expression EQ_EQ expression .)
+    MODULO          reduce using rule 77 (expression -> expression EQ_EQ expression .)
+    EXPONENT        reduce using rule 77 (expression -> expression EQ_EQ expression .)
+    EQ_EQ           reduce using rule 77 (expression -> expression EQ_EQ expression .)
+    NOT_EQ          reduce using rule 77 (expression -> expression EQ_EQ expression .)
+    LT              reduce using rule 77 (expression -> expression EQ_EQ expression .)
+    GT              reduce using rule 77 (expression -> expression EQ_EQ expression .)
+    LT_EQ           reduce using rule 77 (expression -> expression EQ_EQ expression .)
+    GT_EQ           reduce using rule 77 (expression -> expression EQ_EQ expression .)
     GHOST           reduce using rule 77 (expression -> expression EQ_EQ expression .)
     NEWLINE         reduce using rule 77 (expression -> expression EQ_EQ expression .)
     INT             reduce using rule 77 (expression -> expression EQ_EQ expression .)
@@ -5331,35 +5231,23 @@ state 173
     COMMA           reduce using rule 77 (expression -> expression EQ_EQ expression .)
     RPAREN          reduce using rule 77 (expression -> expression EQ_EQ expression .)
     COLON           reduce using rule 77 (expression -> expression EQ_EQ expression .)
-    PLUS            shift and go to state 121
-    MINUS           shift and go to state 122
-    MULTIPLY        shift and go to state 123
-    DIVISION        shift and go to state 124
-    MODULO          shift and go to state 125
-    EXPONENT        shift and go to state 126
-    EQ_EQ           shift and go to state 127
-    NOT_EQ          shift and go to state 128
-    LT              shift and go to state 129
-    GT              shift and go to state 130
-    LT_EQ           shift and go to state 131
-    GT_EQ           shift and go to state 132
     AND             shift and go to state 133
     OR              shift and go to state 134
 
-  ! PLUS            [ reduce using rule 77 (expression -> expression EQ_EQ expression .) ]
-  ! MINUS           [ reduce using rule 77 (expression -> expression EQ_EQ expression .) ]
-  ! MULTIPLY        [ reduce using rule 77 (expression -> expression EQ_EQ expression .) ]
-  ! DIVISION        [ reduce using rule 77 (expression -> expression EQ_EQ expression .) ]
-  ! MODULO          [ reduce using rule 77 (expression -> expression EQ_EQ expression .) ]
-  ! EXPONENT        [ reduce using rule 77 (expression -> expression EQ_EQ expression .) ]
-  ! EQ_EQ           [ reduce using rule 77 (expression -> expression EQ_EQ expression .) ]
-  ! NOT_EQ          [ reduce using rule 77 (expression -> expression EQ_EQ expression .) ]
-  ! LT              [ reduce using rule 77 (expression -> expression EQ_EQ expression .) ]
-  ! GT              [ reduce using rule 77 (expression -> expression EQ_EQ expression .) ]
-  ! LT_EQ           [ reduce using rule 77 (expression -> expression EQ_EQ expression .) ]
-  ! GT_EQ           [ reduce using rule 77 (expression -> expression EQ_EQ expression .) ]
   ! AND             [ reduce using rule 77 (expression -> expression EQ_EQ expression .) ]
   ! OR              [ reduce using rule 77 (expression -> expression EQ_EQ expression .) ]
+  ! PLUS            [ shift and go to state 121 ]
+  ! MINUS           [ shift and go to state 122 ]
+  ! MULTIPLY        [ shift and go to state 123 ]
+  ! DIVISION        [ shift and go to state 124 ]
+  ! MODULO          [ shift and go to state 125 ]
+  ! EXPONENT        [ shift and go to state 126 ]
+  ! EQ_EQ           [ shift and go to state 127 ]
+  ! NOT_EQ          [ shift and go to state 128 ]
+  ! LT              [ shift and go to state 129 ]
+  ! GT              [ shift and go to state 130 ]
+  ! LT_EQ           [ shift and go to state 131 ]
+  ! GT_EQ           [ shift and go to state 132 ]
 
 
 state 174
@@ -5380,20 +5268,18 @@ state 174
     (83) expression -> expression . AND expression
     (84) expression -> expression . OR expression
 
-  ! shift/reduce conflict for PLUS resolved as shift
-  ! shift/reduce conflict for MINUS resolved as shift
-  ! shift/reduce conflict for MULTIPLY resolved as shift
-  ! shift/reduce conflict for DIVISION resolved as shift
-  ! shift/reduce conflict for MODULO resolved as shift
-  ! shift/reduce conflict for EXPONENT resolved as shift
-  ! shift/reduce conflict for EQ_EQ resolved as shift
-  ! shift/reduce conflict for NOT_EQ resolved as shift
-  ! shift/reduce conflict for LT resolved as shift
-  ! shift/reduce conflict for GT resolved as shift
-  ! shift/reduce conflict for LT_EQ resolved as shift
-  ! shift/reduce conflict for GT_EQ resolved as shift
-  ! shift/reduce conflict for AND resolved as shift
-  ! shift/reduce conflict for OR resolved as shift
+    PLUS            reduce using rule 78 (expression -> expression NOT_EQ expression .)
+    MINUS           reduce using rule 78 (expression -> expression NOT_EQ expression .)
+    MULTIPLY        reduce using rule 78 (expression -> expression NOT_EQ expression .)
+    DIVISION        reduce using rule 78 (expression -> expression NOT_EQ expression .)
+    MODULO          reduce using rule 78 (expression -> expression NOT_EQ expression .)
+    EXPONENT        reduce using rule 78 (expression -> expression NOT_EQ expression .)
+    EQ_EQ           reduce using rule 78 (expression -> expression NOT_EQ expression .)
+    NOT_EQ          reduce using rule 78 (expression -> expression NOT_EQ expression .)
+    LT              reduce using rule 78 (expression -> expression NOT_EQ expression .)
+    GT              reduce using rule 78 (expression -> expression NOT_EQ expression .)
+    LT_EQ           reduce using rule 78 (expression -> expression NOT_EQ expression .)
+    GT_EQ           reduce using rule 78 (expression -> expression NOT_EQ expression .)
     GHOST           reduce using rule 78 (expression -> expression NOT_EQ expression .)
     NEWLINE         reduce using rule 78 (expression -> expression NOT_EQ expression .)
     INT             reduce using rule 78 (expression -> expression NOT_EQ expression .)
@@ -5423,35 +5309,23 @@ state 174
     COMMA           reduce using rule 78 (expression -> expression NOT_EQ expression .)
     RPAREN          reduce using rule 78 (expression -> expression NOT_EQ expression .)
     COLON           reduce using rule 78 (expression -> expression NOT_EQ expression .)
-    PLUS            shift and go to state 121
-    MINUS           shift and go to state 122
-    MULTIPLY        shift and go to state 123
-    DIVISION        shift and go to state 124
-    MODULO          shift and go to state 125
-    EXPONENT        shift and go to state 126
-    EQ_EQ           shift and go to state 127
-    NOT_EQ          shift and go to state 128
-    LT              shift and go to state 129
-    GT              shift and go to state 130
-    LT_EQ           shift and go to state 131
-    GT_EQ           shift and go to state 132
     AND             shift and go to state 133
     OR              shift and go to state 134
 
-  ! PLUS            [ reduce using rule 78 (expression -> expression NOT_EQ expression .) ]
-  ! MINUS           [ reduce using rule 78 (expression -> expression NOT_EQ expression .) ]
-  ! MULTIPLY        [ reduce using rule 78 (expression -> expression NOT_EQ expression .) ]
-  ! DIVISION        [ reduce using rule 78 (expression -> expression NOT_EQ expression .) ]
-  ! MODULO          [ reduce using rule 78 (expression -> expression NOT_EQ expression .) ]
-  ! EXPONENT        [ reduce using rule 78 (expression -> expression NOT_EQ expression .) ]
-  ! EQ_EQ           [ reduce using rule 78 (expression -> expression NOT_EQ expression .) ]
-  ! NOT_EQ          [ reduce using rule 78 (expression -> expression NOT_EQ expression .) ]
-  ! LT              [ reduce using rule 78 (expression -> expression NOT_EQ expression .) ]
-  ! GT              [ reduce using rule 78 (expression -> expression NOT_EQ expression .) ]
-  ! LT_EQ           [ reduce using rule 78 (expression -> expression NOT_EQ expression .) ]
-  ! GT_EQ           [ reduce using rule 78 (expression -> expression NOT_EQ expression .) ]
   ! AND             [ reduce using rule 78 (expression -> expression NOT_EQ expression .) ]
   ! OR              [ reduce using rule 78 (expression -> expression NOT_EQ expression .) ]
+  ! PLUS            [ shift and go to state 121 ]
+  ! MINUS           [ shift and go to state 122 ]
+  ! MULTIPLY        [ shift and go to state 123 ]
+  ! DIVISION        [ shift and go to state 124 ]
+  ! MODULO          [ shift and go to state 125 ]
+  ! EXPONENT        [ shift and go to state 126 ]
+  ! EQ_EQ           [ shift and go to state 127 ]
+  ! NOT_EQ          [ shift and go to state 128 ]
+  ! LT              [ shift and go to state 129 ]
+  ! GT              [ shift and go to state 130 ]
+  ! LT_EQ           [ shift and go to state 131 ]
+  ! GT_EQ           [ shift and go to state 132 ]
 
 
 state 175
@@ -5472,20 +5346,18 @@ state 175
     (83) expression -> expression . AND expression
     (84) expression -> expression . OR expression
 
-  ! shift/reduce conflict for PLUS resolved as shift
-  ! shift/reduce conflict for MINUS resolved as shift
-  ! shift/reduce conflict for MULTIPLY resolved as shift
-  ! shift/reduce conflict for DIVISION resolved as shift
-  ! shift/reduce conflict for MODULO resolved as shift
-  ! shift/reduce conflict for EXPONENT resolved as shift
-  ! shift/reduce conflict for EQ_EQ resolved as shift
-  ! shift/reduce conflict for NOT_EQ resolved as shift
-  ! shift/reduce conflict for LT resolved as shift
-  ! shift/reduce conflict for GT resolved as shift
-  ! shift/reduce conflict for LT_EQ resolved as shift
-  ! shift/reduce conflict for GT_EQ resolved as shift
-  ! shift/reduce conflict for AND resolved as shift
-  ! shift/reduce conflict for OR resolved as shift
+    PLUS            reduce using rule 79 (expression -> expression LT expression .)
+    MINUS           reduce using rule 79 (expression -> expression LT expression .)
+    MULTIPLY        reduce using rule 79 (expression -> expression LT expression .)
+    DIVISION        reduce using rule 79 (expression -> expression LT expression .)
+    MODULO          reduce using rule 79 (expression -> expression LT expression .)
+    EXPONENT        reduce using rule 79 (expression -> expression LT expression .)
+    EQ_EQ           reduce using rule 79 (expression -> expression LT expression .)
+    NOT_EQ          reduce using rule 79 (expression -> expression LT expression .)
+    LT              reduce using rule 79 (expression -> expression LT expression .)
+    GT              reduce using rule 79 (expression -> expression LT expression .)
+    LT_EQ           reduce using rule 79 (expression -> expression LT expression .)
+    GT_EQ           reduce using rule 79 (expression -> expression LT expression .)
     GHOST           reduce using rule 79 (expression -> expression LT expression .)
     NEWLINE         reduce using rule 79 (expression -> expression LT expression .)
     INT             reduce using rule 79 (expression -> expression LT expression .)
@@ -5515,35 +5387,23 @@ state 175
     COMMA           reduce using rule 79 (expression -> expression LT expression .)
     RPAREN          reduce using rule 79 (expression -> expression LT expression .)
     COLON           reduce using rule 79 (expression -> expression LT expression .)
-    PLUS            shift and go to state 121
-    MINUS           shift and go to state 122
-    MULTIPLY        shift and go to state 123
-    DIVISION        shift and go to state 124
-    MODULO          shift and go to state 125
-    EXPONENT        shift and go to state 126
-    EQ_EQ           shift and go to state 127
-    NOT_EQ          shift and go to state 128
-    LT              shift and go to state 129
-    GT              shift and go to state 130
-    LT_EQ           shift and go to state 131
-    GT_EQ           shift and go to state 132
     AND             shift and go to state 133
     OR              shift and go to state 134
 
-  ! PLUS            [ reduce using rule 79 (expression -> expression LT expression .) ]
-  ! MINUS           [ reduce using rule 79 (expression -> expression LT expression .) ]
-  ! MULTIPLY        [ reduce using rule 79 (expression -> expression LT expression .) ]
-  ! DIVISION        [ reduce using rule 79 (expression -> expression LT expression .) ]
-  ! MODULO          [ reduce using rule 79 (expression -> expression LT expression .) ]
-  ! EXPONENT        [ reduce using rule 79 (expression -> expression LT expression .) ]
-  ! EQ_EQ           [ reduce using rule 79 (expression -> expression LT expression .) ]
-  ! NOT_EQ          [ reduce using rule 79 (expression -> expression LT expression .) ]
-  ! LT              [ reduce using rule 79 (expression -> expression LT expression .) ]
-  ! GT              [ reduce using rule 79 (expression -> expression LT expression .) ]
-  ! LT_EQ           [ reduce using rule 79 (expression -> expression LT expression .) ]
-  ! GT_EQ           [ reduce using rule 79 (expression -> expression LT expression .) ]
   ! AND             [ reduce using rule 79 (expression -> expression LT expression .) ]
   ! OR              [ reduce using rule 79 (expression -> expression LT expression .) ]
+  ! PLUS            [ shift and go to state 121 ]
+  ! MINUS           [ shift and go to state 122 ]
+  ! MULTIPLY        [ shift and go to state 123 ]
+  ! DIVISION        [ shift and go to state 124 ]
+  ! MODULO          [ shift and go to state 125 ]
+  ! EXPONENT        [ shift and go to state 126 ]
+  ! EQ_EQ           [ shift and go to state 127 ]
+  ! NOT_EQ          [ shift and go to state 128 ]
+  ! LT              [ shift and go to state 129 ]
+  ! GT              [ shift and go to state 130 ]
+  ! LT_EQ           [ shift and go to state 131 ]
+  ! GT_EQ           [ shift and go to state 132 ]
 
 
 state 176
@@ -5564,20 +5424,18 @@ state 176
     (83) expression -> expression . AND expression
     (84) expression -> expression . OR expression
 
-  ! shift/reduce conflict for PLUS resolved as shift
-  ! shift/reduce conflict for MINUS resolved as shift
-  ! shift/reduce conflict for MULTIPLY resolved as shift
-  ! shift/reduce conflict for DIVISION resolved as shift
-  ! shift/reduce conflict for MODULO resolved as shift
-  ! shift/reduce conflict for EXPONENT resolved as shift
-  ! shift/reduce conflict for EQ_EQ resolved as shift
-  ! shift/reduce conflict for NOT_EQ resolved as shift
-  ! shift/reduce conflict for LT resolved as shift
-  ! shift/reduce conflict for GT resolved as shift
-  ! shift/reduce conflict for LT_EQ resolved as shift
-  ! shift/reduce conflict for GT_EQ resolved as shift
-  ! shift/reduce conflict for AND resolved as shift
-  ! shift/reduce conflict for OR resolved as shift
+    PLUS            reduce using rule 80 (expression -> expression GT expression .)
+    MINUS           reduce using rule 80 (expression -> expression GT expression .)
+    MULTIPLY        reduce using rule 80 (expression -> expression GT expression .)
+    DIVISION        reduce using rule 80 (expression -> expression GT expression .)
+    MODULO          reduce using rule 80 (expression -> expression GT expression .)
+    EXPONENT        reduce using rule 80 (expression -> expression GT expression .)
+    EQ_EQ           reduce using rule 80 (expression -> expression GT expression .)
+    NOT_EQ          reduce using rule 80 (expression -> expression GT expression .)
+    LT              reduce using rule 80 (expression -> expression GT expression .)
+    GT              reduce using rule 80 (expression -> expression GT expression .)
+    LT_EQ           reduce using rule 80 (expression -> expression GT expression .)
+    GT_EQ           reduce using rule 80 (expression -> expression GT expression .)
     GHOST           reduce using rule 80 (expression -> expression GT expression .)
     NEWLINE         reduce using rule 80 (expression -> expression GT expression .)
     INT             reduce using rule 80 (expression -> expression GT expression .)
@@ -5607,35 +5465,23 @@ state 176
     COMMA           reduce using rule 80 (expression -> expression GT expression .)
     RPAREN          reduce using rule 80 (expression -> expression GT expression .)
     COLON           reduce using rule 80 (expression -> expression GT expression .)
-    PLUS            shift and go to state 121
-    MINUS           shift and go to state 122
-    MULTIPLY        shift and go to state 123
-    DIVISION        shift and go to state 124
-    MODULO          shift and go to state 125
-    EXPONENT        shift and go to state 126
-    EQ_EQ           shift and go to state 127
-    NOT_EQ          shift and go to state 128
-    LT              shift and go to state 129
-    GT              shift and go to state 130
-    LT_EQ           shift and go to state 131
-    GT_EQ           shift and go to state 132
     AND             shift and go to state 133
     OR              shift and go to state 134
 
-  ! PLUS            [ reduce using rule 80 (expression -> expression GT expression .) ]
-  ! MINUS           [ reduce using rule 80 (expression -> expression GT expression .) ]
-  ! MULTIPLY        [ reduce using rule 80 (expression -> expression GT expression .) ]
-  ! DIVISION        [ reduce using rule 80 (expression -> expression GT expression .) ]
-  ! MODULO          [ reduce using rule 80 (expression -> expression GT expression .) ]
-  ! EXPONENT        [ reduce using rule 80 (expression -> expression GT expression .) ]
-  ! EQ_EQ           [ reduce using rule 80 (expression -> expression GT expression .) ]
-  ! NOT_EQ          [ reduce using rule 80 (expression -> expression GT expression .) ]
-  ! LT              [ reduce using rule 80 (expression -> expression GT expression .) ]
-  ! GT              [ reduce using rule 80 (expression -> expression GT expression .) ]
-  ! LT_EQ           [ reduce using rule 80 (expression -> expression GT expression .) ]
-  ! GT_EQ           [ reduce using rule 80 (expression -> expression GT expression .) ]
   ! AND             [ reduce using rule 80 (expression -> expression GT expression .) ]
   ! OR              [ reduce using rule 80 (expression -> expression GT expression .) ]
+  ! PLUS            [ shift and go to state 121 ]
+  ! MINUS           [ shift and go to state 122 ]
+  ! MULTIPLY        [ shift and go to state 123 ]
+  ! DIVISION        [ shift and go to state 124 ]
+  ! MODULO          [ shift and go to state 125 ]
+  ! EXPONENT        [ shift and go to state 126 ]
+  ! EQ_EQ           [ shift and go to state 127 ]
+  ! NOT_EQ          [ shift and go to state 128 ]
+  ! LT              [ shift and go to state 129 ]
+  ! GT              [ shift and go to state 130 ]
+  ! LT_EQ           [ shift and go to state 131 ]
+  ! GT_EQ           [ shift and go to state 132 ]
 
 
 state 177
@@ -5656,20 +5502,18 @@ state 177
     (83) expression -> expression . AND expression
     (84) expression -> expression . OR expression
 
-  ! shift/reduce conflict for PLUS resolved as shift
-  ! shift/reduce conflict for MINUS resolved as shift
-  ! shift/reduce conflict for MULTIPLY resolved as shift
-  ! shift/reduce conflict for DIVISION resolved as shift
-  ! shift/reduce conflict for MODULO resolved as shift
-  ! shift/reduce conflict for EXPONENT resolved as shift
-  ! shift/reduce conflict for EQ_EQ resolved as shift
-  ! shift/reduce conflict for NOT_EQ resolved as shift
-  ! shift/reduce conflict for LT resolved as shift
-  ! shift/reduce conflict for GT resolved as shift
-  ! shift/reduce conflict for LT_EQ resolved as shift
-  ! shift/reduce conflict for GT_EQ resolved as shift
-  ! shift/reduce conflict for AND resolved as shift
-  ! shift/reduce conflict for OR resolved as shift
+    PLUS            reduce using rule 81 (expression -> expression LT_EQ expression .)
+    MINUS           reduce using rule 81 (expression -> expression LT_EQ expression .)
+    MULTIPLY        reduce using rule 81 (expression -> expression LT_EQ expression .)
+    DIVISION        reduce using rule 81 (expression -> expression LT_EQ expression .)
+    MODULO          reduce using rule 81 (expression -> expression LT_EQ expression .)
+    EXPONENT        reduce using rule 81 (expression -> expression LT_EQ expression .)
+    EQ_EQ           reduce using rule 81 (expression -> expression LT_EQ expression .)
+    NOT_EQ          reduce using rule 81 (expression -> expression LT_EQ expression .)
+    LT              reduce using rule 81 (expression -> expression LT_EQ expression .)
+    GT              reduce using rule 81 (expression -> expression LT_EQ expression .)
+    LT_EQ           reduce using rule 81 (expression -> expression LT_EQ expression .)
+    GT_EQ           reduce using rule 81 (expression -> expression LT_EQ expression .)
     GHOST           reduce using rule 81 (expression -> expression LT_EQ expression .)
     NEWLINE         reduce using rule 81 (expression -> expression LT_EQ expression .)
     INT             reduce using rule 81 (expression -> expression LT_EQ expression .)
@@ -5699,35 +5543,23 @@ state 177
     COMMA           reduce using rule 81 (expression -> expression LT_EQ expression .)
     RPAREN          reduce using rule 81 (expression -> expression LT_EQ expression .)
     COLON           reduce using rule 81 (expression -> expression LT_EQ expression .)
-    PLUS            shift and go to state 121
-    MINUS           shift and go to state 122
-    MULTIPLY        shift and go to state 123
-    DIVISION        shift and go to state 124
-    MODULO          shift and go to state 125
-    EXPONENT        shift and go to state 126
-    EQ_EQ           shift and go to state 127
-    NOT_EQ          shift and go to state 128
-    LT              shift and go to state 129
-    GT              shift and go to state 130
-    LT_EQ           shift and go to state 131
-    GT_EQ           shift and go to state 132
     AND             shift and go to state 133
     OR              shift and go to state 134
 
-  ! PLUS            [ reduce using rule 81 (expression -> expression LT_EQ expression .) ]
-  ! MINUS           [ reduce using rule 81 (expression -> expression LT_EQ expression .) ]
-  ! MULTIPLY        [ reduce using rule 81 (expression -> expression LT_EQ expression .) ]
-  ! DIVISION        [ reduce using rule 81 (expression -> expression LT_EQ expression .) ]
-  ! MODULO          [ reduce using rule 81 (expression -> expression LT_EQ expression .) ]
-  ! EXPONENT        [ reduce using rule 81 (expression -> expression LT_EQ expression .) ]
-  ! EQ_EQ           [ reduce using rule 81 (expression -> expression LT_EQ expression .) ]
-  ! NOT_EQ          [ reduce using rule 81 (expression -> expression LT_EQ expression .) ]
-  ! LT              [ reduce using rule 81 (expression -> expression LT_EQ expression .) ]
-  ! GT              [ reduce using rule 81 (expression -> expression LT_EQ expression .) ]
-  ! LT_EQ           [ reduce using rule 81 (expression -> expression LT_EQ expression .) ]
-  ! GT_EQ           [ reduce using rule 81 (expression -> expression LT_EQ expression .) ]
   ! AND             [ reduce using rule 81 (expression -> expression LT_EQ expression .) ]
   ! OR              [ reduce using rule 81 (expression -> expression LT_EQ expression .) ]
+  ! PLUS            [ shift and go to state 121 ]
+  ! MINUS           [ shift and go to state 122 ]
+  ! MULTIPLY        [ shift and go to state 123 ]
+  ! DIVISION        [ shift and go to state 124 ]
+  ! MODULO          [ shift and go to state 125 ]
+  ! EXPONENT        [ shift and go to state 126 ]
+  ! EQ_EQ           [ shift and go to state 127 ]
+  ! NOT_EQ          [ shift and go to state 128 ]
+  ! LT              [ shift and go to state 129 ]
+  ! GT              [ shift and go to state 130 ]
+  ! LT_EQ           [ shift and go to state 131 ]
+  ! GT_EQ           [ shift and go to state 132 ]
 
 
 state 178
@@ -5748,20 +5580,18 @@ state 178
     (83) expression -> expression . AND expression
     (84) expression -> expression . OR expression
 
-  ! shift/reduce conflict for PLUS resolved as shift
-  ! shift/reduce conflict for MINUS resolved as shift
-  ! shift/reduce conflict for MULTIPLY resolved as shift
-  ! shift/reduce conflict for DIVISION resolved as shift
-  ! shift/reduce conflict for MODULO resolved as shift
-  ! shift/reduce conflict for EXPONENT resolved as shift
-  ! shift/reduce conflict for EQ_EQ resolved as shift
-  ! shift/reduce conflict for NOT_EQ resolved as shift
-  ! shift/reduce conflict for LT resolved as shift
-  ! shift/reduce conflict for GT resolved as shift
-  ! shift/reduce conflict for LT_EQ resolved as shift
-  ! shift/reduce conflict for GT_EQ resolved as shift
-  ! shift/reduce conflict for AND resolved as shift
-  ! shift/reduce conflict for OR resolved as shift
+    PLUS            reduce using rule 82 (expression -> expression GT_EQ expression .)
+    MINUS           reduce using rule 82 (expression -> expression GT_EQ expression .)
+    MULTIPLY        reduce using rule 82 (expression -> expression GT_EQ expression .)
+    DIVISION        reduce using rule 82 (expression -> expression GT_EQ expression .)
+    MODULO          reduce using rule 82 (expression -> expression GT_EQ expression .)
+    EXPONENT        reduce using rule 82 (expression -> expression GT_EQ expression .)
+    EQ_EQ           reduce using rule 82 (expression -> expression GT_EQ expression .)
+    NOT_EQ          reduce using rule 82 (expression -> expression GT_EQ expression .)
+    LT              reduce using rule 82 (expression -> expression GT_EQ expression .)
+    GT              reduce using rule 82 (expression -> expression GT_EQ expression .)
+    LT_EQ           reduce using rule 82 (expression -> expression GT_EQ expression .)
+    GT_EQ           reduce using rule 82 (expression -> expression GT_EQ expression .)
     GHOST           reduce using rule 82 (expression -> expression GT_EQ expression .)
     NEWLINE         reduce using rule 82 (expression -> expression GT_EQ expression .)
     INT             reduce using rule 82 (expression -> expression GT_EQ expression .)
@@ -5791,35 +5621,23 @@ state 178
     COMMA           reduce using rule 82 (expression -> expression GT_EQ expression .)
     RPAREN          reduce using rule 82 (expression -> expression GT_EQ expression .)
     COLON           reduce using rule 82 (expression -> expression GT_EQ expression .)
-    PLUS            shift and go to state 121
-    MINUS           shift and go to state 122
-    MULTIPLY        shift and go to state 123
-    DIVISION        shift and go to state 124
-    MODULO          shift and go to state 125
-    EXPONENT        shift and go to state 126
-    EQ_EQ           shift and go to state 127
-    NOT_EQ          shift and go to state 128
-    LT              shift and go to state 129
-    GT              shift and go to state 130
-    LT_EQ           shift and go to state 131
-    GT_EQ           shift and go to state 132
     AND             shift and go to state 133
     OR              shift and go to state 134
 
-  ! PLUS            [ reduce using rule 82 (expression -> expression GT_EQ expression .) ]
-  ! MINUS           [ reduce using rule 82 (expression -> expression GT_EQ expression .) ]
-  ! MULTIPLY        [ reduce using rule 82 (expression -> expression GT_EQ expression .) ]
-  ! DIVISION        [ reduce using rule 82 (expression -> expression GT_EQ expression .) ]
-  ! MODULO          [ reduce using rule 82 (expression -> expression GT_EQ expression .) ]
-  ! EXPONENT        [ reduce using rule 82 (expression -> expression GT_EQ expression .) ]
-  ! EQ_EQ           [ reduce using rule 82 (expression -> expression GT_EQ expression .) ]
-  ! NOT_EQ          [ reduce using rule 82 (expression -> expression GT_EQ expression .) ]
-  ! LT              [ reduce using rule 82 (expression -> expression GT_EQ expression .) ]
-  ! GT              [ reduce using rule 82 (expression -> expression GT_EQ expression .) ]
-  ! LT_EQ           [ reduce using rule 82 (expression -> expression GT_EQ expression .) ]
-  ! GT_EQ           [ reduce using rule 82 (expression -> expression GT_EQ expression .) ]
   ! AND             [ reduce using rule 82 (expression -> expression GT_EQ expression .) ]
   ! OR              [ reduce using rule 82 (expression -> expression GT_EQ expression .) ]
+  ! PLUS            [ shift and go to state 121 ]
+  ! MINUS           [ shift and go to state 122 ]
+  ! MULTIPLY        [ shift and go to state 123 ]
+  ! DIVISION        [ shift and go to state 124 ]
+  ! MODULO          [ shift and go to state 125 ]
+  ! EXPONENT        [ shift and go to state 126 ]
+  ! EQ_EQ           [ shift and go to state 127 ]
+  ! NOT_EQ          [ shift and go to state 128 ]
+  ! LT              [ shift and go to state 129 ]
+  ! GT              [ shift and go to state 130 ]
+  ! LT_EQ           [ shift and go to state 131 ]
+  ! GT_EQ           [ shift and go to state 132 ]
 
 
 state 179
@@ -5840,20 +5658,19 @@ state 179
     (83) expression -> expression . AND expression
     (84) expression -> expression . OR expression
 
-  ! shift/reduce conflict for PLUS resolved as shift
-  ! shift/reduce conflict for MINUS resolved as shift
-  ! shift/reduce conflict for MULTIPLY resolved as shift
-  ! shift/reduce conflict for DIVISION resolved as shift
-  ! shift/reduce conflict for MODULO resolved as shift
-  ! shift/reduce conflict for EXPONENT resolved as shift
-  ! shift/reduce conflict for EQ_EQ resolved as shift
-  ! shift/reduce conflict for NOT_EQ resolved as shift
-  ! shift/reduce conflict for LT resolved as shift
-  ! shift/reduce conflict for GT resolved as shift
-  ! shift/reduce conflict for LT_EQ resolved as shift
-  ! shift/reduce conflict for GT_EQ resolved as shift
-  ! shift/reduce conflict for AND resolved as shift
-  ! shift/reduce conflict for OR resolved as shift
+    PLUS            reduce using rule 83 (expression -> expression AND expression .)
+    MINUS           reduce using rule 83 (expression -> expression AND expression .)
+    MULTIPLY        reduce using rule 83 (expression -> expression AND expression .)
+    DIVISION        reduce using rule 83 (expression -> expression AND expression .)
+    MODULO          reduce using rule 83 (expression -> expression AND expression .)
+    EXPONENT        reduce using rule 83 (expression -> expression AND expression .)
+    EQ_EQ           reduce using rule 83 (expression -> expression AND expression .)
+    NOT_EQ          reduce using rule 83 (expression -> expression AND expression .)
+    LT              reduce using rule 83 (expression -> expression AND expression .)
+    GT              reduce using rule 83 (expression -> expression AND expression .)
+    LT_EQ           reduce using rule 83 (expression -> expression AND expression .)
+    GT_EQ           reduce using rule 83 (expression -> expression AND expression .)
+    AND             reduce using rule 83 (expression -> expression AND expression .)
     GHOST           reduce using rule 83 (expression -> expression AND expression .)
     NEWLINE         reduce using rule 83 (expression -> expression AND expression .)
     INT             reduce using rule 83 (expression -> expression AND expression .)
@@ -5883,35 +5700,22 @@ state 179
     COMMA           reduce using rule 83 (expression -> expression AND expression .)
     RPAREN          reduce using rule 83 (expression -> expression AND expression .)
     COLON           reduce using rule 83 (expression -> expression AND expression .)
-    PLUS            shift and go to state 121
-    MINUS           shift and go to state 122
-    MULTIPLY        shift and go to state 123
-    DIVISION        shift and go to state 124
-    MODULO          shift and go to state 125
-    EXPONENT        shift and go to state 126
-    EQ_EQ           shift and go to state 127
-    NOT_EQ          shift and go to state 128
-    LT              shift and go to state 129
-    GT              shift and go to state 130
-    LT_EQ           shift and go to state 131
-    GT_EQ           shift and go to state 132
-    AND             shift and go to state 133
     OR              shift and go to state 134
 
-  ! PLUS            [ reduce using rule 83 (expression -> expression AND expression .) ]
-  ! MINUS           [ reduce using rule 83 (expression -> expression AND expression .) ]
-  ! MULTIPLY        [ reduce using rule 83 (expression -> expression AND expression .) ]
-  ! DIVISION        [ reduce using rule 83 (expression -> expression AND expression .) ]
-  ! MODULO          [ reduce using rule 83 (expression -> expression AND expression .) ]
-  ! EXPONENT        [ reduce using rule 83 (expression -> expression AND expression .) ]
-  ! EQ_EQ           [ reduce using rule 83 (expression -> expression AND expression .) ]
-  ! NOT_EQ          [ reduce using rule 83 (expression -> expression AND expression .) ]
-  ! LT              [ reduce using rule 83 (expression -> expression AND expression .) ]
-  ! GT              [ reduce using rule 83 (expression -> expression AND expression .) ]
-  ! LT_EQ           [ reduce using rule 83 (expression -> expression AND expression .) ]
-  ! GT_EQ           [ reduce using rule 83 (expression -> expression AND expression .) ]
-  ! AND             [ reduce using rule 83 (expression -> expression AND expression .) ]
   ! OR              [ reduce using rule 83 (expression -> expression AND expression .) ]
+  ! PLUS            [ shift and go to state 121 ]
+  ! MINUS           [ shift and go to state 122 ]
+  ! MULTIPLY        [ shift and go to state 123 ]
+  ! DIVISION        [ shift and go to state 124 ]
+  ! MODULO          [ shift and go to state 125 ]
+  ! EXPONENT        [ shift and go to state 126 ]
+  ! EQ_EQ           [ shift and go to state 127 ]
+  ! NOT_EQ          [ shift and go to state 128 ]
+  ! LT              [ shift and go to state 129 ]
+  ! GT              [ shift and go to state 130 ]
+  ! LT_EQ           [ shift and go to state 131 ]
+  ! GT_EQ           [ shift and go to state 132 ]
+  ! AND             [ shift and go to state 133 ]
 
 
 state 180
@@ -5932,20 +5736,20 @@ state 180
     (83) expression -> expression . AND expression
     (84) expression -> expression . OR expression
 
-  ! shift/reduce conflict for PLUS resolved as shift
-  ! shift/reduce conflict for MINUS resolved as shift
-  ! shift/reduce conflict for MULTIPLY resolved as shift
-  ! shift/reduce conflict for DIVISION resolved as shift
-  ! shift/reduce conflict for MODULO resolved as shift
-  ! shift/reduce conflict for EXPONENT resolved as shift
-  ! shift/reduce conflict for EQ_EQ resolved as shift
-  ! shift/reduce conflict for NOT_EQ resolved as shift
-  ! shift/reduce conflict for LT resolved as shift
-  ! shift/reduce conflict for GT resolved as shift
-  ! shift/reduce conflict for LT_EQ resolved as shift
-  ! shift/reduce conflict for GT_EQ resolved as shift
-  ! shift/reduce conflict for AND resolved as shift
-  ! shift/reduce conflict for OR resolved as shift
+    PLUS            reduce using rule 84 (expression -> expression OR expression .)
+    MINUS           reduce using rule 84 (expression -> expression OR expression .)
+    MULTIPLY        reduce using rule 84 (expression -> expression OR expression .)
+    DIVISION        reduce using rule 84 (expression -> expression OR expression .)
+    MODULO          reduce using rule 84 (expression -> expression OR expression .)
+    EXPONENT        reduce using rule 84 (expression -> expression OR expression .)
+    EQ_EQ           reduce using rule 84 (expression -> expression OR expression .)
+    NOT_EQ          reduce using rule 84 (expression -> expression OR expression .)
+    LT              reduce using rule 84 (expression -> expression OR expression .)
+    GT              reduce using rule 84 (expression -> expression OR expression .)
+    LT_EQ           reduce using rule 84 (expression -> expression OR expression .)
+    GT_EQ           reduce using rule 84 (expression -> expression OR expression .)
+    AND             reduce using rule 84 (expression -> expression OR expression .)
+    OR              reduce using rule 84 (expression -> expression OR expression .)
     GHOST           reduce using rule 84 (expression -> expression OR expression .)
     NEWLINE         reduce using rule 84 (expression -> expression OR expression .)
     INT             reduce using rule 84 (expression -> expression OR expression .)
@@ -5975,35 +5779,21 @@ state 180
     COMMA           reduce using rule 84 (expression -> expression OR expression .)
     RPAREN          reduce using rule 84 (expression -> expression OR expression .)
     COLON           reduce using rule 84 (expression -> expression OR expression .)
-    PLUS            shift and go to state 121
-    MINUS           shift and go to state 122
-    MULTIPLY        shift and go to state 123
-    DIVISION        shift and go to state 124
-    MODULO          shift and go to state 125
-    EXPONENT        shift and go to state 126
-    EQ_EQ           shift and go to state 127
-    NOT_EQ          shift and go to state 128
-    LT              shift and go to state 129
-    GT              shift and go to state 130
-    LT_EQ           shift and go to state 131
-    GT_EQ           shift and go to state 132
-    AND             shift and go to state 133
-    OR              shift and go to state 134
 
-  ! PLUS            [ reduce using rule 84 (expression -> expression OR expression .) ]
-  ! MINUS           [ reduce using rule 84 (expression -> expression OR expression .) ]
-  ! MULTIPLY        [ reduce using rule 84 (expression -> expression OR expression .) ]
-  ! DIVISION        [ reduce using rule 84 (expression -> expression OR expression .) ]
-  ! MODULO          [ reduce using rule 84 (expression -> expression OR expression .) ]
-  ! EXPONENT        [ reduce using rule 84 (expression -> expression OR expression .) ]
-  ! EQ_EQ           [ reduce using rule 84 (expression -> expression OR expression .) ]
-  ! NOT_EQ          [ reduce using rule 84 (expression -> expression OR expression .) ]
-  ! LT              [ reduce using rule 84 (expression -> expression OR expression .) ]
-  ! GT              [ reduce using rule 84 (expression -> expression OR expression .) ]
-  ! LT_EQ           [ reduce using rule 84 (expression -> expression OR expression .) ]
-  ! GT_EQ           [ reduce using rule 84 (expression -> expression OR expression .) ]
-  ! AND             [ reduce using rule 84 (expression -> expression OR expression .) ]
-  ! OR              [ reduce using rule 84 (expression -> expression OR expression .) ]
+  ! PLUS            [ shift and go to state 121 ]
+  ! MINUS           [ shift and go to state 122 ]
+  ! MULTIPLY        [ shift and go to state 123 ]
+  ! DIVISION        [ shift and go to state 124 ]
+  ! MODULO          [ shift and go to state 125 ]
+  ! EXPONENT        [ shift and go to state 126 ]
+  ! EQ_EQ           [ shift and go to state 127 ]
+  ! NOT_EQ          [ shift and go to state 128 ]
+  ! LT              [ shift and go to state 129 ]
+  ! GT              [ shift and go to state 130 ]
+  ! LT_EQ           [ shift and go to state 131 ]
+  ! GT_EQ           [ shift and go to state 132 ]
+  ! AND             [ shift and go to state 133 ]
+  ! OR              [ shift and go to state 134 ]
 
 
 state 181
@@ -9048,216 +8838,6 @@ WARNING: shift/reduce conflict for REVIVE in state 3 resolved as shift
 WARNING: shift/reduce conflict for STOP in state 3 resolved as shift
 WARNING: shift/reduce conflict for SKIP in state 3 resolved as shift
 WARNING: shift/reduce conflict for MEASURE in state 3 resolved as shift
-WARNING: shift/reduce conflict for PLUS in state 135 resolved as shift
-WARNING: shift/reduce conflict for MINUS in state 135 resolved as shift
-WARNING: shift/reduce conflict for MULTIPLY in state 135 resolved as shift
-WARNING: shift/reduce conflict for DIVISION in state 135 resolved as shift
-WARNING: shift/reduce conflict for MODULO in state 135 resolved as shift
-WARNING: shift/reduce conflict for EXPONENT in state 135 resolved as shift
-WARNING: shift/reduce conflict for EQ_EQ in state 135 resolved as shift
-WARNING: shift/reduce conflict for NOT_EQ in state 135 resolved as shift
-WARNING: shift/reduce conflict for LT in state 135 resolved as shift
-WARNING: shift/reduce conflict for GT in state 135 resolved as shift
-WARNING: shift/reduce conflict for LT_EQ in state 135 resolved as shift
-WARNING: shift/reduce conflict for GT_EQ in state 135 resolved as shift
-WARNING: shift/reduce conflict for AND in state 135 resolved as shift
-WARNING: shift/reduce conflict for OR in state 135 resolved as shift
-WARNING: shift/reduce conflict for PLUS in state 167 resolved as shift
-WARNING: shift/reduce conflict for MINUS in state 167 resolved as shift
-WARNING: shift/reduce conflict for MULTIPLY in state 167 resolved as shift
-WARNING: shift/reduce conflict for DIVISION in state 167 resolved as shift
-WARNING: shift/reduce conflict for MODULO in state 167 resolved as shift
-WARNING: shift/reduce conflict for EXPONENT in state 167 resolved as shift
-WARNING: shift/reduce conflict for EQ_EQ in state 167 resolved as shift
-WARNING: shift/reduce conflict for NOT_EQ in state 167 resolved as shift
-WARNING: shift/reduce conflict for LT in state 167 resolved as shift
-WARNING: shift/reduce conflict for GT in state 167 resolved as shift
-WARNING: shift/reduce conflict for LT_EQ in state 167 resolved as shift
-WARNING: shift/reduce conflict for GT_EQ in state 167 resolved as shift
-WARNING: shift/reduce conflict for AND in state 167 resolved as shift
-WARNING: shift/reduce conflict for OR in state 167 resolved as shift
-WARNING: shift/reduce conflict for PLUS in state 168 resolved as shift
-WARNING: shift/reduce conflict for MINUS in state 168 resolved as shift
-WARNING: shift/reduce conflict for MULTIPLY in state 168 resolved as shift
-WARNING: shift/reduce conflict for DIVISION in state 168 resolved as shift
-WARNING: shift/reduce conflict for MODULO in state 168 resolved as shift
-WARNING: shift/reduce conflict for EXPONENT in state 168 resolved as shift
-WARNING: shift/reduce conflict for EQ_EQ in state 168 resolved as shift
-WARNING: shift/reduce conflict for NOT_EQ in state 168 resolved as shift
-WARNING: shift/reduce conflict for LT in state 168 resolved as shift
-WARNING: shift/reduce conflict for GT in state 168 resolved as shift
-WARNING: shift/reduce conflict for LT_EQ in state 168 resolved as shift
-WARNING: shift/reduce conflict for GT_EQ in state 168 resolved as shift
-WARNING: shift/reduce conflict for AND in state 168 resolved as shift
-WARNING: shift/reduce conflict for OR in state 168 resolved as shift
-WARNING: shift/reduce conflict for PLUS in state 169 resolved as shift
-WARNING: shift/reduce conflict for MINUS in state 169 resolved as shift
-WARNING: shift/reduce conflict for MULTIPLY in state 169 resolved as shift
-WARNING: shift/reduce conflict for DIVISION in state 169 resolved as shift
-WARNING: shift/reduce conflict for MODULO in state 169 resolved as shift
-WARNING: shift/reduce conflict for EXPONENT in state 169 resolved as shift
-WARNING: shift/reduce conflict for EQ_EQ in state 169 resolved as shift
-WARNING: shift/reduce conflict for NOT_EQ in state 169 resolved as shift
-WARNING: shift/reduce conflict for LT in state 169 resolved as shift
-WARNING: shift/reduce conflict for GT in state 169 resolved as shift
-WARNING: shift/reduce conflict for LT_EQ in state 169 resolved as shift
-WARNING: shift/reduce conflict for GT_EQ in state 169 resolved as shift
-WARNING: shift/reduce conflict for AND in state 169 resolved as shift
-WARNING: shift/reduce conflict for OR in state 169 resolved as shift
-WARNING: shift/reduce conflict for PLUS in state 170 resolved as shift
-WARNING: shift/reduce conflict for MINUS in state 170 resolved as shift
-WARNING: shift/reduce conflict for MULTIPLY in state 170 resolved as shift
-WARNING: shift/reduce conflict for DIVISION in state 170 resolved as shift
-WARNING: shift/reduce conflict for MODULO in state 170 resolved as shift
-WARNING: shift/reduce conflict for EXPONENT in state 170 resolved as shift
-WARNING: shift/reduce conflict for EQ_EQ in state 170 resolved as shift
-WARNING: shift/reduce conflict for NOT_EQ in state 170 resolved as shift
-WARNING: shift/reduce conflict for LT in state 170 resolved as shift
-WARNING: shift/reduce conflict for GT in state 170 resolved as shift
-WARNING: shift/reduce conflict for LT_EQ in state 170 resolved as shift
-WARNING: shift/reduce conflict for GT_EQ in state 170 resolved as shift
-WARNING: shift/reduce conflict for AND in state 170 resolved as shift
-WARNING: shift/reduce conflict for OR in state 170 resolved as shift
-WARNING: shift/reduce conflict for PLUS in state 171 resolved as shift
-WARNING: shift/reduce conflict for MINUS in state 171 resolved as shift
-WARNING: shift/reduce conflict for MULTIPLY in state 171 resolved as shift
-WARNING: shift/reduce conflict for DIVISION in state 171 resolved as shift
-WARNING: shift/reduce conflict for MODULO in state 171 resolved as shift
-WARNING: shift/reduce conflict for EXPONENT in state 171 resolved as shift
-WARNING: shift/reduce conflict for EQ_EQ in state 171 resolved as shift
-WARNING: shift/reduce conflict for NOT_EQ in state 171 resolved as shift
-WARNING: shift/reduce conflict for LT in state 171 resolved as shift
-WARNING: shift/reduce conflict for GT in state 171 resolved as shift
-WARNING: shift/reduce conflict for LT_EQ in state 171 resolved as shift
-WARNING: shift/reduce conflict for GT_EQ in state 171 resolved as shift
-WARNING: shift/reduce conflict for AND in state 171 resolved as shift
-WARNING: shift/reduce conflict for OR in state 171 resolved as shift
-WARNING: shift/reduce conflict for PLUS in state 172 resolved as shift
-WARNING: shift/reduce conflict for MINUS in state 172 resolved as shift
-WARNING: shift/reduce conflict for MULTIPLY in state 172 resolved as shift
-WARNING: shift/reduce conflict for DIVISION in state 172 resolved as shift
-WARNING: shift/reduce conflict for MODULO in state 172 resolved as shift
-WARNING: shift/reduce conflict for EXPONENT in state 172 resolved as shift
-WARNING: shift/reduce conflict for EQ_EQ in state 172 resolved as shift
-WARNING: shift/reduce conflict for NOT_EQ in state 172 resolved as shift
-WARNING: shift/reduce conflict for LT in state 172 resolved as shift
-WARNING: shift/reduce conflict for GT in state 172 resolved as shift
-WARNING: shift/reduce conflict for LT_EQ in state 172 resolved as shift
-WARNING: shift/reduce conflict for GT_EQ in state 172 resolved as shift
-WARNING: shift/reduce conflict for AND in state 172 resolved as shift
-WARNING: shift/reduce conflict for OR in state 172 resolved as shift
-WARNING: shift/reduce conflict for PLUS in state 173 resolved as shift
-WARNING: shift/reduce conflict for MINUS in state 173 resolved as shift
-WARNING: shift/reduce conflict for MULTIPLY in state 173 resolved as shift
-WARNING: shift/reduce conflict for DIVISION in state 173 resolved as shift
-WARNING: shift/reduce conflict for MODULO in state 173 resolved as shift
-WARNING: shift/reduce conflict for EXPONENT in state 173 resolved as shift
-WARNING: shift/reduce conflict for EQ_EQ in state 173 resolved as shift
-WARNING: shift/reduce conflict for NOT_EQ in state 173 resolved as shift
-WARNING: shift/reduce conflict for LT in state 173 resolved as shift
-WARNING: shift/reduce conflict for GT in state 173 resolved as shift
-WARNING: shift/reduce conflict for LT_EQ in state 173 resolved as shift
-WARNING: shift/reduce conflict for GT_EQ in state 173 resolved as shift
-WARNING: shift/reduce conflict for AND in state 173 resolved as shift
-WARNING: shift/reduce conflict for OR in state 173 resolved as shift
-WARNING: shift/reduce conflict for PLUS in state 174 resolved as shift
-WARNING: shift/reduce conflict for MINUS in state 174 resolved as shift
-WARNING: shift/reduce conflict for MULTIPLY in state 174 resolved as shift
-WARNING: shift/reduce conflict for DIVISION in state 174 resolved as shift
-WARNING: shift/reduce conflict for MODULO in state 174 resolved as shift
-WARNING: shift/reduce conflict for EXPONENT in state 174 resolved as shift
-WARNING: shift/reduce conflict for EQ_EQ in state 174 resolved as shift
-WARNING: shift/reduce conflict for NOT_EQ in state 174 resolved as shift
-WARNING: shift/reduce conflict for LT in state 174 resolved as shift
-WARNING: shift/reduce conflict for GT in state 174 resolved as shift
-WARNING: shift/reduce conflict for LT_EQ in state 174 resolved as shift
-WARNING: shift/reduce conflict for GT_EQ in state 174 resolved as shift
-WARNING: shift/reduce conflict for AND in state 174 resolved as shift
-WARNING: shift/reduce conflict for OR in state 174 resolved as shift
-WARNING: shift/reduce conflict for PLUS in state 175 resolved as shift
-WARNING: shift/reduce conflict for MINUS in state 175 resolved as shift
-WARNING: shift/reduce conflict for MULTIPLY in state 175 resolved as shift
-WARNING: shift/reduce conflict for DIVISION in state 175 resolved as shift
-WARNING: shift/reduce conflict for MODULO in state 175 resolved as shift
-WARNING: shift/reduce conflict for EXPONENT in state 175 resolved as shift
-WARNING: shift/reduce conflict for EQ_EQ in state 175 resolved as shift
-WARNING: shift/reduce conflict for NOT_EQ in state 175 resolved as shift
-WARNING: shift/reduce conflict for LT in state 175 resolved as shift
-WARNING: shift/reduce conflict for GT in state 175 resolved as shift
-WARNING: shift/reduce conflict for LT_EQ in state 175 resolved as shift
-WARNING: shift/reduce conflict for GT_EQ in state 175 resolved as shift
-WARNING: shift/reduce conflict for AND in state 175 resolved as shift
-WARNING: shift/reduce conflict for OR in state 175 resolved as shift
-WARNING: shift/reduce conflict for PLUS in state 176 resolved as shift
-WARNING: shift/reduce conflict for MINUS in state 176 resolved as shift
-WARNING: shift/reduce conflict for MULTIPLY in state 176 resolved as shift
-WARNING: shift/reduce conflict for DIVISION in state 176 resolved as shift
-WARNING: shift/reduce conflict for MODULO in state 176 resolved as shift
-WARNING: shift/reduce conflict for EXPONENT in state 176 resolved as shift
-WARNING: shift/reduce conflict for EQ_EQ in state 176 resolved as shift
-WARNING: shift/reduce conflict for NOT_EQ in state 176 resolved as shift
-WARNING: shift/reduce conflict for LT in state 176 resolved as shift
-WARNING: shift/reduce conflict for GT in state 176 resolved as shift
-WARNING: shift/reduce conflict for LT_EQ in state 176 resolved as shift
-WARNING: shift/reduce conflict for GT_EQ in state 176 resolved as shift
-WARNING: shift/reduce conflict for AND in state 176 resolved as shift
-WARNING: shift/reduce conflict for OR in state 176 resolved as shift
-WARNING: shift/reduce conflict for PLUS in state 177 resolved as shift
-WARNING: shift/reduce conflict for MINUS in state 177 resolved as shift
-WARNING: shift/reduce conflict for MULTIPLY in state 177 resolved as shift
-WARNING: shift/reduce conflict for DIVISION in state 177 resolved as shift
-WARNING: shift/reduce conflict for MODULO in state 177 resolved as shift
-WARNING: shift/reduce conflict for EXPONENT in state 177 resolved as shift
-WARNING: shift/reduce conflict for EQ_EQ in state 177 resolved as shift
-WARNING: shift/reduce conflict for NOT_EQ in state 177 resolved as shift
-WARNING: shift/reduce conflict for LT in state 177 resolved as shift
-WARNING: shift/reduce conflict for GT in state 177 resolved as shift
-WARNING: shift/reduce conflict for LT_EQ in state 177 resolved as shift
-WARNING: shift/reduce conflict for GT_EQ in state 177 resolved as shift
-WARNING: shift/reduce conflict for AND in state 177 resolved as shift
-WARNING: shift/reduce conflict for OR in state 177 resolved as shift
-WARNING: shift/reduce conflict for PLUS in state 178 resolved as shift
-WARNING: shift/reduce conflict for MINUS in state 178 resolved as shift
-WARNING: shift/reduce conflict for MULTIPLY in state 178 resolved as shift
-WARNING: shift/reduce conflict for DIVISION in state 178 resolved as shift
-WARNING: shift/reduce conflict for MODULO in state 178 resolved as shift
-WARNING: shift/reduce conflict for EXPONENT in state 178 resolved as shift
-WARNING: shift/reduce conflict for EQ_EQ in state 178 resolved as shift
-WARNING: shift/reduce conflict for NOT_EQ in state 178 resolved as shift
-WARNING: shift/reduce conflict for LT in state 178 resolved as shift
-WARNING: shift/reduce conflict for GT in state 178 resolved as shift
-WARNING: shift/reduce conflict for LT_EQ in state 178 resolved as shift
-WARNING: shift/reduce conflict for GT_EQ in state 178 resolved as shift
-WARNING: shift/reduce conflict for AND in state 178 resolved as shift
-WARNING: shift/reduce conflict for OR in state 178 resolved as shift
-WARNING: shift/reduce conflict for PLUS in state 179 resolved as shift
-WARNING: shift/reduce conflict for MINUS in state 179 resolved as shift
-WARNING: shift/reduce conflict for MULTIPLY in state 179 resolved as shift
-WARNING: shift/reduce conflict for DIVISION in state 179 resolved as shift
-WARNING: shift/reduce conflict for MODULO in state 179 resolved as shift
-WARNING: shift/reduce conflict for EXPONENT in state 179 resolved as shift
-WARNING: shift/reduce conflict for EQ_EQ in state 179 resolved as shift
-WARNING: shift/reduce conflict for NOT_EQ in state 179 resolved as shift
-WARNING: shift/reduce conflict for LT in state 179 resolved as shift
-WARNING: shift/reduce conflict for GT in state 179 resolved as shift
-WARNING: shift/reduce conflict for LT_EQ in state 179 resolved as shift
-WARNING: shift/reduce conflict for GT_EQ in state 179 resolved as shift
-WARNING: shift/reduce conflict for AND in state 179 resolved as shift
-WARNING: shift/reduce conflict for OR in state 179 resolved as shift
-WARNING: shift/reduce conflict for PLUS in state 180 resolved as shift
-WARNING: shift/reduce conflict for MINUS in state 180 resolved as shift
-WARNING: shift/reduce conflict for MULTIPLY in state 180 resolved as shift
-WARNING: shift/reduce conflict for DIVISION in state 180 resolved as shift
-WARNING: shift/reduce conflict for MODULO in state 180 resolved as shift
-WARNING: shift/reduce conflict for EXPONENT in state 180 resolved as shift
-WARNING: shift/reduce conflict for EQ_EQ in state 180 resolved as shift
-WARNING: shift/reduce conflict for NOT_EQ in state 180 resolved as shift
-WARNING: shift/reduce conflict for LT in state 180 resolved as shift
-WARNING: shift/reduce conflict for GT in state 180 resolved as shift
-WARNING: shift/reduce conflict for LT_EQ in state 180 resolved as shift
-WARNING: shift/reduce conflict for GT_EQ in state 180 resolved as shift
-WARNING: shift/reduce conflict for AND in state 180 resolved as shift
-WARNING: shift/reduce conflict for OR in state 180 resolved as shift
 WARNING: shift/reduce conflict for INT in state 195 resolved as shift
 WARNING: shift/reduce conflict for FLT in state 195 resolved as shift
 WARNING: shift/reduce conflict for STR in state 195 resolved as shift

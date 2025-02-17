@@ -19,15 +19,16 @@ class ASTNode:
     
 precedence = (
     ('right', 'EXPONENT'),  # 2 - Exponentiation
-    ('right', 'NOT', 'NEGATE'),  # 3 - Logical NOT, Negative Indicator
+    ('right', 'NOT', 'MINUS'),  # 3 - Logical NOT, Negative Indicator
     ('left', 'MULTIPLY', 'DIVISION', 'MODULO'),  # 4 - Multiplication, Division, Modulus
     ('left', 'PLUS', 'MINUS'),  # 5 - Addition, Subtraction
-    ('left', 'INCREMENT', 'DECREMENT'),  # 6 - Postfix Increment, Decrement
+    ('left', 'PLUS_PLUS', 'MINUS_MINUS'),  # 6 - Postfix Increment, Decrement
     ('left', 'EQ_EQ', 'NOT_EQ', 'LT', 'GT', 'LT_EQ', 'GT_EQ'),  # 7 - Relational Operators
     ('left', 'AND'),  # 8 - Boolean AND
-    ('left', 'OR'),  # 9 - Boolean OR (Lower than AND)
-    ('right', 'ASSIGN', 'PLUS_ASSIGN', 'MINUS_ASSIGN', 'MULTIPLY_ASSIGN', 'DIVISION_ASSIGN', 'MODULO_ASSIGN')  # 10 - Assignment Operators
+    ('left', 'OR'),  # 9 - Boolean OR
+    ('right', 'EQ', 'PLUS_EQ', 'MINUS_EQ', 'MUL_EQ', 'DIV_EQ', 'MOD_EQ')  # 10 - Assignment Operators
 )
+
 
 
 # Parsing Rules
