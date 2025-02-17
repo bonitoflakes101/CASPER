@@ -207,6 +207,37 @@ def p_re_tail2(p):
                  | re_term"""
     p[0] = ASTNode("re_tail2", [p[1]]) if p[1] else ASTNode("re_tail2", [])
 
+def p_logical_expression(p):
+    """logical_expression : le_term"""
+    p[0] = ASTNode("logical_expression", [p[1]])
+
+def p_le_term(p):
+    """le_term : le_factor le_tail2
+                | LPAREN le_factor le_tail2 RPAREN le_tail2"""
+    if len(p) == 3:
+        p[0] = ASTNode("le_term", [p[1], p[2]])
+    else:
+        p[0] = ASTNode("le_term", [p[2], p[3], p[5]])
+
+def p_le_factor(p):
+    """le_factor : BLN_LIT
+                  | relational_expression
+                  | var_call"""
+    p[0] = ASTNode("le_factor", value=p[1])
+
+def p_le_tail(p):
+    """le_tail : AND le_term
+                | OR le_term
+                | NOT le_term"""
+    p[0] = ASTNode("le_tail", [p[2]], p[1])
+
+def p_le_tail2(p):
+    """le_tail2 : empty
+                | le_tail
+                | le_term"""
+    if len(p) == 2:
+        p[0] = ASTNode("le_tail2", [p[1]]) if p[1] else ASTNode("le_tail2", [])
+        
 def p_empty(p):
     """empty :"""
     p[0] = None
