@@ -36,11 +36,11 @@ class Delimiters:
     DEL4 = SPACE | NUM | {'(', '$', '\'', '"'} # plus delim
     DEL5 = SPACE | NUM |{'$', '(', '@'}  # minus, multiply, divide, modulo delims, all assignment ops
     DEL6 = NUM | {'$', '(', '\''} #prefix | **
-    DEL7 =  SPACE | NUM | NEWLINE | {'$', '@', '"', '(', '{', '\''} # open LPAREN (
+    DEL7 =  SPACE | ALPHANUM | NEWLINE | {'$', '@', '"', '(', '{', '\'', ')'} # open LPAREN (
     DEL8 = SPACE | NEWLINE | {'+', '-', '*', '/', '{', '(', ')', ']', '}', ','} # closing RPAREN )
     DEL9 = SPACE | NEWLINE | {'(', '{', '$', '@', '"'} # opening LBRACE {
-    DEL10 = SPACE | NEWLINE | NULL | {'"', '(', '{', '[',']',')' } # closing RBRACE }
-    DEL11 = SPACE | NEWLINE | NULL | {',', '(', '{', '[', '+'}
+    DEL10 = SPACE | NEWLINE | NULL | {'"', '(', '{', '[',']',')', ',', ':' ,';'} # closing RBRACE }
+    DEL11 = SPACE | NEWLINE | NULL | {',', '(', '{', '[', '+', ')'}
     DEL12 = SPACE | NEWLINE | NULL | {'\r'}
     DEL13 = SPACE | NULL | {')', '\''} # postfix
     DEL14 = SPACE | ALPHA

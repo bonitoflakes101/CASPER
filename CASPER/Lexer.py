@@ -2,6 +2,8 @@ from Token import Token, TokenType, lookup_ident
 from Delimiters import Delimiters
 from KeywordDelimiters import KEYWORD_DELIMITERS
 
+tokens = [token.name for token in TokenType] 
+
 class Lexer:
     def __init__(self, source: str) -> None:
         self.source = source  # current code
@@ -83,8 +85,10 @@ class Lexer:
         return self.source[self.read_position]
 
     def __skip_whitespace(self) -> None:
-        """Skips whitespace but does not skip newlines."""
-        while self.current_char in [' ', '\t', '\r']:
+        """Skips whitespace including newlines while updating line numbers."""
+        while self.current_char in [' ', '\t', '\r', '\n']:
+            if self.current_char == '\n':
+                self.line_no += 1  # Update line count
             self.__read_char()
 
     def __new_token(self, tt: TokenType, literal: str) -> Token:
@@ -139,7 +143,7 @@ class Lexer:
             # Check if the identifier starts with '@' for FUNCTION_NAME
             if identifier.startswith('@'):
                 if self.current_char in valid_delims:
-                    return self.__new_token(TokenType.IDENT, identifier) # can change into funciton_name if mas better
+                    return self.__new_token(TokenType.FUNCTION_NAME, identifier) # can change into funciton_name if mas better
                 else:
                     # If no valid delimiter, treat as ILLEGAL
                     while self.current_char and self.current_char not in Delimiters.identifier_del:
@@ -313,7 +317,6 @@ class Lexer:
         return None
 
 
-
     def __read_char_literal(self) -> str | None:
         """Reads a character literal enclosed in single quotes and returns the character (or None if invalid)."""
         start_pos = self.position  # Store starting position
@@ -393,10 +396,10 @@ class Lexer:
             return self.__new_token(TokenType.EOF, "")
         
         # NEW LINE TOKEN
-        if self.current_char == '\n':
-            self.line_no += 1  # Increment line number for tracking
-            self.__read_char()  # Consume the newline character
-            return self.__new_token(TokenType.NEWLINE, "\\n")  # Return newline token
+        # if self.current_char == '\n':
+        #     self.line_no += 1  # Increment line number for tracking
+        #     self.__read_char()  # Consume the newline character
+        #     return self.__new_token(TokenType.NEWLINE, "\\n")  # Return newline token
 
 
 
@@ -748,3 +751,16 @@ class Lexer:
                 self.current_char = original_current_char
                 return False
         return False
+
+    def token(self):
+        """Returns the next valid token for PLY, skipping ILLEGAL tokens"""
+        while True:
+            tok = self.next_token()  
+            if tok.type == TokenType.EOF:
+                return None  
+            if tok.type != TokenType.ILLEGAL:
+                tok.type = tok.type.name  # PLY requires token type as a string
+                tok.value = tok.literal  # Ensure PLY gets `.value`
+                tok.lineno = tok.line_no  # Rename `.line_no` to `.lineno` for PLY
+                return tok
+
