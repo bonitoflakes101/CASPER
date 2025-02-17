@@ -157,7 +157,7 @@ def p_ae_tail(p):
     """ae_tail : PLUS ae_term ae_tail
                 | MINUS ae_term ae_tail
                 | DIVIDE ae_term ae_tail
-                | MULTIPLY ae_term ae_tail
+                | MULTIPLY ae_term ae_tail 
                 | MODULO ae_term ae_tail
                 | EXPONENT ae_term ae_tail
                 | empty"""
@@ -196,9 +196,9 @@ def p_re_tail(p):
     """re_tail : GT re_term re_tail2
                 | LT re_term re_tail2
                 | EQ re_term re_tail2
-                | NEQ re_term re_tail2
-                | GE re_term re_tail2
-                | LE re_term re_tail2"""
+                | NOT_EQ re_term re_tail2
+                | GT_EQ re_term re_tail2
+                | LT_EQ re_term re_tail2"""
     p[0] = ASTNode("re_tail", [p[2], p[3]], p[1])
 
 def p_re_tail2(p):
@@ -286,6 +286,7 @@ def p_list_element(p):
     else:
         p[0] = ASTNode("list_element", [p[1], p[3]])
 
+# bawal float?
 def p_index(p):
     """index : INT_LIT
               | IDENT"""
@@ -357,8 +358,8 @@ def p_unary(p):
     p[0] = ASTNode("unary", [p[1]], p[2])
 
 def p_unary_op(p):
-    """unary_op : INCREMENT
-                 | DECREMENT"""
+    """unary_op : PLUS_PLUS
+                 | MINUS_MINUS"""
     p[0] = ASTNode("unary_op", value=p[1])
 
 def p_assignment_statement(p):
@@ -366,11 +367,11 @@ def p_assignment_statement(p):
     p[0] = ASTNode("assignment_statement", [p[1], p[3]], p[2])
 
 def p_assign_op(p):
-    """assign_op : PLUSEQ
-                 | MINUSEQ
-                 | MULTEQ
-                 | DIVEQ
-                 | MODEQ"""
+    """assign_op : PLUS_EQ
+                 | MINUS_EQ
+                 | MUL_EQ
+                 | DIV_EQ
+                 | MOD_EQ"""
     p[0] = ASTNode("assign_op", value=p[1])
 
 def p_function_statement(p):
@@ -400,12 +401,19 @@ def p_ret_type(p):
                  | function_dtype"""
     p[0] = ASTNode("ret_type", [p[1]])
 
+
+# function_list_int, function_bln etc... sa CFG
 def p_function_dtype(p):
     """function_dtype : FUNCTION_INT
-                      | FUNCTION_FLOAT
+                      | FUNCTION_FLT
                       | FUNCTION_CHR
-                      | FUNCTION_STRING
-                      | FUNCTION_LIST"""
+                      | FUNCTION_STR
+                      | FUNCTION_BLN
+                      | FUNCTION_LIST_INT
+                      | FUNCTION_LIST_FLT
+                      | FUNCTION_LIST_CHR
+                      | FUNCTION_LIST_STR
+                      | FUNCTION_LIS_BLN"""
     p[0] = ASTNode("function_dtype", value=p[1])
 
 def p_parameters(p):
@@ -433,7 +441,7 @@ def p_input_statement(p):
 def p_type_cast(p):
     """type_cast : TO_INT LPAREN value RPAREN
                  | TO_FLT LPAREN value RPAREN
-                 | TO_CHR LPAREN value RPAREN
+                 | TO_BLN LPAREN value RPAREN
                  | TO_STR LPAREN value RPAREN"""
     p[0] = ASTNode("type_cast", [p[3]], p[1])
 
