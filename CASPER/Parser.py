@@ -381,6 +381,91 @@ def p_function_statement(p):
     else:
         p[0] = ASTNode("function_statement", [p[1]])
 
+def p_function_call(p):
+    """function_call : IDENTIFIER LPAREN arguments RPAREN
+                     | output_statement
+                     | input_statement"""
+    if len(p) == 5:
+        p[0] = ASTNode("function_call", [p[1], p[3]])
+    else:
+        p[0] = ASTNode("function_call", [p[1]])
+
+def p_arguments(p):
+    """arguments : var_call
+                 | literal"""
+    p[0] = ASTNode("arguments", [p[1]])
+
+def p_ret_type(p):
+    """ret_type : FUNCTION
+                 | function_dtype"""
+    p[0] = ASTNode("ret_type", [p[1]])
+
+def p_function_dtype(p):
+    """function_dtype : FUNCTION_INT
+                      | FUNCTION_FLOAT
+                      | FUNCTION_CHR
+                      | FUNCTION_STRING
+                      | FUNCTION_LIST"""
+    p[0] = ASTNode("function_dtype", value=p[1])
+
+def p_parameters(p):
+    """parameters : var_dec next_parameters
+                   | empty"""
+    p[0] = ASTNode("parameters", [p[1], p[2]]) if len(p) == 3 else ASTNode("parameters", [])
+
+def p_next_parameters(p):
+    """next_parameters : COMMA parameters"""
+    p[0] = ASTNode("next_parameters", [p[2]])
+
+def p_revive(p):
+    """revive : REVIVE value
+               | empty"""
+    p[0] = ASTNode("revive", [p[2]]) if len(p) == 3 else ASTNode("revive", [])
+
+def p_output_statement(p):
+    """output_statement : DISPLAY value"""
+    p[0] = ASTNode("output_statement", [p[2]])
+
+def p_input_statement(p):
+    """input_statement : INPUT LPAREN statements RPAREN"""
+    p[0] = ASTNode("input_statement", [p[3]])
+
+def p_type_cast(p):
+    """type_cast : TO_INT LPAREN value RPAREN
+                 | TO_FLT LPAREN value RPAREN
+                 | TO_CHR LPAREN value RPAREN
+                 | TO_STR LPAREN value RPAREN"""
+    p[0] = ASTNode("type_cast", [p[3]], p[1])
+
+def p_string_concat(p):
+    """string_concat : string_lit stringcon_tail"""
+    p[0] = ASTNode("string_concat", [p[1], p[2]])
+
+def p_stringcon_tail(p):
+    """stringcon_tail : PLUS string_lit stringcon_tail2"""
+    p[0] = ASTNode("stringcon_tail", [p[2], p[3]])
+
+def p_stringcon_tail2(p):
+    """stringcon_tail2 : stringcon_tail
+                        | empty"""
+    p[0] = ASTNode("stringcon_tail2", [p[1]]) if p[1] else ASTNode("stringcon_tail2", [])
+
+def p_string_lit(p):
+    """string_lit : STR_LIT"""
+    p[0] = ASTNode("string_lit", value=p[1])
+
+def p_not_op(p):
+    """not_op : NOT value"""
+    p[0] = ASTNode("not_op", [p[2]])
+
+def p_arithmetic_op(p):
+    """arithmetic_op : PLUS
+                      | MINUS
+                      | DIVIDE
+                      | MULTIPLY
+                      | MODULO"""
+    p[0] = ASTNode("arithmetic_op", value=p[1])
+
 
 
 def p_empty(p):
