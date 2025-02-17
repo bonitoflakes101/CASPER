@@ -72,6 +72,7 @@ def p_statement(p):
     """statement : variable_declaration
                  | assignment
                  | function_call
+                 | function_declaration
                  | loop
                  | conditional
                  | io_statement
@@ -80,15 +81,35 @@ def p_statement(p):
                  | stop_statement
                  | skip_statement
                  | measure_statement"""
-    """statement : variable_declaration
-                 | assignment
-                 | function_call
-                 | loop
-                 | conditional
-                 | io_statement
-                 | switch_statement
-                 | return_statement"""
     p[0] = p[1]
+
+def p_function_declaration(p):
+    """function_declaration : FUNCTION FUNCTION_NAME LPAREN parameters RPAREN LBRACE statements RBRACE
+                              | FUNCTION_INT FUNCTION_NAME LPAREN parameters RPAREN LBRACE statements RBRACE
+                              | FUNCTION_FLT FUNCTION_NAME LPAREN parameters RPAREN LBRACE statements RBRACE
+                              | FUNCTION_STR FUNCTION_NAME LPAREN parameters RPAREN LBRACE statements RBRACE
+                              | FUNCTION_CHR FUNCTION_NAME LPAREN parameters RPAREN LBRACE statements RBRACE
+                              | FUNCTION_BLN FUNCTION_NAME LPAREN parameters RPAREN LBRACE statements RBRACE"""
+    p[0] = ASTNode("function_declaration", [p[1], p[2], p[4], p[7]])
+
+def p_parameters(p):
+    """parameters : INT IDENT COMMA parameters
+                   | FLT IDENT COMMA parameters
+                   | STR IDENT COMMA parameters
+                   | CHR IDENT COMMA parameters
+                   | BLN IDENT COMMA parameters
+                   | INT IDENT
+                   | FLT IDENT
+                   | STR IDENT
+                   | CHR IDENT
+                   | BLN IDENT
+                   | empty"""
+    if len(p) == 2:
+        p[0] = []
+    elif len(p) == 4:
+        p[0] = [(p[1], p[2])] + p[4]  # Ensure proper list concatenation
+    else:
+        p[0] = [(p[1], p[2])]
 
 
 def p_variable_declaration(p):
@@ -106,7 +127,7 @@ def p_assignment(p):
 
 
 def p_function_call(p):
-    """function_call : IDENT LPAREN arguments RPAREN""" # can change into function_name if needed
+    """function_call : FUNCTION_NAME LPAREN arguments RPAREN""" # can change into function_name if needed
     p[0] = ASTNode("function_call", p[3], p[1])
 
 
@@ -193,33 +214,38 @@ def p_expression(p):
                   | function_call"""
     if len(p) == 2:
         p[0] = ASTNode("expression", value=p[1])
+    elif len(p) == 4:
+        p[0] = ASTNode("binary_expression", [p[1], p[3]], p[2])
     elif len(p) == 3:
         p[0] = ASTNode("unary_expression", [p[2]], p[1])
-    else:
-        p[0] = ASTNode("binary_expression", [p[1], p[3]], p[2])
     """expression : expression PLUS expression
                   | expression MINUS expression
                   | expression MULTIPLY expression
                   | expression DIVISION expression
                   | expression MODULO expression
                   | expression EXPONENT expression
+                  | expression EQ_EQ expression
+                  | expression NOT_EQ expression
+                  | expression LT expression
+                  | expression GT expression
+                  | expression LT_EQ expression
+                  | expression GT_EQ expression
+                  | expression AND expression
+                  | expression OR expression
+                  | NOT expression
                   | LPAREN expression RPAREN
                   | IDENT
                   | INT_LIT
                   | FLT_LIT
                   | STR_LIT
+                  | BLN_LIT
                   | function_call"""
     if len(p) == 2:
         p[0] = ASTNode("expression", value=p[1])
+    elif len(p) == 3:
+        p[0] = ASTNode("unary_expression", [p[2]], p[1])
     else:
-        p[0] = ASTNode("arithmetic_expression", [p[1], p[3]], p[2])
-    """expression : IDENT
-                  | INT_LIT
-                  | FLT_LIT
-                  | STR_LIT
-                  | function_call"""
-    p[0] = ASTNode("expression", value=p[1])
-
+        p[0] = ASTNode("binary_expression", [p[1], p[3]], p[2])
 
 def p_arguments(p):
     """arguments : expression COMMA arguments
