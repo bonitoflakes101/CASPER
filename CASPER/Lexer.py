@@ -85,8 +85,10 @@ class Lexer:
         return self.source[self.read_position]
 
     def __skip_whitespace(self) -> None:
-        """Skips whitespace but does not skip newlines."""
-        while self.current_char in [' ', '\t', '\r']:
+        """Skips whitespace including newlines while updating line numbers."""
+        while self.current_char in [' ', '\t', '\r', '\n']:
+            if self.current_char == '\n':
+                self.line_no += 1  # Update line count
             self.__read_char()
 
     def __new_token(self, tt: TokenType, literal: str) -> Token:
@@ -393,10 +395,10 @@ class Lexer:
             return self.__new_token(TokenType.EOF, "")
         
         # NEW LINE TOKEN
-        if self.current_char == '\n':
-            self.line_no += 1  # Increment line number for tracking
-            self.__read_char()  # Consume the newline character
-            return self.__new_token(TokenType.NEWLINE, "\\n")  # Return newline token
+        # if self.current_char == '\n':
+        #     self.line_no += 1  # Increment line number for tracking
+        #     self.__read_char()  # Consume the newline character
+        #     return self.__new_token(TokenType.NEWLINE, "\\n")  # Return newline token
 
 
 

@@ -53,7 +53,7 @@ def p_statements(p):
         p[0] = ASTNode("statements", [p[1]]) if p[1] else ASTNode("statements", [])
 
 def p_statements_tail(p):
-    """statements_tail : NEWLINE statements_tail
+    """statements_tail : statements_tail
                         | statements
                         | empty"""
     if len(p) == 3 and p[1] == "\n":  # Ignore NEWLINE tokens
