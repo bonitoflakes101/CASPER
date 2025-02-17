@@ -446,7 +446,7 @@ def p_revive(p):
 # new DISPLAY LPAREN value RPAREN, wala sa cfg
 def p_output_statement(p):
     """output_statement : DISPLAY value
-                        | DISPLAY LPAREN value RPAREN"""
+                        """
     if len(p) == 3:
         p[0] = ASTNode("output_statement", [p[2]])
     else:
