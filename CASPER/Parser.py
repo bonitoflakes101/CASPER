@@ -156,7 +156,7 @@ def p_ae_factor(p):
 def p_ae_tail(p):
     """ae_tail : PLUS ae_term ae_tail
                 | MINUS ae_term ae_tail
-                | DIVIDE ae_term ae_tail
+                | DIVISION ae_term ae_tail
                 | MULTIPLY ae_term ae_tail 
                 | MODULO ae_term ae_tail
                 | EXPONENT ae_term ae_tail
@@ -413,7 +413,7 @@ def p_function_dtype(p):
                       | FUNCTION_LIST_FLT
                       | FUNCTION_LIST_CHR
                       | FUNCTION_LIST_STR
-                      | FUNCTION_LIS_BLN"""
+                      | FUNCTION_LIST_BLN"""
     p[0] = ASTNode("function_dtype", value=p[1])
 
 def p_parameters(p):
@@ -439,10 +439,10 @@ def p_input_statement(p):
     p[0] = ASTNode("input_statement", [p[3]])
 
 def p_type_cast(p):
-    """type_cast : TO_INT LPAREN value RPAREN
-                 | TO_FLT LPAREN value RPAREN
-                 | TO_BLN LPAREN value RPAREN
-                 | TO_STR LPAREN value RPAREN"""
+    """type_cast : CONVERT_TO_INT LPAREN value RPAREN
+                 | CONVERT_TO_FLT LPAREN value RPAREN
+                 | CONVERT_TO_BLN LPAREN value RPAREN
+                 | CONVERT_TO_STR LPAREN value RPAREN"""
     p[0] = ASTNode("type_cast", [p[3]], p[1])
 
 def p_string_concat(p):
@@ -469,7 +469,7 @@ def p_not_op(p):
 def p_arithmetic_op(p):
     """arithmetic_op : PLUS
                       | MINUS
-                      | DIVIDE
+                      | DIVISION
                       | MULTIPLY
                       | MODULO"""
     p[0] = ASTNode("arithmetic_op", value=p[1])
