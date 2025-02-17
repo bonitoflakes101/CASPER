@@ -309,7 +309,7 @@ def p_conditional_tail(p):
                          | empty"""
     if len(p) == 8:
         p[0] = ASTNode("conditional_tail", [p[3], p[6]])
-    elif len(p) == 4:
+    elif len(p) == 5:
         p[0] = ASTNode("conditional_tail", [p[3]])
     else:
         p[0] = ASTNode("conditional_tail", [])
@@ -437,9 +437,15 @@ def p_revive(p):
                | empty"""
     p[0] = ASTNode("revive", [p[2]]) if len(p) == 3 else ASTNode("revive", [])
 
+# new DISPLAY LPAREN value RPAREN, wala sa cfg
 def p_output_statement(p):
-    """output_statement : DISPLAY value"""
-    p[0] = ASTNode("output_statement", [p[2]])
+    """output_statement : DISPLAY value
+                        | DISPLAY LPAREN value RPAREN"""
+    if len(p) == 3:
+        p[0] = ASTNode("output_statement", [p[2]])
+    else:
+        p[0] = ASTNode("output_statement", [p[3]])
+
 
 def p_input_statement(p):
     """input_statement : INPUT LPAREN statements RPAREN"""
