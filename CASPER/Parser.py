@@ -239,19 +239,19 @@ def p_le_tail2(p):
         p[0] = ASTNode("le_tail2", [p[1]]) if p[1] else ASTNode("le_tail2", [])
 
 def p_var_call(p):
-    """var_call : IDENTIFIER
-                | IDENTIFIER LBRACKET index RBRACKET"""
+    """var_call : IDENT
+                | IDENT LBRACKET index RBRACKET"""
     if len(p) == 2:
         p[0] = ASTNode("var_call", value=p[1])
     else:
         p[0] = ASTNode("var_call", [p[3]], p[1])
 
 def p_list_dec(p):
-    """list_dec : list_dtype IDENTIFIER listdec_tail"""
+    """list_dec : list_dtype IDENT listdec_tail"""
     p[0] = ASTNode("list_dec", [p[1], p[4], p[5]])
 
 def p_listdec_tail(p):
-    """listdec_tail : COMMA IDENTIFIER listdec_tail
+    """listdec_tail : COMMA IDENT listdec_tail
                      | empty"""
     if len(p) == 4:
         p[0] = ASTNode("listdec_tail", [p[2], p[3]])
@@ -259,11 +259,11 @@ def p_listdec_tail(p):
         p[0] = ASTNode("listdec_tail", [])
 
 def p_list_init(p):
-    """list_init : list_dtype IDENTIFIER LBRACKET index RBRACKET EQ LBRACKET list_element RBRACKET listinit_tail"""
+    """list_init : list_dtype IDENT LBRACKET index RBRACKET EQ LBRACKET list_element RBRACKET listinit_tail"""
     p[0] = ASTNode("list_init", [p[1], p[2], p[4], p[8], p[9]])
 
 def p_listinit_tail(p):
-    """listinit_tail : COMMA IDENTIFIER LBRACKET index RBRACKET EQ LBRACKET list_element RBRACKET listinit_tail
+    """listinit_tail : COMMA IDENT LBRACKET index RBRACKET EQ LBRACKET list_element RBRACKET listinit_tail
                       | empty"""
     if len(p) == 11:
         p[0] = ASTNode("listinit_tail", [p[2], p[4], p[8], p[10]])
@@ -288,7 +288,7 @@ def p_list_element(p):
 
 def p_index(p):
     """index : INT_LIT
-              | IDENTIFIER"""
+              | IDENT"""
     p[0] = ASTNode("index", value=p[1])
 
 def p_conditional_statement(p):
@@ -307,7 +307,7 @@ def p_conditional_tail(p):
         p[0] = ASTNode("conditional_tail", [])
 
 def p_switch_statement(p):
-    """switch_statement : SWAP LPAREN IDENTIFIER RPAREN LBRACE switch_condition OTHERWISE statements RBRACE"""
+    """switch_statement : SWAP LPAREN IDENT RPAREN LBRACE switch_condition OTHERWISE statements RBRACE"""
     p[0] = ASTNode("switch_statement", [p[3], p[6], p[8]])
 
 def p_switch_condition(p):
@@ -343,7 +343,7 @@ def p_repeat_until(p):
     p[0] = ASTNode("repeat_until", [p[3], p[7]])
 
 def p_control_variable(p):
-    """control_variable : IDENTIFIER EQ INT_LIT
+    """control_variable : IDENT EQ INT_LIT
                         | var_call"""
     p[0] = ASTNode("control_variable", [p[1], p[3]]) if len(p) == 4 else ASTNode("control_variable", [p[1]])
 
@@ -374,7 +374,7 @@ def p_assign_op(p):
     p[0] = ASTNode("assign_op", value=p[1])
 
 def p_function_statement(p):
-    """function_statement : ret_type IDENTIFIER LPAREN parameters RPAREN LBRACE statements revive RBRACE
+    """function_statement : ret_type IDENT LPAREN parameters RPAREN LBRACE statements revive RBRACE
                            | function_call"""
     if len(p) == 10:
         p[0] = ASTNode("function_statement", [p[1], p[2], p[4], p[7], p[8]])
@@ -382,7 +382,7 @@ def p_function_statement(p):
         p[0] = ASTNode("function_statement", [p[1]])
 
 def p_function_call(p):
-    """function_call : IDENTIFIER LPAREN arguments RPAREN
+    """function_call : IDENT LPAREN arguments RPAREN
                      | output_statement
                      | input_statement"""
     if len(p) == 5:
