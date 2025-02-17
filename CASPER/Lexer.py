@@ -316,6 +316,7 @@ class Lexer:
       
         return None
 
+
     def __read_char_literal(self) -> str | None:
         """Reads a character literal enclosed in single quotes and returns the character (or None if invalid)."""
         start_pos = self.position  # Store starting position
