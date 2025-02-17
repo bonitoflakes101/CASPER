@@ -382,7 +382,7 @@ def p_assign_op(p):
     p[0] = ASTNode("assign_op", value=p[1])
 
 def p_function_statement(p):
-    """function_statement : ret_type IDENT LPAREN parameters RPAREN LBRACE statements revive RBRACE
+    """function_statement : ret_type FUNCTION_NAME LPAREN parameters RPAREN LBRACE statements revive RBRACE
                            | function_call"""
     if len(p) == 10:
         p[0] = ASTNode("function_statement", [p[1], p[2], p[4], p[7], p[8]])
@@ -390,7 +390,7 @@ def p_function_statement(p):
         p[0] = ASTNode("function_statement", [p[1]])
 
 def p_function_call(p):
-    """function_call : IDENT LPAREN arguments RPAREN
+    """function_call : FUNCTION_NAME LPAREN arguments RPAREN
                      | output_statement
                      | input_statement"""
     if len(p) == 5:
@@ -424,9 +424,15 @@ def p_function_dtype(p):
     p[0] = ASTNode("function_dtype", value=p[1])
 
 def p_parameters(p):
-    """parameters : var_dec next_parameters
-                   | empty"""
-    p[0] = ASTNode("parameters", [p[1], p[2]]) if len(p) == 3 else ASTNode("parameters", [])
+    """parameters : var_dec
+                  | var_dec next_parameters
+                  | empty"""
+    if len(p) == 2:
+        p[0] = ASTNode("parameters", [p[1]])
+    elif len(p) == 3:
+        p[0] = ASTNode("parameters", [p[1]] + (p[2].children if isinstance(p[2], ASTNode) else []))
+    else:
+        p[0] = ASTNode("parameters", [])
 
 def p_next_parameters(p):
     """next_parameters : COMMA parameters"""
