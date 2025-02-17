@@ -295,6 +295,94 @@ def p_conditional_statement(p):
     """conditional_statement : CHECK LPAREN condition RPAREN LBRACE statements RBRACE conditional_tail"""
     p[0] = ASTNode("conditional_statement", [p[3], p[6], p[8]])
 
+def p_conditional_tail(p):
+    """conditional_tail : OTHERWISE_CHECK LPAREN condition RPAREN LBRACE statements RBRACE
+                         | OTHERWISE LBRACE statements RBRACE
+                         | empty"""
+    if len(p) == 8:
+        p[0] = ASTNode("conditional_tail", [p[3], p[6]])
+    elif len(p) == 4:
+        p[0] = ASTNode("conditional_tail", [p[3]])
+    else:
+        p[0] = ASTNode("conditional_tail", [])
+
+def p_switch_statement(p):
+    """switch_statement : SWAP LPAREN IDENTIFIER RPAREN LBRACE switch_condition OTHERWISE statements RBRACE"""
+    p[0] = ASTNode("switch_statement", [p[3], p[6], p[8]])
+
+def p_switch_condition(p):
+    """switch_condition : SHIFT value COLON statements switch_cond_tail"""
+    p[0] = ASTNode("switch_condition", [p[2], p[4], p[5]])
+
+def p_switch_cond_tail(p):
+    """switch_cond_tail : switch_condition
+                         | empty"""
+    p[0] = ASTNode("switch_cond_tail", [p[1]]) if p[1] else ASTNode("switch_cond_tail", [])
+
+def p_condition(p):
+    """condition : relational_expression
+                 | logical_expression"""
+    p[0] = ASTNode("condition", [p[1]])
+
+def p_loop_statement(p):
+    """loop_statement : for_loop
+                      | until_loop
+                      | repeat_until"""
+    p[0] = ASTNode("loop_statement", [p[1]])
+
+def p_for_loop(p):
+    """for_loop : FOR LPAREN control_variable SEMICOLON relational_expression SEMICOLON update RPAREN LBRACE statements RBRACE"""
+    p[0] = ASTNode("for_loop", [p[3], p[5], p[7], p[10]])
+
+def p_until_loop(p):
+    """until_loop : UNTIL LPAREN relational_expression RPAREN LBRACE statements RBRACE"""
+    p[0] = ASTNode("until_loop", [p[3], p[6]])
+
+def p_repeat_until(p):
+    """repeat_until : REPEAT LBRACE statements RBRACE UNTIL LPAREN relational_expression RPAREN"""
+    p[0] = ASTNode("repeat_until", [p[3], p[7]])
+
+def p_control_variable(p):
+    """control_variable : IDENTIFIER EQ INT_LIT
+                        | var_call"""
+    p[0] = ASTNode("control_variable", [p[1], p[3]]) if len(p) == 4 else ASTNode("control_variable", [p[1]])
+
+def p_update(p):
+    """update : unary
+              | assignment_statement"""
+    p[0] = ASTNode("update", [p[1]])
+
+def p_unary(p):
+    """unary : value unary_op"""
+    p[0] = ASTNode("unary", [p[1]], p[2])
+
+def p_unary_op(p):
+    """unary_op : INCREMENT
+                 | DECREMENT"""
+    p[0] = ASTNode("unary_op", value=p[1])
+
+def p_assignment_statement(p):
+    """assignment_statement : var_call assign_op value"""
+    p[0] = ASTNode("assignment_statement", [p[1], p[3]], p[2])
+
+def p_assign_op(p):
+    """assign_op : PLUSEQ
+                 | MINUSEQ
+                 | MULTEQ
+                 | DIVEQ
+                 | MODEQ"""
+    p[0] = ASTNode("assign_op", value=p[1])
+
+def p_function_statement(p):
+    """function_statement : ret_type IDENTIFIER LPAREN parameters RPAREN LBRACE statements revive RBRACE
+                           | function_call"""
+    if len(p) == 10:
+        p[0] = ASTNode("function_statement", [p[1], p[2], p[4], p[7], p[8]])
+    else:
+        p[0] = ASTNode("function_statement", [p[1]])
+
+
+
 def p_empty(p):
     """empty :"""
     p[0] = None
