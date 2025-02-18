@@ -1,6 +1,0 @@
-fn main() -> int {
-
-    printf("I dropped my limes :");
-
-    return 0;
-}
