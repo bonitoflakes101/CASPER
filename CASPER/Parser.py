@@ -509,9 +509,12 @@ def p_empty(p):
 # Error Handling
 def p_error(p):
     if p:
-        print(f"Syntax error at '{p.value}', line {p.lineno} (Token Type: {p.type})")
+        error_message = f"Syntax Error: Unexpected token '{p.value}' at line {p.lineno} (Token Type: {p.type})"
     else:
-        print("Syntax error at EOF")
+        error_message = "Syntax Error: Unexpected end of input (EOF)"
+    
+    raise SyntaxError(error_message)
+
 
 # Build Parser
 def build_parser():

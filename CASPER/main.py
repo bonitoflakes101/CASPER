@@ -33,8 +33,11 @@ def home():
             try:
                 ast = parser.parse(lexer=Lexer(code))
                 parser_output = str(ast)
+            except SyntaxError as e:
+                parser_output = str(e)  
             except Exception as e:
-                parser_output = f"Syntax Error: {str(e)}"
+                parser_output = f"Unexpected Error: {str(e)}"
+
 
     return render_template(
         "index.html",
