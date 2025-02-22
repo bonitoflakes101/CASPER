@@ -122,7 +122,7 @@ class TokenType(Enum):
     SWAP = "SWAP"
     SHIFT = "SHIFT"
     REVIVE = "REVIVE"
-    GLOBAL = "GLOBAL"
+    # GLOBAL = "GLOBAL"
     # STRUCTURE = "STRUCTURE"
     DAY = "DAY"
     NIGHT = "NIGHT"
@@ -174,7 +174,7 @@ KEYWORDS: dict[str, TokenType] = {
     "swap": TokenType.SWAP,
     "shift": TokenType.SHIFT,
     "revive": TokenType.REVIVE,
-    "GLOBAL": TokenType.GLOBAL,
+    # "GLOBAL": TokenType.GLOBAL,
     "Day": TokenType.DAY,
     "Night": TokenType.NIGHT,
     # "day": TokenType.DAY,

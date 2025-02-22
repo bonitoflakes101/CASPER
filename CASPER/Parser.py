@@ -461,7 +461,6 @@ def p_statements_tail(p):
                        | loop_statement statements_tail
                        | function_call statements_tail
                        | string_operation_statement statements_tail
-                       | global_reference statements_tail
                        | output_statement statements_tail"""
     if len(p) == 2:
     
@@ -680,7 +679,8 @@ def p_assign_op(p):
                  | MINUS_EQ
                  | MUL_EQ
                  | DIV_EQ
-                 | MOD_EQ"""
+                 | MOD_EQ
+                 | EQ"""
     p[0] = p[1]
 
 # -----------------------------------------------------------------------------
@@ -708,9 +708,9 @@ def p_string_val(p):
 # -----------------------------------------------------------------------------
 # Production: <global_reference> → global <var_call>
 # -----------------------------------------------------------------------------
-def p_global_reference(p):
-    "global_reference : GLOBAL var_call EQ value"
-    p[0] = ASTNode("global_reference", [p[2]])
+# def p_global_reference(p):
+#     "global_reference : GLOBAL var_call EQ value"
+#     p[0] = ASTNode("global_reference", [p[2]])
 
 
 
