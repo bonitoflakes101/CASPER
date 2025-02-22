@@ -59,6 +59,7 @@ class TokenType(Enum):
 
     # Other
     FUNCTION_NAME = "FUNCTION_NAME"
+    MAIN_CASPER = "MAIN_CASPER"
 
     # Arithmetic Symbols
     PLUS = "PLUS"
@@ -230,6 +231,9 @@ KEYWORDS: dict[str, TokenType] = {
     }
 
 def lookup_ident(ident: str) -> TokenType:
+    if ident == "@main_casper":
+        return TokenType.MAIN_CASPER
+    
     # Prioritize longer, exact matches (e.g., "int[]", "int[][]")
     if ident in KEYWORDS:
         return KEYWORDS[ident]

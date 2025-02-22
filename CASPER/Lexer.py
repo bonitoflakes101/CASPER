@@ -142,14 +142,24 @@ class Lexer:
 
             # Check if the identifier starts with '@' for FUNCTION_NAME
             if identifier.startswith('@'):
-                if self.current_char in valid_delims:
-                    return self.__new_token(TokenType.FUNCTION_NAME, identifier) # can change into funciton_name if mas better
+                # If the identifier is the main function token, return MAIN_CASPER.
+                if identifier == "@main_casper":
+                    if self.current_char in valid_delims:
+                        return self.__new_token(TokenType.MAIN_CASPER, identifier)
+                    else:
+                        while self.current_char and self.current_char not in Delimiters.identifier_del:
+                            self.__read_char()
+                        illegal_literal = self.source[start_pos:self.position]
+                        return self.__new_token(TokenType.ILLEGAL, illegal_literal)
                 else:
-                    # If no valid delimiter, treat as ILLEGAL
-                    while self.current_char and self.current_char not in Delimiters.identifier_del:
-                        self.__read_char()
-                    illegal_literal = self.source[start_pos:self.position]
-                    return self.__new_token(TokenType.ILLEGAL, illegal_literal)
+                    # For any other '@'-prefixed identifier, return FUNCTION_NAME.
+                    if self.current_char in valid_delims:
+                        return self.__new_token(TokenType.FUNCTION_NAME, identifier)
+                    else:
+                        while self.current_char and self.current_char not in Delimiters.identifier_del:
+                            self.__read_char()
+                        illegal_literal = self.source[start_pos:self.position]
+                        return self.__new_token(TokenType.ILLEGAL, illegal_literal)
 
             # Check if the identifier starts with '$' for IDENT
             elif identifier.startswith('$'):

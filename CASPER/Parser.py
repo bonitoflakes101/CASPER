@@ -44,7 +44,7 @@ def p_program(p):
 # Production: <main_function> → FUNCTION_NAME LPAREN RPAREN LBRACE <statements> RBRACE
 # -----------------------------------------------------------------------------
 def p_main_function(p):
-    """main_function : FUNCTION_NAME LPAREN RPAREN LBRACE statements RBRACE"""
+    """main_function : MAIN_CASPER LPAREN RPAREN LBRACE statements RBRACE"""
     p[0] = ASTNode("main_function", [p[5]], p[1])
 
 # -----------------------------------------------------------------------------

@@ -12,7 +12,6 @@ Unused terminals:
     FUNCTION_LIST_FLT2D
     FUNCTION_LIST_INT2D
     FUNCTION_LIST_STR2D
-    GLOBAL
     ILLEGAL
     IN
     LIST_BLN
@@ -37,7 +36,7 @@ Grammar
 
 Rule 0     S' -> program
 Rule 1     program -> BIRTH global_dec function_statements main_function GHOST
-Rule 2     main_function -> FUNCTION_NAME LPAREN RPAREN LBRACE statements RBRACE
+Rule 2     main_function -> MAIN_CASPER LPAREN RPAREN LBRACE statements RBRACE
 Rule 3     global_dec -> global_statement global_tail
 Rule 4     global_dec -> empty
 Rule 5     global_tail -> global_dec
@@ -239,10 +238,9 @@ FUNCTION_LIST_INT    : 90
 FUNCTION_LIST_INT2D  : 
 FUNCTION_LIST_STR    : 93
 FUNCTION_LIST_STR2D  : 
-FUNCTION_NAME        : 2 46 81 133
+FUNCTION_NAME        : 46 81 133
 FUNCTION_STR         : 89
 GHOST                : 1
-GLOBAL               : 
 GT                   : 69
 GT_EQ                : 72
 IDENT                : 7 9 12 17 20 22 29 43 78 95 98 117 127
@@ -266,6 +264,7 @@ LIST_STR2D           :
 LPAREN               : 2 39 40 41 42 46 60 81 113 115 117 124 125 126 133 144
 LT                   : 70
 LT_EQ                : 73
+MAIN_CASPER          : 2
 MEASURE              : 
 MINUS                : 63
 MINUS_EQ             : 149
@@ -411,7 +410,7 @@ state 2
     FUNCTION_LIST_CHR reduce using rule 158 (empty -> .)
     FUNCTION_LIST_STR reduce using rule 158 (empty -> .)
     FUNCTION_LIST_BLN reduce using rule 158 (empty -> .)
-    FUNCTION_NAME   reduce using rule 158 (empty -> .)
+    MAIN_CASPER     reduce using rule 158 (empty -> .)
     INT             shift and go to state 7
     FLT             shift and go to state 8
     BLN             shift and go to state 9
@@ -443,7 +442,7 @@ state 3
     (94) function_dtype -> . FUNCTION_LIST_BLN
 
     FUNCTION        shift and go to state 15
-    FUNCTION_NAME   reduce using rule 158 (empty -> .)
+    MAIN_CASPER     reduce using rule 158 (empty -> .)
     FUNCTION_INT    shift and go to state 17
     FUNCTION_FLT    shift and go to state 18
     FUNCTION_CHR    shift and go to state 19
@@ -486,7 +485,7 @@ state 4
     FUNCTION_LIST_CHR reduce using rule 158 (empty -> .)
     FUNCTION_LIST_STR reduce using rule 158 (empty -> .)
     FUNCTION_LIST_BLN reduce using rule 158 (empty -> .)
-    FUNCTION_NAME   reduce using rule 158 (empty -> .)
+    MAIN_CASPER     reduce using rule 158 (empty -> .)
     INT             shift and go to state 7
     FLT             shift and go to state 8
     BLN             shift and go to state 9
@@ -514,7 +513,7 @@ state 5
     FUNCTION_LIST_CHR reduce using rule 4 (global_dec -> empty .)
     FUNCTION_LIST_STR reduce using rule 4 (global_dec -> empty .)
     FUNCTION_LIST_BLN reduce using rule 4 (global_dec -> empty .)
-    FUNCTION_NAME   reduce using rule 4 (global_dec -> empty .)
+    MAIN_CASPER     reduce using rule 4 (global_dec -> empty .)
 
 
 state 6
@@ -562,9 +561,9 @@ state 11
 state 12
 
     (1) program -> BIRTH global_dec function_statements . main_function GHOST
-    (2) main_function -> . FUNCTION_NAME LPAREN RPAREN LBRACE statements RBRACE
+    (2) main_function -> . MAIN_CASPER LPAREN RPAREN LBRACE statements RBRACE
 
-    FUNCTION_NAME   shift and go to state 32
+    MAIN_CASPER     shift and go to state 32
 
     main_function                  shift and go to state 31
 
@@ -579,7 +578,7 @@ state 14
 
     (82) function_statements -> empty .
 
-    FUNCTION_NAME   reduce using rule 82 (function_statements -> empty .)
+    MAIN_CASPER     reduce using rule 82 (function_statements -> empty .)
 
 
 state 15
@@ -681,7 +680,7 @@ state 27
     FUNCTION_LIST_CHR reduce using rule 3 (global_dec -> global_statement global_tail .)
     FUNCTION_LIST_STR reduce using rule 3 (global_dec -> global_statement global_tail .)
     FUNCTION_LIST_BLN reduce using rule 3 (global_dec -> global_statement global_tail .)
-    FUNCTION_NAME   reduce using rule 3 (global_dec -> global_statement global_tail .)
+    MAIN_CASPER     reduce using rule 3 (global_dec -> global_statement global_tail .)
 
 
 state 28
@@ -699,7 +698,7 @@ state 28
     FUNCTION_LIST_CHR reduce using rule 5 (global_tail -> global_dec .)
     FUNCTION_LIST_STR reduce using rule 5 (global_tail -> global_dec .)
     FUNCTION_LIST_BLN reduce using rule 5 (global_tail -> global_dec .)
-    FUNCTION_NAME   reduce using rule 5 (global_tail -> global_dec .)
+    MAIN_CASPER     reduce using rule 5 (global_tail -> global_dec .)
 
 
 state 29
@@ -718,7 +717,7 @@ state 29
   ! reduce/reduce conflict for FUNCTION_LIST_CHR resolved using rule 4 (global_dec -> empty .)
   ! reduce/reduce conflict for FUNCTION_LIST_STR resolved using rule 4 (global_dec -> empty .)
   ! reduce/reduce conflict for FUNCTION_LIST_BLN resolved using rule 4 (global_dec -> empty .)
-  ! reduce/reduce conflict for FUNCTION_NAME resolved using rule 4 (global_dec -> empty .)
+  ! reduce/reduce conflict for MAIN_CASPER resolved using rule 4 (global_dec -> empty .)
     FUNCTION        reduce using rule 4 (global_dec -> empty .)
     FUNCTION_INT    reduce using rule 4 (global_dec -> empty .)
     FUNCTION_FLT    reduce using rule 4 (global_dec -> empty .)
@@ -730,7 +729,7 @@ state 29
     FUNCTION_LIST_CHR reduce using rule 4 (global_dec -> empty .)
     FUNCTION_LIST_STR reduce using rule 4 (global_dec -> empty .)
     FUNCTION_LIST_BLN reduce using rule 4 (global_dec -> empty .)
-    FUNCTION_NAME   reduce using rule 4 (global_dec -> empty .)
+    MAIN_CASPER     reduce using rule 4 (global_dec -> empty .)
 
   ! FUNCTION        [ reduce using rule 6 (global_tail -> empty .) ]
   ! FUNCTION_INT    [ reduce using rule 6 (global_tail -> empty .) ]
@@ -743,7 +742,7 @@ state 29
   ! FUNCTION_LIST_CHR [ reduce using rule 6 (global_tail -> empty .) ]
   ! FUNCTION_LIST_STR [ reduce using rule 6 (global_tail -> empty .) ]
   ! FUNCTION_LIST_BLN [ reduce using rule 6 (global_tail -> empty .) ]
-  ! FUNCTION_NAME   [ reduce using rule 6 (global_tail -> empty .) ]
+  ! MAIN_CASPER     [ reduce using rule 6 (global_tail -> empty .) ]
 
 
 state 30
@@ -772,7 +771,7 @@ state 30
     FUNCTION_LIST_CHR reduce using rule 158 (empty -> .)
     FUNCTION_LIST_STR reduce using rule 158 (empty -> .)
     FUNCTION_LIST_BLN reduce using rule 158 (empty -> .)
-    FUNCTION_NAME   reduce using rule 158 (empty -> .)
+    MAIN_CASPER     reduce using rule 158 (empty -> .)
 
     global_statement_tail          shift and go to state 34
     empty                          shift and go to state 35
@@ -786,7 +785,7 @@ state 31
 
 state 32
 
-    (2) main_function -> FUNCTION_NAME . LPAREN RPAREN LBRACE statements RBRACE
+    (2) main_function -> MAIN_CASPER . LPAREN RPAREN LBRACE statements RBRACE
 
     LPAREN          shift and go to state 39
 
@@ -818,7 +817,7 @@ state 34
     FUNCTION_LIST_CHR reduce using rule 7 (global_statement -> data_type IDENT global_statement_tail .)
     FUNCTION_LIST_STR reduce using rule 7 (global_statement -> data_type IDENT global_statement_tail .)
     FUNCTION_LIST_BLN reduce using rule 7 (global_statement -> data_type IDENT global_statement_tail .)
-    FUNCTION_NAME   reduce using rule 7 (global_statement -> data_type IDENT global_statement_tail .)
+    MAIN_CASPER     reduce using rule 7 (global_statement -> data_type IDENT global_statement_tail .)
 
 
 state 35
@@ -841,7 +840,7 @@ state 35
     FUNCTION_LIST_CHR reduce using rule 8 (global_statement_tail -> empty .)
     FUNCTION_LIST_STR reduce using rule 8 (global_statement_tail -> empty .)
     FUNCTION_LIST_BLN reduce using rule 8 (global_statement_tail -> empty .)
-    FUNCTION_NAME   reduce using rule 8 (global_statement_tail -> empty .)
+    MAIN_CASPER     reduce using rule 8 (global_statement_tail -> empty .)
 
 
 state 36
@@ -902,7 +901,7 @@ state 38
 
 state 39
 
-    (2) main_function -> FUNCTION_NAME LPAREN . RPAREN LBRACE statements RBRACE
+    (2) main_function -> MAIN_CASPER LPAREN . RPAREN LBRACE statements RBRACE
 
     RPAREN          shift and go to state 60
 
@@ -956,7 +955,7 @@ state 41
     FUNCTION_LIST_CHR reduce using rule 158 (empty -> .)
     FUNCTION_LIST_STR reduce using rule 158 (empty -> .)
     FUNCTION_LIST_BLN reduce using rule 158 (empty -> .)
-    FUNCTION_NAME   reduce using rule 158 (empty -> .)
+    MAIN_CASPER     reduce using rule 158 (empty -> .)
 
     global_statement_tail          shift and go to state 64
     empty                          shift and go to state 35
@@ -985,7 +984,7 @@ state 42
     FUNCTION_LIST_CHR reduce using rule 158 (empty -> .)
     FUNCTION_LIST_STR reduce using rule 158 (empty -> .)
     FUNCTION_LIST_BLN reduce using rule 158 (empty -> .)
-    FUNCTION_NAME   reduce using rule 158 (empty -> .)
+    MAIN_CASPER     reduce using rule 158 (empty -> .)
 
     global_tail2                   shift and go to state 65
     empty                          shift and go to state 66
@@ -1011,7 +1010,7 @@ state 43
     FUNCTION_LIST_CHR reduce using rule 13 (global_dec_value -> global_value .)
     FUNCTION_LIST_STR reduce using rule 13 (global_dec_value -> global_value .)
     FUNCTION_LIST_BLN reduce using rule 13 (global_dec_value -> global_value .)
-    FUNCTION_NAME   reduce using rule 13 (global_dec_value -> global_value .)
+    MAIN_CASPER     reduce using rule 13 (global_dec_value -> global_value .)
 
 
 state 44
@@ -1065,7 +1064,7 @@ state 45
   ! reduce/reduce conflict for FUNCTION_LIST_CHR resolved using rule 15 (global_value -> factor .)
   ! reduce/reduce conflict for FUNCTION_LIST_STR resolved using rule 15 (global_value -> factor .)
   ! reduce/reduce conflict for FUNCTION_LIST_BLN resolved using rule 15 (global_value -> factor .)
-  ! reduce/reduce conflict for FUNCTION_NAME resolved using rule 15 (global_value -> factor .)
+  ! reduce/reduce conflict for MAIN_CASPER resolved using rule 15 (global_value -> factor .)
     COMMA           reduce using rule 15 (global_value -> factor .)
     INT             reduce using rule 15 (global_value -> factor .)
     FLT             reduce using rule 15 (global_value -> factor .)
@@ -1083,7 +1082,7 @@ state 45
     FUNCTION_LIST_CHR reduce using rule 15 (global_value -> factor .)
     FUNCTION_LIST_STR reduce using rule 15 (global_value -> factor .)
     FUNCTION_LIST_BLN reduce using rule 15 (global_value -> factor .)
-    FUNCTION_NAME   reduce using rule 15 (global_value -> factor .)
+    MAIN_CASPER     reduce using rule 15 (global_value -> factor .)
     PLUS            shift and go to state 72
     MINUS           shift and go to state 73
     MULTIPLY        shift and go to state 74
@@ -1116,7 +1115,7 @@ state 45
   ! FUNCTION_LIST_CHR [ reduce using rule 158 (empty -> .) ]
   ! FUNCTION_LIST_STR [ reduce using rule 158 (empty -> .) ]
   ! FUNCTION_LIST_BLN [ reduce using rule 158 (empty -> .) ]
-  ! FUNCTION_NAME   [ reduce using rule 158 (empty -> .) ]
+  ! MAIN_CASPER     [ reduce using rule 158 (empty -> .) ]
 
     factor_tail                    shift and go to state 70
     empty                          shift and go to state 71
@@ -1142,7 +1141,7 @@ state 46
     FUNCTION_LIST_CHR reduce using rule 16 (global_value -> expression .)
     FUNCTION_LIST_STR reduce using rule 16 (global_value -> expression .)
     FUNCTION_LIST_BLN reduce using rule 16 (global_value -> expression .)
-    FUNCTION_NAME   reduce using rule 16 (global_value -> expression .)
+    MAIN_CASPER     reduce using rule 16 (global_value -> expression .)
 
 
 state 47
@@ -1172,7 +1171,7 @@ state 47
     FUNCTION_LIST_CHR reduce using rule 57 (factor -> var_call .)
     FUNCTION_LIST_STR reduce using rule 57 (factor -> var_call .)
     FUNCTION_LIST_BLN reduce using rule 57 (factor -> var_call .)
-    FUNCTION_NAME   reduce using rule 57 (factor -> var_call .)
+    MAIN_CASPER     reduce using rule 57 (factor -> var_call .)
     GT              reduce using rule 57 (factor -> var_call .)
     LT              reduce using rule 57 (factor -> var_call .)
     EQ_EQ           reduce using rule 57 (factor -> var_call .)
@@ -1184,6 +1183,7 @@ state 47
     RPAREN          reduce using rule 57 (factor -> var_call .)
     CHECK           reduce using rule 57 (factor -> var_call .)
     SWAP            reduce using rule 57 (factor -> var_call .)
+    FUNCTION_NAME   reduce using rule 57 (factor -> var_call .)
     DISPLAY         reduce using rule 57 (factor -> var_call .)
     FOR             reduce using rule 57 (factor -> var_call .)
     UNTIL           reduce using rule 57 (factor -> var_call .)
@@ -1225,7 +1225,7 @@ state 48
     FUNCTION_LIST_CHR reduce using rule 58 (factor -> literal .)
     FUNCTION_LIST_STR reduce using rule 58 (factor -> literal .)
     FUNCTION_LIST_BLN reduce using rule 58 (factor -> literal .)
-    FUNCTION_NAME   reduce using rule 58 (factor -> literal .)
+    MAIN_CASPER     reduce using rule 58 (factor -> literal .)
     GT              reduce using rule 58 (factor -> literal .)
     LT              reduce using rule 58 (factor -> literal .)
     EQ_EQ           reduce using rule 58 (factor -> literal .)
@@ -1237,6 +1237,7 @@ state 48
     RPAREN          reduce using rule 58 (factor -> literal .)
     CHECK           reduce using rule 58 (factor -> literal .)
     SWAP            reduce using rule 58 (factor -> literal .)
+    FUNCTION_NAME   reduce using rule 58 (factor -> literal .)
     DISPLAY         reduce using rule 58 (factor -> literal .)
     FOR             reduce using rule 58 (factor -> literal .)
     UNTIL           reduce using rule 58 (factor -> literal .)
@@ -1340,10 +1341,11 @@ state 51
     FUNCTION_LIST_CHR reduce using rule 158 (empty -> .)
     FUNCTION_LIST_STR reduce using rule 158 (empty -> .)
     FUNCTION_LIST_BLN reduce using rule 158 (empty -> .)
-    FUNCTION_NAME   reduce using rule 158 (empty -> .)
+    MAIN_CASPER     reduce using rule 158 (empty -> .)
     RPAREN          reduce using rule 158 (empty -> .)
     CHECK           reduce using rule 158 (empty -> .)
     SWAP            reduce using rule 158 (empty -> .)
+    FUNCTION_NAME   reduce using rule 158 (empty -> .)
     DISPLAY         reduce using rule 158 (empty -> .)
     FOR             reduce using rule 158 (empty -> .)
     UNTIL           reduce using rule 158 (empty -> .)
@@ -1394,7 +1396,7 @@ state 52
     FUNCTION_LIST_CHR reduce using rule 158 (empty -> .)
     FUNCTION_LIST_STR reduce using rule 158 (empty -> .)
     FUNCTION_LIST_BLN reduce using rule 158 (empty -> .)
-    FUNCTION_NAME   reduce using rule 158 (empty -> .)
+    MAIN_CASPER     reduce using rule 158 (empty -> .)
     GT              reduce using rule 158 (empty -> .)
     LT              reduce using rule 158 (empty -> .)
     EQ_EQ           reduce using rule 158 (empty -> .)
@@ -1406,6 +1408,7 @@ state 52
     RPAREN          reduce using rule 158 (empty -> .)
     CHECK           reduce using rule 158 (empty -> .)
     SWAP            reduce using rule 158 (empty -> .)
+    FUNCTION_NAME   reduce using rule 158 (empty -> .)
     DISPLAY         reduce using rule 158 (empty -> .)
     FOR             reduce using rule 158 (empty -> .)
     UNTIL           reduce using rule 158 (empty -> .)
@@ -1457,7 +1460,7 @@ state 53
     FUNCTION_LIST_CHR reduce using rule 48 (literal -> INT_LIT .)
     FUNCTION_LIST_STR reduce using rule 48 (literal -> INT_LIT .)
     FUNCTION_LIST_BLN reduce using rule 48 (literal -> INT_LIT .)
-    FUNCTION_NAME   reduce using rule 48 (literal -> INT_LIT .)
+    MAIN_CASPER     reduce using rule 48 (literal -> INT_LIT .)
     GT              reduce using rule 48 (literal -> INT_LIT .)
     LT              reduce using rule 48 (literal -> INT_LIT .)
     EQ_EQ           reduce using rule 48 (literal -> INT_LIT .)
@@ -1470,6 +1473,7 @@ state 53
     RPAREN          reduce using rule 48 (literal -> INT_LIT .)
     CHECK           reduce using rule 48 (literal -> INT_LIT .)
     SWAP            reduce using rule 48 (literal -> INT_LIT .)
+    FUNCTION_NAME   reduce using rule 48 (literal -> INT_LIT .)
     DISPLAY         reduce using rule 48 (literal -> INT_LIT .)
     FOR             reduce using rule 48 (literal -> INT_LIT .)
     UNTIL           reduce using rule 48 (literal -> INT_LIT .)
@@ -1511,7 +1515,7 @@ state 54
     FUNCTION_LIST_CHR reduce using rule 49 (literal -> FLT_LIT .)
     FUNCTION_LIST_STR reduce using rule 49 (literal -> FLT_LIT .)
     FUNCTION_LIST_BLN reduce using rule 49 (literal -> FLT_LIT .)
-    FUNCTION_NAME   reduce using rule 49 (literal -> FLT_LIT .)
+    MAIN_CASPER     reduce using rule 49 (literal -> FLT_LIT .)
     GT              reduce using rule 49 (literal -> FLT_LIT .)
     LT              reduce using rule 49 (literal -> FLT_LIT .)
     EQ_EQ           reduce using rule 49 (literal -> FLT_LIT .)
@@ -1524,6 +1528,7 @@ state 54
     RPAREN          reduce using rule 49 (literal -> FLT_LIT .)
     CHECK           reduce using rule 49 (literal -> FLT_LIT .)
     SWAP            reduce using rule 49 (literal -> FLT_LIT .)
+    FUNCTION_NAME   reduce using rule 49 (literal -> FLT_LIT .)
     DISPLAY         reduce using rule 49 (literal -> FLT_LIT .)
     FOR             reduce using rule 49 (literal -> FLT_LIT .)
     UNTIL           reduce using rule 49 (literal -> FLT_LIT .)
@@ -1565,7 +1570,7 @@ state 55
     FUNCTION_LIST_CHR reduce using rule 50 (literal -> DAY .)
     FUNCTION_LIST_STR reduce using rule 50 (literal -> DAY .)
     FUNCTION_LIST_BLN reduce using rule 50 (literal -> DAY .)
-    FUNCTION_NAME   reduce using rule 50 (literal -> DAY .)
+    MAIN_CASPER     reduce using rule 50 (literal -> DAY .)
     GT              reduce using rule 50 (literal -> DAY .)
     LT              reduce using rule 50 (literal -> DAY .)
     EQ_EQ           reduce using rule 50 (literal -> DAY .)
@@ -1578,6 +1583,7 @@ state 55
     RPAREN          reduce using rule 50 (literal -> DAY .)
     CHECK           reduce using rule 50 (literal -> DAY .)
     SWAP            reduce using rule 50 (literal -> DAY .)
+    FUNCTION_NAME   reduce using rule 50 (literal -> DAY .)
     DISPLAY         reduce using rule 50 (literal -> DAY .)
     FOR             reduce using rule 50 (literal -> DAY .)
     UNTIL           reduce using rule 50 (literal -> DAY .)
@@ -1619,7 +1625,7 @@ state 56
     FUNCTION_LIST_CHR reduce using rule 51 (literal -> NIGHT .)
     FUNCTION_LIST_STR reduce using rule 51 (literal -> NIGHT .)
     FUNCTION_LIST_BLN reduce using rule 51 (literal -> NIGHT .)
-    FUNCTION_NAME   reduce using rule 51 (literal -> NIGHT .)
+    MAIN_CASPER     reduce using rule 51 (literal -> NIGHT .)
     GT              reduce using rule 51 (literal -> NIGHT .)
     LT              reduce using rule 51 (literal -> NIGHT .)
     EQ_EQ           reduce using rule 51 (literal -> NIGHT .)
@@ -1632,6 +1638,7 @@ state 56
     RPAREN          reduce using rule 51 (literal -> NIGHT .)
     CHECK           reduce using rule 51 (literal -> NIGHT .)
     SWAP            reduce using rule 51 (literal -> NIGHT .)
+    FUNCTION_NAME   reduce using rule 51 (literal -> NIGHT .)
     DISPLAY         reduce using rule 51 (literal -> NIGHT .)
     FOR             reduce using rule 51 (literal -> NIGHT .)
     UNTIL           reduce using rule 51 (literal -> NIGHT .)
@@ -1673,7 +1680,7 @@ state 57
     FUNCTION_LIST_CHR reduce using rule 52 (literal -> CHR_LIT .)
     FUNCTION_LIST_STR reduce using rule 52 (literal -> CHR_LIT .)
     FUNCTION_LIST_BLN reduce using rule 52 (literal -> CHR_LIT .)
-    FUNCTION_NAME   reduce using rule 52 (literal -> CHR_LIT .)
+    MAIN_CASPER     reduce using rule 52 (literal -> CHR_LIT .)
     GT              reduce using rule 52 (literal -> CHR_LIT .)
     LT              reduce using rule 52 (literal -> CHR_LIT .)
     EQ_EQ           reduce using rule 52 (literal -> CHR_LIT .)
@@ -1686,6 +1693,7 @@ state 57
     RPAREN          reduce using rule 52 (literal -> CHR_LIT .)
     CHECK           reduce using rule 52 (literal -> CHR_LIT .)
     SWAP            reduce using rule 52 (literal -> CHR_LIT .)
+    FUNCTION_NAME   reduce using rule 52 (literal -> CHR_LIT .)
     DISPLAY         reduce using rule 52 (literal -> CHR_LIT .)
     FOR             reduce using rule 52 (literal -> CHR_LIT .)
     UNTIL           reduce using rule 52 (literal -> CHR_LIT .)
@@ -1727,7 +1735,7 @@ state 58
     FUNCTION_LIST_CHR reduce using rule 53 (literal -> STR_LIT .)
     FUNCTION_LIST_STR reduce using rule 53 (literal -> STR_LIT .)
     FUNCTION_LIST_BLN reduce using rule 53 (literal -> STR_LIT .)
-    FUNCTION_NAME   reduce using rule 53 (literal -> STR_LIT .)
+    MAIN_CASPER     reduce using rule 53 (literal -> STR_LIT .)
     GT              reduce using rule 53 (literal -> STR_LIT .)
     LT              reduce using rule 53 (literal -> STR_LIT .)
     EQ_EQ           reduce using rule 53 (literal -> STR_LIT .)
@@ -1740,6 +1748,7 @@ state 58
     RPAREN          reduce using rule 53 (literal -> STR_LIT .)
     CHECK           reduce using rule 53 (literal -> STR_LIT .)
     SWAP            reduce using rule 53 (literal -> STR_LIT .)
+    FUNCTION_NAME   reduce using rule 53 (literal -> STR_LIT .)
     DISPLAY         reduce using rule 53 (literal -> STR_LIT .)
     FOR             reduce using rule 53 (literal -> STR_LIT .)
     UNTIL           reduce using rule 53 (literal -> STR_LIT .)
@@ -1797,10 +1806,11 @@ state 59
     FUNCTION_LIST_CHR reduce using rule 158 (empty -> .)
     FUNCTION_LIST_STR reduce using rule 158 (empty -> .)
     FUNCTION_LIST_BLN reduce using rule 158 (empty -> .)
-    FUNCTION_NAME   reduce using rule 158 (empty -> .)
+    MAIN_CASPER     reduce using rule 158 (empty -> .)
     RPAREN          reduce using rule 158 (empty -> .)
     CHECK           reduce using rule 158 (empty -> .)
     SWAP            reduce using rule 158 (empty -> .)
+    FUNCTION_NAME   reduce using rule 158 (empty -> .)
     DISPLAY         reduce using rule 158 (empty -> .)
     FOR             reduce using rule 158 (empty -> .)
     UNTIL           reduce using rule 158 (empty -> .)
@@ -1826,7 +1836,7 @@ state 59
 
 state 60
 
-    (2) main_function -> FUNCTION_NAME LPAREN RPAREN . LBRACE statements RBRACE
+    (2) main_function -> MAIN_CASPER LPAREN RPAREN . LBRACE statements RBRACE
 
     LBRACE          shift and go to state 96
 
@@ -1872,7 +1882,7 @@ state 64
     FUNCTION_LIST_CHR reduce using rule 9 (global_statement_tail -> COMMA IDENT global_statement_tail .)
     FUNCTION_LIST_STR reduce using rule 9 (global_statement_tail -> COMMA IDENT global_statement_tail .)
     FUNCTION_LIST_BLN reduce using rule 9 (global_statement_tail -> COMMA IDENT global_statement_tail .)
-    FUNCTION_NAME   reduce using rule 9 (global_statement_tail -> COMMA IDENT global_statement_tail .)
+    MAIN_CASPER     reduce using rule 9 (global_statement_tail -> COMMA IDENT global_statement_tail .)
 
 
 state 65
@@ -1895,7 +1905,7 @@ state 65
     FUNCTION_LIST_CHR reduce using rule 10 (global_statement_tail -> EQ global_dec_value global_tail2 .)
     FUNCTION_LIST_STR reduce using rule 10 (global_statement_tail -> EQ global_dec_value global_tail2 .)
     FUNCTION_LIST_BLN reduce using rule 10 (global_statement_tail -> EQ global_dec_value global_tail2 .)
-    FUNCTION_NAME   reduce using rule 10 (global_statement_tail -> EQ global_dec_value global_tail2 .)
+    MAIN_CASPER     reduce using rule 10 (global_statement_tail -> EQ global_dec_value global_tail2 .)
 
 
 state 66
@@ -1918,7 +1928,7 @@ state 66
     FUNCTION_LIST_CHR reduce using rule 11 (global_tail2 -> empty .)
     FUNCTION_LIST_STR reduce using rule 11 (global_tail2 -> empty .)
     FUNCTION_LIST_BLN reduce using rule 11 (global_tail2 -> empty .)
-    FUNCTION_NAME   reduce using rule 11 (global_tail2 -> empty .)
+    MAIN_CASPER     reduce using rule 11 (global_tail2 -> empty .)
 
 
 state 67
@@ -1977,10 +1987,11 @@ state 70
     FUNCTION_LIST_CHR reduce using rule 56 (term -> factor factor_tail .)
     FUNCTION_LIST_STR reduce using rule 56 (term -> factor factor_tail .)
     FUNCTION_LIST_BLN reduce using rule 56 (term -> factor factor_tail .)
-    FUNCTION_NAME   reduce using rule 56 (term -> factor factor_tail .)
+    MAIN_CASPER     reduce using rule 56 (term -> factor factor_tail .)
     RPAREN          reduce using rule 56 (term -> factor factor_tail .)
     CHECK           reduce using rule 56 (term -> factor factor_tail .)
     SWAP            reduce using rule 56 (term -> factor factor_tail .)
+    FUNCTION_NAME   reduce using rule 56 (term -> factor factor_tail .)
     DISPLAY         reduce using rule 56 (term -> factor factor_tail .)
     FOR             reduce using rule 56 (term -> factor factor_tail .)
     UNTIL           reduce using rule 56 (term -> factor factor_tail .)
@@ -2024,10 +2035,11 @@ state 71
     FUNCTION_LIST_CHR reduce using rule 61 (factor_tail -> empty .)
     FUNCTION_LIST_STR reduce using rule 61 (factor_tail -> empty .)
     FUNCTION_LIST_BLN reduce using rule 61 (factor_tail -> empty .)
-    FUNCTION_NAME   reduce using rule 61 (factor_tail -> empty .)
+    MAIN_CASPER     reduce using rule 61 (factor_tail -> empty .)
     RPAREN          reduce using rule 61 (factor_tail -> empty .)
     CHECK           reduce using rule 61 (factor_tail -> empty .)
     SWAP            reduce using rule 61 (factor_tail -> empty .)
+    FUNCTION_NAME   reduce using rule 61 (factor_tail -> empty .)
     DISPLAY         reduce using rule 61 (factor_tail -> empty .)
     FOR             reduce using rule 61 (factor_tail -> empty .)
     UNTIL           reduce using rule 61 (factor_tail -> empty .)
@@ -2279,7 +2291,7 @@ state 78
     FUNCTION_LIST_CHR reduce using rule 59 (factor -> TILDE literal .)
     FUNCTION_LIST_STR reduce using rule 59 (factor -> TILDE literal .)
     FUNCTION_LIST_BLN reduce using rule 59 (factor -> TILDE literal .)
-    FUNCTION_NAME   reduce using rule 59 (factor -> TILDE literal .)
+    MAIN_CASPER     reduce using rule 59 (factor -> TILDE literal .)
     GT              reduce using rule 59 (factor -> TILDE literal .)
     LT              reduce using rule 59 (factor -> TILDE literal .)
     EQ_EQ           reduce using rule 59 (factor -> TILDE literal .)
@@ -2291,6 +2303,7 @@ state 78
     RPAREN          reduce using rule 59 (factor -> TILDE literal .)
     CHECK           reduce using rule 59 (factor -> TILDE literal .)
     SWAP            reduce using rule 59 (factor -> TILDE literal .)
+    FUNCTION_NAME   reduce using rule 59 (factor -> TILDE literal .)
     DISPLAY         reduce using rule 59 (factor -> TILDE literal .)
     FOR             reduce using rule 59 (factor -> TILDE literal .)
     UNTIL           reduce using rule 59 (factor -> TILDE literal .)
@@ -2355,10 +2368,11 @@ state 80
     FUNCTION_LIST_CHR reduce using rule 158 (empty -> .)
     FUNCTION_LIST_STR reduce using rule 158 (empty -> .)
     FUNCTION_LIST_BLN reduce using rule 158 (empty -> .)
-    FUNCTION_NAME   reduce using rule 158 (empty -> .)
+    MAIN_CASPER     reduce using rule 158 (empty -> .)
     RPAREN          reduce using rule 158 (empty -> .)
     CHECK           reduce using rule 158 (empty -> .)
     SWAP            reduce using rule 158 (empty -> .)
+    FUNCTION_NAME   reduce using rule 158 (empty -> .)
     DISPLAY         reduce using rule 158 (empty -> .)
     FOR             reduce using rule 158 (empty -> .)
     UNTIL           reduce using rule 158 (empty -> .)
@@ -2396,7 +2410,7 @@ state 81
     FUNCTION_LIST_CHR reduce using rule 54 (expression -> expr_head expr_tail .)
     FUNCTION_LIST_STR reduce using rule 54 (expression -> expr_head expr_tail .)
     FUNCTION_LIST_BLN reduce using rule 54 (expression -> expr_head expr_tail .)
-    FUNCTION_NAME   reduce using rule 54 (expression -> expr_head expr_tail .)
+    MAIN_CASPER     reduce using rule 54 (expression -> expr_head expr_tail .)
     RPAREN          reduce using rule 54 (expression -> expr_head expr_tail .)
     GT              reduce using rule 54 (expression -> expr_head expr_tail .)
     LT              reduce using rule 54 (expression -> expr_head expr_tail .)
@@ -2408,6 +2422,7 @@ state 81
     OR              reduce using rule 54 (expression -> expr_head expr_tail .)
     CHECK           reduce using rule 54 (expression -> expr_head expr_tail .)
     SWAP            reduce using rule 54 (expression -> expr_head expr_tail .)
+    FUNCTION_NAME   reduce using rule 54 (expression -> expr_head expr_tail .)
     DISPLAY         reduce using rule 54 (expression -> expr_head expr_tail .)
     FOR             reduce using rule 54 (expression -> expr_head expr_tail .)
     UNTIL           reduce using rule 54 (expression -> expr_head expr_tail .)
@@ -2451,10 +2466,11 @@ state 82
     FUNCTION_LIST_CHR reduce using rule 75 (expr_tail -> empty .)
     FUNCTION_LIST_STR reduce using rule 75 (expr_tail -> empty .)
     FUNCTION_LIST_BLN reduce using rule 75 (expr_tail -> empty .)
-    FUNCTION_NAME   reduce using rule 75 (expr_tail -> empty .)
+    MAIN_CASPER     reduce using rule 75 (expr_tail -> empty .)
     RPAREN          reduce using rule 75 (expr_tail -> empty .)
     CHECK           reduce using rule 75 (expr_tail -> empty .)
     SWAP            reduce using rule 75 (expr_tail -> empty .)
+    FUNCTION_NAME   reduce using rule 75 (expr_tail -> empty .)
     DISPLAY         reduce using rule 75 (expr_tail -> empty .)
     FOR             reduce using rule 75 (expr_tail -> empty .)
     UNTIL           reduce using rule 75 (expr_tail -> empty .)
@@ -2566,7 +2582,7 @@ state 85
     FUNCTION_LIST_CHR reduce using rule 78 (var_call -> IDENT var_call_tail .)
     FUNCTION_LIST_STR reduce using rule 78 (var_call -> IDENT var_call_tail .)
     FUNCTION_LIST_BLN reduce using rule 78 (var_call -> IDENT var_call_tail .)
-    FUNCTION_NAME   reduce using rule 78 (var_call -> IDENT var_call_tail .)
+    MAIN_CASPER     reduce using rule 78 (var_call -> IDENT var_call_tail .)
     GT              reduce using rule 78 (var_call -> IDENT var_call_tail .)
     LT              reduce using rule 78 (var_call -> IDENT var_call_tail .)
     EQ_EQ           reduce using rule 78 (var_call -> IDENT var_call_tail .)
@@ -2578,6 +2594,7 @@ state 85
     RPAREN          reduce using rule 78 (var_call -> IDENT var_call_tail .)
     CHECK           reduce using rule 78 (var_call -> IDENT var_call_tail .)
     SWAP            reduce using rule 78 (var_call -> IDENT var_call_tail .)
+    FUNCTION_NAME   reduce using rule 78 (var_call -> IDENT var_call_tail .)
     DISPLAY         reduce using rule 78 (var_call -> IDENT var_call_tail .)
     FOR             reduce using rule 78 (var_call -> IDENT var_call_tail .)
     UNTIL           reduce using rule 78 (var_call -> IDENT var_call_tail .)
@@ -2627,7 +2644,7 @@ state 86
     FUNCTION_LIST_CHR reduce using rule 79 (var_call_tail -> empty .)
     FUNCTION_LIST_STR reduce using rule 79 (var_call_tail -> empty .)
     FUNCTION_LIST_BLN reduce using rule 79 (var_call_tail -> empty .)
-    FUNCTION_NAME   reduce using rule 79 (var_call_tail -> empty .)
+    MAIN_CASPER     reduce using rule 79 (var_call_tail -> empty .)
     GT              reduce using rule 79 (var_call_tail -> empty .)
     LT              reduce using rule 79 (var_call_tail -> empty .)
     EQ_EQ           reduce using rule 79 (var_call_tail -> empty .)
@@ -2639,6 +2656,7 @@ state 86
     RPAREN          reduce using rule 79 (var_call_tail -> empty .)
     CHECK           reduce using rule 79 (var_call_tail -> empty .)
     SWAP            reduce using rule 79 (var_call_tail -> empty .)
+    FUNCTION_NAME   reduce using rule 79 (var_call_tail -> empty .)
     DISPLAY         reduce using rule 79 (var_call_tail -> empty .)
     FOR             reduce using rule 79 (var_call_tail -> empty .)
     UNTIL           reduce using rule 79 (var_call_tail -> empty .)
@@ -2695,7 +2713,7 @@ state 88
     FUNCTION_LIST_CHR reduce using rule 55 (expr_head -> term term_tail .)
     FUNCTION_LIST_STR reduce using rule 55 (expr_head -> term term_tail .)
     FUNCTION_LIST_BLN reduce using rule 55 (expr_head -> term term_tail .)
-    FUNCTION_NAME   reduce using rule 55 (expr_head -> term term_tail .)
+    MAIN_CASPER     reduce using rule 55 (expr_head -> term term_tail .)
     RPAREN          reduce using rule 55 (expr_head -> term term_tail .)
     GT              reduce using rule 55 (expr_head -> term term_tail .)
     LT              reduce using rule 55 (expr_head -> term term_tail .)
@@ -2705,6 +2723,7 @@ state 88
     NOT_EQ          reduce using rule 55 (expr_head -> term term_tail .)
     CHECK           reduce using rule 55 (expr_head -> term term_tail .)
     SWAP            reduce using rule 55 (expr_head -> term term_tail .)
+    FUNCTION_NAME   reduce using rule 55 (expr_head -> term term_tail .)
     DISPLAY         reduce using rule 55 (expr_head -> term term_tail .)
     FOR             reduce using rule 55 (expr_head -> term term_tail .)
     UNTIL           reduce using rule 55 (expr_head -> term term_tail .)
@@ -2748,10 +2767,11 @@ state 89
     FUNCTION_LIST_CHR reduce using rule 68 (term_tail -> empty .)
     FUNCTION_LIST_STR reduce using rule 68 (term_tail -> empty .)
     FUNCTION_LIST_BLN reduce using rule 68 (term_tail -> empty .)
-    FUNCTION_NAME   reduce using rule 68 (term_tail -> empty .)
+    MAIN_CASPER     reduce using rule 68 (term_tail -> empty .)
     RPAREN          reduce using rule 68 (term_tail -> empty .)
     CHECK           reduce using rule 68 (term_tail -> empty .)
     SWAP            reduce using rule 68 (term_tail -> empty .)
+    FUNCTION_NAME   reduce using rule 68 (term_tail -> empty .)
     DISPLAY         reduce using rule 68 (term_tail -> empty .)
     FOR             reduce using rule 68 (term_tail -> empty .)
     UNTIL           reduce using rule 68 (term_tail -> empty .)
@@ -2978,7 +2998,7 @@ state 95
 
 state 96
 
-    (2) main_function -> FUNCTION_NAME LPAREN RPAREN LBRACE . statements RBRACE
+    (2) main_function -> MAIN_CASPER LPAREN RPAREN LBRACE . statements RBRACE
     (101) statements -> . empty
     (102) statements -> . local_dec statements_tail
     (158) empty -> .
@@ -3070,7 +3090,7 @@ state 99
     FUNCTION_LIST_CHR reduce using rule 158 (empty -> .)
     FUNCTION_LIST_STR reduce using rule 158 (empty -> .)
     FUNCTION_LIST_BLN reduce using rule 158 (empty -> .)
-    FUNCTION_NAME   reduce using rule 158 (empty -> .)
+    MAIN_CASPER     reduce using rule 158 (empty -> .)
 
     global_statement_tail          shift and go to state 131
     empty                          shift and go to state 35
@@ -3096,7 +3116,7 @@ state 100
     FUNCTION_LIST_CHR reduce using rule 14 (global_dec_value -> LBRACKET list_element RBRACKET .)
     FUNCTION_LIST_STR reduce using rule 14 (global_dec_value -> LBRACKET list_element RBRACKET .)
     FUNCTION_LIST_BLN reduce using rule 14 (global_dec_value -> LBRACKET list_element RBRACKET .)
-    FUNCTION_NAME   reduce using rule 14 (global_dec_value -> LBRACKET list_element RBRACKET .)
+    MAIN_CASPER     reduce using rule 14 (global_dec_value -> LBRACKET list_element RBRACKET .)
 
 
 state 101
@@ -3163,10 +3183,11 @@ state 104
     FUNCTION_LIST_CHR reduce using rule 62 (factor_tail -> PLUS expression .)
     FUNCTION_LIST_STR reduce using rule 62 (factor_tail -> PLUS expression .)
     FUNCTION_LIST_BLN reduce using rule 62 (factor_tail -> PLUS expression .)
-    FUNCTION_NAME   reduce using rule 62 (factor_tail -> PLUS expression .)
+    MAIN_CASPER     reduce using rule 62 (factor_tail -> PLUS expression .)
     RPAREN          reduce using rule 62 (factor_tail -> PLUS expression .)
     CHECK           reduce using rule 62 (factor_tail -> PLUS expression .)
     SWAP            reduce using rule 62 (factor_tail -> PLUS expression .)
+    FUNCTION_NAME   reduce using rule 62 (factor_tail -> PLUS expression .)
     DISPLAY         reduce using rule 62 (factor_tail -> PLUS expression .)
     FOR             reduce using rule 62 (factor_tail -> PLUS expression .)
     UNTIL           reduce using rule 62 (factor_tail -> PLUS expression .)
@@ -3210,10 +3231,11 @@ state 105
     FUNCTION_LIST_CHR reduce using rule 63 (factor_tail -> MINUS expression .)
     FUNCTION_LIST_STR reduce using rule 63 (factor_tail -> MINUS expression .)
     FUNCTION_LIST_BLN reduce using rule 63 (factor_tail -> MINUS expression .)
-    FUNCTION_NAME   reduce using rule 63 (factor_tail -> MINUS expression .)
+    MAIN_CASPER     reduce using rule 63 (factor_tail -> MINUS expression .)
     RPAREN          reduce using rule 63 (factor_tail -> MINUS expression .)
     CHECK           reduce using rule 63 (factor_tail -> MINUS expression .)
     SWAP            reduce using rule 63 (factor_tail -> MINUS expression .)
+    FUNCTION_NAME   reduce using rule 63 (factor_tail -> MINUS expression .)
     DISPLAY         reduce using rule 63 (factor_tail -> MINUS expression .)
     FOR             reduce using rule 63 (factor_tail -> MINUS expression .)
     UNTIL           reduce using rule 63 (factor_tail -> MINUS expression .)
@@ -3257,10 +3279,11 @@ state 106
     FUNCTION_LIST_CHR reduce using rule 64 (factor_tail -> MULTIPLY expression .)
     FUNCTION_LIST_STR reduce using rule 64 (factor_tail -> MULTIPLY expression .)
     FUNCTION_LIST_BLN reduce using rule 64 (factor_tail -> MULTIPLY expression .)
-    FUNCTION_NAME   reduce using rule 64 (factor_tail -> MULTIPLY expression .)
+    MAIN_CASPER     reduce using rule 64 (factor_tail -> MULTIPLY expression .)
     RPAREN          reduce using rule 64 (factor_tail -> MULTIPLY expression .)
     CHECK           reduce using rule 64 (factor_tail -> MULTIPLY expression .)
     SWAP            reduce using rule 64 (factor_tail -> MULTIPLY expression .)
+    FUNCTION_NAME   reduce using rule 64 (factor_tail -> MULTIPLY expression .)
     DISPLAY         reduce using rule 64 (factor_tail -> MULTIPLY expression .)
     FOR             reduce using rule 64 (factor_tail -> MULTIPLY expression .)
     UNTIL           reduce using rule 64 (factor_tail -> MULTIPLY expression .)
@@ -3304,10 +3327,11 @@ state 107
     FUNCTION_LIST_CHR reduce using rule 65 (factor_tail -> DIVISION expression .)
     FUNCTION_LIST_STR reduce using rule 65 (factor_tail -> DIVISION expression .)
     FUNCTION_LIST_BLN reduce using rule 65 (factor_tail -> DIVISION expression .)
-    FUNCTION_NAME   reduce using rule 65 (factor_tail -> DIVISION expression .)
+    MAIN_CASPER     reduce using rule 65 (factor_tail -> DIVISION expression .)
     RPAREN          reduce using rule 65 (factor_tail -> DIVISION expression .)
     CHECK           reduce using rule 65 (factor_tail -> DIVISION expression .)
     SWAP            reduce using rule 65 (factor_tail -> DIVISION expression .)
+    FUNCTION_NAME   reduce using rule 65 (factor_tail -> DIVISION expression .)
     DISPLAY         reduce using rule 65 (factor_tail -> DIVISION expression .)
     FOR             reduce using rule 65 (factor_tail -> DIVISION expression .)
     UNTIL           reduce using rule 65 (factor_tail -> DIVISION expression .)
@@ -3351,10 +3375,11 @@ state 108
     FUNCTION_LIST_CHR reduce using rule 66 (factor_tail -> MODULO expression .)
     FUNCTION_LIST_STR reduce using rule 66 (factor_tail -> MODULO expression .)
     FUNCTION_LIST_BLN reduce using rule 66 (factor_tail -> MODULO expression .)
-    FUNCTION_NAME   reduce using rule 66 (factor_tail -> MODULO expression .)
+    MAIN_CASPER     reduce using rule 66 (factor_tail -> MODULO expression .)
     RPAREN          reduce using rule 66 (factor_tail -> MODULO expression .)
     CHECK           reduce using rule 66 (factor_tail -> MODULO expression .)
     SWAP            reduce using rule 66 (factor_tail -> MODULO expression .)
+    FUNCTION_NAME   reduce using rule 66 (factor_tail -> MODULO expression .)
     DISPLAY         reduce using rule 66 (factor_tail -> MODULO expression .)
     FOR             reduce using rule 66 (factor_tail -> MODULO expression .)
     UNTIL           reduce using rule 66 (factor_tail -> MODULO expression .)
@@ -3398,10 +3423,11 @@ state 109
     FUNCTION_LIST_CHR reduce using rule 67 (factor_tail -> EXPONENT expression .)
     FUNCTION_LIST_STR reduce using rule 67 (factor_tail -> EXPONENT expression .)
     FUNCTION_LIST_BLN reduce using rule 67 (factor_tail -> EXPONENT expression .)
-    FUNCTION_NAME   reduce using rule 67 (factor_tail -> EXPONENT expression .)
+    MAIN_CASPER     reduce using rule 67 (factor_tail -> EXPONENT expression .)
     RPAREN          reduce using rule 67 (factor_tail -> EXPONENT expression .)
     CHECK           reduce using rule 67 (factor_tail -> EXPONENT expression .)
     SWAP            reduce using rule 67 (factor_tail -> EXPONENT expression .)
+    FUNCTION_NAME   reduce using rule 67 (factor_tail -> EXPONENT expression .)
     DISPLAY         reduce using rule 67 (factor_tail -> EXPONENT expression .)
     FOR             reduce using rule 67 (factor_tail -> EXPONENT expression .)
     UNTIL           reduce using rule 67 (factor_tail -> EXPONENT expression .)
@@ -3443,7 +3469,7 @@ state 110
     FUNCTION_LIST_CHR reduce using rule 60 (factor -> LPAREN expression RPAREN .)
     FUNCTION_LIST_STR reduce using rule 60 (factor -> LPAREN expression RPAREN .)
     FUNCTION_LIST_BLN reduce using rule 60 (factor -> LPAREN expression RPAREN .)
-    FUNCTION_NAME   reduce using rule 60 (factor -> LPAREN expression RPAREN .)
+    MAIN_CASPER     reduce using rule 60 (factor -> LPAREN expression RPAREN .)
     GT              reduce using rule 60 (factor -> LPAREN expression RPAREN .)
     LT              reduce using rule 60 (factor -> LPAREN expression RPAREN .)
     EQ_EQ           reduce using rule 60 (factor -> LPAREN expression RPAREN .)
@@ -3455,6 +3481,7 @@ state 110
     RPAREN          reduce using rule 60 (factor -> LPAREN expression RPAREN .)
     CHECK           reduce using rule 60 (factor -> LPAREN expression RPAREN .)
     SWAP            reduce using rule 60 (factor -> LPAREN expression RPAREN .)
+    FUNCTION_NAME   reduce using rule 60 (factor -> LPAREN expression RPAREN .)
     DISPLAY         reduce using rule 60 (factor -> LPAREN expression RPAREN .)
     FOR             reduce using rule 60 (factor -> LPAREN expression RPAREN .)
     UNTIL           reduce using rule 60 (factor -> LPAREN expression RPAREN .)
@@ -3498,10 +3525,11 @@ state 111
     FUNCTION_LIST_CHR reduce using rule 76 (expr_tail -> AND expression .)
     FUNCTION_LIST_STR reduce using rule 76 (expr_tail -> AND expression .)
     FUNCTION_LIST_BLN reduce using rule 76 (expr_tail -> AND expression .)
-    FUNCTION_NAME   reduce using rule 76 (expr_tail -> AND expression .)
+    MAIN_CASPER     reduce using rule 76 (expr_tail -> AND expression .)
     RPAREN          reduce using rule 76 (expr_tail -> AND expression .)
     CHECK           reduce using rule 76 (expr_tail -> AND expression .)
     SWAP            reduce using rule 76 (expr_tail -> AND expression .)
+    FUNCTION_NAME   reduce using rule 76 (expr_tail -> AND expression .)
     DISPLAY         reduce using rule 76 (expr_tail -> AND expression .)
     FOR             reduce using rule 76 (expr_tail -> AND expression .)
     UNTIL           reduce using rule 76 (expr_tail -> AND expression .)
@@ -3545,10 +3573,11 @@ state 112
     FUNCTION_LIST_CHR reduce using rule 77 (expr_tail -> OR expression .)
     FUNCTION_LIST_STR reduce using rule 77 (expr_tail -> OR expression .)
     FUNCTION_LIST_BLN reduce using rule 77 (expr_tail -> OR expression .)
-    FUNCTION_NAME   reduce using rule 77 (expr_tail -> OR expression .)
+    MAIN_CASPER     reduce using rule 77 (expr_tail -> OR expression .)
     RPAREN          reduce using rule 77 (expr_tail -> OR expression .)
     CHECK           reduce using rule 77 (expr_tail -> OR expression .)
     SWAP            reduce using rule 77 (expr_tail -> OR expression .)
+    FUNCTION_NAME   reduce using rule 77 (expr_tail -> OR expression .)
     DISPLAY         reduce using rule 77 (expr_tail -> OR expression .)
     FOR             reduce using rule 77 (expr_tail -> OR expression .)
     UNTIL           reduce using rule 77 (expr_tail -> OR expression .)
@@ -3613,10 +3642,11 @@ state 116
     FUNCTION_LIST_CHR reduce using rule 69 (term_tail -> GT expression .)
     FUNCTION_LIST_STR reduce using rule 69 (term_tail -> GT expression .)
     FUNCTION_LIST_BLN reduce using rule 69 (term_tail -> GT expression .)
-    FUNCTION_NAME   reduce using rule 69 (term_tail -> GT expression .)
+    MAIN_CASPER     reduce using rule 69 (term_tail -> GT expression .)
     RPAREN          reduce using rule 69 (term_tail -> GT expression .)
     CHECK           reduce using rule 69 (term_tail -> GT expression .)
     SWAP            reduce using rule 69 (term_tail -> GT expression .)
+    FUNCTION_NAME   reduce using rule 69 (term_tail -> GT expression .)
     DISPLAY         reduce using rule 69 (term_tail -> GT expression .)
     FOR             reduce using rule 69 (term_tail -> GT expression .)
     UNTIL           reduce using rule 69 (term_tail -> GT expression .)
@@ -3660,10 +3690,11 @@ state 117
     FUNCTION_LIST_CHR reduce using rule 70 (term_tail -> LT expression .)
     FUNCTION_LIST_STR reduce using rule 70 (term_tail -> LT expression .)
     FUNCTION_LIST_BLN reduce using rule 70 (term_tail -> LT expression .)
-    FUNCTION_NAME   reduce using rule 70 (term_tail -> LT expression .)
+    MAIN_CASPER     reduce using rule 70 (term_tail -> LT expression .)
     RPAREN          reduce using rule 70 (term_tail -> LT expression .)
     CHECK           reduce using rule 70 (term_tail -> LT expression .)
     SWAP            reduce using rule 70 (term_tail -> LT expression .)
+    FUNCTION_NAME   reduce using rule 70 (term_tail -> LT expression .)
     DISPLAY         reduce using rule 70 (term_tail -> LT expression .)
     FOR             reduce using rule 70 (term_tail -> LT expression .)
     UNTIL           reduce using rule 70 (term_tail -> LT expression .)
@@ -3707,10 +3738,11 @@ state 118
     FUNCTION_LIST_CHR reduce using rule 71 (term_tail -> EQ_EQ expression .)
     FUNCTION_LIST_STR reduce using rule 71 (term_tail -> EQ_EQ expression .)
     FUNCTION_LIST_BLN reduce using rule 71 (term_tail -> EQ_EQ expression .)
-    FUNCTION_NAME   reduce using rule 71 (term_tail -> EQ_EQ expression .)
+    MAIN_CASPER     reduce using rule 71 (term_tail -> EQ_EQ expression .)
     RPAREN          reduce using rule 71 (term_tail -> EQ_EQ expression .)
     CHECK           reduce using rule 71 (term_tail -> EQ_EQ expression .)
     SWAP            reduce using rule 71 (term_tail -> EQ_EQ expression .)
+    FUNCTION_NAME   reduce using rule 71 (term_tail -> EQ_EQ expression .)
     DISPLAY         reduce using rule 71 (term_tail -> EQ_EQ expression .)
     FOR             reduce using rule 71 (term_tail -> EQ_EQ expression .)
     UNTIL           reduce using rule 71 (term_tail -> EQ_EQ expression .)
@@ -3754,10 +3786,11 @@ state 119
     FUNCTION_LIST_CHR reduce using rule 72 (term_tail -> GT_EQ expression .)
     FUNCTION_LIST_STR reduce using rule 72 (term_tail -> GT_EQ expression .)
     FUNCTION_LIST_BLN reduce using rule 72 (term_tail -> GT_EQ expression .)
-    FUNCTION_NAME   reduce using rule 72 (term_tail -> GT_EQ expression .)
+    MAIN_CASPER     reduce using rule 72 (term_tail -> GT_EQ expression .)
     RPAREN          reduce using rule 72 (term_tail -> GT_EQ expression .)
     CHECK           reduce using rule 72 (term_tail -> GT_EQ expression .)
     SWAP            reduce using rule 72 (term_tail -> GT_EQ expression .)
+    FUNCTION_NAME   reduce using rule 72 (term_tail -> GT_EQ expression .)
     DISPLAY         reduce using rule 72 (term_tail -> GT_EQ expression .)
     FOR             reduce using rule 72 (term_tail -> GT_EQ expression .)
     UNTIL           reduce using rule 72 (term_tail -> GT_EQ expression .)
@@ -3801,10 +3834,11 @@ state 120
     FUNCTION_LIST_CHR reduce using rule 73 (term_tail -> LT_EQ expression .)
     FUNCTION_LIST_STR reduce using rule 73 (term_tail -> LT_EQ expression .)
     FUNCTION_LIST_BLN reduce using rule 73 (term_tail -> LT_EQ expression .)
-    FUNCTION_NAME   reduce using rule 73 (term_tail -> LT_EQ expression .)
+    MAIN_CASPER     reduce using rule 73 (term_tail -> LT_EQ expression .)
     RPAREN          reduce using rule 73 (term_tail -> LT_EQ expression .)
     CHECK           reduce using rule 73 (term_tail -> LT_EQ expression .)
     SWAP            reduce using rule 73 (term_tail -> LT_EQ expression .)
+    FUNCTION_NAME   reduce using rule 73 (term_tail -> LT_EQ expression .)
     DISPLAY         reduce using rule 73 (term_tail -> LT_EQ expression .)
     FOR             reduce using rule 73 (term_tail -> LT_EQ expression .)
     UNTIL           reduce using rule 73 (term_tail -> LT_EQ expression .)
@@ -3848,10 +3882,11 @@ state 121
     FUNCTION_LIST_CHR reduce using rule 74 (term_tail -> NOT_EQ expression .)
     FUNCTION_LIST_STR reduce using rule 74 (term_tail -> NOT_EQ expression .)
     FUNCTION_LIST_BLN reduce using rule 74 (term_tail -> NOT_EQ expression .)
-    FUNCTION_NAME   reduce using rule 74 (term_tail -> NOT_EQ expression .)
+    MAIN_CASPER     reduce using rule 74 (term_tail -> NOT_EQ expression .)
     RPAREN          reduce using rule 74 (term_tail -> NOT_EQ expression .)
     CHECK           reduce using rule 74 (term_tail -> NOT_EQ expression .)
     SWAP            reduce using rule 74 (term_tail -> NOT_EQ expression .)
+    FUNCTION_NAME   reduce using rule 74 (term_tail -> NOT_EQ expression .)
     DISPLAY         reduce using rule 74 (term_tail -> NOT_EQ expression .)
     FOR             reduce using rule 74 (term_tail -> NOT_EQ expression .)
     UNTIL           reduce using rule 74 (term_tail -> NOT_EQ expression .)
@@ -3868,7 +3903,7 @@ state 121
 
 state 122
 
-    (2) main_function -> FUNCTION_NAME LPAREN RPAREN LBRACE statements . RBRACE
+    (2) main_function -> MAIN_CASPER LPAREN RPAREN LBRACE statements . RBRACE
 
     RBRACE          shift and go to state 134
 
@@ -4141,7 +4176,7 @@ state 131
     FUNCTION_LIST_CHR reduce using rule 12 (global_tail2 -> COMMA IDENT global_statement_tail .)
     FUNCTION_LIST_STR reduce using rule 12 (global_tail2 -> COMMA IDENT global_statement_tail .)
     FUNCTION_LIST_BLN reduce using rule 12 (global_tail2 -> COMMA IDENT global_statement_tail .)
-    FUNCTION_NAME   reduce using rule 12 (global_tail2 -> COMMA IDENT global_statement_tail .)
+    MAIN_CASPER     reduce using rule 12 (global_tail2 -> COMMA IDENT global_statement_tail .)
 
 
 state 132
@@ -4178,7 +4213,7 @@ state 133
     FUNCTION_LIST_CHR reduce using rule 80 (var_call_tail -> LBRACKET index RBRACKET .)
     FUNCTION_LIST_STR reduce using rule 80 (var_call_tail -> LBRACKET index RBRACKET .)
     FUNCTION_LIST_BLN reduce using rule 80 (var_call_tail -> LBRACKET index RBRACKET .)
-    FUNCTION_NAME   reduce using rule 80 (var_call_tail -> LBRACKET index RBRACKET .)
+    MAIN_CASPER     reduce using rule 80 (var_call_tail -> LBRACKET index RBRACKET .)
     GT              reduce using rule 80 (var_call_tail -> LBRACKET index RBRACKET .)
     LT              reduce using rule 80 (var_call_tail -> LBRACKET index RBRACKET .)
     EQ_EQ           reduce using rule 80 (var_call_tail -> LBRACKET index RBRACKET .)
@@ -4190,6 +4225,7 @@ state 133
     RPAREN          reduce using rule 80 (var_call_tail -> LBRACKET index RBRACKET .)
     CHECK           reduce using rule 80 (var_call_tail -> LBRACKET index RBRACKET .)
     SWAP            reduce using rule 80 (var_call_tail -> LBRACKET index RBRACKET .)
+    FUNCTION_NAME   reduce using rule 80 (var_call_tail -> LBRACKET index RBRACKET .)
     DISPLAY         reduce using rule 80 (var_call_tail -> LBRACKET index RBRACKET .)
     FOR             reduce using rule 80 (var_call_tail -> LBRACKET index RBRACKET .)
     UNTIL           reduce using rule 80 (var_call_tail -> LBRACKET index RBRACKET .)
@@ -4214,9 +4250,9 @@ state 133
 
 state 134
 
-    (2) main_function -> FUNCTION_NAME LPAREN RPAREN LBRACE statements RBRACE .
+    (2) main_function -> MAIN_CASPER LPAREN RPAREN LBRACE statements RBRACE .
 
-    GHOST           reduce using rule 2 (main_function -> FUNCTION_NAME LPAREN RPAREN LBRACE statements RBRACE .)
+    GHOST           reduce using rule 2 (main_function -> MAIN_CASPER LPAREN RPAREN LBRACE statements RBRACE .)
 
 
 state 135
@@ -6674,7 +6710,7 @@ state 226
 
     (81) function_statements -> ret_type FUNCTION_NAME LPAREN parameters RPAREN LBRACE statements revive RBRACE .
 
-    FUNCTION_NAME   reduce using rule 81 (function_statements -> ret_type FUNCTION_NAME LPAREN parameters RPAREN LBRACE statements revive RBRACE .)
+    MAIN_CASPER     reduce using rule 81 (function_statements -> ret_type FUNCTION_NAME LPAREN parameters RPAREN LBRACE statements revive RBRACE .)
 
 
 state 227
