@@ -32,7 +32,8 @@ def home():
             parser = build_parser()
             try:
                 ast = parser.parse(lexer=Lexer(code))
-                parser_output = str(ast)
+                # parser_output = str(ast)
+                parser_output = "No Syntax Error"
             except SyntaxError as e:
                 parser_output = str(e)  
             except Exception as e:
