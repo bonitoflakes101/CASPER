@@ -632,7 +632,8 @@ def p_arg_value(p):
 # Production: <output_statement> → display <value> <next_val>
 # -----------------------------------------------------------------------------
 def p_output_statement(p):
-    "output_statement : DISPLAY value next_val"
+    """output_statement : DISPLAY value next_val
+                        |  DISPLAY LPAREN value next_val RPAREN"""
     p[0] = ASTNode("output_statement", [p[2], p[3]])
 
 # -----------------------------------------------------------------------------
