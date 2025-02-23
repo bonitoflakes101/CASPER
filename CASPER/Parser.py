@@ -566,7 +566,7 @@ def p_loop_statement(p):
 # Production: <for_loop> → for ( <control_variable> ; <expression> ; <update> ) { <statements> }
 # -----------------------------------------------------------------------------
 def p_for_loop(p):
-    "for_loop : FOR LPAREN control_variable SEMICOLON expression SEMICOLON update RPAREN LBRACE maybe_newline statements RBRACE"
+    "for_loop : FOR LPAREN control_variable SEMICOLON expression SEMICOLON update RPAREN maybe_newline LBRACE maybe_newline statements RBRACE"
     p[0] = ASTNode("for_loop", [p[3], p[5], p[7], p[11]])
 
 # -----------------------------------------------------------------------------
