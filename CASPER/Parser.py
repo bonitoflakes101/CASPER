@@ -463,7 +463,7 @@ def p_revive(p):
 # -----------------------------------------------------------------------------
 def p_statements(p):
     """statements : empty
-                  | local_dec NEWLINE statements_tail"""
+                  | local_dec maybe_newline statements_tail"""
     if len(p) == 2:
         # 'empty'
         p[0] = []     # Return an empty list instead of None
@@ -478,37 +478,32 @@ def p_statements(p):
 def p_statements_tail(p):
     """
     statements_tail : empty
-                    | statements
-                    | conditional_statement NEWLINE statements_tail
-                    | switch_statement NEWLINE statements_tail
-                    | loop_statement NEWLINE statements_tail
-                    | function_call NEWLINE statements_tail
-                    | string_operation_statement NEWLINE statements_tail
-                    | output_statement NEWLINE statements_tail
+                    | string_operation_statement maybe_newline statements_tail
+                    | conditional_statement maybe_newline statements_tail
+                    | switch_statement maybe_newline statements_tail
+                    | loop_statement maybe_newline statements_tail
+                    | function_call maybe_newline statements_tail
+                    | output_statement maybe_newline statements_tail
+                    | statements maybe_newline
     """
     if len(p) == 2:
-        # 'empty' or 'statements'
-        if p[1] is None:
-            p[0] = []
-        else:
-            # p[1] == statements
-            if isinstance(p[1], list):
-                p[0] = p[1]
-            else:
-                p[0] = [p[1]]
-    else:
-        # e.g. 'conditional_statement NEWLINE statements_tail'
-        # p[1] is the statement node, p[2] is NEWLINE, p[3] is the remainder
-        if not isinstance(p[3], list):
-           raise TypeError("statements_tail expected a list in p[3]")
+        p[0] = []  # empty
+    # If the alternative starts with string_operation_statement, conditional_statement, etc.
+    elif len(p) == 4:
         p[0] = [p[1]] + p[3]
+    else:
+        # For the "statements maybe_newline" alternative (when it’s the last alternative)
+        if isinstance(p[1], list):
+            p[0] = p[1]
+        else:
+            p[0] = [p[1]] + p[2]
 
 # -----------------------------------------------------------------------------
 # Production: <local_dec> → <var_statement>
 # -----------------------------------------------------------------------------
 def p_local_dec(p):
-    """local_dec : var_statement
-                 | empty"""
+    """local_dec : empty
+                 | var_statement"""
     p[0] = p[1] if p[1] is not None else ASTNode("local_dec", [])
 
 
@@ -571,8 +566,8 @@ def p_loop_statement(p):
 # Production: <for_loop> → for ( <control_variable> ; <expression> ; <update> ) { <statements> }
 # -----------------------------------------------------------------------------
 def p_for_loop(p):
-    "for_loop : FOR LPAREN control_variable SEMICOLON expression SEMICOLON update RPAREN LBRACE statements RBRACE"
-    p[0] = ASTNode("for_loop", [p[3], p[5], p[7], p[10]])
+    "for_loop : FOR LPAREN control_variable SEMICOLON expression SEMICOLON update RPAREN LBRACE maybe_newline statements RBRACE"
+    p[0] = ASTNode("for_loop", [p[3], p[5], p[7], p[11]])
 
 # -----------------------------------------------------------------------------
 # Production: <until_loop> → until ( <expression> ) { <statements> }
@@ -693,7 +688,9 @@ def p_input_statement(p):
 # -----------------------------------------------------------------------------
 def p_string_operation_statement(p):
     "string_operation_statement : var_call string_operation_tail"
-    p[0] = ASTNode("string_operation_statement", [p[1], p[2]])
+    # Wrap the left-hand side so that it's clearly marked as an assignment target.
+    lhs = ASTNode("assignment_target", [p[1]])
+    p[0] = ASTNode("string_operation_statement", [lhs, p[2]])
 
 # -----------------------------------------------------------------------------
 # Production: <string_operation_tail> → <assign_op> <value> | + <string_val> <stringcon_tail>
