@@ -37,7 +37,7 @@ precedence = (
 # Production: <program> → birth <global_dec> <function_statements> <main_function> ghost
 # -----------------------------------------------------------------------------
 def p_program(p):
-    """program : BIRTH unli_newline global_dec function_statements maybe_newline main_function unli_newline GHOST"""
+    """program : BIRTH unli_newline global_dec maybe_newline function_statements maybe_newline main_function unli_newline GHOST"""
     # p[3] = global_dec
     # p[5] = function_statements
     # p[7] = main_function
@@ -70,7 +70,7 @@ def p_main_function(p):
 # Production: <global_dec> → <global_statement> <global_tail> | null
 # -----------------------------------------------------------------------------
 def p_global_dec(p):
-    """global_dec : global_statement global_tail maybe_newline
+    """global_dec : global_statement unli_newline global_tail 
                   | empty"""
     if len(p) == 2:
         p[0] = ASTNode("global_dec", [])
@@ -94,7 +94,7 @@ def p_global_tail(p):
 # Production: <global_statement> → <data_type> IDENT<global_statement_tail>
 # -----------------------------------------------------------------------------
 def p_global_statement(p):
-    """global_statement : data_type IDENT global_statement_tail"""
+    """global_statement : data_type IDENT global_statement_tail """
     p[0] = ASTNode("global_statement", [p[1], ASTNode("IDENT", value=p[2]), p[3]])
 
 # -----------------------------------------------------------------------------
@@ -386,7 +386,7 @@ def p_var_call_tail(p):
 # Production: <function_statements> → <ret_type> FUNCTION_NAME ( <parameters> ) { <statements> <revive> }
 # -----------------------------------------------------------------------------
 def p_function_statements(p):
-    """function_statements : ret_type FUNCTION_NAME LPAREN parameters RPAREN LBRACE maybe_newline statements revive maybe_newline RBRACE 
+    """function_statements : maybe_newline ret_type FUNCTION_NAME LPAREN parameters RPAREN LBRACE maybe_newline statements revive maybe_newline RBRACE 
                          | empty"""
     if len(p) == 2:
     
