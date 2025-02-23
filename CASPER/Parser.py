@@ -463,7 +463,7 @@ def p_revive(p):
 # -----------------------------------------------------------------------------
 def p_statements(p):
     """statements : empty
-                  | local_dec unli_newline statements_tail"""
+                  | local_dec maybe_newline statements_tail"""
     if len(p) == 2:
         # 'empty'
         p[0] = []     # Return an empty list instead of None

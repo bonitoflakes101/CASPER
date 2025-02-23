@@ -140,7 +140,7 @@ Rule 102   parameters_tail -> COMMA data_type IDENT parameters_tail
 Rule 103   revive -> REVIVE value
 Rule 104   revive -> empty
 Rule 105   statements -> empty
-Rule 106   statements -> local_dec unli_newline statements_tail
+Rule 106   statements -> local_dec maybe_newline statements_tail
 Rule 107   statements_tail -> empty
 Rule 108   statements_tail -> string_operation_statement unli_newline statements_tail
 Rule 109   statements_tail -> conditional_statement unli_newline statements_tail
@@ -342,7 +342,7 @@ literal              : 29 48 62 63 143
 local_dec            : 106
 loop_statement       : 111
 main_function        : 1
-maybe_newline        : 1 1 3 6 6 85 85 85 128
+maybe_newline        : 1 1 3 6 6 85 85 85 106 128
 next_val             : 145 146 148
 output_statement     : 113
 parameters           : 85
@@ -366,7 +366,7 @@ term                 : 59
 term_tail            : 59
 type_cast            : 40
 typecast_value       : 43 44 45 46
-unli_newline         : 1 1 5 7 85 106 108 109 110 111 112 113 114
+unli_newline         : 1 1 5 7 85 108 109 110 111 112 113 114
 until_loop           : 126
 update               : 128
 update_tail          : 132
@@ -676,6 +676,18 @@ state 16
     CHR             reduce using rule 2 (maybe_newline -> empty .)
     STR             reduce using rule 2 (maybe_newline -> empty .)
     RBRACE          reduce using rule 2 (maybe_newline -> empty .)
+    CHECK           reduce using rule 2 (maybe_newline -> empty .)
+    SWAP            reduce using rule 2 (maybe_newline -> empty .)
+    FUNCTION_NAME   reduce using rule 2 (maybe_newline -> empty .)
+    DISPLAY         reduce using rule 2 (maybe_newline -> empty .)
+    IDENT           reduce using rule 2 (maybe_newline -> empty .)
+    FOR             reduce using rule 2 (maybe_newline -> empty .)
+    UNTIL           reduce using rule 2 (maybe_newline -> empty .)
+    REPEAT          reduce using rule 2 (maybe_newline -> empty .)
+    INPUT           reduce using rule 2 (maybe_newline -> empty .)
+    REVIVE          reduce using rule 2 (maybe_newline -> empty .)
+    SHIFT           reduce using rule 2 (maybe_newline -> empty .)
+    OTHERWISE       reduce using rule 2 (maybe_newline -> empty .)
 
 
 state 17
@@ -706,6 +718,18 @@ state 17
     CHR             reduce using rule 163 (empty -> .)
     STR             reduce using rule 163 (empty -> .)
     RBRACE          reduce using rule 163 (empty -> .)
+    CHECK           reduce using rule 163 (empty -> .)
+    SWAP            reduce using rule 163 (empty -> .)
+    FUNCTION_NAME   reduce using rule 163 (empty -> .)
+    DISPLAY         reduce using rule 163 (empty -> .)
+    IDENT           reduce using rule 163 (empty -> .)
+    FOR             reduce using rule 163 (empty -> .)
+    UNTIL           reduce using rule 163 (empty -> .)
+    REPEAT          reduce using rule 163 (empty -> .)
+    INPUT           reduce using rule 163 (empty -> .)
+    REVIVE          reduce using rule 163 (empty -> .)
+    SHIFT           reduce using rule 163 (empty -> .)
+    OTHERWISE       reduce using rule 163 (empty -> .)
 
   ! NEWLINE         [ reduce using rule 163 (empty -> .) ]
 
@@ -855,6 +879,18 @@ state 23
     CHR             reduce using rule 3 (maybe_newline -> NEWLINE maybe_newline .)
     STR             reduce using rule 3 (maybe_newline -> NEWLINE maybe_newline .)
     RBRACE          reduce using rule 3 (maybe_newline -> NEWLINE maybe_newline .)
+    CHECK           reduce using rule 3 (maybe_newline -> NEWLINE maybe_newline .)
+    SWAP            reduce using rule 3 (maybe_newline -> NEWLINE maybe_newline .)
+    FUNCTION_NAME   reduce using rule 3 (maybe_newline -> NEWLINE maybe_newline .)
+    DISPLAY         reduce using rule 3 (maybe_newline -> NEWLINE maybe_newline .)
+    IDENT           reduce using rule 3 (maybe_newline -> NEWLINE maybe_newline .)
+    FOR             reduce using rule 3 (maybe_newline -> NEWLINE maybe_newline .)
+    UNTIL           reduce using rule 3 (maybe_newline -> NEWLINE maybe_newline .)
+    REPEAT          reduce using rule 3 (maybe_newline -> NEWLINE maybe_newline .)
+    INPUT           reduce using rule 3 (maybe_newline -> NEWLINE maybe_newline .)
+    REVIVE          reduce using rule 3 (maybe_newline -> NEWLINE maybe_newline .)
+    SHIFT           reduce using rule 3 (maybe_newline -> NEWLINE maybe_newline .)
+    OTHERWISE       reduce using rule 3 (maybe_newline -> NEWLINE maybe_newline .)
 
 
 state 24
@@ -1229,7 +1265,24 @@ state 51
     AND             reduce using rule 61 (factor -> var_call .)
     OR              reduce using rule 61 (factor -> var_call .)
     RPAREN          reduce using rule 61 (factor -> var_call .)
+    CHECK           reduce using rule 61 (factor -> var_call .)
+    SWAP            reduce using rule 61 (factor -> var_call .)
+    FUNCTION_NAME   reduce using rule 61 (factor -> var_call .)
+    DISPLAY         reduce using rule 61 (factor -> var_call .)
+    IDENT           reduce using rule 61 (factor -> var_call .)
+    FOR             reduce using rule 61 (factor -> var_call .)
+    UNTIL           reduce using rule 61 (factor -> var_call .)
+    REPEAT          reduce using rule 61 (factor -> var_call .)
+    INPUT           reduce using rule 61 (factor -> var_call .)
+    INT             reduce using rule 61 (factor -> var_call .)
+    FLT             reduce using rule 61 (factor -> var_call .)
+    BLN             reduce using rule 61 (factor -> var_call .)
+    CHR             reduce using rule 61 (factor -> var_call .)
+    STR             reduce using rule 61 (factor -> var_call .)
     RBRACE          reduce using rule 61 (factor -> var_call .)
+    REVIVE          reduce using rule 61 (factor -> var_call .)
+    SHIFT           reduce using rule 61 (factor -> var_call .)
+    OTHERWISE       reduce using rule 61 (factor -> var_call .)
     COLON           reduce using rule 61 (factor -> var_call .)
     SEMICOLON       reduce using rule 61 (factor -> var_call .)
 
@@ -1255,7 +1308,24 @@ state 52
     AND             reduce using rule 62 (factor -> literal .)
     OR              reduce using rule 62 (factor -> literal .)
     RPAREN          reduce using rule 62 (factor -> literal .)
+    CHECK           reduce using rule 62 (factor -> literal .)
+    SWAP            reduce using rule 62 (factor -> literal .)
+    FUNCTION_NAME   reduce using rule 62 (factor -> literal .)
+    DISPLAY         reduce using rule 62 (factor -> literal .)
+    IDENT           reduce using rule 62 (factor -> literal .)
+    FOR             reduce using rule 62 (factor -> literal .)
+    UNTIL           reduce using rule 62 (factor -> literal .)
+    REPEAT          reduce using rule 62 (factor -> literal .)
+    INPUT           reduce using rule 62 (factor -> literal .)
+    INT             reduce using rule 62 (factor -> literal .)
+    FLT             reduce using rule 62 (factor -> literal .)
+    BLN             reduce using rule 62 (factor -> literal .)
+    CHR             reduce using rule 62 (factor -> literal .)
+    STR             reduce using rule 62 (factor -> literal .)
     RBRACE          reduce using rule 62 (factor -> literal .)
+    REVIVE          reduce using rule 62 (factor -> literal .)
+    SHIFT           reduce using rule 62 (factor -> literal .)
+    OTHERWISE       reduce using rule 62 (factor -> literal .)
     COLON           reduce using rule 62 (factor -> literal .)
     SEMICOLON       reduce using rule 62 (factor -> literal .)
 
@@ -1335,7 +1405,24 @@ state 55
     COMMA           reduce using rule 163 (empty -> .)
     NEWLINE         reduce using rule 163 (empty -> .)
     RPAREN          reduce using rule 163 (empty -> .)
+    CHECK           reduce using rule 163 (empty -> .)
+    SWAP            reduce using rule 163 (empty -> .)
+    FUNCTION_NAME   reduce using rule 163 (empty -> .)
+    DISPLAY         reduce using rule 163 (empty -> .)
+    IDENT           reduce using rule 163 (empty -> .)
+    FOR             reduce using rule 163 (empty -> .)
+    UNTIL           reduce using rule 163 (empty -> .)
+    REPEAT          reduce using rule 163 (empty -> .)
+    INPUT           reduce using rule 163 (empty -> .)
+    INT             reduce using rule 163 (empty -> .)
+    FLT             reduce using rule 163 (empty -> .)
+    BLN             reduce using rule 163 (empty -> .)
+    CHR             reduce using rule 163 (empty -> .)
+    STR             reduce using rule 163 (empty -> .)
     RBRACE          reduce using rule 163 (empty -> .)
+    REVIVE          reduce using rule 163 (empty -> .)
+    SHIFT           reduce using rule 163 (empty -> .)
+    OTHERWISE       reduce using rule 163 (empty -> .)
     COLON           reduce using rule 163 (empty -> .)
     SEMICOLON       reduce using rule 163 (empty -> .)
 
@@ -1370,7 +1457,24 @@ state 56
     AND             reduce using rule 163 (empty -> .)
     OR              reduce using rule 163 (empty -> .)
     RPAREN          reduce using rule 163 (empty -> .)
+    CHECK           reduce using rule 163 (empty -> .)
+    SWAP            reduce using rule 163 (empty -> .)
+    FUNCTION_NAME   reduce using rule 163 (empty -> .)
+    DISPLAY         reduce using rule 163 (empty -> .)
+    IDENT           reduce using rule 163 (empty -> .)
+    FOR             reduce using rule 163 (empty -> .)
+    UNTIL           reduce using rule 163 (empty -> .)
+    REPEAT          reduce using rule 163 (empty -> .)
+    INPUT           reduce using rule 163 (empty -> .)
+    INT             reduce using rule 163 (empty -> .)
+    FLT             reduce using rule 163 (empty -> .)
+    BLN             reduce using rule 163 (empty -> .)
+    CHR             reduce using rule 163 (empty -> .)
+    STR             reduce using rule 163 (empty -> .)
     RBRACE          reduce using rule 163 (empty -> .)
+    REVIVE          reduce using rule 163 (empty -> .)
+    SHIFT           reduce using rule 163 (empty -> .)
+    OTHERWISE       reduce using rule 163 (empty -> .)
     COLON           reduce using rule 163 (empty -> .)
     SEMICOLON       reduce using rule 163 (empty -> .)
     PLUS_EQ         reduce using rule 163 (empty -> .)
@@ -1407,7 +1511,24 @@ state 57
     OR              reduce using rule 52 (literal -> INT_LIT .)
     RBRACKET        reduce using rule 52 (literal -> INT_LIT .)
     RPAREN          reduce using rule 52 (literal -> INT_LIT .)
+    CHECK           reduce using rule 52 (literal -> INT_LIT .)
+    SWAP            reduce using rule 52 (literal -> INT_LIT .)
+    FUNCTION_NAME   reduce using rule 52 (literal -> INT_LIT .)
+    DISPLAY         reduce using rule 52 (literal -> INT_LIT .)
+    IDENT           reduce using rule 52 (literal -> INT_LIT .)
+    FOR             reduce using rule 52 (literal -> INT_LIT .)
+    UNTIL           reduce using rule 52 (literal -> INT_LIT .)
+    REPEAT          reduce using rule 52 (literal -> INT_LIT .)
+    INPUT           reduce using rule 52 (literal -> INT_LIT .)
+    INT             reduce using rule 52 (literal -> INT_LIT .)
+    FLT             reduce using rule 52 (literal -> INT_LIT .)
+    BLN             reduce using rule 52 (literal -> INT_LIT .)
+    CHR             reduce using rule 52 (literal -> INT_LIT .)
+    STR             reduce using rule 52 (literal -> INT_LIT .)
     RBRACE          reduce using rule 52 (literal -> INT_LIT .)
+    REVIVE          reduce using rule 52 (literal -> INT_LIT .)
+    SHIFT           reduce using rule 52 (literal -> INT_LIT .)
+    OTHERWISE       reduce using rule 52 (literal -> INT_LIT .)
     COLON           reduce using rule 52 (literal -> INT_LIT .)
     SEMICOLON       reduce using rule 52 (literal -> INT_LIT .)
 
@@ -1434,7 +1555,24 @@ state 58
     OR              reduce using rule 53 (literal -> FLT_LIT .)
     RBRACKET        reduce using rule 53 (literal -> FLT_LIT .)
     RPAREN          reduce using rule 53 (literal -> FLT_LIT .)
+    CHECK           reduce using rule 53 (literal -> FLT_LIT .)
+    SWAP            reduce using rule 53 (literal -> FLT_LIT .)
+    FUNCTION_NAME   reduce using rule 53 (literal -> FLT_LIT .)
+    DISPLAY         reduce using rule 53 (literal -> FLT_LIT .)
+    IDENT           reduce using rule 53 (literal -> FLT_LIT .)
+    FOR             reduce using rule 53 (literal -> FLT_LIT .)
+    UNTIL           reduce using rule 53 (literal -> FLT_LIT .)
+    REPEAT          reduce using rule 53 (literal -> FLT_LIT .)
+    INPUT           reduce using rule 53 (literal -> FLT_LIT .)
+    INT             reduce using rule 53 (literal -> FLT_LIT .)
+    FLT             reduce using rule 53 (literal -> FLT_LIT .)
+    BLN             reduce using rule 53 (literal -> FLT_LIT .)
+    CHR             reduce using rule 53 (literal -> FLT_LIT .)
+    STR             reduce using rule 53 (literal -> FLT_LIT .)
     RBRACE          reduce using rule 53 (literal -> FLT_LIT .)
+    REVIVE          reduce using rule 53 (literal -> FLT_LIT .)
+    SHIFT           reduce using rule 53 (literal -> FLT_LIT .)
+    OTHERWISE       reduce using rule 53 (literal -> FLT_LIT .)
     COLON           reduce using rule 53 (literal -> FLT_LIT .)
     SEMICOLON       reduce using rule 53 (literal -> FLT_LIT .)
 
@@ -1461,7 +1599,24 @@ state 59
     OR              reduce using rule 54 (literal -> DAY .)
     RBRACKET        reduce using rule 54 (literal -> DAY .)
     RPAREN          reduce using rule 54 (literal -> DAY .)
+    CHECK           reduce using rule 54 (literal -> DAY .)
+    SWAP            reduce using rule 54 (literal -> DAY .)
+    FUNCTION_NAME   reduce using rule 54 (literal -> DAY .)
+    DISPLAY         reduce using rule 54 (literal -> DAY .)
+    IDENT           reduce using rule 54 (literal -> DAY .)
+    FOR             reduce using rule 54 (literal -> DAY .)
+    UNTIL           reduce using rule 54 (literal -> DAY .)
+    REPEAT          reduce using rule 54 (literal -> DAY .)
+    INPUT           reduce using rule 54 (literal -> DAY .)
+    INT             reduce using rule 54 (literal -> DAY .)
+    FLT             reduce using rule 54 (literal -> DAY .)
+    BLN             reduce using rule 54 (literal -> DAY .)
+    CHR             reduce using rule 54 (literal -> DAY .)
+    STR             reduce using rule 54 (literal -> DAY .)
     RBRACE          reduce using rule 54 (literal -> DAY .)
+    REVIVE          reduce using rule 54 (literal -> DAY .)
+    SHIFT           reduce using rule 54 (literal -> DAY .)
+    OTHERWISE       reduce using rule 54 (literal -> DAY .)
     COLON           reduce using rule 54 (literal -> DAY .)
     SEMICOLON       reduce using rule 54 (literal -> DAY .)
 
@@ -1488,7 +1643,24 @@ state 60
     OR              reduce using rule 55 (literal -> NIGHT .)
     RBRACKET        reduce using rule 55 (literal -> NIGHT .)
     RPAREN          reduce using rule 55 (literal -> NIGHT .)
+    CHECK           reduce using rule 55 (literal -> NIGHT .)
+    SWAP            reduce using rule 55 (literal -> NIGHT .)
+    FUNCTION_NAME   reduce using rule 55 (literal -> NIGHT .)
+    DISPLAY         reduce using rule 55 (literal -> NIGHT .)
+    IDENT           reduce using rule 55 (literal -> NIGHT .)
+    FOR             reduce using rule 55 (literal -> NIGHT .)
+    UNTIL           reduce using rule 55 (literal -> NIGHT .)
+    REPEAT          reduce using rule 55 (literal -> NIGHT .)
+    INPUT           reduce using rule 55 (literal -> NIGHT .)
+    INT             reduce using rule 55 (literal -> NIGHT .)
+    FLT             reduce using rule 55 (literal -> NIGHT .)
+    BLN             reduce using rule 55 (literal -> NIGHT .)
+    CHR             reduce using rule 55 (literal -> NIGHT .)
+    STR             reduce using rule 55 (literal -> NIGHT .)
     RBRACE          reduce using rule 55 (literal -> NIGHT .)
+    REVIVE          reduce using rule 55 (literal -> NIGHT .)
+    SHIFT           reduce using rule 55 (literal -> NIGHT .)
+    OTHERWISE       reduce using rule 55 (literal -> NIGHT .)
     COLON           reduce using rule 55 (literal -> NIGHT .)
     SEMICOLON       reduce using rule 55 (literal -> NIGHT .)
 
@@ -1515,7 +1687,24 @@ state 61
     OR              reduce using rule 56 (literal -> CHR_LIT .)
     RBRACKET        reduce using rule 56 (literal -> CHR_LIT .)
     RPAREN          reduce using rule 56 (literal -> CHR_LIT .)
+    CHECK           reduce using rule 56 (literal -> CHR_LIT .)
+    SWAP            reduce using rule 56 (literal -> CHR_LIT .)
+    FUNCTION_NAME   reduce using rule 56 (literal -> CHR_LIT .)
+    DISPLAY         reduce using rule 56 (literal -> CHR_LIT .)
+    IDENT           reduce using rule 56 (literal -> CHR_LIT .)
+    FOR             reduce using rule 56 (literal -> CHR_LIT .)
+    UNTIL           reduce using rule 56 (literal -> CHR_LIT .)
+    REPEAT          reduce using rule 56 (literal -> CHR_LIT .)
+    INPUT           reduce using rule 56 (literal -> CHR_LIT .)
+    INT             reduce using rule 56 (literal -> CHR_LIT .)
+    FLT             reduce using rule 56 (literal -> CHR_LIT .)
+    BLN             reduce using rule 56 (literal -> CHR_LIT .)
+    CHR             reduce using rule 56 (literal -> CHR_LIT .)
+    STR             reduce using rule 56 (literal -> CHR_LIT .)
     RBRACE          reduce using rule 56 (literal -> CHR_LIT .)
+    REVIVE          reduce using rule 56 (literal -> CHR_LIT .)
+    SHIFT           reduce using rule 56 (literal -> CHR_LIT .)
+    OTHERWISE       reduce using rule 56 (literal -> CHR_LIT .)
     COLON           reduce using rule 56 (literal -> CHR_LIT .)
     SEMICOLON       reduce using rule 56 (literal -> CHR_LIT .)
 
@@ -1542,7 +1731,24 @@ state 62
     OR              reduce using rule 57 (literal -> STR_LIT .)
     RBRACKET        reduce using rule 57 (literal -> STR_LIT .)
     RPAREN          reduce using rule 57 (literal -> STR_LIT .)
+    CHECK           reduce using rule 57 (literal -> STR_LIT .)
+    SWAP            reduce using rule 57 (literal -> STR_LIT .)
+    FUNCTION_NAME   reduce using rule 57 (literal -> STR_LIT .)
+    DISPLAY         reduce using rule 57 (literal -> STR_LIT .)
+    IDENT           reduce using rule 57 (literal -> STR_LIT .)
+    FOR             reduce using rule 57 (literal -> STR_LIT .)
+    UNTIL           reduce using rule 57 (literal -> STR_LIT .)
+    REPEAT          reduce using rule 57 (literal -> STR_LIT .)
+    INPUT           reduce using rule 57 (literal -> STR_LIT .)
+    INT             reduce using rule 57 (literal -> STR_LIT .)
+    FLT             reduce using rule 57 (literal -> STR_LIT .)
+    BLN             reduce using rule 57 (literal -> STR_LIT .)
+    CHR             reduce using rule 57 (literal -> STR_LIT .)
+    STR             reduce using rule 57 (literal -> STR_LIT .)
     RBRACE          reduce using rule 57 (literal -> STR_LIT .)
+    REVIVE          reduce using rule 57 (literal -> STR_LIT .)
+    SHIFT           reduce using rule 57 (literal -> STR_LIT .)
+    OTHERWISE       reduce using rule 57 (literal -> STR_LIT .)
     COLON           reduce using rule 57 (literal -> STR_LIT .)
     SEMICOLON       reduce using rule 57 (literal -> STR_LIT .)
 
@@ -1576,7 +1782,24 @@ state 63
     COMMA           reduce using rule 163 (empty -> .)
     NEWLINE         reduce using rule 163 (empty -> .)
     RPAREN          reduce using rule 163 (empty -> .)
+    CHECK           reduce using rule 163 (empty -> .)
+    SWAP            reduce using rule 163 (empty -> .)
+    FUNCTION_NAME   reduce using rule 163 (empty -> .)
+    DISPLAY         reduce using rule 163 (empty -> .)
+    IDENT           reduce using rule 163 (empty -> .)
+    FOR             reduce using rule 163 (empty -> .)
+    UNTIL           reduce using rule 163 (empty -> .)
+    REPEAT          reduce using rule 163 (empty -> .)
+    INPUT           reduce using rule 163 (empty -> .)
+    INT             reduce using rule 163 (empty -> .)
+    FLT             reduce using rule 163 (empty -> .)
+    BLN             reduce using rule 163 (empty -> .)
+    CHR             reduce using rule 163 (empty -> .)
+    STR             reduce using rule 163 (empty -> .)
     RBRACE          reduce using rule 163 (empty -> .)
+    REVIVE          reduce using rule 163 (empty -> .)
+    SHIFT           reduce using rule 163 (empty -> .)
+    OTHERWISE       reduce using rule 163 (empty -> .)
     COLON           reduce using rule 163 (empty -> .)
     SEMICOLON       reduce using rule 163 (empty -> .)
 
@@ -1677,7 +1900,24 @@ state 73
     COMMA           reduce using rule 60 (term -> factor factor_tail .)
     NEWLINE         reduce using rule 60 (term -> factor factor_tail .)
     RPAREN          reduce using rule 60 (term -> factor factor_tail .)
+    CHECK           reduce using rule 60 (term -> factor factor_tail .)
+    SWAP            reduce using rule 60 (term -> factor factor_tail .)
+    FUNCTION_NAME   reduce using rule 60 (term -> factor factor_tail .)
+    DISPLAY         reduce using rule 60 (term -> factor factor_tail .)
+    IDENT           reduce using rule 60 (term -> factor factor_tail .)
+    FOR             reduce using rule 60 (term -> factor factor_tail .)
+    UNTIL           reduce using rule 60 (term -> factor factor_tail .)
+    REPEAT          reduce using rule 60 (term -> factor factor_tail .)
+    INPUT           reduce using rule 60 (term -> factor factor_tail .)
+    INT             reduce using rule 60 (term -> factor factor_tail .)
+    FLT             reduce using rule 60 (term -> factor factor_tail .)
+    BLN             reduce using rule 60 (term -> factor factor_tail .)
+    CHR             reduce using rule 60 (term -> factor factor_tail .)
+    STR             reduce using rule 60 (term -> factor factor_tail .)
     RBRACE          reduce using rule 60 (term -> factor factor_tail .)
+    REVIVE          reduce using rule 60 (term -> factor factor_tail .)
+    SHIFT           reduce using rule 60 (term -> factor factor_tail .)
+    OTHERWISE       reduce using rule 60 (term -> factor factor_tail .)
     COLON           reduce using rule 60 (term -> factor factor_tail .)
     SEMICOLON       reduce using rule 60 (term -> factor factor_tail .)
 
@@ -1697,7 +1937,24 @@ state 74
     COMMA           reduce using rule 65 (factor_tail -> empty .)
     NEWLINE         reduce using rule 65 (factor_tail -> empty .)
     RPAREN          reduce using rule 65 (factor_tail -> empty .)
+    CHECK           reduce using rule 65 (factor_tail -> empty .)
+    SWAP            reduce using rule 65 (factor_tail -> empty .)
+    FUNCTION_NAME   reduce using rule 65 (factor_tail -> empty .)
+    DISPLAY         reduce using rule 65 (factor_tail -> empty .)
+    IDENT           reduce using rule 65 (factor_tail -> empty .)
+    FOR             reduce using rule 65 (factor_tail -> empty .)
+    UNTIL           reduce using rule 65 (factor_tail -> empty .)
+    REPEAT          reduce using rule 65 (factor_tail -> empty .)
+    INPUT           reduce using rule 65 (factor_tail -> empty .)
+    INT             reduce using rule 65 (factor_tail -> empty .)
+    FLT             reduce using rule 65 (factor_tail -> empty .)
+    BLN             reduce using rule 65 (factor_tail -> empty .)
+    CHR             reduce using rule 65 (factor_tail -> empty .)
+    STR             reduce using rule 65 (factor_tail -> empty .)
     RBRACE          reduce using rule 65 (factor_tail -> empty .)
+    REVIVE          reduce using rule 65 (factor_tail -> empty .)
+    SHIFT           reduce using rule 65 (factor_tail -> empty .)
+    OTHERWISE       reduce using rule 65 (factor_tail -> empty .)
     COLON           reduce using rule 65 (factor_tail -> empty .)
     SEMICOLON       reduce using rule 65 (factor_tail -> empty .)
 
@@ -1933,7 +2190,24 @@ state 81
     AND             reduce using rule 63 (factor -> TILDE literal .)
     OR              reduce using rule 63 (factor -> TILDE literal .)
     RPAREN          reduce using rule 63 (factor -> TILDE literal .)
+    CHECK           reduce using rule 63 (factor -> TILDE literal .)
+    SWAP            reduce using rule 63 (factor -> TILDE literal .)
+    FUNCTION_NAME   reduce using rule 63 (factor -> TILDE literal .)
+    DISPLAY         reduce using rule 63 (factor -> TILDE literal .)
+    IDENT           reduce using rule 63 (factor -> TILDE literal .)
+    FOR             reduce using rule 63 (factor -> TILDE literal .)
+    UNTIL           reduce using rule 63 (factor -> TILDE literal .)
+    REPEAT          reduce using rule 63 (factor -> TILDE literal .)
+    INPUT           reduce using rule 63 (factor -> TILDE literal .)
+    INT             reduce using rule 63 (factor -> TILDE literal .)
+    FLT             reduce using rule 63 (factor -> TILDE literal .)
+    BLN             reduce using rule 63 (factor -> TILDE literal .)
+    CHR             reduce using rule 63 (factor -> TILDE literal .)
+    STR             reduce using rule 63 (factor -> TILDE literal .)
     RBRACE          reduce using rule 63 (factor -> TILDE literal .)
+    REVIVE          reduce using rule 63 (factor -> TILDE literal .)
+    SHIFT           reduce using rule 63 (factor -> TILDE literal .)
+    OTHERWISE       reduce using rule 63 (factor -> TILDE literal .)
     COLON           reduce using rule 63 (factor -> TILDE literal .)
     SEMICOLON       reduce using rule 63 (factor -> TILDE literal .)
 
@@ -1974,7 +2248,24 @@ state 83
     COMMA           reduce using rule 163 (empty -> .)
     NEWLINE         reduce using rule 163 (empty -> .)
     RPAREN          reduce using rule 163 (empty -> .)
+    CHECK           reduce using rule 163 (empty -> .)
+    SWAP            reduce using rule 163 (empty -> .)
+    FUNCTION_NAME   reduce using rule 163 (empty -> .)
+    DISPLAY         reduce using rule 163 (empty -> .)
+    IDENT           reduce using rule 163 (empty -> .)
+    FOR             reduce using rule 163 (empty -> .)
+    UNTIL           reduce using rule 163 (empty -> .)
+    REPEAT          reduce using rule 163 (empty -> .)
+    INPUT           reduce using rule 163 (empty -> .)
+    INT             reduce using rule 163 (empty -> .)
+    FLT             reduce using rule 163 (empty -> .)
+    BLN             reduce using rule 163 (empty -> .)
+    CHR             reduce using rule 163 (empty -> .)
+    STR             reduce using rule 163 (empty -> .)
     RBRACE          reduce using rule 163 (empty -> .)
+    REVIVE          reduce using rule 163 (empty -> .)
+    SHIFT           reduce using rule 163 (empty -> .)
+    OTHERWISE       reduce using rule 163 (empty -> .)
     COLON           reduce using rule 163 (empty -> .)
     SEMICOLON       reduce using rule 163 (empty -> .)
 
@@ -1996,7 +2287,24 @@ state 84
     NOT_EQ          reduce using rule 58 (expression -> expr_head expr_tail .)
     AND             reduce using rule 58 (expression -> expr_head expr_tail .)
     OR              reduce using rule 58 (expression -> expr_head expr_tail .)
+    CHECK           reduce using rule 58 (expression -> expr_head expr_tail .)
+    SWAP            reduce using rule 58 (expression -> expr_head expr_tail .)
+    FUNCTION_NAME   reduce using rule 58 (expression -> expr_head expr_tail .)
+    DISPLAY         reduce using rule 58 (expression -> expr_head expr_tail .)
+    IDENT           reduce using rule 58 (expression -> expr_head expr_tail .)
+    FOR             reduce using rule 58 (expression -> expr_head expr_tail .)
+    UNTIL           reduce using rule 58 (expression -> expr_head expr_tail .)
+    REPEAT          reduce using rule 58 (expression -> expr_head expr_tail .)
+    INPUT           reduce using rule 58 (expression -> expr_head expr_tail .)
+    INT             reduce using rule 58 (expression -> expr_head expr_tail .)
+    FLT             reduce using rule 58 (expression -> expr_head expr_tail .)
+    BLN             reduce using rule 58 (expression -> expr_head expr_tail .)
+    CHR             reduce using rule 58 (expression -> expr_head expr_tail .)
+    STR             reduce using rule 58 (expression -> expr_head expr_tail .)
     RBRACE          reduce using rule 58 (expression -> expr_head expr_tail .)
+    REVIVE          reduce using rule 58 (expression -> expr_head expr_tail .)
+    SHIFT           reduce using rule 58 (expression -> expr_head expr_tail .)
+    OTHERWISE       reduce using rule 58 (expression -> expr_head expr_tail .)
     COLON           reduce using rule 58 (expression -> expr_head expr_tail .)
     SEMICOLON       reduce using rule 58 (expression -> expr_head expr_tail .)
 
@@ -2016,7 +2324,24 @@ state 85
     COMMA           reduce using rule 79 (expr_tail -> empty .)
     NEWLINE         reduce using rule 79 (expr_tail -> empty .)
     RPAREN          reduce using rule 79 (expr_tail -> empty .)
+    CHECK           reduce using rule 79 (expr_tail -> empty .)
+    SWAP            reduce using rule 79 (expr_tail -> empty .)
+    FUNCTION_NAME   reduce using rule 79 (expr_tail -> empty .)
+    DISPLAY         reduce using rule 79 (expr_tail -> empty .)
+    IDENT           reduce using rule 79 (expr_tail -> empty .)
+    FOR             reduce using rule 79 (expr_tail -> empty .)
+    UNTIL           reduce using rule 79 (expr_tail -> empty .)
+    REPEAT          reduce using rule 79 (expr_tail -> empty .)
+    INPUT           reduce using rule 79 (expr_tail -> empty .)
+    INT             reduce using rule 79 (expr_tail -> empty .)
+    FLT             reduce using rule 79 (expr_tail -> empty .)
+    BLN             reduce using rule 79 (expr_tail -> empty .)
+    CHR             reduce using rule 79 (expr_tail -> empty .)
+    STR             reduce using rule 79 (expr_tail -> empty .)
     RBRACE          reduce using rule 79 (expr_tail -> empty .)
+    REVIVE          reduce using rule 79 (expr_tail -> empty .)
+    SHIFT           reduce using rule 79 (expr_tail -> empty .)
+    OTHERWISE       reduce using rule 79 (expr_tail -> empty .)
     COLON           reduce using rule 79 (expr_tail -> empty .)
     SEMICOLON       reduce using rule 79 (expr_tail -> empty .)
 
@@ -2112,7 +2437,24 @@ state 88
     AND             reduce using rule 82 (var_call -> IDENT var_call_tail .)
     OR              reduce using rule 82 (var_call -> IDENT var_call_tail .)
     RPAREN          reduce using rule 82 (var_call -> IDENT var_call_tail .)
+    CHECK           reduce using rule 82 (var_call -> IDENT var_call_tail .)
+    SWAP            reduce using rule 82 (var_call -> IDENT var_call_tail .)
+    FUNCTION_NAME   reduce using rule 82 (var_call -> IDENT var_call_tail .)
+    DISPLAY         reduce using rule 82 (var_call -> IDENT var_call_tail .)
+    IDENT           reduce using rule 82 (var_call -> IDENT var_call_tail .)
+    FOR             reduce using rule 82 (var_call -> IDENT var_call_tail .)
+    UNTIL           reduce using rule 82 (var_call -> IDENT var_call_tail .)
+    REPEAT          reduce using rule 82 (var_call -> IDENT var_call_tail .)
+    INPUT           reduce using rule 82 (var_call -> IDENT var_call_tail .)
+    INT             reduce using rule 82 (var_call -> IDENT var_call_tail .)
+    FLT             reduce using rule 82 (var_call -> IDENT var_call_tail .)
+    BLN             reduce using rule 82 (var_call -> IDENT var_call_tail .)
+    CHR             reduce using rule 82 (var_call -> IDENT var_call_tail .)
+    STR             reduce using rule 82 (var_call -> IDENT var_call_tail .)
     RBRACE          reduce using rule 82 (var_call -> IDENT var_call_tail .)
+    REVIVE          reduce using rule 82 (var_call -> IDENT var_call_tail .)
+    SHIFT           reduce using rule 82 (var_call -> IDENT var_call_tail .)
+    OTHERWISE       reduce using rule 82 (var_call -> IDENT var_call_tail .)
     COLON           reduce using rule 82 (var_call -> IDENT var_call_tail .)
     SEMICOLON       reduce using rule 82 (var_call -> IDENT var_call_tail .)
     PLUS_EQ         reduce using rule 82 (var_call -> IDENT var_call_tail .)
@@ -2146,7 +2488,24 @@ state 89
     AND             reduce using rule 83 (var_call_tail -> empty .)
     OR              reduce using rule 83 (var_call_tail -> empty .)
     RPAREN          reduce using rule 83 (var_call_tail -> empty .)
+    CHECK           reduce using rule 83 (var_call_tail -> empty .)
+    SWAP            reduce using rule 83 (var_call_tail -> empty .)
+    FUNCTION_NAME   reduce using rule 83 (var_call_tail -> empty .)
+    DISPLAY         reduce using rule 83 (var_call_tail -> empty .)
+    IDENT           reduce using rule 83 (var_call_tail -> empty .)
+    FOR             reduce using rule 83 (var_call_tail -> empty .)
+    UNTIL           reduce using rule 83 (var_call_tail -> empty .)
+    REPEAT          reduce using rule 83 (var_call_tail -> empty .)
+    INPUT           reduce using rule 83 (var_call_tail -> empty .)
+    INT             reduce using rule 83 (var_call_tail -> empty .)
+    FLT             reduce using rule 83 (var_call_tail -> empty .)
+    BLN             reduce using rule 83 (var_call_tail -> empty .)
+    CHR             reduce using rule 83 (var_call_tail -> empty .)
+    STR             reduce using rule 83 (var_call_tail -> empty .)
     RBRACE          reduce using rule 83 (var_call_tail -> empty .)
+    REVIVE          reduce using rule 83 (var_call_tail -> empty .)
+    SHIFT           reduce using rule 83 (var_call_tail -> empty .)
+    OTHERWISE       reduce using rule 83 (var_call_tail -> empty .)
     COLON           reduce using rule 83 (var_call_tail -> empty .)
     SEMICOLON       reduce using rule 83 (var_call_tail -> empty .)
     PLUS_EQ         reduce using rule 83 (var_call_tail -> empty .)
@@ -2185,7 +2544,24 @@ state 91
     GT_EQ           reduce using rule 59 (expr_head -> term term_tail .)
     LT_EQ           reduce using rule 59 (expr_head -> term term_tail .)
     NOT_EQ          reduce using rule 59 (expr_head -> term term_tail .)
+    CHECK           reduce using rule 59 (expr_head -> term term_tail .)
+    SWAP            reduce using rule 59 (expr_head -> term term_tail .)
+    FUNCTION_NAME   reduce using rule 59 (expr_head -> term term_tail .)
+    DISPLAY         reduce using rule 59 (expr_head -> term term_tail .)
+    IDENT           reduce using rule 59 (expr_head -> term term_tail .)
+    FOR             reduce using rule 59 (expr_head -> term term_tail .)
+    UNTIL           reduce using rule 59 (expr_head -> term term_tail .)
+    REPEAT          reduce using rule 59 (expr_head -> term term_tail .)
+    INPUT           reduce using rule 59 (expr_head -> term term_tail .)
+    INT             reduce using rule 59 (expr_head -> term term_tail .)
+    FLT             reduce using rule 59 (expr_head -> term term_tail .)
+    BLN             reduce using rule 59 (expr_head -> term term_tail .)
+    CHR             reduce using rule 59 (expr_head -> term term_tail .)
+    STR             reduce using rule 59 (expr_head -> term term_tail .)
     RBRACE          reduce using rule 59 (expr_head -> term term_tail .)
+    REVIVE          reduce using rule 59 (expr_head -> term term_tail .)
+    SHIFT           reduce using rule 59 (expr_head -> term term_tail .)
+    OTHERWISE       reduce using rule 59 (expr_head -> term term_tail .)
     COLON           reduce using rule 59 (expr_head -> term term_tail .)
     SEMICOLON       reduce using rule 59 (expr_head -> term term_tail .)
 
@@ -2205,7 +2581,24 @@ state 92
     COMMA           reduce using rule 72 (term_tail -> empty .)
     NEWLINE         reduce using rule 72 (term_tail -> empty .)
     RPAREN          reduce using rule 72 (term_tail -> empty .)
+    CHECK           reduce using rule 72 (term_tail -> empty .)
+    SWAP            reduce using rule 72 (term_tail -> empty .)
+    FUNCTION_NAME   reduce using rule 72 (term_tail -> empty .)
+    DISPLAY         reduce using rule 72 (term_tail -> empty .)
+    IDENT           reduce using rule 72 (term_tail -> empty .)
+    FOR             reduce using rule 72 (term_tail -> empty .)
+    UNTIL           reduce using rule 72 (term_tail -> empty .)
+    REPEAT          reduce using rule 72 (term_tail -> empty .)
+    INPUT           reduce using rule 72 (term_tail -> empty .)
+    INT             reduce using rule 72 (term_tail -> empty .)
+    FLT             reduce using rule 72 (term_tail -> empty .)
+    BLN             reduce using rule 72 (term_tail -> empty .)
+    CHR             reduce using rule 72 (term_tail -> empty .)
+    STR             reduce using rule 72 (term_tail -> empty .)
     RBRACE          reduce using rule 72 (term_tail -> empty .)
+    REVIVE          reduce using rule 72 (term_tail -> empty .)
+    SHIFT           reduce using rule 72 (term_tail -> empty .)
+    OTHERWISE       reduce using rule 72 (term_tail -> empty .)
     COLON           reduce using rule 72 (term_tail -> empty .)
     SEMICOLON       reduce using rule 72 (term_tail -> empty .)
 
@@ -2530,7 +2923,24 @@ state 107
     COMMA           reduce using rule 66 (factor_tail -> PLUS expression .)
     NEWLINE         reduce using rule 66 (factor_tail -> PLUS expression .)
     RPAREN          reduce using rule 66 (factor_tail -> PLUS expression .)
+    CHECK           reduce using rule 66 (factor_tail -> PLUS expression .)
+    SWAP            reduce using rule 66 (factor_tail -> PLUS expression .)
+    FUNCTION_NAME   reduce using rule 66 (factor_tail -> PLUS expression .)
+    DISPLAY         reduce using rule 66 (factor_tail -> PLUS expression .)
+    IDENT           reduce using rule 66 (factor_tail -> PLUS expression .)
+    FOR             reduce using rule 66 (factor_tail -> PLUS expression .)
+    UNTIL           reduce using rule 66 (factor_tail -> PLUS expression .)
+    REPEAT          reduce using rule 66 (factor_tail -> PLUS expression .)
+    INPUT           reduce using rule 66 (factor_tail -> PLUS expression .)
+    INT             reduce using rule 66 (factor_tail -> PLUS expression .)
+    FLT             reduce using rule 66 (factor_tail -> PLUS expression .)
+    BLN             reduce using rule 66 (factor_tail -> PLUS expression .)
+    CHR             reduce using rule 66 (factor_tail -> PLUS expression .)
+    STR             reduce using rule 66 (factor_tail -> PLUS expression .)
     RBRACE          reduce using rule 66 (factor_tail -> PLUS expression .)
+    REVIVE          reduce using rule 66 (factor_tail -> PLUS expression .)
+    SHIFT           reduce using rule 66 (factor_tail -> PLUS expression .)
+    OTHERWISE       reduce using rule 66 (factor_tail -> PLUS expression .)
     COLON           reduce using rule 66 (factor_tail -> PLUS expression .)
     SEMICOLON       reduce using rule 66 (factor_tail -> PLUS expression .)
 
@@ -2550,7 +2960,24 @@ state 108
     COMMA           reduce using rule 67 (factor_tail -> MINUS expression .)
     NEWLINE         reduce using rule 67 (factor_tail -> MINUS expression .)
     RPAREN          reduce using rule 67 (factor_tail -> MINUS expression .)
+    CHECK           reduce using rule 67 (factor_tail -> MINUS expression .)
+    SWAP            reduce using rule 67 (factor_tail -> MINUS expression .)
+    FUNCTION_NAME   reduce using rule 67 (factor_tail -> MINUS expression .)
+    DISPLAY         reduce using rule 67 (factor_tail -> MINUS expression .)
+    IDENT           reduce using rule 67 (factor_tail -> MINUS expression .)
+    FOR             reduce using rule 67 (factor_tail -> MINUS expression .)
+    UNTIL           reduce using rule 67 (factor_tail -> MINUS expression .)
+    REPEAT          reduce using rule 67 (factor_tail -> MINUS expression .)
+    INPUT           reduce using rule 67 (factor_tail -> MINUS expression .)
+    INT             reduce using rule 67 (factor_tail -> MINUS expression .)
+    FLT             reduce using rule 67 (factor_tail -> MINUS expression .)
+    BLN             reduce using rule 67 (factor_tail -> MINUS expression .)
+    CHR             reduce using rule 67 (factor_tail -> MINUS expression .)
+    STR             reduce using rule 67 (factor_tail -> MINUS expression .)
     RBRACE          reduce using rule 67 (factor_tail -> MINUS expression .)
+    REVIVE          reduce using rule 67 (factor_tail -> MINUS expression .)
+    SHIFT           reduce using rule 67 (factor_tail -> MINUS expression .)
+    OTHERWISE       reduce using rule 67 (factor_tail -> MINUS expression .)
     COLON           reduce using rule 67 (factor_tail -> MINUS expression .)
     SEMICOLON       reduce using rule 67 (factor_tail -> MINUS expression .)
 
@@ -2570,7 +2997,24 @@ state 109
     COMMA           reduce using rule 68 (factor_tail -> MULTIPLY expression .)
     NEWLINE         reduce using rule 68 (factor_tail -> MULTIPLY expression .)
     RPAREN          reduce using rule 68 (factor_tail -> MULTIPLY expression .)
+    CHECK           reduce using rule 68 (factor_tail -> MULTIPLY expression .)
+    SWAP            reduce using rule 68 (factor_tail -> MULTIPLY expression .)
+    FUNCTION_NAME   reduce using rule 68 (factor_tail -> MULTIPLY expression .)
+    DISPLAY         reduce using rule 68 (factor_tail -> MULTIPLY expression .)
+    IDENT           reduce using rule 68 (factor_tail -> MULTIPLY expression .)
+    FOR             reduce using rule 68 (factor_tail -> MULTIPLY expression .)
+    UNTIL           reduce using rule 68 (factor_tail -> MULTIPLY expression .)
+    REPEAT          reduce using rule 68 (factor_tail -> MULTIPLY expression .)
+    INPUT           reduce using rule 68 (factor_tail -> MULTIPLY expression .)
+    INT             reduce using rule 68 (factor_tail -> MULTIPLY expression .)
+    FLT             reduce using rule 68 (factor_tail -> MULTIPLY expression .)
+    BLN             reduce using rule 68 (factor_tail -> MULTIPLY expression .)
+    CHR             reduce using rule 68 (factor_tail -> MULTIPLY expression .)
+    STR             reduce using rule 68 (factor_tail -> MULTIPLY expression .)
     RBRACE          reduce using rule 68 (factor_tail -> MULTIPLY expression .)
+    REVIVE          reduce using rule 68 (factor_tail -> MULTIPLY expression .)
+    SHIFT           reduce using rule 68 (factor_tail -> MULTIPLY expression .)
+    OTHERWISE       reduce using rule 68 (factor_tail -> MULTIPLY expression .)
     COLON           reduce using rule 68 (factor_tail -> MULTIPLY expression .)
     SEMICOLON       reduce using rule 68 (factor_tail -> MULTIPLY expression .)
 
@@ -2590,7 +3034,24 @@ state 110
     COMMA           reduce using rule 69 (factor_tail -> DIVISION expression .)
     NEWLINE         reduce using rule 69 (factor_tail -> DIVISION expression .)
     RPAREN          reduce using rule 69 (factor_tail -> DIVISION expression .)
+    CHECK           reduce using rule 69 (factor_tail -> DIVISION expression .)
+    SWAP            reduce using rule 69 (factor_tail -> DIVISION expression .)
+    FUNCTION_NAME   reduce using rule 69 (factor_tail -> DIVISION expression .)
+    DISPLAY         reduce using rule 69 (factor_tail -> DIVISION expression .)
+    IDENT           reduce using rule 69 (factor_tail -> DIVISION expression .)
+    FOR             reduce using rule 69 (factor_tail -> DIVISION expression .)
+    UNTIL           reduce using rule 69 (factor_tail -> DIVISION expression .)
+    REPEAT          reduce using rule 69 (factor_tail -> DIVISION expression .)
+    INPUT           reduce using rule 69 (factor_tail -> DIVISION expression .)
+    INT             reduce using rule 69 (factor_tail -> DIVISION expression .)
+    FLT             reduce using rule 69 (factor_tail -> DIVISION expression .)
+    BLN             reduce using rule 69 (factor_tail -> DIVISION expression .)
+    CHR             reduce using rule 69 (factor_tail -> DIVISION expression .)
+    STR             reduce using rule 69 (factor_tail -> DIVISION expression .)
     RBRACE          reduce using rule 69 (factor_tail -> DIVISION expression .)
+    REVIVE          reduce using rule 69 (factor_tail -> DIVISION expression .)
+    SHIFT           reduce using rule 69 (factor_tail -> DIVISION expression .)
+    OTHERWISE       reduce using rule 69 (factor_tail -> DIVISION expression .)
     COLON           reduce using rule 69 (factor_tail -> DIVISION expression .)
     SEMICOLON       reduce using rule 69 (factor_tail -> DIVISION expression .)
 
@@ -2610,7 +3071,24 @@ state 111
     COMMA           reduce using rule 70 (factor_tail -> MODULO expression .)
     NEWLINE         reduce using rule 70 (factor_tail -> MODULO expression .)
     RPAREN          reduce using rule 70 (factor_tail -> MODULO expression .)
+    CHECK           reduce using rule 70 (factor_tail -> MODULO expression .)
+    SWAP            reduce using rule 70 (factor_tail -> MODULO expression .)
+    FUNCTION_NAME   reduce using rule 70 (factor_tail -> MODULO expression .)
+    DISPLAY         reduce using rule 70 (factor_tail -> MODULO expression .)
+    IDENT           reduce using rule 70 (factor_tail -> MODULO expression .)
+    FOR             reduce using rule 70 (factor_tail -> MODULO expression .)
+    UNTIL           reduce using rule 70 (factor_tail -> MODULO expression .)
+    REPEAT          reduce using rule 70 (factor_tail -> MODULO expression .)
+    INPUT           reduce using rule 70 (factor_tail -> MODULO expression .)
+    INT             reduce using rule 70 (factor_tail -> MODULO expression .)
+    FLT             reduce using rule 70 (factor_tail -> MODULO expression .)
+    BLN             reduce using rule 70 (factor_tail -> MODULO expression .)
+    CHR             reduce using rule 70 (factor_tail -> MODULO expression .)
+    STR             reduce using rule 70 (factor_tail -> MODULO expression .)
     RBRACE          reduce using rule 70 (factor_tail -> MODULO expression .)
+    REVIVE          reduce using rule 70 (factor_tail -> MODULO expression .)
+    SHIFT           reduce using rule 70 (factor_tail -> MODULO expression .)
+    OTHERWISE       reduce using rule 70 (factor_tail -> MODULO expression .)
     COLON           reduce using rule 70 (factor_tail -> MODULO expression .)
     SEMICOLON       reduce using rule 70 (factor_tail -> MODULO expression .)
 
@@ -2630,7 +3108,24 @@ state 112
     COMMA           reduce using rule 71 (factor_tail -> EXPONENT expression .)
     NEWLINE         reduce using rule 71 (factor_tail -> EXPONENT expression .)
     RPAREN          reduce using rule 71 (factor_tail -> EXPONENT expression .)
+    CHECK           reduce using rule 71 (factor_tail -> EXPONENT expression .)
+    SWAP            reduce using rule 71 (factor_tail -> EXPONENT expression .)
+    FUNCTION_NAME   reduce using rule 71 (factor_tail -> EXPONENT expression .)
+    DISPLAY         reduce using rule 71 (factor_tail -> EXPONENT expression .)
+    IDENT           reduce using rule 71 (factor_tail -> EXPONENT expression .)
+    FOR             reduce using rule 71 (factor_tail -> EXPONENT expression .)
+    UNTIL           reduce using rule 71 (factor_tail -> EXPONENT expression .)
+    REPEAT          reduce using rule 71 (factor_tail -> EXPONENT expression .)
+    INPUT           reduce using rule 71 (factor_tail -> EXPONENT expression .)
+    INT             reduce using rule 71 (factor_tail -> EXPONENT expression .)
+    FLT             reduce using rule 71 (factor_tail -> EXPONENT expression .)
+    BLN             reduce using rule 71 (factor_tail -> EXPONENT expression .)
+    CHR             reduce using rule 71 (factor_tail -> EXPONENT expression .)
+    STR             reduce using rule 71 (factor_tail -> EXPONENT expression .)
     RBRACE          reduce using rule 71 (factor_tail -> EXPONENT expression .)
+    REVIVE          reduce using rule 71 (factor_tail -> EXPONENT expression .)
+    SHIFT           reduce using rule 71 (factor_tail -> EXPONENT expression .)
+    OTHERWISE       reduce using rule 71 (factor_tail -> EXPONENT expression .)
     COLON           reduce using rule 71 (factor_tail -> EXPONENT expression .)
     SEMICOLON       reduce using rule 71 (factor_tail -> EXPONENT expression .)
 
@@ -2656,7 +3151,24 @@ state 113
     AND             reduce using rule 64 (factor -> LPAREN expression RPAREN .)
     OR              reduce using rule 64 (factor -> LPAREN expression RPAREN .)
     RPAREN          reduce using rule 64 (factor -> LPAREN expression RPAREN .)
+    CHECK           reduce using rule 64 (factor -> LPAREN expression RPAREN .)
+    SWAP            reduce using rule 64 (factor -> LPAREN expression RPAREN .)
+    FUNCTION_NAME   reduce using rule 64 (factor -> LPAREN expression RPAREN .)
+    DISPLAY         reduce using rule 64 (factor -> LPAREN expression RPAREN .)
+    IDENT           reduce using rule 64 (factor -> LPAREN expression RPAREN .)
+    FOR             reduce using rule 64 (factor -> LPAREN expression RPAREN .)
+    UNTIL           reduce using rule 64 (factor -> LPAREN expression RPAREN .)
+    REPEAT          reduce using rule 64 (factor -> LPAREN expression RPAREN .)
+    INPUT           reduce using rule 64 (factor -> LPAREN expression RPAREN .)
+    INT             reduce using rule 64 (factor -> LPAREN expression RPAREN .)
+    FLT             reduce using rule 64 (factor -> LPAREN expression RPAREN .)
+    BLN             reduce using rule 64 (factor -> LPAREN expression RPAREN .)
+    CHR             reduce using rule 64 (factor -> LPAREN expression RPAREN .)
+    STR             reduce using rule 64 (factor -> LPAREN expression RPAREN .)
     RBRACE          reduce using rule 64 (factor -> LPAREN expression RPAREN .)
+    REVIVE          reduce using rule 64 (factor -> LPAREN expression RPAREN .)
+    SHIFT           reduce using rule 64 (factor -> LPAREN expression RPAREN .)
+    OTHERWISE       reduce using rule 64 (factor -> LPAREN expression RPAREN .)
     COLON           reduce using rule 64 (factor -> LPAREN expression RPAREN .)
     SEMICOLON       reduce using rule 64 (factor -> LPAREN expression RPAREN .)
 
@@ -2676,7 +3188,24 @@ state 114
     COMMA           reduce using rule 80 (expr_tail -> AND expression .)
     NEWLINE         reduce using rule 80 (expr_tail -> AND expression .)
     RPAREN          reduce using rule 80 (expr_tail -> AND expression .)
+    CHECK           reduce using rule 80 (expr_tail -> AND expression .)
+    SWAP            reduce using rule 80 (expr_tail -> AND expression .)
+    FUNCTION_NAME   reduce using rule 80 (expr_tail -> AND expression .)
+    DISPLAY         reduce using rule 80 (expr_tail -> AND expression .)
+    IDENT           reduce using rule 80 (expr_tail -> AND expression .)
+    FOR             reduce using rule 80 (expr_tail -> AND expression .)
+    UNTIL           reduce using rule 80 (expr_tail -> AND expression .)
+    REPEAT          reduce using rule 80 (expr_tail -> AND expression .)
+    INPUT           reduce using rule 80 (expr_tail -> AND expression .)
+    INT             reduce using rule 80 (expr_tail -> AND expression .)
+    FLT             reduce using rule 80 (expr_tail -> AND expression .)
+    BLN             reduce using rule 80 (expr_tail -> AND expression .)
+    CHR             reduce using rule 80 (expr_tail -> AND expression .)
+    STR             reduce using rule 80 (expr_tail -> AND expression .)
     RBRACE          reduce using rule 80 (expr_tail -> AND expression .)
+    REVIVE          reduce using rule 80 (expr_tail -> AND expression .)
+    SHIFT           reduce using rule 80 (expr_tail -> AND expression .)
+    OTHERWISE       reduce using rule 80 (expr_tail -> AND expression .)
     COLON           reduce using rule 80 (expr_tail -> AND expression .)
     SEMICOLON       reduce using rule 80 (expr_tail -> AND expression .)
 
@@ -2696,7 +3225,24 @@ state 115
     COMMA           reduce using rule 81 (expr_tail -> OR expression .)
     NEWLINE         reduce using rule 81 (expr_tail -> OR expression .)
     RPAREN          reduce using rule 81 (expr_tail -> OR expression .)
+    CHECK           reduce using rule 81 (expr_tail -> OR expression .)
+    SWAP            reduce using rule 81 (expr_tail -> OR expression .)
+    FUNCTION_NAME   reduce using rule 81 (expr_tail -> OR expression .)
+    DISPLAY         reduce using rule 81 (expr_tail -> OR expression .)
+    IDENT           reduce using rule 81 (expr_tail -> OR expression .)
+    FOR             reduce using rule 81 (expr_tail -> OR expression .)
+    UNTIL           reduce using rule 81 (expr_tail -> OR expression .)
+    REPEAT          reduce using rule 81 (expr_tail -> OR expression .)
+    INPUT           reduce using rule 81 (expr_tail -> OR expression .)
+    INT             reduce using rule 81 (expr_tail -> OR expression .)
+    FLT             reduce using rule 81 (expr_tail -> OR expression .)
+    BLN             reduce using rule 81 (expr_tail -> OR expression .)
+    CHR             reduce using rule 81 (expr_tail -> OR expression .)
+    STR             reduce using rule 81 (expr_tail -> OR expression .)
     RBRACE          reduce using rule 81 (expr_tail -> OR expression .)
+    REVIVE          reduce using rule 81 (expr_tail -> OR expression .)
+    SHIFT           reduce using rule 81 (expr_tail -> OR expression .)
+    OTHERWISE       reduce using rule 81 (expr_tail -> OR expression .)
     COLON           reduce using rule 81 (expr_tail -> OR expression .)
     SEMICOLON       reduce using rule 81 (expr_tail -> OR expression .)
 
@@ -2737,7 +3283,24 @@ state 119
     COMMA           reduce using rule 73 (term_tail -> GT expression .)
     NEWLINE         reduce using rule 73 (term_tail -> GT expression .)
     RPAREN          reduce using rule 73 (term_tail -> GT expression .)
+    CHECK           reduce using rule 73 (term_tail -> GT expression .)
+    SWAP            reduce using rule 73 (term_tail -> GT expression .)
+    FUNCTION_NAME   reduce using rule 73 (term_tail -> GT expression .)
+    DISPLAY         reduce using rule 73 (term_tail -> GT expression .)
+    IDENT           reduce using rule 73 (term_tail -> GT expression .)
+    FOR             reduce using rule 73 (term_tail -> GT expression .)
+    UNTIL           reduce using rule 73 (term_tail -> GT expression .)
+    REPEAT          reduce using rule 73 (term_tail -> GT expression .)
+    INPUT           reduce using rule 73 (term_tail -> GT expression .)
+    INT             reduce using rule 73 (term_tail -> GT expression .)
+    FLT             reduce using rule 73 (term_tail -> GT expression .)
+    BLN             reduce using rule 73 (term_tail -> GT expression .)
+    CHR             reduce using rule 73 (term_tail -> GT expression .)
+    STR             reduce using rule 73 (term_tail -> GT expression .)
     RBRACE          reduce using rule 73 (term_tail -> GT expression .)
+    REVIVE          reduce using rule 73 (term_tail -> GT expression .)
+    SHIFT           reduce using rule 73 (term_tail -> GT expression .)
+    OTHERWISE       reduce using rule 73 (term_tail -> GT expression .)
     COLON           reduce using rule 73 (term_tail -> GT expression .)
     SEMICOLON       reduce using rule 73 (term_tail -> GT expression .)
 
@@ -2757,7 +3320,24 @@ state 120
     COMMA           reduce using rule 74 (term_tail -> LT expression .)
     NEWLINE         reduce using rule 74 (term_tail -> LT expression .)
     RPAREN          reduce using rule 74 (term_tail -> LT expression .)
+    CHECK           reduce using rule 74 (term_tail -> LT expression .)
+    SWAP            reduce using rule 74 (term_tail -> LT expression .)
+    FUNCTION_NAME   reduce using rule 74 (term_tail -> LT expression .)
+    DISPLAY         reduce using rule 74 (term_tail -> LT expression .)
+    IDENT           reduce using rule 74 (term_tail -> LT expression .)
+    FOR             reduce using rule 74 (term_tail -> LT expression .)
+    UNTIL           reduce using rule 74 (term_tail -> LT expression .)
+    REPEAT          reduce using rule 74 (term_tail -> LT expression .)
+    INPUT           reduce using rule 74 (term_tail -> LT expression .)
+    INT             reduce using rule 74 (term_tail -> LT expression .)
+    FLT             reduce using rule 74 (term_tail -> LT expression .)
+    BLN             reduce using rule 74 (term_tail -> LT expression .)
+    CHR             reduce using rule 74 (term_tail -> LT expression .)
+    STR             reduce using rule 74 (term_tail -> LT expression .)
     RBRACE          reduce using rule 74 (term_tail -> LT expression .)
+    REVIVE          reduce using rule 74 (term_tail -> LT expression .)
+    SHIFT           reduce using rule 74 (term_tail -> LT expression .)
+    OTHERWISE       reduce using rule 74 (term_tail -> LT expression .)
     COLON           reduce using rule 74 (term_tail -> LT expression .)
     SEMICOLON       reduce using rule 74 (term_tail -> LT expression .)
 
@@ -2777,7 +3357,24 @@ state 121
     COMMA           reduce using rule 75 (term_tail -> EQ_EQ expression .)
     NEWLINE         reduce using rule 75 (term_tail -> EQ_EQ expression .)
     RPAREN          reduce using rule 75 (term_tail -> EQ_EQ expression .)
+    CHECK           reduce using rule 75 (term_tail -> EQ_EQ expression .)
+    SWAP            reduce using rule 75 (term_tail -> EQ_EQ expression .)
+    FUNCTION_NAME   reduce using rule 75 (term_tail -> EQ_EQ expression .)
+    DISPLAY         reduce using rule 75 (term_tail -> EQ_EQ expression .)
+    IDENT           reduce using rule 75 (term_tail -> EQ_EQ expression .)
+    FOR             reduce using rule 75 (term_tail -> EQ_EQ expression .)
+    UNTIL           reduce using rule 75 (term_tail -> EQ_EQ expression .)
+    REPEAT          reduce using rule 75 (term_tail -> EQ_EQ expression .)
+    INPUT           reduce using rule 75 (term_tail -> EQ_EQ expression .)
+    INT             reduce using rule 75 (term_tail -> EQ_EQ expression .)
+    FLT             reduce using rule 75 (term_tail -> EQ_EQ expression .)
+    BLN             reduce using rule 75 (term_tail -> EQ_EQ expression .)
+    CHR             reduce using rule 75 (term_tail -> EQ_EQ expression .)
+    STR             reduce using rule 75 (term_tail -> EQ_EQ expression .)
     RBRACE          reduce using rule 75 (term_tail -> EQ_EQ expression .)
+    REVIVE          reduce using rule 75 (term_tail -> EQ_EQ expression .)
+    SHIFT           reduce using rule 75 (term_tail -> EQ_EQ expression .)
+    OTHERWISE       reduce using rule 75 (term_tail -> EQ_EQ expression .)
     COLON           reduce using rule 75 (term_tail -> EQ_EQ expression .)
     SEMICOLON       reduce using rule 75 (term_tail -> EQ_EQ expression .)
 
@@ -2797,7 +3394,24 @@ state 122
     COMMA           reduce using rule 76 (term_tail -> GT_EQ expression .)
     NEWLINE         reduce using rule 76 (term_tail -> GT_EQ expression .)
     RPAREN          reduce using rule 76 (term_tail -> GT_EQ expression .)
+    CHECK           reduce using rule 76 (term_tail -> GT_EQ expression .)
+    SWAP            reduce using rule 76 (term_tail -> GT_EQ expression .)
+    FUNCTION_NAME   reduce using rule 76 (term_tail -> GT_EQ expression .)
+    DISPLAY         reduce using rule 76 (term_tail -> GT_EQ expression .)
+    IDENT           reduce using rule 76 (term_tail -> GT_EQ expression .)
+    FOR             reduce using rule 76 (term_tail -> GT_EQ expression .)
+    UNTIL           reduce using rule 76 (term_tail -> GT_EQ expression .)
+    REPEAT          reduce using rule 76 (term_tail -> GT_EQ expression .)
+    INPUT           reduce using rule 76 (term_tail -> GT_EQ expression .)
+    INT             reduce using rule 76 (term_tail -> GT_EQ expression .)
+    FLT             reduce using rule 76 (term_tail -> GT_EQ expression .)
+    BLN             reduce using rule 76 (term_tail -> GT_EQ expression .)
+    CHR             reduce using rule 76 (term_tail -> GT_EQ expression .)
+    STR             reduce using rule 76 (term_tail -> GT_EQ expression .)
     RBRACE          reduce using rule 76 (term_tail -> GT_EQ expression .)
+    REVIVE          reduce using rule 76 (term_tail -> GT_EQ expression .)
+    SHIFT           reduce using rule 76 (term_tail -> GT_EQ expression .)
+    OTHERWISE       reduce using rule 76 (term_tail -> GT_EQ expression .)
     COLON           reduce using rule 76 (term_tail -> GT_EQ expression .)
     SEMICOLON       reduce using rule 76 (term_tail -> GT_EQ expression .)
 
@@ -2817,7 +3431,24 @@ state 123
     COMMA           reduce using rule 77 (term_tail -> LT_EQ expression .)
     NEWLINE         reduce using rule 77 (term_tail -> LT_EQ expression .)
     RPAREN          reduce using rule 77 (term_tail -> LT_EQ expression .)
+    CHECK           reduce using rule 77 (term_tail -> LT_EQ expression .)
+    SWAP            reduce using rule 77 (term_tail -> LT_EQ expression .)
+    FUNCTION_NAME   reduce using rule 77 (term_tail -> LT_EQ expression .)
+    DISPLAY         reduce using rule 77 (term_tail -> LT_EQ expression .)
+    IDENT           reduce using rule 77 (term_tail -> LT_EQ expression .)
+    FOR             reduce using rule 77 (term_tail -> LT_EQ expression .)
+    UNTIL           reduce using rule 77 (term_tail -> LT_EQ expression .)
+    REPEAT          reduce using rule 77 (term_tail -> LT_EQ expression .)
+    INPUT           reduce using rule 77 (term_tail -> LT_EQ expression .)
+    INT             reduce using rule 77 (term_tail -> LT_EQ expression .)
+    FLT             reduce using rule 77 (term_tail -> LT_EQ expression .)
+    BLN             reduce using rule 77 (term_tail -> LT_EQ expression .)
+    CHR             reduce using rule 77 (term_tail -> LT_EQ expression .)
+    STR             reduce using rule 77 (term_tail -> LT_EQ expression .)
     RBRACE          reduce using rule 77 (term_tail -> LT_EQ expression .)
+    REVIVE          reduce using rule 77 (term_tail -> LT_EQ expression .)
+    SHIFT           reduce using rule 77 (term_tail -> LT_EQ expression .)
+    OTHERWISE       reduce using rule 77 (term_tail -> LT_EQ expression .)
     COLON           reduce using rule 77 (term_tail -> LT_EQ expression .)
     SEMICOLON       reduce using rule 77 (term_tail -> LT_EQ expression .)
 
@@ -2837,7 +3468,24 @@ state 124
     COMMA           reduce using rule 78 (term_tail -> NOT_EQ expression .)
     NEWLINE         reduce using rule 78 (term_tail -> NOT_EQ expression .)
     RPAREN          reduce using rule 78 (term_tail -> NOT_EQ expression .)
+    CHECK           reduce using rule 78 (term_tail -> NOT_EQ expression .)
+    SWAP            reduce using rule 78 (term_tail -> NOT_EQ expression .)
+    FUNCTION_NAME   reduce using rule 78 (term_tail -> NOT_EQ expression .)
+    DISPLAY         reduce using rule 78 (term_tail -> NOT_EQ expression .)
+    IDENT           reduce using rule 78 (term_tail -> NOT_EQ expression .)
+    FOR             reduce using rule 78 (term_tail -> NOT_EQ expression .)
+    UNTIL           reduce using rule 78 (term_tail -> NOT_EQ expression .)
+    REPEAT          reduce using rule 78 (term_tail -> NOT_EQ expression .)
+    INPUT           reduce using rule 78 (term_tail -> NOT_EQ expression .)
+    INT             reduce using rule 78 (term_tail -> NOT_EQ expression .)
+    FLT             reduce using rule 78 (term_tail -> NOT_EQ expression .)
+    BLN             reduce using rule 78 (term_tail -> NOT_EQ expression .)
+    CHR             reduce using rule 78 (term_tail -> NOT_EQ expression .)
+    STR             reduce using rule 78 (term_tail -> NOT_EQ expression .)
     RBRACE          reduce using rule 78 (term_tail -> NOT_EQ expression .)
+    REVIVE          reduce using rule 78 (term_tail -> NOT_EQ expression .)
+    SHIFT           reduce using rule 78 (term_tail -> NOT_EQ expression .)
+    OTHERWISE       reduce using rule 78 (term_tail -> NOT_EQ expression .)
     COLON           reduce using rule 78 (term_tail -> NOT_EQ expression .)
     SEMICOLON       reduce using rule 78 (term_tail -> NOT_EQ expression .)
 
@@ -2912,7 +3560,24 @@ state 132
     AND             reduce using rule 84 (var_call_tail -> LBRACKET index RBRACKET .)
     OR              reduce using rule 84 (var_call_tail -> LBRACKET index RBRACKET .)
     RPAREN          reduce using rule 84 (var_call_tail -> LBRACKET index RBRACKET .)
+    CHECK           reduce using rule 84 (var_call_tail -> LBRACKET index RBRACKET .)
+    SWAP            reduce using rule 84 (var_call_tail -> LBRACKET index RBRACKET .)
+    FUNCTION_NAME   reduce using rule 84 (var_call_tail -> LBRACKET index RBRACKET .)
+    DISPLAY         reduce using rule 84 (var_call_tail -> LBRACKET index RBRACKET .)
+    IDENT           reduce using rule 84 (var_call_tail -> LBRACKET index RBRACKET .)
+    FOR             reduce using rule 84 (var_call_tail -> LBRACKET index RBRACKET .)
+    UNTIL           reduce using rule 84 (var_call_tail -> LBRACKET index RBRACKET .)
+    REPEAT          reduce using rule 84 (var_call_tail -> LBRACKET index RBRACKET .)
+    INPUT           reduce using rule 84 (var_call_tail -> LBRACKET index RBRACKET .)
+    INT             reduce using rule 84 (var_call_tail -> LBRACKET index RBRACKET .)
+    FLT             reduce using rule 84 (var_call_tail -> LBRACKET index RBRACKET .)
+    BLN             reduce using rule 84 (var_call_tail -> LBRACKET index RBRACKET .)
+    CHR             reduce using rule 84 (var_call_tail -> LBRACKET index RBRACKET .)
+    STR             reduce using rule 84 (var_call_tail -> LBRACKET index RBRACKET .)
     RBRACE          reduce using rule 84 (var_call_tail -> LBRACKET index RBRACKET .)
+    REVIVE          reduce using rule 84 (var_call_tail -> LBRACKET index RBRACKET .)
+    SHIFT           reduce using rule 84 (var_call_tail -> LBRACKET index RBRACKET .)
+    OTHERWISE       reduce using rule 84 (var_call_tail -> LBRACKET index RBRACKET .)
     COLON           reduce using rule 84 (var_call_tail -> LBRACKET index RBRACKET .)
     SEMICOLON       reduce using rule 84 (var_call_tail -> LBRACKET index RBRACKET .)
     PLUS_EQ         reduce using rule 84 (var_call_tail -> LBRACKET index RBRACKET .)
@@ -2966,6 +3631,15 @@ state 135
     CHR             reduce using rule 163 (empty -> .)
     STR             reduce using rule 163 (empty -> .)
     RBRACE          reduce using rule 163 (empty -> .)
+    CHECK           reduce using rule 163 (empty -> .)
+    SWAP            reduce using rule 163 (empty -> .)
+    FUNCTION_NAME   reduce using rule 163 (empty -> .)
+    DISPLAY         reduce using rule 163 (empty -> .)
+    IDENT           reduce using rule 163 (empty -> .)
+    FOR             reduce using rule 163 (empty -> .)
+    UNTIL           reduce using rule 163 (empty -> .)
+    REPEAT          reduce using rule 163 (empty -> .)
+    INPUT           reduce using rule 163 (empty -> .)
 
   ! NEWLINE         [ reduce using rule 163 (empty -> .) ]
 
@@ -3014,7 +3688,7 @@ state 140
 
     (6) main_function -> MAIN_CASPER LPAREN RPAREN LBRACE maybe_newline . statements maybe_newline RBRACE
     (105) statements -> . empty
-    (106) statements -> . local_dec unli_newline statements_tail
+    (106) statements -> . local_dec maybe_newline statements_tail
     (163) empty -> .
     (115) local_dec -> . empty
     (116) local_dec -> . var_statement
@@ -3025,13 +3699,33 @@ state 140
     (37) data_type -> . CHR
     (38) data_type -> . STR
 
+  ! shift/reduce conflict for INT resolved as shift
+  ! shift/reduce conflict for FLT resolved as shift
+  ! shift/reduce conflict for BLN resolved as shift
+  ! shift/reduce conflict for CHR resolved as shift
+  ! shift/reduce conflict for STR resolved as shift
     NEWLINE         reduce using rule 163 (empty -> .)
     RBRACE          reduce using rule 163 (empty -> .)
+    CHECK           reduce using rule 163 (empty -> .)
+    SWAP            reduce using rule 163 (empty -> .)
+    FUNCTION_NAME   reduce using rule 163 (empty -> .)
+    DISPLAY         reduce using rule 163 (empty -> .)
+    IDENT           reduce using rule 163 (empty -> .)
+    FOR             reduce using rule 163 (empty -> .)
+    UNTIL           reduce using rule 163 (empty -> .)
+    REPEAT          reduce using rule 163 (empty -> .)
+    INPUT           reduce using rule 163 (empty -> .)
     INT             shift and go to state 9
     FLT             shift and go to state 10
     BLN             shift and go to state 11
     CHR             shift and go to state 12
     STR             shift and go to state 13
+
+  ! INT             [ reduce using rule 163 (empty -> .) ]
+  ! FLT             [ reduce using rule 163 (empty -> .) ]
+  ! BLN             [ reduce using rule 163 (empty -> .) ]
+  ! CHR             [ reduce using rule 163 (empty -> .) ]
+  ! STR             [ reduce using rule 163 (empty -> .) ]
 
     statements                     shift and go to state 143
     empty                          shift and go to state 144
@@ -3075,30 +3769,93 @@ state 144
     (115) local_dec -> empty .
 
   ! reduce/reduce conflict for NEWLINE resolved using rule 105 (statements -> empty .)
+  ! reduce/reduce conflict for RBRACE resolved using rule 105 (statements -> empty .)
+  ! reduce/reduce conflict for REVIVE resolved using rule 105 (statements -> empty .)
+  ! reduce/reduce conflict for SHIFT resolved using rule 105 (statements -> empty .)
+  ! reduce/reduce conflict for OTHERWISE resolved using rule 105 (statements -> empty .)
     NEWLINE         reduce using rule 105 (statements -> empty .)
     RBRACE          reduce using rule 105 (statements -> empty .)
     REVIVE          reduce using rule 105 (statements -> empty .)
     SHIFT           reduce using rule 105 (statements -> empty .)
     OTHERWISE       reduce using rule 105 (statements -> empty .)
+    CHECK           reduce using rule 115 (local_dec -> empty .)
+    SWAP            reduce using rule 115 (local_dec -> empty .)
+    FUNCTION_NAME   reduce using rule 115 (local_dec -> empty .)
+    DISPLAY         reduce using rule 115 (local_dec -> empty .)
+    IDENT           reduce using rule 115 (local_dec -> empty .)
+    FOR             reduce using rule 115 (local_dec -> empty .)
+    UNTIL           reduce using rule 115 (local_dec -> empty .)
+    REPEAT          reduce using rule 115 (local_dec -> empty .)
+    INPUT           reduce using rule 115 (local_dec -> empty .)
+    INT             reduce using rule 115 (local_dec -> empty .)
+    FLT             reduce using rule 115 (local_dec -> empty .)
+    BLN             reduce using rule 115 (local_dec -> empty .)
+    CHR             reduce using rule 115 (local_dec -> empty .)
+    STR             reduce using rule 115 (local_dec -> empty .)
 
   ! NEWLINE         [ reduce using rule 115 (local_dec -> empty .) ]
+  ! RBRACE          [ reduce using rule 115 (local_dec -> empty .) ]
+  ! REVIVE          [ reduce using rule 115 (local_dec -> empty .) ]
+  ! SHIFT           [ reduce using rule 115 (local_dec -> empty .) ]
+  ! OTHERWISE       [ reduce using rule 115 (local_dec -> empty .) ]
 
 
 state 145
 
-    (106) statements -> local_dec . unli_newline statements_tail
-    (4) unli_newline -> . NEWLINE
-    (5) unli_newline -> . NEWLINE unli_newline
+    (106) statements -> local_dec . maybe_newline statements_tail
+    (2) maybe_newline -> . empty
+    (3) maybe_newline -> . NEWLINE maybe_newline
+    (163) empty -> .
 
-    NEWLINE         shift and go to state 4
+  ! shift/reduce conflict for NEWLINE resolved as shift
+    NEWLINE         shift and go to state 17
+    CHECK           reduce using rule 163 (empty -> .)
+    SWAP            reduce using rule 163 (empty -> .)
+    FUNCTION_NAME   reduce using rule 163 (empty -> .)
+    DISPLAY         reduce using rule 163 (empty -> .)
+    IDENT           reduce using rule 163 (empty -> .)
+    FOR             reduce using rule 163 (empty -> .)
+    UNTIL           reduce using rule 163 (empty -> .)
+    REPEAT          reduce using rule 163 (empty -> .)
+    INPUT           reduce using rule 163 (empty -> .)
+    INT             reduce using rule 163 (empty -> .)
+    FLT             reduce using rule 163 (empty -> .)
+    BLN             reduce using rule 163 (empty -> .)
+    CHR             reduce using rule 163 (empty -> .)
+    STR             reduce using rule 163 (empty -> .)
+    RBRACE          reduce using rule 163 (empty -> .)
+    REVIVE          reduce using rule 163 (empty -> .)
+    SHIFT           reduce using rule 163 (empty -> .)
+    OTHERWISE       reduce using rule 163 (empty -> .)
 
-    unli_newline                   shift and go to state 151
+  ! NEWLINE         [ reduce using rule 163 (empty -> .) ]
+
+    maybe_newline                  shift and go to state 151
+    empty                          shift and go to state 16
 
 state 146
 
     (116) local_dec -> var_statement .
 
     NEWLINE         reduce using rule 116 (local_dec -> var_statement .)
+    CHECK           reduce using rule 116 (local_dec -> var_statement .)
+    SWAP            reduce using rule 116 (local_dec -> var_statement .)
+    FUNCTION_NAME   reduce using rule 116 (local_dec -> var_statement .)
+    DISPLAY         reduce using rule 116 (local_dec -> var_statement .)
+    IDENT           reduce using rule 116 (local_dec -> var_statement .)
+    FOR             reduce using rule 116 (local_dec -> var_statement .)
+    UNTIL           reduce using rule 116 (local_dec -> var_statement .)
+    REPEAT          reduce using rule 116 (local_dec -> var_statement .)
+    INPUT           reduce using rule 116 (local_dec -> var_statement .)
+    INT             reduce using rule 116 (local_dec -> var_statement .)
+    FLT             reduce using rule 116 (local_dec -> var_statement .)
+    BLN             reduce using rule 116 (local_dec -> var_statement .)
+    CHR             reduce using rule 116 (local_dec -> var_statement .)
+    STR             reduce using rule 116 (local_dec -> var_statement .)
+    RBRACE          reduce using rule 116 (local_dec -> var_statement .)
+    REVIVE          reduce using rule 116 (local_dec -> var_statement .)
+    SHIFT           reduce using rule 116 (local_dec -> var_statement .)
+    OTHERWISE       reduce using rule 116 (local_dec -> var_statement .)
 
 
 state 147
@@ -3112,7 +3869,7 @@ state 148
 
     (85) function_statements -> maybe_newline ret_type FUNCTION_NAME LPAREN parameters RPAREN maybe_newline LBRACE unli_newline . statements revive maybe_newline RBRACE
     (105) statements -> . empty
-    (106) statements -> . local_dec unli_newline statements_tail
+    (106) statements -> . local_dec maybe_newline statements_tail
     (163) empty -> .
     (115) local_dec -> . empty
     (116) local_dec -> . var_statement
@@ -3123,14 +3880,34 @@ state 148
     (37) data_type -> . CHR
     (38) data_type -> . STR
 
+  ! shift/reduce conflict for INT resolved as shift
+  ! shift/reduce conflict for FLT resolved as shift
+  ! shift/reduce conflict for BLN resolved as shift
+  ! shift/reduce conflict for CHR resolved as shift
+  ! shift/reduce conflict for STR resolved as shift
     REVIVE          reduce using rule 163 (empty -> .)
     NEWLINE         reduce using rule 163 (empty -> .)
     RBRACE          reduce using rule 163 (empty -> .)
+    CHECK           reduce using rule 163 (empty -> .)
+    SWAP            reduce using rule 163 (empty -> .)
+    FUNCTION_NAME   reduce using rule 163 (empty -> .)
+    DISPLAY         reduce using rule 163 (empty -> .)
+    IDENT           reduce using rule 163 (empty -> .)
+    FOR             reduce using rule 163 (empty -> .)
+    UNTIL           reduce using rule 163 (empty -> .)
+    REPEAT          reduce using rule 163 (empty -> .)
+    INPUT           reduce using rule 163 (empty -> .)
     INT             shift and go to state 9
     FLT             shift and go to state 10
     BLN             shift and go to state 11
     CHR             shift and go to state 12
     STR             shift and go to state 13
+
+  ! INT             [ reduce using rule 163 (empty -> .) ]
+  ! FLT             [ reduce using rule 163 (empty -> .) ]
+  ! BLN             [ reduce using rule 163 (empty -> .) ]
+  ! CHR             [ reduce using rule 163 (empty -> .) ]
+  ! STR             [ reduce using rule 163 (empty -> .) ]
 
     statements                     shift and go to state 153
     empty                          shift and go to state 144
@@ -3160,7 +3937,7 @@ state 150
 
 state 151
 
-    (106) statements -> local_dec unli_newline . statements_tail
+    (106) statements -> local_dec maybe_newline . statements_tail
     (107) statements_tail -> . empty
     (108) statements_tail -> . string_operation_statement unli_newline statements_tail
     (109) statements_tail -> . conditional_statement unli_newline statements_tail
@@ -3181,7 +3958,7 @@ state 151
     (145) output_statement -> . DISPLAY value next_val
     (146) output_statement -> . DISPLAY LPAREN value next_val RPAREN
     (105) statements -> . empty
-    (106) statements -> . local_dec unli_newline statements_tail
+    (106) statements -> . local_dec maybe_newline statements_tail
     (82) var_call -> . IDENT var_call_tail
     (128) for_loop -> . FOR LPAREN control_variable SEMICOLON expression SEMICOLON update RPAREN LBRACE maybe_newline statements RBRACE
     (129) until_loop -> . UNTIL LPAREN expression RPAREN LBRACE statements RBRACE
@@ -3196,6 +3973,20 @@ state 151
     (37) data_type -> . CHR
     (38) data_type -> . STR
 
+  ! shift/reduce conflict for CHECK resolved as shift
+  ! shift/reduce conflict for SWAP resolved as shift
+  ! shift/reduce conflict for FUNCTION_NAME resolved as shift
+  ! shift/reduce conflict for DISPLAY resolved as shift
+  ! shift/reduce conflict for IDENT resolved as shift
+  ! shift/reduce conflict for FOR resolved as shift
+  ! shift/reduce conflict for UNTIL resolved as shift
+  ! shift/reduce conflict for REPEAT resolved as shift
+  ! shift/reduce conflict for INPUT resolved as shift
+  ! shift/reduce conflict for INT resolved as shift
+  ! shift/reduce conflict for FLT resolved as shift
+  ! shift/reduce conflict for BLN resolved as shift
+  ! shift/reduce conflict for CHR resolved as shift
+  ! shift/reduce conflict for STR resolved as shift
     NEWLINE         reduce using rule 163 (empty -> .)
     RBRACE          reduce using rule 163 (empty -> .)
     REVIVE          reduce using rule 163 (empty -> .)
@@ -3215,6 +4006,21 @@ state 151
     BLN             shift and go to state 11
     CHR             shift and go to state 12
     STR             shift and go to state 13
+
+  ! CHECK           [ reduce using rule 163 (empty -> .) ]
+  ! SWAP            [ reduce using rule 163 (empty -> .) ]
+  ! FUNCTION_NAME   [ reduce using rule 163 (empty -> .) ]
+  ! DISPLAY         [ reduce using rule 163 (empty -> .) ]
+  ! IDENT           [ reduce using rule 163 (empty -> .) ]
+  ! FOR             [ reduce using rule 163 (empty -> .) ]
+  ! UNTIL           [ reduce using rule 163 (empty -> .) ]
+  ! REPEAT          [ reduce using rule 163 (empty -> .) ]
+  ! INPUT           [ reduce using rule 163 (empty -> .) ]
+  ! INT             [ reduce using rule 163 (empty -> .) ]
+  ! FLT             [ reduce using rule 163 (empty -> .) ]
+  ! BLN             [ reduce using rule 163 (empty -> .) ]
+  ! CHR             [ reduce using rule 163 (empty -> .) ]
+  ! STR             [ reduce using rule 163 (empty -> .) ]
 
     local_dec                      shift and go to state 145
     statements_tail                shift and go to state 156
@@ -3245,6 +4051,24 @@ state 152
     EQ              shift and go to state 180
     COMMA           shift and go to state 181
     NEWLINE         reduce using rule 163 (empty -> .)
+    CHECK           reduce using rule 163 (empty -> .)
+    SWAP            reduce using rule 163 (empty -> .)
+    FUNCTION_NAME   reduce using rule 163 (empty -> .)
+    DISPLAY         reduce using rule 163 (empty -> .)
+    IDENT           reduce using rule 163 (empty -> .)
+    FOR             reduce using rule 163 (empty -> .)
+    UNTIL           reduce using rule 163 (empty -> .)
+    REPEAT          reduce using rule 163 (empty -> .)
+    INPUT           reduce using rule 163 (empty -> .)
+    INT             reduce using rule 163 (empty -> .)
+    FLT             reduce using rule 163 (empty -> .)
+    BLN             reduce using rule 163 (empty -> .)
+    CHR             reduce using rule 163 (empty -> .)
+    STR             reduce using rule 163 (empty -> .)
+    RBRACE          reduce using rule 163 (empty -> .)
+    REVIVE          reduce using rule 163 (empty -> .)
+    SHIFT           reduce using rule 163 (empty -> .)
+    OTHERWISE       reduce using rule 163 (empty -> .)
 
     var_tail                       shift and go to state 178
     empty                          shift and go to state 179
@@ -3279,13 +4103,13 @@ state 155
 
 state 156
 
-    (106) statements -> local_dec unli_newline statements_tail .
+    (106) statements -> local_dec maybe_newline statements_tail .
 
-    NEWLINE         reduce using rule 106 (statements -> local_dec unli_newline statements_tail .)
-    RBRACE          reduce using rule 106 (statements -> local_dec unli_newline statements_tail .)
-    REVIVE          reduce using rule 106 (statements -> local_dec unli_newline statements_tail .)
-    SHIFT           reduce using rule 106 (statements -> local_dec unli_newline statements_tail .)
-    OTHERWISE       reduce using rule 106 (statements -> local_dec unli_newline statements_tail .)
+    NEWLINE         reduce using rule 106 (statements -> local_dec maybe_newline statements_tail .)
+    RBRACE          reduce using rule 106 (statements -> local_dec maybe_newline statements_tail .)
+    REVIVE          reduce using rule 106 (statements -> local_dec maybe_newline statements_tail .)
+    SHIFT           reduce using rule 106 (statements -> local_dec maybe_newline statements_tail .)
+    OTHERWISE       reduce using rule 106 (statements -> local_dec maybe_newline statements_tail .)
 
 
 state 157
@@ -3296,14 +4120,36 @@ state 157
 
   ! reduce/reduce conflict for NEWLINE resolved using rule 105 (statements -> empty .)
   ! reduce/reduce conflict for NEWLINE resolved using rule 105 (statements -> empty .)
+  ! reduce/reduce conflict for RBRACE resolved using rule 107 (statements_tail -> empty .)
+  ! reduce/reduce conflict for REVIVE resolved using rule 107 (statements_tail -> empty .)
+  ! reduce/reduce conflict for SHIFT resolved using rule 107 (statements_tail -> empty .)
+  ! reduce/reduce conflict for OTHERWISE resolved using rule 107 (statements_tail -> empty .)
     RBRACE          reduce using rule 107 (statements_tail -> empty .)
     REVIVE          reduce using rule 107 (statements_tail -> empty .)
     SHIFT           reduce using rule 107 (statements_tail -> empty .)
     OTHERWISE       reduce using rule 107 (statements_tail -> empty .)
     NEWLINE         reduce using rule 105 (statements -> empty .)
+    CHECK           reduce using rule 115 (local_dec -> empty .)
+    SWAP            reduce using rule 115 (local_dec -> empty .)
+    FUNCTION_NAME   reduce using rule 115 (local_dec -> empty .)
+    DISPLAY         reduce using rule 115 (local_dec -> empty .)
+    IDENT           reduce using rule 115 (local_dec -> empty .)
+    FOR             reduce using rule 115 (local_dec -> empty .)
+    UNTIL           reduce using rule 115 (local_dec -> empty .)
+    REPEAT          reduce using rule 115 (local_dec -> empty .)
+    INPUT           reduce using rule 115 (local_dec -> empty .)
+    INT             reduce using rule 115 (local_dec -> empty .)
+    FLT             reduce using rule 115 (local_dec -> empty .)
+    BLN             reduce using rule 115 (local_dec -> empty .)
+    CHR             reduce using rule 115 (local_dec -> empty .)
+    STR             reduce using rule 115 (local_dec -> empty .)
 
   ! NEWLINE         [ reduce using rule 107 (statements_tail -> empty .) ]
   ! NEWLINE         [ reduce using rule 115 (local_dec -> empty .) ]
+  ! RBRACE          [ reduce using rule 115 (local_dec -> empty .) ]
+  ! REVIVE          [ reduce using rule 115 (local_dec -> empty .) ]
+  ! SHIFT           [ reduce using rule 115 (local_dec -> empty .) ]
+  ! OTHERWISE       [ reduce using rule 115 (local_dec -> empty .) ]
 
 
 state 158
@@ -3447,7 +4293,24 @@ state 172
 
     NEWLINE         reduce using rule 138 (function_call -> input_statement .)
     COMMA           reduce using rule 138 (function_call -> input_statement .)
+    CHECK           reduce using rule 138 (function_call -> input_statement .)
+    SWAP            reduce using rule 138 (function_call -> input_statement .)
+    FUNCTION_NAME   reduce using rule 138 (function_call -> input_statement .)
+    DISPLAY         reduce using rule 138 (function_call -> input_statement .)
+    IDENT           reduce using rule 138 (function_call -> input_statement .)
+    FOR             reduce using rule 138 (function_call -> input_statement .)
+    UNTIL           reduce using rule 138 (function_call -> input_statement .)
+    REPEAT          reduce using rule 138 (function_call -> input_statement .)
+    INPUT           reduce using rule 138 (function_call -> input_statement .)
+    INT             reduce using rule 138 (function_call -> input_statement .)
+    FLT             reduce using rule 138 (function_call -> input_statement .)
+    BLN             reduce using rule 138 (function_call -> input_statement .)
+    CHR             reduce using rule 138 (function_call -> input_statement .)
+    STR             reduce using rule 138 (function_call -> input_statement .)
     RBRACE          reduce using rule 138 (function_call -> input_statement .)
+    REVIVE          reduce using rule 138 (function_call -> input_statement .)
+    SHIFT           reduce using rule 138 (function_call -> input_statement .)
+    OTHERWISE       reduce using rule 138 (function_call -> input_statement .)
     RPAREN          reduce using rule 138 (function_call -> input_statement .)
     COLON           reduce using rule 138 (function_call -> input_statement .)
 
@@ -3542,6 +4405,24 @@ state 178
     (21) var_statement -> data_type IDENT var_tail .
 
     NEWLINE         reduce using rule 21 (var_statement -> data_type IDENT var_tail .)
+    CHECK           reduce using rule 21 (var_statement -> data_type IDENT var_tail .)
+    SWAP            reduce using rule 21 (var_statement -> data_type IDENT var_tail .)
+    FUNCTION_NAME   reduce using rule 21 (var_statement -> data_type IDENT var_tail .)
+    DISPLAY         reduce using rule 21 (var_statement -> data_type IDENT var_tail .)
+    IDENT           reduce using rule 21 (var_statement -> data_type IDENT var_tail .)
+    FOR             reduce using rule 21 (var_statement -> data_type IDENT var_tail .)
+    UNTIL           reduce using rule 21 (var_statement -> data_type IDENT var_tail .)
+    REPEAT          reduce using rule 21 (var_statement -> data_type IDENT var_tail .)
+    INPUT           reduce using rule 21 (var_statement -> data_type IDENT var_tail .)
+    INT             reduce using rule 21 (var_statement -> data_type IDENT var_tail .)
+    FLT             reduce using rule 21 (var_statement -> data_type IDENT var_tail .)
+    BLN             reduce using rule 21 (var_statement -> data_type IDENT var_tail .)
+    CHR             reduce using rule 21 (var_statement -> data_type IDENT var_tail .)
+    STR             reduce using rule 21 (var_statement -> data_type IDENT var_tail .)
+    RBRACE          reduce using rule 21 (var_statement -> data_type IDENT var_tail .)
+    REVIVE          reduce using rule 21 (var_statement -> data_type IDENT var_tail .)
+    SHIFT           reduce using rule 21 (var_statement -> data_type IDENT var_tail .)
+    OTHERWISE       reduce using rule 21 (var_statement -> data_type IDENT var_tail .)
 
 
 state 179
@@ -3549,6 +4430,24 @@ state 179
     (22) var_tail -> empty .
 
     NEWLINE         reduce using rule 22 (var_tail -> empty .)
+    CHECK           reduce using rule 22 (var_tail -> empty .)
+    SWAP            reduce using rule 22 (var_tail -> empty .)
+    FUNCTION_NAME   reduce using rule 22 (var_tail -> empty .)
+    DISPLAY         reduce using rule 22 (var_tail -> empty .)
+    IDENT           reduce using rule 22 (var_tail -> empty .)
+    FOR             reduce using rule 22 (var_tail -> empty .)
+    UNTIL           reduce using rule 22 (var_tail -> empty .)
+    REPEAT          reduce using rule 22 (var_tail -> empty .)
+    INPUT           reduce using rule 22 (var_tail -> empty .)
+    INT             reduce using rule 22 (var_tail -> empty .)
+    FLT             reduce using rule 22 (var_tail -> empty .)
+    BLN             reduce using rule 22 (var_tail -> empty .)
+    CHR             reduce using rule 22 (var_tail -> empty .)
+    STR             reduce using rule 22 (var_tail -> empty .)
+    RBRACE          reduce using rule 22 (var_tail -> empty .)
+    REVIVE          reduce using rule 22 (var_tail -> empty .)
+    SHIFT           reduce using rule 22 (var_tail -> empty .)
+    OTHERWISE       reduce using rule 22 (var_tail -> empty .)
 
 
 state 180
@@ -3718,7 +4617,7 @@ state 185
     (145) output_statement -> . DISPLAY value next_val
     (146) output_statement -> . DISPLAY LPAREN value next_val RPAREN
     (105) statements -> . empty
-    (106) statements -> . local_dec unli_newline statements_tail
+    (106) statements -> . local_dec maybe_newline statements_tail
     (82) var_call -> . IDENT var_call_tail
     (128) for_loop -> . FOR LPAREN control_variable SEMICOLON expression SEMICOLON update RPAREN LBRACE maybe_newline statements RBRACE
     (129) until_loop -> . UNTIL LPAREN expression RPAREN LBRACE statements RBRACE
@@ -3733,6 +4632,20 @@ state 185
     (37) data_type -> . CHR
     (38) data_type -> . STR
 
+  ! shift/reduce conflict for CHECK resolved as shift
+  ! shift/reduce conflict for SWAP resolved as shift
+  ! shift/reduce conflict for FUNCTION_NAME resolved as shift
+  ! shift/reduce conflict for DISPLAY resolved as shift
+  ! shift/reduce conflict for IDENT resolved as shift
+  ! shift/reduce conflict for FOR resolved as shift
+  ! shift/reduce conflict for UNTIL resolved as shift
+  ! shift/reduce conflict for REPEAT resolved as shift
+  ! shift/reduce conflict for INPUT resolved as shift
+  ! shift/reduce conflict for INT resolved as shift
+  ! shift/reduce conflict for FLT resolved as shift
+  ! shift/reduce conflict for BLN resolved as shift
+  ! shift/reduce conflict for CHR resolved as shift
+  ! shift/reduce conflict for STR resolved as shift
     NEWLINE         reduce using rule 163 (empty -> .)
     RBRACE          reduce using rule 163 (empty -> .)
     REVIVE          reduce using rule 163 (empty -> .)
@@ -3752,6 +4665,21 @@ state 185
     BLN             shift and go to state 11
     CHR             shift and go to state 12
     STR             shift and go to state 13
+
+  ! CHECK           [ reduce using rule 163 (empty -> .) ]
+  ! SWAP            [ reduce using rule 163 (empty -> .) ]
+  ! FUNCTION_NAME   [ reduce using rule 163 (empty -> .) ]
+  ! DISPLAY         [ reduce using rule 163 (empty -> .) ]
+  ! IDENT           [ reduce using rule 163 (empty -> .) ]
+  ! FOR             [ reduce using rule 163 (empty -> .) ]
+  ! UNTIL           [ reduce using rule 163 (empty -> .) ]
+  ! REPEAT          [ reduce using rule 163 (empty -> .) ]
+  ! INPUT           [ reduce using rule 163 (empty -> .) ]
+  ! INT             [ reduce using rule 163 (empty -> .) ]
+  ! FLT             [ reduce using rule 163 (empty -> .) ]
+  ! BLN             [ reduce using rule 163 (empty -> .) ]
+  ! CHR             [ reduce using rule 163 (empty -> .) ]
+  ! STR             [ reduce using rule 163 (empty -> .) ]
 
     string_operation_statement     shift and go to state 158
     statements_tail                shift and go to state 224
@@ -3794,7 +4722,7 @@ state 186
     (145) output_statement -> . DISPLAY value next_val
     (146) output_statement -> . DISPLAY LPAREN value next_val RPAREN
     (105) statements -> . empty
-    (106) statements -> . local_dec unli_newline statements_tail
+    (106) statements -> . local_dec maybe_newline statements_tail
     (82) var_call -> . IDENT var_call_tail
     (128) for_loop -> . FOR LPAREN control_variable SEMICOLON expression SEMICOLON update RPAREN LBRACE maybe_newline statements RBRACE
     (129) until_loop -> . UNTIL LPAREN expression RPAREN LBRACE statements RBRACE
@@ -3809,6 +4737,20 @@ state 186
     (37) data_type -> . CHR
     (38) data_type -> . STR
 
+  ! shift/reduce conflict for CHECK resolved as shift
+  ! shift/reduce conflict for SWAP resolved as shift
+  ! shift/reduce conflict for FUNCTION_NAME resolved as shift
+  ! shift/reduce conflict for DISPLAY resolved as shift
+  ! shift/reduce conflict for IDENT resolved as shift
+  ! shift/reduce conflict for FOR resolved as shift
+  ! shift/reduce conflict for UNTIL resolved as shift
+  ! shift/reduce conflict for REPEAT resolved as shift
+  ! shift/reduce conflict for INPUT resolved as shift
+  ! shift/reduce conflict for INT resolved as shift
+  ! shift/reduce conflict for FLT resolved as shift
+  ! shift/reduce conflict for BLN resolved as shift
+  ! shift/reduce conflict for CHR resolved as shift
+  ! shift/reduce conflict for STR resolved as shift
     NEWLINE         reduce using rule 163 (empty -> .)
     RBRACE          reduce using rule 163 (empty -> .)
     REVIVE          reduce using rule 163 (empty -> .)
@@ -3828,6 +4770,21 @@ state 186
     BLN             shift and go to state 11
     CHR             shift and go to state 12
     STR             shift and go to state 13
+
+  ! CHECK           [ reduce using rule 163 (empty -> .) ]
+  ! SWAP            [ reduce using rule 163 (empty -> .) ]
+  ! FUNCTION_NAME   [ reduce using rule 163 (empty -> .) ]
+  ! DISPLAY         [ reduce using rule 163 (empty -> .) ]
+  ! IDENT           [ reduce using rule 163 (empty -> .) ]
+  ! FOR             [ reduce using rule 163 (empty -> .) ]
+  ! UNTIL           [ reduce using rule 163 (empty -> .) ]
+  ! REPEAT          [ reduce using rule 163 (empty -> .) ]
+  ! INPUT           [ reduce using rule 163 (empty -> .) ]
+  ! INT             [ reduce using rule 163 (empty -> .) ]
+  ! FLT             [ reduce using rule 163 (empty -> .) ]
+  ! BLN             [ reduce using rule 163 (empty -> .) ]
+  ! CHR             [ reduce using rule 163 (empty -> .) ]
+  ! STR             [ reduce using rule 163 (empty -> .) ]
 
     conditional_statement          shift and go to state 159
     statements_tail                shift and go to state 225
@@ -3870,7 +4827,7 @@ state 187
     (145) output_statement -> . DISPLAY value next_val
     (146) output_statement -> . DISPLAY LPAREN value next_val RPAREN
     (105) statements -> . empty
-    (106) statements -> . local_dec unli_newline statements_tail
+    (106) statements -> . local_dec maybe_newline statements_tail
     (82) var_call -> . IDENT var_call_tail
     (128) for_loop -> . FOR LPAREN control_variable SEMICOLON expression SEMICOLON update RPAREN LBRACE maybe_newline statements RBRACE
     (129) until_loop -> . UNTIL LPAREN expression RPAREN LBRACE statements RBRACE
@@ -3885,6 +4842,20 @@ state 187
     (37) data_type -> . CHR
     (38) data_type -> . STR
 
+  ! shift/reduce conflict for CHECK resolved as shift
+  ! shift/reduce conflict for SWAP resolved as shift
+  ! shift/reduce conflict for FUNCTION_NAME resolved as shift
+  ! shift/reduce conflict for DISPLAY resolved as shift
+  ! shift/reduce conflict for IDENT resolved as shift
+  ! shift/reduce conflict for FOR resolved as shift
+  ! shift/reduce conflict for UNTIL resolved as shift
+  ! shift/reduce conflict for REPEAT resolved as shift
+  ! shift/reduce conflict for INPUT resolved as shift
+  ! shift/reduce conflict for INT resolved as shift
+  ! shift/reduce conflict for FLT resolved as shift
+  ! shift/reduce conflict for BLN resolved as shift
+  ! shift/reduce conflict for CHR resolved as shift
+  ! shift/reduce conflict for STR resolved as shift
     NEWLINE         reduce using rule 163 (empty -> .)
     RBRACE          reduce using rule 163 (empty -> .)
     REVIVE          reduce using rule 163 (empty -> .)
@@ -3904,6 +4875,21 @@ state 187
     BLN             shift and go to state 11
     CHR             shift and go to state 12
     STR             shift and go to state 13
+
+  ! CHECK           [ reduce using rule 163 (empty -> .) ]
+  ! SWAP            [ reduce using rule 163 (empty -> .) ]
+  ! FUNCTION_NAME   [ reduce using rule 163 (empty -> .) ]
+  ! DISPLAY         [ reduce using rule 163 (empty -> .) ]
+  ! IDENT           [ reduce using rule 163 (empty -> .) ]
+  ! FOR             [ reduce using rule 163 (empty -> .) ]
+  ! UNTIL           [ reduce using rule 163 (empty -> .) ]
+  ! REPEAT          [ reduce using rule 163 (empty -> .) ]
+  ! INPUT           [ reduce using rule 163 (empty -> .) ]
+  ! INT             [ reduce using rule 163 (empty -> .) ]
+  ! FLT             [ reduce using rule 163 (empty -> .) ]
+  ! BLN             [ reduce using rule 163 (empty -> .) ]
+  ! CHR             [ reduce using rule 163 (empty -> .) ]
+  ! STR             [ reduce using rule 163 (empty -> .) ]
 
     switch_statement               shift and go to state 160
     statements_tail                shift and go to state 226
@@ -3946,7 +4932,7 @@ state 188
     (145) output_statement -> . DISPLAY value next_val
     (146) output_statement -> . DISPLAY LPAREN value next_val RPAREN
     (105) statements -> . empty
-    (106) statements -> . local_dec unli_newline statements_tail
+    (106) statements -> . local_dec maybe_newline statements_tail
     (82) var_call -> . IDENT var_call_tail
     (128) for_loop -> . FOR LPAREN control_variable SEMICOLON expression SEMICOLON update RPAREN LBRACE maybe_newline statements RBRACE
     (129) until_loop -> . UNTIL LPAREN expression RPAREN LBRACE statements RBRACE
@@ -3961,6 +4947,20 @@ state 188
     (37) data_type -> . CHR
     (38) data_type -> . STR
 
+  ! shift/reduce conflict for CHECK resolved as shift
+  ! shift/reduce conflict for SWAP resolved as shift
+  ! shift/reduce conflict for FUNCTION_NAME resolved as shift
+  ! shift/reduce conflict for DISPLAY resolved as shift
+  ! shift/reduce conflict for IDENT resolved as shift
+  ! shift/reduce conflict for FOR resolved as shift
+  ! shift/reduce conflict for UNTIL resolved as shift
+  ! shift/reduce conflict for REPEAT resolved as shift
+  ! shift/reduce conflict for INPUT resolved as shift
+  ! shift/reduce conflict for INT resolved as shift
+  ! shift/reduce conflict for FLT resolved as shift
+  ! shift/reduce conflict for BLN resolved as shift
+  ! shift/reduce conflict for CHR resolved as shift
+  ! shift/reduce conflict for STR resolved as shift
     NEWLINE         reduce using rule 163 (empty -> .)
     RBRACE          reduce using rule 163 (empty -> .)
     REVIVE          reduce using rule 163 (empty -> .)
@@ -3980,6 +4980,21 @@ state 188
     BLN             shift and go to state 11
     CHR             shift and go to state 12
     STR             shift and go to state 13
+
+  ! CHECK           [ reduce using rule 163 (empty -> .) ]
+  ! SWAP            [ reduce using rule 163 (empty -> .) ]
+  ! FUNCTION_NAME   [ reduce using rule 163 (empty -> .) ]
+  ! DISPLAY         [ reduce using rule 163 (empty -> .) ]
+  ! IDENT           [ reduce using rule 163 (empty -> .) ]
+  ! FOR             [ reduce using rule 163 (empty -> .) ]
+  ! UNTIL           [ reduce using rule 163 (empty -> .) ]
+  ! REPEAT          [ reduce using rule 163 (empty -> .) ]
+  ! INPUT           [ reduce using rule 163 (empty -> .) ]
+  ! INT             [ reduce using rule 163 (empty -> .) ]
+  ! FLT             [ reduce using rule 163 (empty -> .) ]
+  ! BLN             [ reduce using rule 163 (empty -> .) ]
+  ! CHR             [ reduce using rule 163 (empty -> .) ]
+  ! STR             [ reduce using rule 163 (empty -> .) ]
 
     loop_statement                 shift and go to state 161
     statements_tail                shift and go to state 227
@@ -4022,7 +5037,7 @@ state 189
     (145) output_statement -> . DISPLAY value next_val
     (146) output_statement -> . DISPLAY LPAREN value next_val RPAREN
     (105) statements -> . empty
-    (106) statements -> . local_dec unli_newline statements_tail
+    (106) statements -> . local_dec maybe_newline statements_tail
     (82) var_call -> . IDENT var_call_tail
     (128) for_loop -> . FOR LPAREN control_variable SEMICOLON expression SEMICOLON update RPAREN LBRACE maybe_newline statements RBRACE
     (129) until_loop -> . UNTIL LPAREN expression RPAREN LBRACE statements RBRACE
@@ -4037,6 +5052,20 @@ state 189
     (37) data_type -> . CHR
     (38) data_type -> . STR
 
+  ! shift/reduce conflict for CHECK resolved as shift
+  ! shift/reduce conflict for SWAP resolved as shift
+  ! shift/reduce conflict for FUNCTION_NAME resolved as shift
+  ! shift/reduce conflict for DISPLAY resolved as shift
+  ! shift/reduce conflict for IDENT resolved as shift
+  ! shift/reduce conflict for FOR resolved as shift
+  ! shift/reduce conflict for UNTIL resolved as shift
+  ! shift/reduce conflict for REPEAT resolved as shift
+  ! shift/reduce conflict for INPUT resolved as shift
+  ! shift/reduce conflict for INT resolved as shift
+  ! shift/reduce conflict for FLT resolved as shift
+  ! shift/reduce conflict for BLN resolved as shift
+  ! shift/reduce conflict for CHR resolved as shift
+  ! shift/reduce conflict for STR resolved as shift
     NEWLINE         reduce using rule 163 (empty -> .)
     RBRACE          reduce using rule 163 (empty -> .)
     REVIVE          reduce using rule 163 (empty -> .)
@@ -4056,6 +5085,21 @@ state 189
     BLN             shift and go to state 11
     CHR             shift and go to state 12
     STR             shift and go to state 13
+
+  ! CHECK           [ reduce using rule 163 (empty -> .) ]
+  ! SWAP            [ reduce using rule 163 (empty -> .) ]
+  ! FUNCTION_NAME   [ reduce using rule 163 (empty -> .) ]
+  ! DISPLAY         [ reduce using rule 163 (empty -> .) ]
+  ! IDENT           [ reduce using rule 163 (empty -> .) ]
+  ! FOR             [ reduce using rule 163 (empty -> .) ]
+  ! UNTIL           [ reduce using rule 163 (empty -> .) ]
+  ! REPEAT          [ reduce using rule 163 (empty -> .) ]
+  ! INPUT           [ reduce using rule 163 (empty -> .) ]
+  ! INT             [ reduce using rule 163 (empty -> .) ]
+  ! FLT             [ reduce using rule 163 (empty -> .) ]
+  ! BLN             [ reduce using rule 163 (empty -> .) ]
+  ! CHR             [ reduce using rule 163 (empty -> .) ]
+  ! STR             [ reduce using rule 163 (empty -> .) ]
 
     function_call                  shift and go to state 162
     statements_tail                shift and go to state 228
@@ -4098,7 +5142,7 @@ state 190
     (145) output_statement -> . DISPLAY value next_val
     (146) output_statement -> . DISPLAY LPAREN value next_val RPAREN
     (105) statements -> . empty
-    (106) statements -> . local_dec unli_newline statements_tail
+    (106) statements -> . local_dec maybe_newline statements_tail
     (82) var_call -> . IDENT var_call_tail
     (128) for_loop -> . FOR LPAREN control_variable SEMICOLON expression SEMICOLON update RPAREN LBRACE maybe_newline statements RBRACE
     (129) until_loop -> . UNTIL LPAREN expression RPAREN LBRACE statements RBRACE
@@ -4113,6 +5157,20 @@ state 190
     (37) data_type -> . CHR
     (38) data_type -> . STR
 
+  ! shift/reduce conflict for CHECK resolved as shift
+  ! shift/reduce conflict for SWAP resolved as shift
+  ! shift/reduce conflict for FUNCTION_NAME resolved as shift
+  ! shift/reduce conflict for DISPLAY resolved as shift
+  ! shift/reduce conflict for IDENT resolved as shift
+  ! shift/reduce conflict for FOR resolved as shift
+  ! shift/reduce conflict for UNTIL resolved as shift
+  ! shift/reduce conflict for REPEAT resolved as shift
+  ! shift/reduce conflict for INPUT resolved as shift
+  ! shift/reduce conflict for INT resolved as shift
+  ! shift/reduce conflict for FLT resolved as shift
+  ! shift/reduce conflict for BLN resolved as shift
+  ! shift/reduce conflict for CHR resolved as shift
+  ! shift/reduce conflict for STR resolved as shift
     NEWLINE         reduce using rule 163 (empty -> .)
     RBRACE          reduce using rule 163 (empty -> .)
     REVIVE          reduce using rule 163 (empty -> .)
@@ -4132,6 +5190,21 @@ state 190
     BLN             shift and go to state 11
     CHR             shift and go to state 12
     STR             shift and go to state 13
+
+  ! CHECK           [ reduce using rule 163 (empty -> .) ]
+  ! SWAP            [ reduce using rule 163 (empty -> .) ]
+  ! FUNCTION_NAME   [ reduce using rule 163 (empty -> .) ]
+  ! DISPLAY         [ reduce using rule 163 (empty -> .) ]
+  ! IDENT           [ reduce using rule 163 (empty -> .) ]
+  ! FOR             [ reduce using rule 163 (empty -> .) ]
+  ! UNTIL           [ reduce using rule 163 (empty -> .) ]
+  ! REPEAT          [ reduce using rule 163 (empty -> .) ]
+  ! INPUT           [ reduce using rule 163 (empty -> .) ]
+  ! INT             [ reduce using rule 163 (empty -> .) ]
+  ! FLT             [ reduce using rule 163 (empty -> .) ]
+  ! BLN             [ reduce using rule 163 (empty -> .) ]
+  ! CHR             [ reduce using rule 163 (empty -> .) ]
+  ! STR             [ reduce using rule 163 (empty -> .) ]
 
     output_statement               shift and go to state 163
     statements_tail                shift and go to state 229
@@ -4522,12 +5595,46 @@ state 206
 
   ! reduce/reduce conflict for COMMA resolved using rule 39 (value -> factor .)
   ! reduce/reduce conflict for NEWLINE resolved using rule 39 (value -> factor .)
+  ! reduce/reduce conflict for CHECK resolved using rule 39 (value -> factor .)
+  ! reduce/reduce conflict for SWAP resolved using rule 39 (value -> factor .)
+  ! reduce/reduce conflict for FUNCTION_NAME resolved using rule 39 (value -> factor .)
+  ! reduce/reduce conflict for DISPLAY resolved using rule 39 (value -> factor .)
+  ! reduce/reduce conflict for IDENT resolved using rule 39 (value -> factor .)
+  ! reduce/reduce conflict for FOR resolved using rule 39 (value -> factor .)
+  ! reduce/reduce conflict for UNTIL resolved using rule 39 (value -> factor .)
+  ! reduce/reduce conflict for REPEAT resolved using rule 39 (value -> factor .)
+  ! reduce/reduce conflict for INPUT resolved using rule 39 (value -> factor .)
+  ! reduce/reduce conflict for INT resolved using rule 39 (value -> factor .)
+  ! reduce/reduce conflict for FLT resolved using rule 39 (value -> factor .)
+  ! reduce/reduce conflict for BLN resolved using rule 39 (value -> factor .)
+  ! reduce/reduce conflict for CHR resolved using rule 39 (value -> factor .)
+  ! reduce/reduce conflict for STR resolved using rule 39 (value -> factor .)
   ! reduce/reduce conflict for RBRACE resolved using rule 39 (value -> factor .)
+  ! reduce/reduce conflict for REVIVE resolved using rule 39 (value -> factor .)
+  ! reduce/reduce conflict for SHIFT resolved using rule 39 (value -> factor .)
+  ! reduce/reduce conflict for OTHERWISE resolved using rule 39 (value -> factor .)
   ! reduce/reduce conflict for RPAREN resolved using rule 39 (value -> factor .)
   ! reduce/reduce conflict for COLON resolved using rule 39 (value -> factor .)
     COMMA           reduce using rule 39 (value -> factor .)
     NEWLINE         reduce using rule 39 (value -> factor .)
+    CHECK           reduce using rule 39 (value -> factor .)
+    SWAP            reduce using rule 39 (value -> factor .)
+    FUNCTION_NAME   reduce using rule 39 (value -> factor .)
+    DISPLAY         reduce using rule 39 (value -> factor .)
+    IDENT           reduce using rule 39 (value -> factor .)
+    FOR             reduce using rule 39 (value -> factor .)
+    UNTIL           reduce using rule 39 (value -> factor .)
+    REPEAT          reduce using rule 39 (value -> factor .)
+    INPUT           reduce using rule 39 (value -> factor .)
+    INT             reduce using rule 39 (value -> factor .)
+    FLT             reduce using rule 39 (value -> factor .)
+    BLN             reduce using rule 39 (value -> factor .)
+    CHR             reduce using rule 39 (value -> factor .)
+    STR             reduce using rule 39 (value -> factor .)
     RBRACE          reduce using rule 39 (value -> factor .)
+    REVIVE          reduce using rule 39 (value -> factor .)
+    SHIFT           reduce using rule 39 (value -> factor .)
+    OTHERWISE       reduce using rule 39 (value -> factor .)
     RPAREN          reduce using rule 39 (value -> factor .)
     COLON           reduce using rule 39 (value -> factor .)
     PLUS            shift and go to state 75
@@ -4547,7 +5654,24 @@ state 206
 
   ! COMMA           [ reduce using rule 163 (empty -> .) ]
   ! NEWLINE         [ reduce using rule 163 (empty -> .) ]
+  ! CHECK           [ reduce using rule 163 (empty -> .) ]
+  ! SWAP            [ reduce using rule 163 (empty -> .) ]
+  ! FUNCTION_NAME   [ reduce using rule 163 (empty -> .) ]
+  ! DISPLAY         [ reduce using rule 163 (empty -> .) ]
+  ! IDENT           [ reduce using rule 163 (empty -> .) ]
+  ! FOR             [ reduce using rule 163 (empty -> .) ]
+  ! UNTIL           [ reduce using rule 163 (empty -> .) ]
+  ! REPEAT          [ reduce using rule 163 (empty -> .) ]
+  ! INPUT           [ reduce using rule 163 (empty -> .) ]
+  ! INT             [ reduce using rule 163 (empty -> .) ]
+  ! FLT             [ reduce using rule 163 (empty -> .) ]
+  ! BLN             [ reduce using rule 163 (empty -> .) ]
+  ! CHR             [ reduce using rule 163 (empty -> .) ]
+  ! STR             [ reduce using rule 163 (empty -> .) ]
   ! RBRACE          [ reduce using rule 163 (empty -> .) ]
+  ! REVIVE          [ reduce using rule 163 (empty -> .) ]
+  ! SHIFT           [ reduce using rule 163 (empty -> .) ]
+  ! OTHERWISE       [ reduce using rule 163 (empty -> .) ]
   ! RPAREN          [ reduce using rule 163 (empty -> .) ]
   ! COLON           [ reduce using rule 163 (empty -> .) ]
 
@@ -4560,7 +5684,24 @@ state 207
 
     COMMA           reduce using rule 40 (value -> type_cast .)
     NEWLINE         reduce using rule 40 (value -> type_cast .)
+    CHECK           reduce using rule 40 (value -> type_cast .)
+    SWAP            reduce using rule 40 (value -> type_cast .)
+    FUNCTION_NAME   reduce using rule 40 (value -> type_cast .)
+    DISPLAY         reduce using rule 40 (value -> type_cast .)
+    IDENT           reduce using rule 40 (value -> type_cast .)
+    FOR             reduce using rule 40 (value -> type_cast .)
+    UNTIL           reduce using rule 40 (value -> type_cast .)
+    REPEAT          reduce using rule 40 (value -> type_cast .)
+    INPUT           reduce using rule 40 (value -> type_cast .)
+    INT             reduce using rule 40 (value -> type_cast .)
+    FLT             reduce using rule 40 (value -> type_cast .)
+    BLN             reduce using rule 40 (value -> type_cast .)
+    CHR             reduce using rule 40 (value -> type_cast .)
+    STR             reduce using rule 40 (value -> type_cast .)
     RBRACE          reduce using rule 40 (value -> type_cast .)
+    REVIVE          reduce using rule 40 (value -> type_cast .)
+    SHIFT           reduce using rule 40 (value -> type_cast .)
+    OTHERWISE       reduce using rule 40 (value -> type_cast .)
     RPAREN          reduce using rule 40 (value -> type_cast .)
     COLON           reduce using rule 40 (value -> type_cast .)
 
@@ -4571,7 +5712,24 @@ state 208
 
     COMMA           reduce using rule 41 (value -> expression .)
     NEWLINE         reduce using rule 41 (value -> expression .)
+    CHECK           reduce using rule 41 (value -> expression .)
+    SWAP            reduce using rule 41 (value -> expression .)
+    FUNCTION_NAME   reduce using rule 41 (value -> expression .)
+    DISPLAY         reduce using rule 41 (value -> expression .)
+    IDENT           reduce using rule 41 (value -> expression .)
+    FOR             reduce using rule 41 (value -> expression .)
+    UNTIL           reduce using rule 41 (value -> expression .)
+    REPEAT          reduce using rule 41 (value -> expression .)
+    INPUT           reduce using rule 41 (value -> expression .)
+    INT             reduce using rule 41 (value -> expression .)
+    FLT             reduce using rule 41 (value -> expression .)
+    BLN             reduce using rule 41 (value -> expression .)
+    CHR             reduce using rule 41 (value -> expression .)
+    STR             reduce using rule 41 (value -> expression .)
     RBRACE          reduce using rule 41 (value -> expression .)
+    REVIVE          reduce using rule 41 (value -> expression .)
+    SHIFT           reduce using rule 41 (value -> expression .)
+    OTHERWISE       reduce using rule 41 (value -> expression .)
     RPAREN          reduce using rule 41 (value -> expression .)
     COLON           reduce using rule 41 (value -> expression .)
 
@@ -4582,7 +5740,24 @@ state 209
 
     COMMA           reduce using rule 42 (value -> function_call .)
     NEWLINE         reduce using rule 42 (value -> function_call .)
+    CHECK           reduce using rule 42 (value -> function_call .)
+    SWAP            reduce using rule 42 (value -> function_call .)
+    FUNCTION_NAME   reduce using rule 42 (value -> function_call .)
+    DISPLAY         reduce using rule 42 (value -> function_call .)
+    IDENT           reduce using rule 42 (value -> function_call .)
+    FOR             reduce using rule 42 (value -> function_call .)
+    UNTIL           reduce using rule 42 (value -> function_call .)
+    REPEAT          reduce using rule 42 (value -> function_call .)
+    INPUT           reduce using rule 42 (value -> function_call .)
+    INT             reduce using rule 42 (value -> function_call .)
+    FLT             reduce using rule 42 (value -> function_call .)
+    BLN             reduce using rule 42 (value -> function_call .)
+    CHR             reduce using rule 42 (value -> function_call .)
+    STR             reduce using rule 42 (value -> function_call .)
     RBRACE          reduce using rule 42 (value -> function_call .)
+    REVIVE          reduce using rule 42 (value -> function_call .)
+    SHIFT           reduce using rule 42 (value -> function_call .)
+    OTHERWISE       reduce using rule 42 (value -> function_call .)
     RPAREN          reduce using rule 42 (value -> function_call .)
     COLON           reduce using rule 42 (value -> function_call .)
 
@@ -4663,7 +5838,7 @@ state 216
 
     (130) repeat_until -> REPEAT LBRACE . statements RBRACE UNTIL LPAREN expression RPAREN
     (105) statements -> . empty
-    (106) statements -> . local_dec unli_newline statements_tail
+    (106) statements -> . local_dec maybe_newline statements_tail
     (163) empty -> .
     (115) local_dec -> . empty
     (116) local_dec -> . var_statement
@@ -4674,13 +5849,33 @@ state 216
     (37) data_type -> . CHR
     (38) data_type -> . STR
 
+  ! shift/reduce conflict for INT resolved as shift
+  ! shift/reduce conflict for FLT resolved as shift
+  ! shift/reduce conflict for BLN resolved as shift
+  ! shift/reduce conflict for CHR resolved as shift
+  ! shift/reduce conflict for STR resolved as shift
     RBRACE          reduce using rule 163 (empty -> .)
     NEWLINE         reduce using rule 163 (empty -> .)
+    CHECK           reduce using rule 163 (empty -> .)
+    SWAP            reduce using rule 163 (empty -> .)
+    FUNCTION_NAME   reduce using rule 163 (empty -> .)
+    DISPLAY         reduce using rule 163 (empty -> .)
+    IDENT           reduce using rule 163 (empty -> .)
+    FOR             reduce using rule 163 (empty -> .)
+    UNTIL           reduce using rule 163 (empty -> .)
+    REPEAT          reduce using rule 163 (empty -> .)
+    INPUT           reduce using rule 163 (empty -> .)
     INT             shift and go to state 9
     FLT             shift and go to state 10
     BLN             shift and go to state 11
     CHR             shift and go to state 12
     STR             shift and go to state 13
+
+  ! INT             [ reduce using rule 163 (empty -> .) ]
+  ! FLT             [ reduce using rule 163 (empty -> .) ]
+  ! BLN             [ reduce using rule 163 (empty -> .) ]
+  ! CHR             [ reduce using rule 163 (empty -> .) ]
+  ! STR             [ reduce using rule 163 (empty -> .) ]
 
     statements                     shift and go to state 253
     empty                          shift and go to state 144
@@ -4704,6 +5899,24 @@ state 218
 
     COMMA           shift and go to state 257
     NEWLINE         reduce using rule 163 (empty -> .)
+    CHECK           reduce using rule 163 (empty -> .)
+    SWAP            reduce using rule 163 (empty -> .)
+    FUNCTION_NAME   reduce using rule 163 (empty -> .)
+    DISPLAY         reduce using rule 163 (empty -> .)
+    IDENT           reduce using rule 163 (empty -> .)
+    FOR             reduce using rule 163 (empty -> .)
+    UNTIL           reduce using rule 163 (empty -> .)
+    REPEAT          reduce using rule 163 (empty -> .)
+    INPUT           reduce using rule 163 (empty -> .)
+    INT             reduce using rule 163 (empty -> .)
+    FLT             reduce using rule 163 (empty -> .)
+    BLN             reduce using rule 163 (empty -> .)
+    CHR             reduce using rule 163 (empty -> .)
+    STR             reduce using rule 163 (empty -> .)
+    RBRACE          reduce using rule 163 (empty -> .)
+    REVIVE          reduce using rule 163 (empty -> .)
+    SHIFT           reduce using rule 163 (empty -> .)
+    OTHERWISE       reduce using rule 163 (empty -> .)
 
     var_tail2                      shift and go to state 255
     empty                          shift and go to state 256
@@ -4714,6 +5927,24 @@ state 219
 
     COMMA           reduce using rule 27 (tail_value -> value .)
     NEWLINE         reduce using rule 27 (tail_value -> value .)
+    CHECK           reduce using rule 27 (tail_value -> value .)
+    SWAP            reduce using rule 27 (tail_value -> value .)
+    FUNCTION_NAME   reduce using rule 27 (tail_value -> value .)
+    DISPLAY         reduce using rule 27 (tail_value -> value .)
+    IDENT           reduce using rule 27 (tail_value -> value .)
+    FOR             reduce using rule 27 (tail_value -> value .)
+    UNTIL           reduce using rule 27 (tail_value -> value .)
+    REPEAT          reduce using rule 27 (tail_value -> value .)
+    INPUT           reduce using rule 27 (tail_value -> value .)
+    INT             reduce using rule 27 (tail_value -> value .)
+    FLT             reduce using rule 27 (tail_value -> value .)
+    BLN             reduce using rule 27 (tail_value -> value .)
+    CHR             reduce using rule 27 (tail_value -> value .)
+    STR             reduce using rule 27 (tail_value -> value .)
+    RBRACE          reduce using rule 27 (tail_value -> value .)
+    REVIVE          reduce using rule 27 (tail_value -> value .)
+    SHIFT           reduce using rule 27 (tail_value -> value .)
+    OTHERWISE       reduce using rule 27 (tail_value -> value .)
 
 
 state 220
@@ -4748,6 +5979,24 @@ state 221
     EQ              shift and go to state 180
     COMMA           shift and go to state 181
     NEWLINE         reduce using rule 163 (empty -> .)
+    CHECK           reduce using rule 163 (empty -> .)
+    SWAP            reduce using rule 163 (empty -> .)
+    FUNCTION_NAME   reduce using rule 163 (empty -> .)
+    DISPLAY         reduce using rule 163 (empty -> .)
+    IDENT           reduce using rule 163 (empty -> .)
+    FOR             reduce using rule 163 (empty -> .)
+    UNTIL           reduce using rule 163 (empty -> .)
+    REPEAT          reduce using rule 163 (empty -> .)
+    INPUT           reduce using rule 163 (empty -> .)
+    INT             reduce using rule 163 (empty -> .)
+    FLT             reduce using rule 163 (empty -> .)
+    BLN             reduce using rule 163 (empty -> .)
+    CHR             reduce using rule 163 (empty -> .)
+    STR             reduce using rule 163 (empty -> .)
+    RBRACE          reduce using rule 163 (empty -> .)
+    REVIVE          reduce using rule 163 (empty -> .)
+    SHIFT           reduce using rule 163 (empty -> .)
+    OTHERWISE       reduce using rule 163 (empty -> .)
 
     var_tail                       shift and go to state 259
     empty                          shift and go to state 179
@@ -5236,7 +6485,24 @@ state 254
 
     NEWLINE         reduce using rule 149 (input_statement -> INPUT LPAREN RPAREN .)
     COMMA           reduce using rule 149 (input_statement -> INPUT LPAREN RPAREN .)
+    CHECK           reduce using rule 149 (input_statement -> INPUT LPAREN RPAREN .)
+    SWAP            reduce using rule 149 (input_statement -> INPUT LPAREN RPAREN .)
+    FUNCTION_NAME   reduce using rule 149 (input_statement -> INPUT LPAREN RPAREN .)
+    DISPLAY         reduce using rule 149 (input_statement -> INPUT LPAREN RPAREN .)
+    IDENT           reduce using rule 149 (input_statement -> INPUT LPAREN RPAREN .)
+    FOR             reduce using rule 149 (input_statement -> INPUT LPAREN RPAREN .)
+    UNTIL           reduce using rule 149 (input_statement -> INPUT LPAREN RPAREN .)
+    REPEAT          reduce using rule 149 (input_statement -> INPUT LPAREN RPAREN .)
+    INPUT           reduce using rule 149 (input_statement -> INPUT LPAREN RPAREN .)
+    INT             reduce using rule 149 (input_statement -> INPUT LPAREN RPAREN .)
+    FLT             reduce using rule 149 (input_statement -> INPUT LPAREN RPAREN .)
+    BLN             reduce using rule 149 (input_statement -> INPUT LPAREN RPAREN .)
+    CHR             reduce using rule 149 (input_statement -> INPUT LPAREN RPAREN .)
+    STR             reduce using rule 149 (input_statement -> INPUT LPAREN RPAREN .)
     RBRACE          reduce using rule 149 (input_statement -> INPUT LPAREN RPAREN .)
+    REVIVE          reduce using rule 149 (input_statement -> INPUT LPAREN RPAREN .)
+    SHIFT           reduce using rule 149 (input_statement -> INPUT LPAREN RPAREN .)
+    OTHERWISE       reduce using rule 149 (input_statement -> INPUT LPAREN RPAREN .)
     RPAREN          reduce using rule 149 (input_statement -> INPUT LPAREN RPAREN .)
     COLON           reduce using rule 149 (input_statement -> INPUT LPAREN RPAREN .)
 
@@ -5246,6 +6512,24 @@ state 255
     (23) var_tail -> EQ tail_value var_tail2 .
 
     NEWLINE         reduce using rule 23 (var_tail -> EQ tail_value var_tail2 .)
+    CHECK           reduce using rule 23 (var_tail -> EQ tail_value var_tail2 .)
+    SWAP            reduce using rule 23 (var_tail -> EQ tail_value var_tail2 .)
+    FUNCTION_NAME   reduce using rule 23 (var_tail -> EQ tail_value var_tail2 .)
+    DISPLAY         reduce using rule 23 (var_tail -> EQ tail_value var_tail2 .)
+    IDENT           reduce using rule 23 (var_tail -> EQ tail_value var_tail2 .)
+    FOR             reduce using rule 23 (var_tail -> EQ tail_value var_tail2 .)
+    UNTIL           reduce using rule 23 (var_tail -> EQ tail_value var_tail2 .)
+    REPEAT          reduce using rule 23 (var_tail -> EQ tail_value var_tail2 .)
+    INPUT           reduce using rule 23 (var_tail -> EQ tail_value var_tail2 .)
+    INT             reduce using rule 23 (var_tail -> EQ tail_value var_tail2 .)
+    FLT             reduce using rule 23 (var_tail -> EQ tail_value var_tail2 .)
+    BLN             reduce using rule 23 (var_tail -> EQ tail_value var_tail2 .)
+    CHR             reduce using rule 23 (var_tail -> EQ tail_value var_tail2 .)
+    STR             reduce using rule 23 (var_tail -> EQ tail_value var_tail2 .)
+    RBRACE          reduce using rule 23 (var_tail -> EQ tail_value var_tail2 .)
+    REVIVE          reduce using rule 23 (var_tail -> EQ tail_value var_tail2 .)
+    SHIFT           reduce using rule 23 (var_tail -> EQ tail_value var_tail2 .)
+    OTHERWISE       reduce using rule 23 (var_tail -> EQ tail_value var_tail2 .)
 
 
 state 256
@@ -5253,6 +6537,24 @@ state 256
     (25) var_tail2 -> empty .
 
     NEWLINE         reduce using rule 25 (var_tail2 -> empty .)
+    CHECK           reduce using rule 25 (var_tail2 -> empty .)
+    SWAP            reduce using rule 25 (var_tail2 -> empty .)
+    FUNCTION_NAME   reduce using rule 25 (var_tail2 -> empty .)
+    DISPLAY         reduce using rule 25 (var_tail2 -> empty .)
+    IDENT           reduce using rule 25 (var_tail2 -> empty .)
+    FOR             reduce using rule 25 (var_tail2 -> empty .)
+    UNTIL           reduce using rule 25 (var_tail2 -> empty .)
+    REPEAT          reduce using rule 25 (var_tail2 -> empty .)
+    INPUT           reduce using rule 25 (var_tail2 -> empty .)
+    INT             reduce using rule 25 (var_tail2 -> empty .)
+    FLT             reduce using rule 25 (var_tail2 -> empty .)
+    BLN             reduce using rule 25 (var_tail2 -> empty .)
+    CHR             reduce using rule 25 (var_tail2 -> empty .)
+    STR             reduce using rule 25 (var_tail2 -> empty .)
+    RBRACE          reduce using rule 25 (var_tail2 -> empty .)
+    REVIVE          reduce using rule 25 (var_tail2 -> empty .)
+    SHIFT           reduce using rule 25 (var_tail2 -> empty .)
+    OTHERWISE       reduce using rule 25 (var_tail2 -> empty .)
 
 
 state 257
@@ -5274,6 +6576,24 @@ state 259
     (24) var_tail -> COMMA IDENT var_tail .
 
     NEWLINE         reduce using rule 24 (var_tail -> COMMA IDENT var_tail .)
+    CHECK           reduce using rule 24 (var_tail -> COMMA IDENT var_tail .)
+    SWAP            reduce using rule 24 (var_tail -> COMMA IDENT var_tail .)
+    FUNCTION_NAME   reduce using rule 24 (var_tail -> COMMA IDENT var_tail .)
+    DISPLAY         reduce using rule 24 (var_tail -> COMMA IDENT var_tail .)
+    IDENT           reduce using rule 24 (var_tail -> COMMA IDENT var_tail .)
+    FOR             reduce using rule 24 (var_tail -> COMMA IDENT var_tail .)
+    UNTIL           reduce using rule 24 (var_tail -> COMMA IDENT var_tail .)
+    REPEAT          reduce using rule 24 (var_tail -> COMMA IDENT var_tail .)
+    INPUT           reduce using rule 24 (var_tail -> COMMA IDENT var_tail .)
+    INT             reduce using rule 24 (var_tail -> COMMA IDENT var_tail .)
+    FLT             reduce using rule 24 (var_tail -> COMMA IDENT var_tail .)
+    BLN             reduce using rule 24 (var_tail -> COMMA IDENT var_tail .)
+    CHR             reduce using rule 24 (var_tail -> COMMA IDENT var_tail .)
+    STR             reduce using rule 24 (var_tail -> COMMA IDENT var_tail .)
+    RBRACE          reduce using rule 24 (var_tail -> COMMA IDENT var_tail .)
+    REVIVE          reduce using rule 24 (var_tail -> COMMA IDENT var_tail .)
+    SHIFT           reduce using rule 24 (var_tail -> COMMA IDENT var_tail .)
+    OTHERWISE       reduce using rule 24 (var_tail -> COMMA IDENT var_tail .)
 
 
 state 260
@@ -5331,7 +6651,24 @@ state 266
 
     NEWLINE         reduce using rule 137 (function_call -> FUNCTION_NAME LPAREN arguments RPAREN .)
     COMMA           reduce using rule 137 (function_call -> FUNCTION_NAME LPAREN arguments RPAREN .)
+    CHECK           reduce using rule 137 (function_call -> FUNCTION_NAME LPAREN arguments RPAREN .)
+    SWAP            reduce using rule 137 (function_call -> FUNCTION_NAME LPAREN arguments RPAREN .)
+    FUNCTION_NAME   reduce using rule 137 (function_call -> FUNCTION_NAME LPAREN arguments RPAREN .)
+    DISPLAY         reduce using rule 137 (function_call -> FUNCTION_NAME LPAREN arguments RPAREN .)
+    IDENT           reduce using rule 137 (function_call -> FUNCTION_NAME LPAREN arguments RPAREN .)
+    FOR             reduce using rule 137 (function_call -> FUNCTION_NAME LPAREN arguments RPAREN .)
+    UNTIL           reduce using rule 137 (function_call -> FUNCTION_NAME LPAREN arguments RPAREN .)
+    REPEAT          reduce using rule 137 (function_call -> FUNCTION_NAME LPAREN arguments RPAREN .)
+    INPUT           reduce using rule 137 (function_call -> FUNCTION_NAME LPAREN arguments RPAREN .)
+    INT             reduce using rule 137 (function_call -> FUNCTION_NAME LPAREN arguments RPAREN .)
+    FLT             reduce using rule 137 (function_call -> FUNCTION_NAME LPAREN arguments RPAREN .)
+    BLN             reduce using rule 137 (function_call -> FUNCTION_NAME LPAREN arguments RPAREN .)
+    CHR             reduce using rule 137 (function_call -> FUNCTION_NAME LPAREN arguments RPAREN .)
+    STR             reduce using rule 137 (function_call -> FUNCTION_NAME LPAREN arguments RPAREN .)
     RBRACE          reduce using rule 137 (function_call -> FUNCTION_NAME LPAREN arguments RPAREN .)
+    REVIVE          reduce using rule 137 (function_call -> FUNCTION_NAME LPAREN arguments RPAREN .)
+    SHIFT           reduce using rule 137 (function_call -> FUNCTION_NAME LPAREN arguments RPAREN .)
+    OTHERWISE       reduce using rule 137 (function_call -> FUNCTION_NAME LPAREN arguments RPAREN .)
     RPAREN          reduce using rule 137 (function_call -> FUNCTION_NAME LPAREN arguments RPAREN .)
     COLON           reduce using rule 137 (function_call -> FUNCTION_NAME LPAREN arguments RPAREN .)
 
@@ -5568,6 +6905,24 @@ state 285
     EQ              shift and go to state 180
     COMMA           shift and go to state 181
     NEWLINE         reduce using rule 163 (empty -> .)
+    CHECK           reduce using rule 163 (empty -> .)
+    SWAP            reduce using rule 163 (empty -> .)
+    FUNCTION_NAME   reduce using rule 163 (empty -> .)
+    DISPLAY         reduce using rule 163 (empty -> .)
+    IDENT           reduce using rule 163 (empty -> .)
+    FOR             reduce using rule 163 (empty -> .)
+    UNTIL           reduce using rule 163 (empty -> .)
+    REPEAT          reduce using rule 163 (empty -> .)
+    INPUT           reduce using rule 163 (empty -> .)
+    INT             reduce using rule 163 (empty -> .)
+    FLT             reduce using rule 163 (empty -> .)
+    BLN             reduce using rule 163 (empty -> .)
+    CHR             reduce using rule 163 (empty -> .)
+    STR             reduce using rule 163 (empty -> .)
+    RBRACE          reduce using rule 163 (empty -> .)
+    REVIVE          reduce using rule 163 (empty -> .)
+    SHIFT           reduce using rule 163 (empty -> .)
+    OTHERWISE       reduce using rule 163 (empty -> .)
 
     var_tail                       shift and go to state 302
     empty                          shift and go to state 179
@@ -5578,6 +6933,24 @@ state 286
 
     COMMA           reduce using rule 28 (tail_value -> LBRACKET list_element RBRACKET .)
     NEWLINE         reduce using rule 28 (tail_value -> LBRACKET list_element RBRACKET .)
+    CHECK           reduce using rule 28 (tail_value -> LBRACKET list_element RBRACKET .)
+    SWAP            reduce using rule 28 (tail_value -> LBRACKET list_element RBRACKET .)
+    FUNCTION_NAME   reduce using rule 28 (tail_value -> LBRACKET list_element RBRACKET .)
+    DISPLAY         reduce using rule 28 (tail_value -> LBRACKET list_element RBRACKET .)
+    IDENT           reduce using rule 28 (tail_value -> LBRACKET list_element RBRACKET .)
+    FOR             reduce using rule 28 (tail_value -> LBRACKET list_element RBRACKET .)
+    UNTIL           reduce using rule 28 (tail_value -> LBRACKET list_element RBRACKET .)
+    REPEAT          reduce using rule 28 (tail_value -> LBRACKET list_element RBRACKET .)
+    INPUT           reduce using rule 28 (tail_value -> LBRACKET list_element RBRACKET .)
+    INT             reduce using rule 28 (tail_value -> LBRACKET list_element RBRACKET .)
+    FLT             reduce using rule 28 (tail_value -> LBRACKET list_element RBRACKET .)
+    BLN             reduce using rule 28 (tail_value -> LBRACKET list_element RBRACKET .)
+    CHR             reduce using rule 28 (tail_value -> LBRACKET list_element RBRACKET .)
+    STR             reduce using rule 28 (tail_value -> LBRACKET list_element RBRACKET .)
+    RBRACE          reduce using rule 28 (tail_value -> LBRACKET list_element RBRACKET .)
+    REVIVE          reduce using rule 28 (tail_value -> LBRACKET list_element RBRACKET .)
+    SHIFT           reduce using rule 28 (tail_value -> LBRACKET list_element RBRACKET .)
+    OTHERWISE       reduce using rule 28 (tail_value -> LBRACKET list_element RBRACKET .)
 
 
 state 287
@@ -5597,7 +6970,7 @@ state 288
 
     (117) conditional_statement -> CHECK LPAREN expression RPAREN LBRACE . statements RBRACE conditional_tail
     (105) statements -> . empty
-    (106) statements -> . local_dec unli_newline statements_tail
+    (106) statements -> . local_dec maybe_newline statements_tail
     (163) empty -> .
     (115) local_dec -> . empty
     (116) local_dec -> . var_statement
@@ -5608,13 +6981,33 @@ state 288
     (37) data_type -> . CHR
     (38) data_type -> . STR
 
+  ! shift/reduce conflict for INT resolved as shift
+  ! shift/reduce conflict for FLT resolved as shift
+  ! shift/reduce conflict for BLN resolved as shift
+  ! shift/reduce conflict for CHR resolved as shift
+  ! shift/reduce conflict for STR resolved as shift
     RBRACE          reduce using rule 163 (empty -> .)
     NEWLINE         reduce using rule 163 (empty -> .)
+    CHECK           reduce using rule 163 (empty -> .)
+    SWAP            reduce using rule 163 (empty -> .)
+    FUNCTION_NAME   reduce using rule 163 (empty -> .)
+    DISPLAY         reduce using rule 163 (empty -> .)
+    IDENT           reduce using rule 163 (empty -> .)
+    FOR             reduce using rule 163 (empty -> .)
+    UNTIL           reduce using rule 163 (empty -> .)
+    REPEAT          reduce using rule 163 (empty -> .)
+    INPUT           reduce using rule 163 (empty -> .)
     INT             shift and go to state 9
     FLT             shift and go to state 10
     BLN             shift and go to state 11
     CHR             shift and go to state 12
     STR             shift and go to state 13
+
+  ! INT             [ reduce using rule 163 (empty -> .) ]
+  ! FLT             [ reduce using rule 163 (empty -> .) ]
+  ! BLN             [ reduce using rule 163 (empty -> .) ]
+  ! CHR             [ reduce using rule 163 (empty -> .) ]
+  ! STR             [ reduce using rule 163 (empty -> .) ]
 
     statements                     shift and go to state 304
     empty                          shift and go to state 144
@@ -5665,7 +7058,24 @@ state 293
 
     COMMA           reduce using rule 43 (type_cast -> CONVERT_TO_INT LPAREN typecast_value RPAREN .)
     NEWLINE         reduce using rule 43 (type_cast -> CONVERT_TO_INT LPAREN typecast_value RPAREN .)
+    CHECK           reduce using rule 43 (type_cast -> CONVERT_TO_INT LPAREN typecast_value RPAREN .)
+    SWAP            reduce using rule 43 (type_cast -> CONVERT_TO_INT LPAREN typecast_value RPAREN .)
+    FUNCTION_NAME   reduce using rule 43 (type_cast -> CONVERT_TO_INT LPAREN typecast_value RPAREN .)
+    DISPLAY         reduce using rule 43 (type_cast -> CONVERT_TO_INT LPAREN typecast_value RPAREN .)
+    IDENT           reduce using rule 43 (type_cast -> CONVERT_TO_INT LPAREN typecast_value RPAREN .)
+    FOR             reduce using rule 43 (type_cast -> CONVERT_TO_INT LPAREN typecast_value RPAREN .)
+    UNTIL           reduce using rule 43 (type_cast -> CONVERT_TO_INT LPAREN typecast_value RPAREN .)
+    REPEAT          reduce using rule 43 (type_cast -> CONVERT_TO_INT LPAREN typecast_value RPAREN .)
+    INPUT           reduce using rule 43 (type_cast -> CONVERT_TO_INT LPAREN typecast_value RPAREN .)
+    INT             reduce using rule 43 (type_cast -> CONVERT_TO_INT LPAREN typecast_value RPAREN .)
+    FLT             reduce using rule 43 (type_cast -> CONVERT_TO_INT LPAREN typecast_value RPAREN .)
+    BLN             reduce using rule 43 (type_cast -> CONVERT_TO_INT LPAREN typecast_value RPAREN .)
+    CHR             reduce using rule 43 (type_cast -> CONVERT_TO_INT LPAREN typecast_value RPAREN .)
+    STR             reduce using rule 43 (type_cast -> CONVERT_TO_INT LPAREN typecast_value RPAREN .)
     RBRACE          reduce using rule 43 (type_cast -> CONVERT_TO_INT LPAREN typecast_value RPAREN .)
+    REVIVE          reduce using rule 43 (type_cast -> CONVERT_TO_INT LPAREN typecast_value RPAREN .)
+    SHIFT           reduce using rule 43 (type_cast -> CONVERT_TO_INT LPAREN typecast_value RPAREN .)
+    OTHERWISE       reduce using rule 43 (type_cast -> CONVERT_TO_INT LPAREN typecast_value RPAREN .)
     RPAREN          reduce using rule 43 (type_cast -> CONVERT_TO_INT LPAREN typecast_value RPAREN .)
     COLON           reduce using rule 43 (type_cast -> CONVERT_TO_INT LPAREN typecast_value RPAREN .)
 
@@ -5683,7 +7093,24 @@ state 295
 
     COMMA           reduce using rule 44 (type_cast -> CONVERT_TO_FLT LPAREN typecast_value RPAREN .)
     NEWLINE         reduce using rule 44 (type_cast -> CONVERT_TO_FLT LPAREN typecast_value RPAREN .)
+    CHECK           reduce using rule 44 (type_cast -> CONVERT_TO_FLT LPAREN typecast_value RPAREN .)
+    SWAP            reduce using rule 44 (type_cast -> CONVERT_TO_FLT LPAREN typecast_value RPAREN .)
+    FUNCTION_NAME   reduce using rule 44 (type_cast -> CONVERT_TO_FLT LPAREN typecast_value RPAREN .)
+    DISPLAY         reduce using rule 44 (type_cast -> CONVERT_TO_FLT LPAREN typecast_value RPAREN .)
+    IDENT           reduce using rule 44 (type_cast -> CONVERT_TO_FLT LPAREN typecast_value RPAREN .)
+    FOR             reduce using rule 44 (type_cast -> CONVERT_TO_FLT LPAREN typecast_value RPAREN .)
+    UNTIL           reduce using rule 44 (type_cast -> CONVERT_TO_FLT LPAREN typecast_value RPAREN .)
+    REPEAT          reduce using rule 44 (type_cast -> CONVERT_TO_FLT LPAREN typecast_value RPAREN .)
+    INPUT           reduce using rule 44 (type_cast -> CONVERT_TO_FLT LPAREN typecast_value RPAREN .)
+    INT             reduce using rule 44 (type_cast -> CONVERT_TO_FLT LPAREN typecast_value RPAREN .)
+    FLT             reduce using rule 44 (type_cast -> CONVERT_TO_FLT LPAREN typecast_value RPAREN .)
+    BLN             reduce using rule 44 (type_cast -> CONVERT_TO_FLT LPAREN typecast_value RPAREN .)
+    CHR             reduce using rule 44 (type_cast -> CONVERT_TO_FLT LPAREN typecast_value RPAREN .)
+    STR             reduce using rule 44 (type_cast -> CONVERT_TO_FLT LPAREN typecast_value RPAREN .)
     RBRACE          reduce using rule 44 (type_cast -> CONVERT_TO_FLT LPAREN typecast_value RPAREN .)
+    REVIVE          reduce using rule 44 (type_cast -> CONVERT_TO_FLT LPAREN typecast_value RPAREN .)
+    SHIFT           reduce using rule 44 (type_cast -> CONVERT_TO_FLT LPAREN typecast_value RPAREN .)
+    OTHERWISE       reduce using rule 44 (type_cast -> CONVERT_TO_FLT LPAREN typecast_value RPAREN .)
     RPAREN          reduce using rule 44 (type_cast -> CONVERT_TO_FLT LPAREN typecast_value RPAREN .)
     COLON           reduce using rule 44 (type_cast -> CONVERT_TO_FLT LPAREN typecast_value RPAREN .)
 
@@ -5694,7 +7121,24 @@ state 296
 
     COMMA           reduce using rule 45 (type_cast -> CONVERT_TO_BLN LPAREN typecast_value RPAREN .)
     NEWLINE         reduce using rule 45 (type_cast -> CONVERT_TO_BLN LPAREN typecast_value RPAREN .)
+    CHECK           reduce using rule 45 (type_cast -> CONVERT_TO_BLN LPAREN typecast_value RPAREN .)
+    SWAP            reduce using rule 45 (type_cast -> CONVERT_TO_BLN LPAREN typecast_value RPAREN .)
+    FUNCTION_NAME   reduce using rule 45 (type_cast -> CONVERT_TO_BLN LPAREN typecast_value RPAREN .)
+    DISPLAY         reduce using rule 45 (type_cast -> CONVERT_TO_BLN LPAREN typecast_value RPAREN .)
+    IDENT           reduce using rule 45 (type_cast -> CONVERT_TO_BLN LPAREN typecast_value RPAREN .)
+    FOR             reduce using rule 45 (type_cast -> CONVERT_TO_BLN LPAREN typecast_value RPAREN .)
+    UNTIL           reduce using rule 45 (type_cast -> CONVERT_TO_BLN LPAREN typecast_value RPAREN .)
+    REPEAT          reduce using rule 45 (type_cast -> CONVERT_TO_BLN LPAREN typecast_value RPAREN .)
+    INPUT           reduce using rule 45 (type_cast -> CONVERT_TO_BLN LPAREN typecast_value RPAREN .)
+    INT             reduce using rule 45 (type_cast -> CONVERT_TO_BLN LPAREN typecast_value RPAREN .)
+    FLT             reduce using rule 45 (type_cast -> CONVERT_TO_BLN LPAREN typecast_value RPAREN .)
+    BLN             reduce using rule 45 (type_cast -> CONVERT_TO_BLN LPAREN typecast_value RPAREN .)
+    CHR             reduce using rule 45 (type_cast -> CONVERT_TO_BLN LPAREN typecast_value RPAREN .)
+    STR             reduce using rule 45 (type_cast -> CONVERT_TO_BLN LPAREN typecast_value RPAREN .)
     RBRACE          reduce using rule 45 (type_cast -> CONVERT_TO_BLN LPAREN typecast_value RPAREN .)
+    REVIVE          reduce using rule 45 (type_cast -> CONVERT_TO_BLN LPAREN typecast_value RPAREN .)
+    SHIFT           reduce using rule 45 (type_cast -> CONVERT_TO_BLN LPAREN typecast_value RPAREN .)
+    OTHERWISE       reduce using rule 45 (type_cast -> CONVERT_TO_BLN LPAREN typecast_value RPAREN .)
     RPAREN          reduce using rule 45 (type_cast -> CONVERT_TO_BLN LPAREN typecast_value RPAREN .)
     COLON           reduce using rule 45 (type_cast -> CONVERT_TO_BLN LPAREN typecast_value RPAREN .)
 
@@ -5705,7 +7149,24 @@ state 297
 
     COMMA           reduce using rule 46 (type_cast -> CONVERT_TO_STR LPAREN typecast_value RPAREN .)
     NEWLINE         reduce using rule 46 (type_cast -> CONVERT_TO_STR LPAREN typecast_value RPAREN .)
+    CHECK           reduce using rule 46 (type_cast -> CONVERT_TO_STR LPAREN typecast_value RPAREN .)
+    SWAP            reduce using rule 46 (type_cast -> CONVERT_TO_STR LPAREN typecast_value RPAREN .)
+    FUNCTION_NAME   reduce using rule 46 (type_cast -> CONVERT_TO_STR LPAREN typecast_value RPAREN .)
+    DISPLAY         reduce using rule 46 (type_cast -> CONVERT_TO_STR LPAREN typecast_value RPAREN .)
+    IDENT           reduce using rule 46 (type_cast -> CONVERT_TO_STR LPAREN typecast_value RPAREN .)
+    FOR             reduce using rule 46 (type_cast -> CONVERT_TO_STR LPAREN typecast_value RPAREN .)
+    UNTIL           reduce using rule 46 (type_cast -> CONVERT_TO_STR LPAREN typecast_value RPAREN .)
+    REPEAT          reduce using rule 46 (type_cast -> CONVERT_TO_STR LPAREN typecast_value RPAREN .)
+    INPUT           reduce using rule 46 (type_cast -> CONVERT_TO_STR LPAREN typecast_value RPAREN .)
+    INT             reduce using rule 46 (type_cast -> CONVERT_TO_STR LPAREN typecast_value RPAREN .)
+    FLT             reduce using rule 46 (type_cast -> CONVERT_TO_STR LPAREN typecast_value RPAREN .)
+    BLN             reduce using rule 46 (type_cast -> CONVERT_TO_STR LPAREN typecast_value RPAREN .)
+    CHR             reduce using rule 46 (type_cast -> CONVERT_TO_STR LPAREN typecast_value RPAREN .)
+    STR             reduce using rule 46 (type_cast -> CONVERT_TO_STR LPAREN typecast_value RPAREN .)
     RBRACE          reduce using rule 46 (type_cast -> CONVERT_TO_STR LPAREN typecast_value RPAREN .)
+    REVIVE          reduce using rule 46 (type_cast -> CONVERT_TO_STR LPAREN typecast_value RPAREN .)
+    SHIFT           reduce using rule 46 (type_cast -> CONVERT_TO_STR LPAREN typecast_value RPAREN .)
+    OTHERWISE       reduce using rule 46 (type_cast -> CONVERT_TO_STR LPAREN typecast_value RPAREN .)
     RPAREN          reduce using rule 46 (type_cast -> CONVERT_TO_STR LPAREN typecast_value RPAREN .)
     COLON           reduce using rule 46 (type_cast -> CONVERT_TO_STR LPAREN typecast_value RPAREN .)
 
@@ -5728,7 +7189,7 @@ state 300
 
     (129) until_loop -> UNTIL LPAREN expression RPAREN LBRACE . statements RBRACE
     (105) statements -> . empty
-    (106) statements -> . local_dec unli_newline statements_tail
+    (106) statements -> . local_dec maybe_newline statements_tail
     (163) empty -> .
     (115) local_dec -> . empty
     (116) local_dec -> . var_statement
@@ -5739,13 +7200,33 @@ state 300
     (37) data_type -> . CHR
     (38) data_type -> . STR
 
+  ! shift/reduce conflict for INT resolved as shift
+  ! shift/reduce conflict for FLT resolved as shift
+  ! shift/reduce conflict for BLN resolved as shift
+  ! shift/reduce conflict for CHR resolved as shift
+  ! shift/reduce conflict for STR resolved as shift
     RBRACE          reduce using rule 163 (empty -> .)
     NEWLINE         reduce using rule 163 (empty -> .)
+    CHECK           reduce using rule 163 (empty -> .)
+    SWAP            reduce using rule 163 (empty -> .)
+    FUNCTION_NAME   reduce using rule 163 (empty -> .)
+    DISPLAY         reduce using rule 163 (empty -> .)
+    IDENT           reduce using rule 163 (empty -> .)
+    FOR             reduce using rule 163 (empty -> .)
+    UNTIL           reduce using rule 163 (empty -> .)
+    REPEAT          reduce using rule 163 (empty -> .)
+    INPUT           reduce using rule 163 (empty -> .)
     INT             shift and go to state 9
     FLT             shift and go to state 10
     BLN             shift and go to state 11
     CHR             shift and go to state 12
     STR             shift and go to state 13
+
+  ! INT             [ reduce using rule 163 (empty -> .) ]
+  ! FLT             [ reduce using rule 163 (empty -> .) ]
+  ! BLN             [ reduce using rule 163 (empty -> .) ]
+  ! CHR             [ reduce using rule 163 (empty -> .) ]
+  ! STR             [ reduce using rule 163 (empty -> .) ]
 
     statements                     shift and go to state 311
     empty                          shift and go to state 144
@@ -5765,6 +7246,24 @@ state 302
     (26) var_tail2 -> COMMA IDENT var_tail .
 
     NEWLINE         reduce using rule 26 (var_tail2 -> COMMA IDENT var_tail .)
+    CHECK           reduce using rule 26 (var_tail2 -> COMMA IDENT var_tail .)
+    SWAP            reduce using rule 26 (var_tail2 -> COMMA IDENT var_tail .)
+    FUNCTION_NAME   reduce using rule 26 (var_tail2 -> COMMA IDENT var_tail .)
+    DISPLAY         reduce using rule 26 (var_tail2 -> COMMA IDENT var_tail .)
+    IDENT           reduce using rule 26 (var_tail2 -> COMMA IDENT var_tail .)
+    FOR             reduce using rule 26 (var_tail2 -> COMMA IDENT var_tail .)
+    UNTIL           reduce using rule 26 (var_tail2 -> COMMA IDENT var_tail .)
+    REPEAT          reduce using rule 26 (var_tail2 -> COMMA IDENT var_tail .)
+    INPUT           reduce using rule 26 (var_tail2 -> COMMA IDENT var_tail .)
+    INT             reduce using rule 26 (var_tail2 -> COMMA IDENT var_tail .)
+    FLT             reduce using rule 26 (var_tail2 -> COMMA IDENT var_tail .)
+    BLN             reduce using rule 26 (var_tail2 -> COMMA IDENT var_tail .)
+    CHR             reduce using rule 26 (var_tail2 -> COMMA IDENT var_tail .)
+    STR             reduce using rule 26 (var_tail2 -> COMMA IDENT var_tail .)
+    RBRACE          reduce using rule 26 (var_tail2 -> COMMA IDENT var_tail .)
+    REVIVE          reduce using rule 26 (var_tail2 -> COMMA IDENT var_tail .)
+    SHIFT           reduce using rule 26 (var_tail2 -> COMMA IDENT var_tail .)
+    OTHERWISE       reduce using rule 26 (var_tail2 -> COMMA IDENT var_tail .)
 
 
 state 303
@@ -5937,7 +7436,7 @@ state 314
 
     (121) switch_statement -> SWAP LPAREN IDENT RPAREN LBRACE switch_condition OTHERWISE . statements RBRACE
     (105) statements -> . empty
-    (106) statements -> . local_dec unli_newline statements_tail
+    (106) statements -> . local_dec maybe_newline statements_tail
     (163) empty -> .
     (115) local_dec -> . empty
     (116) local_dec -> . var_statement
@@ -5948,13 +7447,33 @@ state 314
     (37) data_type -> . CHR
     (38) data_type -> . STR
 
+  ! shift/reduce conflict for INT resolved as shift
+  ! shift/reduce conflict for FLT resolved as shift
+  ! shift/reduce conflict for BLN resolved as shift
+  ! shift/reduce conflict for CHR resolved as shift
+  ! shift/reduce conflict for STR resolved as shift
     RBRACE          reduce using rule 163 (empty -> .)
     NEWLINE         reduce using rule 163 (empty -> .)
+    CHECK           reduce using rule 163 (empty -> .)
+    SWAP            reduce using rule 163 (empty -> .)
+    FUNCTION_NAME   reduce using rule 163 (empty -> .)
+    DISPLAY         reduce using rule 163 (empty -> .)
+    IDENT           reduce using rule 163 (empty -> .)
+    FOR             reduce using rule 163 (empty -> .)
+    UNTIL           reduce using rule 163 (empty -> .)
+    REPEAT          reduce using rule 163 (empty -> .)
+    INPUT           reduce using rule 163 (empty -> .)
     INT             shift and go to state 9
     FLT             shift and go to state 10
     BLN             shift and go to state 11
     CHR             shift and go to state 12
     STR             shift and go to state 13
+
+  ! INT             [ reduce using rule 163 (empty -> .) ]
+  ! FLT             [ reduce using rule 163 (empty -> .) ]
+  ! BLN             [ reduce using rule 163 (empty -> .) ]
+  ! CHR             [ reduce using rule 163 (empty -> .) ]
+  ! STR             [ reduce using rule 163 (empty -> .) ]
 
     statements                     shift and go to state 324
     empty                          shift and go to state 144
@@ -6056,7 +7575,7 @@ state 325
 
     (122) switch_condition -> SHIFT value COLON . statements switchcond_tail
     (105) statements -> . empty
-    (106) statements -> . local_dec unli_newline statements_tail
+    (106) statements -> . local_dec maybe_newline statements_tail
     (163) empty -> .
     (115) local_dec -> . empty
     (116) local_dec -> . var_statement
@@ -6067,14 +7586,34 @@ state 325
     (37) data_type -> . CHR
     (38) data_type -> . STR
 
+  ! shift/reduce conflict for INT resolved as shift
+  ! shift/reduce conflict for FLT resolved as shift
+  ! shift/reduce conflict for BLN resolved as shift
+  ! shift/reduce conflict for CHR resolved as shift
+  ! shift/reduce conflict for STR resolved as shift
     SHIFT           reduce using rule 163 (empty -> .)
     OTHERWISE       reduce using rule 163 (empty -> .)
     NEWLINE         reduce using rule 163 (empty -> .)
+    CHECK           reduce using rule 163 (empty -> .)
+    SWAP            reduce using rule 163 (empty -> .)
+    FUNCTION_NAME   reduce using rule 163 (empty -> .)
+    DISPLAY         reduce using rule 163 (empty -> .)
+    IDENT           reduce using rule 163 (empty -> .)
+    FOR             reduce using rule 163 (empty -> .)
+    UNTIL           reduce using rule 163 (empty -> .)
+    REPEAT          reduce using rule 163 (empty -> .)
+    INPUT           reduce using rule 163 (empty -> .)
     INT             shift and go to state 9
     FLT             shift and go to state 10
     BLN             shift and go to state 11
     CHR             shift and go to state 12
     STR             shift and go to state 13
+
+  ! INT             [ reduce using rule 163 (empty -> .) ]
+  ! FLT             [ reduce using rule 163 (empty -> .) ]
+  ! BLN             [ reduce using rule 163 (empty -> .) ]
+  ! CHR             [ reduce using rule 163 (empty -> .) ]
+  ! STR             [ reduce using rule 163 (empty -> .) ]
 
     statements                     shift and go to state 336
     empty                          shift and go to state 144
@@ -6219,7 +7758,7 @@ state 334
 
     (120) conditional_tail -> OTHERWISE LBRACE . statements RBRACE
     (105) statements -> . empty
-    (106) statements -> . local_dec unli_newline statements_tail
+    (106) statements -> . local_dec maybe_newline statements_tail
     (163) empty -> .
     (115) local_dec -> . empty
     (116) local_dec -> . var_statement
@@ -6230,13 +7769,33 @@ state 334
     (37) data_type -> . CHR
     (38) data_type -> . STR
 
+  ! shift/reduce conflict for INT resolved as shift
+  ! shift/reduce conflict for FLT resolved as shift
+  ! shift/reduce conflict for BLN resolved as shift
+  ! shift/reduce conflict for CHR resolved as shift
+  ! shift/reduce conflict for STR resolved as shift
     RBRACE          reduce using rule 163 (empty -> .)
     NEWLINE         reduce using rule 163 (empty -> .)
+    CHECK           reduce using rule 163 (empty -> .)
+    SWAP            reduce using rule 163 (empty -> .)
+    FUNCTION_NAME   reduce using rule 163 (empty -> .)
+    DISPLAY         reduce using rule 163 (empty -> .)
+    IDENT           reduce using rule 163 (empty -> .)
+    FOR             reduce using rule 163 (empty -> .)
+    UNTIL           reduce using rule 163 (empty -> .)
+    REPEAT          reduce using rule 163 (empty -> .)
+    INPUT           reduce using rule 163 (empty -> .)
     INT             shift and go to state 9
     FLT             shift and go to state 10
     BLN             shift and go to state 11
     CHR             shift and go to state 12
     STR             shift and go to state 13
+
+  ! INT             [ reduce using rule 163 (empty -> .) ]
+  ! FLT             [ reduce using rule 163 (empty -> .) ]
+  ! BLN             [ reduce using rule 163 (empty -> .) ]
+  ! CHR             [ reduce using rule 163 (empty -> .) ]
+  ! STR             [ reduce using rule 163 (empty -> .) ]
 
     statements                     shift and go to state 340
     empty                          shift and go to state 144
@@ -6281,6 +7840,15 @@ state 337
     CHR             reduce using rule 163 (empty -> .)
     STR             reduce using rule 163 (empty -> .)
     RBRACE          reduce using rule 163 (empty -> .)
+    CHECK           reduce using rule 163 (empty -> .)
+    SWAP            reduce using rule 163 (empty -> .)
+    FUNCTION_NAME   reduce using rule 163 (empty -> .)
+    DISPLAY         reduce using rule 163 (empty -> .)
+    IDENT           reduce using rule 163 (empty -> .)
+    FOR             reduce using rule 163 (empty -> .)
+    UNTIL           reduce using rule 163 (empty -> .)
+    REPEAT          reduce using rule 163 (empty -> .)
+    INPUT           reduce using rule 163 (empty -> .)
 
   ! NEWLINE         [ reduce using rule 163 (empty -> .) ]
 
@@ -6333,7 +7901,7 @@ state 344
 
     (128) for_loop -> FOR LPAREN control_variable SEMICOLON expression SEMICOLON update RPAREN LBRACE maybe_newline . statements RBRACE
     (105) statements -> . empty
-    (106) statements -> . local_dec unli_newline statements_tail
+    (106) statements -> . local_dec maybe_newline statements_tail
     (163) empty -> .
     (115) local_dec -> . empty
     (116) local_dec -> . var_statement
@@ -6344,13 +7912,33 @@ state 344
     (37) data_type -> . CHR
     (38) data_type -> . STR
 
+  ! shift/reduce conflict for INT resolved as shift
+  ! shift/reduce conflict for FLT resolved as shift
+  ! shift/reduce conflict for BLN resolved as shift
+  ! shift/reduce conflict for CHR resolved as shift
+  ! shift/reduce conflict for STR resolved as shift
     RBRACE          reduce using rule 163 (empty -> .)
     NEWLINE         reduce using rule 163 (empty -> .)
+    CHECK           reduce using rule 163 (empty -> .)
+    SWAP            reduce using rule 163 (empty -> .)
+    FUNCTION_NAME   reduce using rule 163 (empty -> .)
+    DISPLAY         reduce using rule 163 (empty -> .)
+    IDENT           reduce using rule 163 (empty -> .)
+    FOR             reduce using rule 163 (empty -> .)
+    UNTIL           reduce using rule 163 (empty -> .)
+    REPEAT          reduce using rule 163 (empty -> .)
+    INPUT           reduce using rule 163 (empty -> .)
     INT             shift and go to state 9
     FLT             shift and go to state 10
     BLN             shift and go to state 11
     CHR             shift and go to state 12
     STR             shift and go to state 13
+
+  ! INT             [ reduce using rule 163 (empty -> .) ]
+  ! FLT             [ reduce using rule 163 (empty -> .) ]
+  ! BLN             [ reduce using rule 163 (empty -> .) ]
+  ! CHR             [ reduce using rule 163 (empty -> .) ]
+  ! STR             [ reduce using rule 163 (empty -> .) ]
 
     statements                     shift and go to state 347
     empty                          shift and go to state 144
@@ -6383,7 +7971,7 @@ state 348
 
     (119) conditional_tail -> OTHERWISE_CHECK LPAREN expression RPAREN LBRACE . statements RBRACE
     (105) statements -> . empty
-    (106) statements -> . local_dec unli_newline statements_tail
+    (106) statements -> . local_dec maybe_newline statements_tail
     (163) empty -> .
     (115) local_dec -> . empty
     (116) local_dec -> . var_statement
@@ -6394,13 +7982,33 @@ state 348
     (37) data_type -> . CHR
     (38) data_type -> . STR
 
+  ! shift/reduce conflict for INT resolved as shift
+  ! shift/reduce conflict for FLT resolved as shift
+  ! shift/reduce conflict for BLN resolved as shift
+  ! shift/reduce conflict for CHR resolved as shift
+  ! shift/reduce conflict for STR resolved as shift
     RBRACE          reduce using rule 163 (empty -> .)
     NEWLINE         reduce using rule 163 (empty -> .)
+    CHECK           reduce using rule 163 (empty -> .)
+    SWAP            reduce using rule 163 (empty -> .)
+    FUNCTION_NAME   reduce using rule 163 (empty -> .)
+    DISPLAY         reduce using rule 163 (empty -> .)
+    IDENT           reduce using rule 163 (empty -> .)
+    FOR             reduce using rule 163 (empty -> .)
+    UNTIL           reduce using rule 163 (empty -> .)
+    REPEAT          reduce using rule 163 (empty -> .)
+    INPUT           reduce using rule 163 (empty -> .)
     INT             shift and go to state 9
     FLT             shift and go to state 10
     BLN             shift and go to state 11
     CHR             shift and go to state 12
     STR             shift and go to state 13
+
+  ! INT             [ reduce using rule 163 (empty -> .) ]
+  ! FLT             [ reduce using rule 163 (empty -> .) ]
+  ! BLN             [ reduce using rule 163 (empty -> .) ]
+  ! CHR             [ reduce using rule 163 (empty -> .) ]
+  ! STR             [ reduce using rule 163 (empty -> .) ]
 
     statements                     shift and go to state 350
     empty                          shift and go to state 144
@@ -6444,8 +8052,157 @@ WARNING: shift/reduce conflict for GT_EQ in state 63 resolved as shift
 WARNING: shift/reduce conflict for LT_EQ in state 63 resolved as shift
 WARNING: shift/reduce conflict for NOT_EQ in state 63 resolved as shift
 WARNING: shift/reduce conflict for NEWLINE in state 135 resolved as shift
+WARNING: shift/reduce conflict for INT in state 140 resolved as shift
+WARNING: shift/reduce conflict for FLT in state 140 resolved as shift
+WARNING: shift/reduce conflict for BLN in state 140 resolved as shift
+WARNING: shift/reduce conflict for CHR in state 140 resolved as shift
+WARNING: shift/reduce conflict for STR in state 140 resolved as shift
+WARNING: shift/reduce conflict for NEWLINE in state 145 resolved as shift
+WARNING: shift/reduce conflict for INT in state 148 resolved as shift
+WARNING: shift/reduce conflict for FLT in state 148 resolved as shift
+WARNING: shift/reduce conflict for BLN in state 148 resolved as shift
+WARNING: shift/reduce conflict for CHR in state 148 resolved as shift
+WARNING: shift/reduce conflict for STR in state 148 resolved as shift
+WARNING: shift/reduce conflict for CHECK in state 151 resolved as shift
+WARNING: shift/reduce conflict for SWAP in state 151 resolved as shift
+WARNING: shift/reduce conflict for FUNCTION_NAME in state 151 resolved as shift
+WARNING: shift/reduce conflict for DISPLAY in state 151 resolved as shift
+WARNING: shift/reduce conflict for IDENT in state 151 resolved as shift
+WARNING: shift/reduce conflict for FOR in state 151 resolved as shift
+WARNING: shift/reduce conflict for UNTIL in state 151 resolved as shift
+WARNING: shift/reduce conflict for REPEAT in state 151 resolved as shift
+WARNING: shift/reduce conflict for INPUT in state 151 resolved as shift
+WARNING: shift/reduce conflict for INT in state 151 resolved as shift
+WARNING: shift/reduce conflict for FLT in state 151 resolved as shift
+WARNING: shift/reduce conflict for BLN in state 151 resolved as shift
+WARNING: shift/reduce conflict for CHR in state 151 resolved as shift
+WARNING: shift/reduce conflict for STR in state 151 resolved as shift
+WARNING: shift/reduce conflict for CHECK in state 185 resolved as shift
+WARNING: shift/reduce conflict for SWAP in state 185 resolved as shift
+WARNING: shift/reduce conflict for FUNCTION_NAME in state 185 resolved as shift
+WARNING: shift/reduce conflict for DISPLAY in state 185 resolved as shift
+WARNING: shift/reduce conflict for IDENT in state 185 resolved as shift
+WARNING: shift/reduce conflict for FOR in state 185 resolved as shift
+WARNING: shift/reduce conflict for UNTIL in state 185 resolved as shift
+WARNING: shift/reduce conflict for REPEAT in state 185 resolved as shift
+WARNING: shift/reduce conflict for INPUT in state 185 resolved as shift
+WARNING: shift/reduce conflict for INT in state 185 resolved as shift
+WARNING: shift/reduce conflict for FLT in state 185 resolved as shift
+WARNING: shift/reduce conflict for BLN in state 185 resolved as shift
+WARNING: shift/reduce conflict for CHR in state 185 resolved as shift
+WARNING: shift/reduce conflict for STR in state 185 resolved as shift
+WARNING: shift/reduce conflict for CHECK in state 186 resolved as shift
+WARNING: shift/reduce conflict for SWAP in state 186 resolved as shift
+WARNING: shift/reduce conflict for FUNCTION_NAME in state 186 resolved as shift
+WARNING: shift/reduce conflict for DISPLAY in state 186 resolved as shift
+WARNING: shift/reduce conflict for IDENT in state 186 resolved as shift
+WARNING: shift/reduce conflict for FOR in state 186 resolved as shift
+WARNING: shift/reduce conflict for UNTIL in state 186 resolved as shift
+WARNING: shift/reduce conflict for REPEAT in state 186 resolved as shift
+WARNING: shift/reduce conflict for INPUT in state 186 resolved as shift
+WARNING: shift/reduce conflict for INT in state 186 resolved as shift
+WARNING: shift/reduce conflict for FLT in state 186 resolved as shift
+WARNING: shift/reduce conflict for BLN in state 186 resolved as shift
+WARNING: shift/reduce conflict for CHR in state 186 resolved as shift
+WARNING: shift/reduce conflict for STR in state 186 resolved as shift
+WARNING: shift/reduce conflict for CHECK in state 187 resolved as shift
+WARNING: shift/reduce conflict for SWAP in state 187 resolved as shift
+WARNING: shift/reduce conflict for FUNCTION_NAME in state 187 resolved as shift
+WARNING: shift/reduce conflict for DISPLAY in state 187 resolved as shift
+WARNING: shift/reduce conflict for IDENT in state 187 resolved as shift
+WARNING: shift/reduce conflict for FOR in state 187 resolved as shift
+WARNING: shift/reduce conflict for UNTIL in state 187 resolved as shift
+WARNING: shift/reduce conflict for REPEAT in state 187 resolved as shift
+WARNING: shift/reduce conflict for INPUT in state 187 resolved as shift
+WARNING: shift/reduce conflict for INT in state 187 resolved as shift
+WARNING: shift/reduce conflict for FLT in state 187 resolved as shift
+WARNING: shift/reduce conflict for BLN in state 187 resolved as shift
+WARNING: shift/reduce conflict for CHR in state 187 resolved as shift
+WARNING: shift/reduce conflict for STR in state 187 resolved as shift
+WARNING: shift/reduce conflict for CHECK in state 188 resolved as shift
+WARNING: shift/reduce conflict for SWAP in state 188 resolved as shift
+WARNING: shift/reduce conflict for FUNCTION_NAME in state 188 resolved as shift
+WARNING: shift/reduce conflict for DISPLAY in state 188 resolved as shift
+WARNING: shift/reduce conflict for IDENT in state 188 resolved as shift
+WARNING: shift/reduce conflict for FOR in state 188 resolved as shift
+WARNING: shift/reduce conflict for UNTIL in state 188 resolved as shift
+WARNING: shift/reduce conflict for REPEAT in state 188 resolved as shift
+WARNING: shift/reduce conflict for INPUT in state 188 resolved as shift
+WARNING: shift/reduce conflict for INT in state 188 resolved as shift
+WARNING: shift/reduce conflict for FLT in state 188 resolved as shift
+WARNING: shift/reduce conflict for BLN in state 188 resolved as shift
+WARNING: shift/reduce conflict for CHR in state 188 resolved as shift
+WARNING: shift/reduce conflict for STR in state 188 resolved as shift
+WARNING: shift/reduce conflict for CHECK in state 189 resolved as shift
+WARNING: shift/reduce conflict for SWAP in state 189 resolved as shift
+WARNING: shift/reduce conflict for FUNCTION_NAME in state 189 resolved as shift
+WARNING: shift/reduce conflict for DISPLAY in state 189 resolved as shift
+WARNING: shift/reduce conflict for IDENT in state 189 resolved as shift
+WARNING: shift/reduce conflict for FOR in state 189 resolved as shift
+WARNING: shift/reduce conflict for UNTIL in state 189 resolved as shift
+WARNING: shift/reduce conflict for REPEAT in state 189 resolved as shift
+WARNING: shift/reduce conflict for INPUT in state 189 resolved as shift
+WARNING: shift/reduce conflict for INT in state 189 resolved as shift
+WARNING: shift/reduce conflict for FLT in state 189 resolved as shift
+WARNING: shift/reduce conflict for BLN in state 189 resolved as shift
+WARNING: shift/reduce conflict for CHR in state 189 resolved as shift
+WARNING: shift/reduce conflict for STR in state 189 resolved as shift
+WARNING: shift/reduce conflict for CHECK in state 190 resolved as shift
+WARNING: shift/reduce conflict for SWAP in state 190 resolved as shift
+WARNING: shift/reduce conflict for FUNCTION_NAME in state 190 resolved as shift
+WARNING: shift/reduce conflict for DISPLAY in state 190 resolved as shift
+WARNING: shift/reduce conflict for IDENT in state 190 resolved as shift
+WARNING: shift/reduce conflict for FOR in state 190 resolved as shift
+WARNING: shift/reduce conflict for UNTIL in state 190 resolved as shift
+WARNING: shift/reduce conflict for REPEAT in state 190 resolved as shift
+WARNING: shift/reduce conflict for INPUT in state 190 resolved as shift
+WARNING: shift/reduce conflict for INT in state 190 resolved as shift
+WARNING: shift/reduce conflict for FLT in state 190 resolved as shift
+WARNING: shift/reduce conflict for BLN in state 190 resolved as shift
+WARNING: shift/reduce conflict for CHR in state 190 resolved as shift
+WARNING: shift/reduce conflict for STR in state 190 resolved as shift
+WARNING: shift/reduce conflict for INT in state 216 resolved as shift
+WARNING: shift/reduce conflict for FLT in state 216 resolved as shift
+WARNING: shift/reduce conflict for BLN in state 216 resolved as shift
+WARNING: shift/reduce conflict for CHR in state 216 resolved as shift
+WARNING: shift/reduce conflict for STR in state 216 resolved as shift
 WARNING: shift/reduce conflict for RPAREN in state 245 resolved as shift
+WARNING: shift/reduce conflict for INT in state 288 resolved as shift
+WARNING: shift/reduce conflict for FLT in state 288 resolved as shift
+WARNING: shift/reduce conflict for BLN in state 288 resolved as shift
+WARNING: shift/reduce conflict for CHR in state 288 resolved as shift
+WARNING: shift/reduce conflict for STR in state 288 resolved as shift
+WARNING: shift/reduce conflict for INT in state 300 resolved as shift
+WARNING: shift/reduce conflict for FLT in state 300 resolved as shift
+WARNING: shift/reduce conflict for BLN in state 300 resolved as shift
+WARNING: shift/reduce conflict for CHR in state 300 resolved as shift
+WARNING: shift/reduce conflict for STR in state 300 resolved as shift
+WARNING: shift/reduce conflict for INT in state 314 resolved as shift
+WARNING: shift/reduce conflict for FLT in state 314 resolved as shift
+WARNING: shift/reduce conflict for BLN in state 314 resolved as shift
+WARNING: shift/reduce conflict for CHR in state 314 resolved as shift
+WARNING: shift/reduce conflict for STR in state 314 resolved as shift
+WARNING: shift/reduce conflict for INT in state 325 resolved as shift
+WARNING: shift/reduce conflict for FLT in state 325 resolved as shift
+WARNING: shift/reduce conflict for BLN in state 325 resolved as shift
+WARNING: shift/reduce conflict for CHR in state 325 resolved as shift
+WARNING: shift/reduce conflict for STR in state 325 resolved as shift
+WARNING: shift/reduce conflict for INT in state 334 resolved as shift
+WARNING: shift/reduce conflict for FLT in state 334 resolved as shift
+WARNING: shift/reduce conflict for BLN in state 334 resolved as shift
+WARNING: shift/reduce conflict for CHR in state 334 resolved as shift
+WARNING: shift/reduce conflict for STR in state 334 resolved as shift
 WARNING: shift/reduce conflict for NEWLINE in state 337 resolved as shift
+WARNING: shift/reduce conflict for INT in state 344 resolved as shift
+WARNING: shift/reduce conflict for FLT in state 344 resolved as shift
+WARNING: shift/reduce conflict for BLN in state 344 resolved as shift
+WARNING: shift/reduce conflict for CHR in state 344 resolved as shift
+WARNING: shift/reduce conflict for STR in state 344 resolved as shift
+WARNING: shift/reduce conflict for INT in state 348 resolved as shift
+WARNING: shift/reduce conflict for FLT in state 348 resolved as shift
+WARNING: shift/reduce conflict for BLN in state 348 resolved as shift
+WARNING: shift/reduce conflict for CHR in state 348 resolved as shift
+WARNING: shift/reduce conflict for STR in state 348 resolved as shift
 WARNING: reduce/reduce conflict in state 26 resolved using rule (global_dec -> empty)
 WARNING: rejected rule (global_tail -> empty) in state 26
 WARNING: reduce/reduce conflict in state 49 resolved using rule (global_value -> factor)
@@ -6456,6 +8213,8 @@ WARNING: reduce/reduce conflict in state 157 resolved using rule (statements -> 
 WARNING: rejected rule (statements_tail -> empty) in state 157
 WARNING: reduce/reduce conflict in state 157 resolved using rule (statements -> empty)
 WARNING: rejected rule (local_dec -> empty) in state 157
+WARNING: reduce/reduce conflict in state 157 resolved using rule (statements_tail -> empty)
+WARNING: rejected rule (local_dec -> empty) in state 157
 WARNING: reduce/reduce conflict in state 206 resolved using rule (value -> factor)
 WARNING: rejected rule (empty -> <empty>) in state 206
 WARNING: reduce/reduce conflict in state 273 resolved using rule (typecast_value -> IDENT)
@@ -6463,4 +8222,3 @@ WARNING: rejected rule (empty -> <empty>) in state 273
 WARNING: reduce/reduce conflict in state 274 resolved using rule (typecast_value -> literal)
 WARNING: rejected rule (factor -> literal) in state 274
 WARNING: Rule (global_tail -> empty) is never reduced
-WARNING: Rule (local_dec -> empty) is never reduced
