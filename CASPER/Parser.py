@@ -37,7 +37,7 @@ precedence = (
 # Production: <program> → birth <global_dec> <function_statements> <main_function> ghost
 # -----------------------------------------------------------------------------
 def p_program(p):
-    """program : BIRTH NEWLINE global_dec maybe_newline function_statements maybe_newline main_function maybe_newline GHOST"""
+    """program : BIRTH unli_newline global_dec function_statements maybe_newline main_function unli_newline GHOST"""
     # p[3] = global_dec
     # p[5] = function_statements
     # p[7] = main_function
@@ -52,19 +52,25 @@ def p_maybe_newline(p):
     # No AST node is strictly necessary for an optional newline.
     pass
 
-
+def p_unli_newline(p):
+    """
+    unli_newline : NEWLINE
+                 | NEWLINE unli_newline
+    """
+    # No AST node is strictly necessary for an optional newline.
+    pass
 # -----------------------------------------------------------------------------
 # Production: <main_function> → FUNCTION_NAME LPAREN RPAREN LBRACE <statements> RBRACE
 # -----------------------------------------------------------------------------
 def p_main_function(p):
-    """main_function : MAIN_CASPER LPAREN RPAREN LBRACE maybe_newline statements maybe_newline RBRACE maybe_newline"""
+    """main_function : MAIN_CASPER LPAREN RPAREN LBRACE maybe_newline statements maybe_newline RBRACE"""
     p[0] = ASTNode("main_function", [p[5]], p[1])
 
 # -----------------------------------------------------------------------------
 # Production: <global_dec> → <global_statement> <global_tail> | null
 # -----------------------------------------------------------------------------
 def p_global_dec(p):
-    """global_dec : global_statement global_tail 
+    """global_dec : global_statement global_tail maybe_newline
                   | empty"""
     if len(p) == 2:
         p[0] = ASTNode("global_dec", [])
