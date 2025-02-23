@@ -129,6 +129,7 @@ class TokenType(Enum):
     NIGHT = "NIGHT"
     MEASURE = "MEASURE"
     IN = "IN"
+    CARRIAGE_RETURN = "CARRIAGE_RETURN"
     NEWLINE = "NEWLINE"
     SEMICOLON = ";"
     COLON = ":"

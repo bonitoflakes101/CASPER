@@ -37,8 +37,21 @@ precedence = (
 # Production: <program> → birth <global_dec> <function_statements> <main_function> ghost
 # -----------------------------------------------------------------------------
 def p_program(p):
-    """program : BIRTH global_dec function_statements main_function GHOST"""
-    p[0] = ASTNode("program", [p[2], p[3], p[4]])
+    """program : BIRTH NEWLINE global_dec NEWLINE function_statements NEWLINE main_function NEWLINE GHOST"""
+    # p[3] = global_dec
+    # p[5] = function_statements
+    # p[7] = main_function
+    p[0] = ASTNode("program", [p[3], p[5], p[7]])
+
+def p_maybe_newline(p):
+    """
+    maybe_newline : empty
+                  | NEWLINE
+    """
+    # If p[1] is None, do nothing. If p[1] == NEWLINE, we have a newline.
+    # No AST node is strictly necessary for an optional newline.
+    pass
+
 
 # -----------------------------------------------------------------------------
 # Production: <main_function> → FUNCTION_NAME LPAREN RPAREN LBRACE <statements> RBRACE
@@ -107,7 +120,7 @@ def p_global_tail2(p):
 # Production: <global_dec_value> → <global_value> | [ <list_element> ]
 # -----------------------------------------------------------------------------
 def p_global_dec_value(p):
-    """global_dec_value : global_value
+    """global_dec_value : global_value 
                         | LBRACKET list_element RBRACKET"""
     if len(p) == 2:
         p[0] = p[1]
@@ -444,30 +457,45 @@ def p_revive(p):
 # -----------------------------------------------------------------------------
 def p_statements(p):
     """statements : empty
-                  | local_dec statements_tail"""
-    if p[1] is None:
-        p[0] = None
+                  | local_dec NEWLINE statements_tail"""
+    if len(p) == 2:
+        # 'empty'
+        p[0] = []     # Return an empty list instead of None
     else:
-        p[0] = ASTNode("statements", [p[1]] + (p[2] if p[2] else []))
+        # 'local_dec NEWLINE statements_tail'
+        # p[1] is local_dec, p[2] is NEWLINE, p[3] is the remainder
+        p[0] = [p[1]] + p[3]
 
 # -----------------------------------------------------------------------------
 # Production: <statements_tail> → null | one of: <conditional_statement> | <switch_statement> | <loop_statement> | <function_call> | <string_operation_statement> | <global_reference> | <output_statement> then <statements_tail>
 # -----------------------------------------------------------------------------
 def p_statements_tail(p):
-    """statements_tail : empty
-                       | statements
-                       | conditional_statement statements_tail
-                       | switch_statement statements_tail
-                       | loop_statement statements_tail
-                       | function_call statements_tail
-                       | string_operation_statement statements_tail
-                       | output_statement statements_tail"""
+    """
+    statements_tail : empty
+                    | statements
+                    | conditional_statement NEWLINE statements_tail
+                    | switch_statement NEWLINE statements_tail
+                    | loop_statement NEWLINE statements_tail
+                    | function_call NEWLINE statements_tail
+                    | string_operation_statement NEWLINE statements_tail
+                    | output_statement NEWLINE statements_tail
+    """
     if len(p) == 2:
-    
-        p[0] = [] if p[1] is None else [p[1]]
+        # 'empty' or 'statements'
+        if p[1] is None:
+            p[0] = []
+        else:
+            # p[1] == statements
+            if isinstance(p[1], list):
+                p[0] = p[1]
+            else:
+                p[0] = [p[1]]
     else:
-    
-        p[0] = [p[1]] + (p[2] if p[2] is not None else [])
+        # e.g. 'conditional_statement NEWLINE statements_tail'
+        # p[1] is the statement node, p[2] is NEWLINE, p[3] is the remainder
+        if not isinstance(p[3], list):
+           raise TypeError("statements_tail expected a list in p[3]")
+        p[0] = [p[1]] + p[3]
 
 # -----------------------------------------------------------------------------
 # Production: <local_dec> → <var_statement>
