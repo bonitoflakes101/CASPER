@@ -37,7 +37,7 @@ precedence = (
 # Production: <program> → birth <global_dec> <function_statements> <main_function> ghost
 # -----------------------------------------------------------------------------
 def p_program(p):
-    """program : BIRTH NEWLINE global_dec NEWLINE function_statements NEWLINE main_function NEWLINE GHOST"""
+    """program : BIRTH NEWLINE global_dec maybe_newline function_statements maybe_newline main_function maybe_newline GHOST"""
     # p[3] = global_dec
     # p[5] = function_statements
     # p[7] = main_function
@@ -46,7 +46,7 @@ def p_program(p):
 def p_maybe_newline(p):
     """
     maybe_newline : empty
-                  | NEWLINE
+                  | NEWLINE maybe_newline
     """
     # If p[1] is None, do nothing. If p[1] == NEWLINE, we have a newline.
     # No AST node is strictly necessary for an optional newline.
@@ -57,14 +57,14 @@ def p_maybe_newline(p):
 # Production: <main_function> → FUNCTION_NAME LPAREN RPAREN LBRACE <statements> RBRACE
 # -----------------------------------------------------------------------------
 def p_main_function(p):
-    """main_function : MAIN_CASPER LPAREN RPAREN LBRACE statements RBRACE"""
+    """main_function : MAIN_CASPER LPAREN RPAREN LBRACE maybe_newline statements maybe_newline RBRACE maybe_newline"""
     p[0] = ASTNode("main_function", [p[5]], p[1])
 
 # -----------------------------------------------------------------------------
 # Production: <global_dec> → <global_statement> <global_tail> | null
 # -----------------------------------------------------------------------------
 def p_global_dec(p):
-    """global_dec : global_statement global_tail
+    """global_dec : global_statement global_tail 
                   | empty"""
     if len(p) == 2:
         p[0] = ASTNode("global_dec", [])
@@ -380,7 +380,7 @@ def p_var_call_tail(p):
 # Production: <function_statements> → <ret_type> FUNCTION_NAME ( <parameters> ) { <statements> <revive> }
 # -----------------------------------------------------------------------------
 def p_function_statements(p):
-    """function_statements : ret_type FUNCTION_NAME LPAREN parameters RPAREN LBRACE statements revive RBRACE
+    """function_statements : ret_type FUNCTION_NAME LPAREN parameters RPAREN LBRACE maybe_newline statements revive maybe_newline RBRACE 
                          | empty"""
     if len(p) == 2:
     
