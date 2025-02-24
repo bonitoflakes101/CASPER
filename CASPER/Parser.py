@@ -478,13 +478,14 @@ def p_statements(p):
 def p_statements_tail(p):
     """
     statements_tail : empty
+                    | local_dec maybe_newline statements_tail
                     | string_operation_statement unli_newline statements_tail
                     | conditional_statement unli_newline statements_tail
                     | switch_statement unli_newline statements_tail
                     | loop_statement unli_newline statements_tail
                     | function_call unli_newline statements_tail
                     | output_statement unli_newline statements_tail
-                    | statements unli_newline
+                    
     """
     if len(p) == 2:
         p[0] = []  # empty

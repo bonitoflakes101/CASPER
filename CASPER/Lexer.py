@@ -766,12 +766,17 @@ class Lexer:
     def token(self):
         """Returns the next valid token for PLY, skipping ILLEGAL tokens"""
         while True:
-            tok = self.next_token()  
+            tok = self.next_token()
             if tok.type == TokenType.EOF:
-                return None  
-            if tok.type != TokenType.ILLEGAL:
-                tok.type = tok.type.name  # PLY requires token type as a string
-                tok.value = tok.literal  # Ensure PLY gets `.value`
-                tok.lineno = tok.line_no  # Rename `.line_no` to `.lineno` for PLY
-                return tok
+                return None
+
+            # If it's a comment or an ILLEGAL token, just skip it
+            if tok.type == TokenType.COMMENT or tok.type == TokenType.ILLEGAL:
+                continue
+
+            # Otherwise, it's a valid token for the parser
+            tok.type = tok.type.name  # PLY requires token type as a string
+            tok.value = tok.literal
+            tok.lineno = tok.line_no
+            return tok
 

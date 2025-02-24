@@ -26,11 +26,7 @@ birth
     int $n
     check ($n > 0) {
         display "Positive"
-    }
-    otherwise_check ($n == 0) {
-        display "Zero"
-    }
-    otherwise {
+    } otherwise {
         display "Negative"
     }
     display "Check done"
@@ -52,7 +48,7 @@ birth
 ghost
 
 birth
-function function_int @sumNumbers(int $a, int $b) {
+function_int @sumNumbers(int $a, int $b) {
     display "Summing"
     revive $a + $b
 }
@@ -61,10 +57,10 @@ function function_int @sumNumbers(int $a, int $b) {
     int $count
     repeat {
         display "Repeat block count: " + $count
-        $count++
+        $count++ 
     } until ($count > 3)
 
-    int $result
+    int $result << nag error kasi dapat sa una yung vardec
     $result = @sumNumbers(10, 20)
     display "Result is: " + $result
 }
@@ -92,5 +88,25 @@ birth
         }
     }
     display "Switch ended"
+}
+ghost
+
+birth
+function_int @addTwo(int $a, int $b) {
+    revive $a + $b
+}
+
+@main_casper() {
+    int $x = 1
+    int $y = 2
+    int $result
+
+    $result = @addTwo($x, $y)
+
+    check ($result > 3) {
+        display "Result is more than 3"
+    } otherwise {
+        display "Result is 3 or less"
+    }
 }
 ghost
