@@ -581,7 +581,7 @@ def p_until_loop(p):
 # Production: <repeat_until> → repeat { <statements> } until ( <expression> )
 # -----------------------------------------------------------------------------
 def p_repeat_until(p):
-    "repeat_until : REPEAT LBRACE statements RBRACE UNTIL LPAREN expression RPAREN"
+    "repeat_until : REPEAT LBRACE maybe_newline statements RBRACE UNTIL LPAREN expression RPAREN"
     p[0] = ASTNode("repeat_until", [p[3], p[7]])
 
 # -----------------------------------------------------------------------------
@@ -698,11 +698,14 @@ def p_string_operation_statement(p):
 # -----------------------------------------------------------------------------
 def p_string_operation_tail(p):
     """string_operation_tail : assign_op value
-                             | PLUS string_val stringcon_tail"""
-    if p[1] == '+':
+                             | PLUS string_val stringcon_tail
+                             | update_tail"""
+    if len(p) == 4 and p[1] == '+':
         p[0] = ASTNode("string_operation_tail", [p[2], p[3]], "+")
-    else:
+    elif len(p) == 3:
         p[0] = ASTNode("string_operation_tail", [p[2]], p[1])
+    else:
+        p[0] = ASTNode("string_operation_tail", [p[1]], "update_tail")
 
 # -----------------------------------------------------------------------------
 # Production: <assign_op> → += | -= | *= | /= | %=
