@@ -574,8 +574,8 @@ def p_for_loop(p):
 # Production: <until_loop> → until ( <expression> ) { <statements> }
 # -----------------------------------------------------------------------------
 def p_until_loop(p):
-    "until_loop : UNTIL LPAREN expression RPAREN LBRACE statements RBRACE"
-    p[0] = ASTNode("until_loop", [p[3], p[6]])
+    "until_loop : UNTIL LPAREN expression RPAREN LBRACE maybe_newline statements RBRACE"
+    p[0] = ASTNode("until_loop", [p[3], p[7]])
 
 # -----------------------------------------------------------------------------
 # Production: <repeat_until> → repeat { <statements> } until ( <expression> )
