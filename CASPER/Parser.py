@@ -511,7 +511,7 @@ def p_local_dec(p):
 # Production: <conditional_statement> → check ( <expression> ) { <statements> } <conditional_tail>
 # -----------------------------------------------------------------------------
 def p_conditional_statement(p):
-    "conditional_statement : CHECK LPAREN expression RPAREN LBRACE maybe_newline statements RBRACE conditional_tail"
+    "conditional_statement : CHECK LPAREN expression RPAREN LBRACE maybe_newline statements RBRACE conditional_tail "
     p[0] = ASTNode("conditional_statement", [p[3], p[6], p[8]])
 
 # -----------------------------------------------------------------------------
@@ -519,14 +519,15 @@ def p_conditional_statement(p):
 # -----------------------------------------------------------------------------
 def p_conditional_tail(p):
     """conditional_tail : empty
-                        | maybe_newline OTHERWISE_CHECK LPAREN expression RPAREN LBRACE maybe_newline statements RBRACE
-                        | maybe_newline OTHERWISE LBRACE maybe_newline statements RBRACE"""
+                        | OTHERWISE_CHECK LPAREN expression RPAREN LBRACE maybe_newline statements RBRACE
+                        | OTHERWISE LBRACE maybe_newline statements RBRACE"""
     if len(p) == 2:
         p[0] = None
-    elif p[1] == "otherwise_check":
-        p[0] = ASTNode("conditional_tail", [p[3], p[6]])
+    elif p[2] == "OTHERWISE_CHECK":
+        p[0] = ASTNode("conditional_tail", [p[4], p[8]])
     else:
-        p[0] = ASTNode("conditional_tail", [p[3]])
+        p[0] = ASTNode("conditional_tail", [p[5]])
+
 
 # -----------------------------------------------------------------------------
 # Production: <switch_statement> → swap(IDENT){ <switch_condition> otherwise <statements> }
