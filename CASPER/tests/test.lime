@@ -1,53 +1,96 @@
-birth 
-str $greetings = "Hello, World!"
-
-function_int @count(int $age) {
-    revive  $age
+birth
+@main_casper() {
 }
-
-function @person() {
-    int $age = 32
-    
-    check ($age > 0) {
-        display (@count($age))
-    }
-
-    otherwise {
-        display ("You are not born yet.")
-    }
-}
-
-int $count = 0
-repeat $count < 2 {
-    display ("While loop count: {$count}")
-    int $count += 1
-}
-
-list_str $fruits = ["apple", "banana", "cherry"]    
-display ("My favorite fruit is: {$fruits[0]}")
-
-
-
-@greet("Alice")
-@person()
-
 ghost
 
-int()
-int ()
-$hello ()
-$hello[] 
-$asdfk#sdg
+birth
+int $g1 = 10, $g2
+flt $pi = 3.14
+@main_casper() {
+    display $g1, $g2, $pi
+}
+ghost
 
-<< $suaho#
+birth
+@main_casper() {
+    int $x
+    check ($x > 0) {
+        display "Positive"
+    }
+    display "Done"
+}
+ghost
 
-+ 
-//
-** 
-* 
+birth
+@main_casper() {
+    int $n
+    check ($n > 0) {
+        display "Positive"
+    }
+    otherwise_check ($n == 0) {
+        display "Zero"
+    }
+    otherwise {
+        display "Negative"
+    }
+    display "Check done"
+}
+ghost
 
-&
-&&
+birth
+@main_casper() {
+    int $i
+    for (int $i = 0; $i < 5; $i++) {
+        display "For Loop i: " + $i
+    }
+    until ($i > 10) {
+        $i += 2
+        display "Until Loop i: " + $i
+    }
+    display "Loop finished"
+}
+ghost
 
-|
-||
+birth
+function function_int @sumNumbers(int $a, int $b) {
+    display "Summing"
+    revive $a + $b
+}
+
+@main_casper() {
+    int $count
+    repeat {
+        display "Repeat block count: " + $count
+        $count++
+    } until ($count > 3)
+
+    int $result
+    $result = @sumNumbers(10, 20)
+    display "Result is: " + $result
+}
+ghost
+
+birth
+@main_casper() {
+    str $greeting = "Hello"
+    $greeting + " Casper"
+    $greeting += "!"
+    display $greeting
+}
+ghost
+
+birth
+@main_casper() {
+    int $choice = 2
+    swap($choice) {
+        shift 1:
+            display "Choice is 1"
+        shift 2:
+            display "Choice is 2"
+        otherwise {
+            display "Choice not recognized"
+        }
+    }
+    display "Switch ended"
+}
+ghost

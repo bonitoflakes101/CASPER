@@ -533,15 +533,15 @@ def p_conditional_tail(p):
 # Production: <switch_statement> → swap(IDENT){ <switch_condition> otherwise <statements> }
 # -----------------------------------------------------------------------------
 def p_switch_statement(p):
-    "switch_statement : SWAP LPAREN IDENT RPAREN LBRACE switch_condition OTHERWISE statements RBRACE"
+    "switch_statement : SWAP LPAREN IDENT RPAREN LBRACE maybe_newline switch_condition maybe_newline OTHERWISE maybe_newline  LBRACE maybe_newline statements maybe_newline RBRACE maybe_newline RBRACE"
     p[0] = ASTNode("switch_statement", [ASTNode("IDENT", value=p[3]), p[6], p[8]])
 
 # -----------------------------------------------------------------------------
 # Production: <switch_condition> → shift <value> : <statements> <switchcond_tail>
 # -----------------------------------------------------------------------------
 def p_switch_condition(p):
-    "switch_condition : SHIFT value COLON statements switchcond_tail"
-    p[0] = ASTNode("switch_condition", [p[2], p[4], p[5]])
+    "switch_condition : SHIFT value COLON maybe_newline statements switchcond_tail"
+    p[0] = ASTNode("switch_condition", [p[2], p[5], p[6]])
 
 # -----------------------------------------------------------------------------
 # Production: <switchcond_tail> → <switch_condition> | null
