@@ -392,11 +392,18 @@ def p_function_statements(p):
     
         p[0] = None
     else:
-        p[0] = ASTNode("function_statements", [p[1],
-                                                ASTNode("FUNCTION_NAME", value=p[2]),
-                                                p[4],
-                                                p[7],
-                                                p[8]])
+        ret_type = p[2]
+        function_name = ASTNode("FUNCTION_NAME", value=p[3])
+        parameters = p[5]
+        statements = p[10]
+        revive_node = p[11] 
+        p[0] = ASTNode("function_statements", children=[
+            ret_type,
+            function_name,
+            parameters,
+            statements,
+            revive_node
+        ])
 
 # -----------------------------------------------------------------------------
 # Production: <ret_type> → function | <function_dtype>
