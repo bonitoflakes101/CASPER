@@ -531,7 +531,7 @@ def p_conditional_tail(p):
                         | OTHERWISE LBRACE maybe_newline statements RBRACE"""
     if len(p) == 2:
         p[0] = None
-    elif p[2] == "OTHERWISE_CHECK":
+    elif p[1] == "OTHERWISE_CHECK":
         p[0] = ASTNode("conditional_tail", [p[4], p[8]])
     else:
         p[0] = ASTNode("conditional_tail", [p[5]])
@@ -542,7 +542,7 @@ def p_conditional_tail(p):
 # -----------------------------------------------------------------------------
 def p_switch_statement(p):
     "switch_statement : SWAP LPAREN IDENT RPAREN LBRACE maybe_newline switch_condition maybe_newline OTHERWISE maybe_newline  LBRACE maybe_newline statements maybe_newline RBRACE maybe_newline RBRACE"
-    p[0] = ASTNode("switch_statement", [ASTNode("IDENT", value=p[3]), p[6], p[8]])
+    p[0] = ASTNode("switch_statement", [ASTNode("IDENT", value=p[3]), p[7], p[13]])
 
 # -----------------------------------------------------------------------------
 # Production: <switch_condition> → shift <value> : <statements> <switchcond_tail>
@@ -708,13 +708,10 @@ def p_string_operation_statement(p):
 # Production: <string_operation_tail> → <assign_op> <value> | + <string_val> <stringcon_tail>
 # -----------------------------------------------------------------------------
 def p_string_operation_tail(p):
-    """string_operation_tail : assign_op value
-                             | PLUS string_val stringcon_tail
+    """string_operation_tail : PLUS string_val stringcon_tail
                              | update_tail"""
-    if len(p) == 4 and p[1] == '+':
+    if p.slice[1].type == 'PLUS':
         p[0] = ASTNode("string_operation_tail", [p[2], p[3]], "+")
-    elif len(p) == 3:
-        p[0] = ASTNode("string_operation_tail", [p[2]], p[1])
     else:
         p[0] = ASTNode("string_operation_tail", [p[1]], "update_tail")
 
