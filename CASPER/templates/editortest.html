@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Code Editor with Line Numbers</title>
+    <link rel="stylesheet" href="../static/editortest.css">
+</head>
+<body>
+
+    <div class="editor-container">
+        <div class="line-numbers" id="lineNumbers"></div>
+        <textarea id="codeEditor" class="code-editor" oninput="updateLineNumbers()" onscroll="syncScroll()"></textarea>
+    </div>
+
+    <script src="../static/editortest.js"></script>
+</body>
+</html>
