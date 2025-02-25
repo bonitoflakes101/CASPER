@@ -185,20 +185,19 @@ Rule 147   next_val -> empty
 Rule 148   next_val -> COMMA value next_val
 Rule 149   input_statement -> INPUT LPAREN RPAREN
 Rule 150   string_operation_statement -> var_call string_operation_tail
-Rule 151   string_operation_tail -> assign_op value
-Rule 152   string_operation_tail -> PLUS string_val stringcon_tail
-Rule 153   string_operation_tail -> update_tail
-Rule 154   assign_op -> PLUS_EQ
-Rule 155   assign_op -> MINUS_EQ
-Rule 156   assign_op -> MUL_EQ
-Rule 157   assign_op -> DIV_EQ
-Rule 158   assign_op -> MOD_EQ
-Rule 159   assign_op -> EQ
-Rule 160   stringcon_tail -> empty
-Rule 161   stringcon_tail -> PLUS string_val stringcon_tail
-Rule 162   string_val -> var_call
-Rule 163   string_val -> STR_LIT
-Rule 164   empty -> <empty>
+Rule 151   string_operation_tail -> PLUS string_val stringcon_tail
+Rule 152   string_operation_tail -> update_tail
+Rule 153   assign_op -> PLUS_EQ
+Rule 154   assign_op -> MINUS_EQ
+Rule 155   assign_op -> MUL_EQ
+Rule 156   assign_op -> DIV_EQ
+Rule 157   assign_op -> MOD_EQ
+Rule 158   assign_op -> EQ
+Rule 159   stringcon_tail -> empty
+Rule 160   stringcon_tail -> PLUS string_val stringcon_tail
+Rule 161   string_val -> var_call
+Rule 162   string_val -> STR_LIT
+Rule 163   empty -> <empty>
 
 Terminals, with rules where they appear
 
@@ -220,11 +219,11 @@ CONVERT_TO_STR       : 46
 DAY                  : 54
 DISPLAY              : 145 146
 DIVISION             : 69
-DIV_EQ               : 157
+DIV_EQ               : 156
 DOUBLE_LT            : 
 DOUBLE_SLASH         : 
 EOF                  : 
-EQ                   : 14 23 131 159
+EQ                   : 14 23 131 158
 EQ_EQ                : 75
 EXPONENT             : 71
 FLT                  : 35
@@ -274,12 +273,12 @@ LT_EQ                : 77
 MAIN_CASPER          : 6
 MEASURE              : 
 MINUS                : 67
-MINUS_EQ             : 155
+MINUS_EQ             : 154
 MINUS_MINUS          : 136
 MODULO               : 70
-MOD_EQ               : 158
+MOD_EQ               : 157
 MULTIPLY             : 68
-MUL_EQ               : 156
+MUL_EQ               : 155
 NEWLINE              : 3 4 5
 NIGHT                : 55
 NOT                  : 
@@ -287,8 +286,8 @@ NOT_EQ               : 78
 OR                   : 81
 OTHERWISE            : 120 121
 OTHERWISE_CHECK      : 119
-PLUS                 : 66 152 161
-PLUS_EQ              : 154
+PLUS                 : 66 151 160
+PLUS_EQ              : 153
 PLUS_PLUS            : 135
 POW                  : 
 RBRACE               : 6 85 117 119 120 121 121 128 129 130
@@ -301,7 +300,7 @@ SHIFT                : 122
 SKIP                 : 
 STOP                 : 
 STR                  : 38
-STR_LIT              : 57 163
+STR_LIT              : 57 162
 SWAP                 : 121
 TILDE                : 63
 TYPE                 : 
@@ -313,13 +312,13 @@ Nonterminals, with rules where they appear
 arg_tail             : 140 142
 arg_value            : 140 142
 arguments            : 137
-assign_op            : 134 151
+assign_op            : 134
 conditional_statement : 110
 conditional_tail     : 117
 control_variable     : 128
 data_type            : 11 21 99 102
 element_tail         : 29
-empty                : 2 8 10 12 15 22 25 30 65 72 79 83 86 100 101 104 105 107 115 118 123 139 141 147 160
+empty                : 2 8 10 12 15 22 25 30 65 72 79 83 86 100 101 104 105 107 115 118 123 139 141 147 159
 expr_head            : 58
 expr_tail            : 58
 expression           : 20 41 49 64 66 67 68 69 70 71 73 74 75 76 77 78 80 81 117 119 128 129 130
@@ -357,8 +356,8 @@ statements           : 6 85 117 119 120 121 122 128 129 130
 statements_tail      : 106 108 109 110 111 112 113 114
 string_operation_statement : 109
 string_operation_tail : 150
-string_val           : 152 161
-stringcon_tail       : 152 161
+string_val           : 151 160
+stringcon_tail       : 151 160
 switch_condition     : 121 124
 switch_statement     : 111
 switchcond_tail      : 122
@@ -370,9 +369,9 @@ typecast_value       : 43 44 45 46
 unli_newline         : 1 1 5 7 85 109 110 111 112 113 114
 until_loop           : 126
 update               : 128
-update_tail          : 132 153
-value                : 27 103 122 134 145 146 148 151
-var_call             : 61 132 144 150 162
+update_tail          : 132 152
+value                : 27 103 122 134 145 146 148
+var_call             : 61 132 144 150 161
 var_call_tail        : 82
 var_statement        : 116
 var_tail             : 21 24 26
@@ -411,26 +410,26 @@ state 3
     (7) global_dec -> . global_statement unli_newline global_tail
     (8) global_dec -> . empty
     (11) global_statement -> . data_type IDENT global_statement_tail
-    (164) empty -> .
+    (163) empty -> .
     (34) data_type -> . INT
     (35) data_type -> . FLT
     (36) data_type -> . BLN
     (37) data_type -> . CHR
     (38) data_type -> . STR
 
-    NEWLINE         reduce using rule 164 (empty -> .)
-    MAIN_CASPER     reduce using rule 164 (empty -> .)
-    FUNCTION        reduce using rule 164 (empty -> .)
-    FUNCTION_INT    reduce using rule 164 (empty -> .)
-    FUNCTION_FLT    reduce using rule 164 (empty -> .)
-    FUNCTION_CHR    reduce using rule 164 (empty -> .)
-    FUNCTION_BLN    reduce using rule 164 (empty -> .)
-    FUNCTION_STR    reduce using rule 164 (empty -> .)
-    FUNCTION_LIST_INT reduce using rule 164 (empty -> .)
-    FUNCTION_LIST_FLT reduce using rule 164 (empty -> .)
-    FUNCTION_LIST_CHR reduce using rule 164 (empty -> .)
-    FUNCTION_LIST_STR reduce using rule 164 (empty -> .)
-    FUNCTION_LIST_BLN reduce using rule 164 (empty -> .)
+    NEWLINE         reduce using rule 163 (empty -> .)
+    MAIN_CASPER     reduce using rule 163 (empty -> .)
+    FUNCTION        reduce using rule 163 (empty -> .)
+    FUNCTION_INT    reduce using rule 163 (empty -> .)
+    FUNCTION_FLT    reduce using rule 163 (empty -> .)
+    FUNCTION_CHR    reduce using rule 163 (empty -> .)
+    FUNCTION_BLN    reduce using rule 163 (empty -> .)
+    FUNCTION_STR    reduce using rule 163 (empty -> .)
+    FUNCTION_LIST_INT reduce using rule 163 (empty -> .)
+    FUNCTION_LIST_FLT reduce using rule 163 (empty -> .)
+    FUNCTION_LIST_CHR reduce using rule 163 (empty -> .)
+    FUNCTION_LIST_STR reduce using rule 163 (empty -> .)
+    FUNCTION_LIST_BLN reduce using rule 163 (empty -> .)
     INT             shift and go to state 9
     FLT             shift and go to state 10
     BLN             shift and go to state 11
@@ -492,24 +491,24 @@ state 5
     (1) program -> BIRTH unli_newline global_dec . maybe_newline function_statements maybe_newline main_function unli_newline GHOST
     (2) maybe_newline -> . empty
     (3) maybe_newline -> . NEWLINE maybe_newline
-    (164) empty -> .
+    (163) empty -> .
 
   ! shift/reduce conflict for NEWLINE resolved as shift
     NEWLINE         shift and go to state 17
-    MAIN_CASPER     reduce using rule 164 (empty -> .)
-    FUNCTION        reduce using rule 164 (empty -> .)
-    FUNCTION_INT    reduce using rule 164 (empty -> .)
-    FUNCTION_FLT    reduce using rule 164 (empty -> .)
-    FUNCTION_CHR    reduce using rule 164 (empty -> .)
-    FUNCTION_BLN    reduce using rule 164 (empty -> .)
-    FUNCTION_STR    reduce using rule 164 (empty -> .)
-    FUNCTION_LIST_INT reduce using rule 164 (empty -> .)
-    FUNCTION_LIST_FLT reduce using rule 164 (empty -> .)
-    FUNCTION_LIST_CHR reduce using rule 164 (empty -> .)
-    FUNCTION_LIST_STR reduce using rule 164 (empty -> .)
-    FUNCTION_LIST_BLN reduce using rule 164 (empty -> .)
+    MAIN_CASPER     reduce using rule 163 (empty -> .)
+    FUNCTION        reduce using rule 163 (empty -> .)
+    FUNCTION_INT    reduce using rule 163 (empty -> .)
+    FUNCTION_FLT    reduce using rule 163 (empty -> .)
+    FUNCTION_CHR    reduce using rule 163 (empty -> .)
+    FUNCTION_BLN    reduce using rule 163 (empty -> .)
+    FUNCTION_STR    reduce using rule 163 (empty -> .)
+    FUNCTION_LIST_INT reduce using rule 163 (empty -> .)
+    FUNCTION_LIST_FLT reduce using rule 163 (empty -> .)
+    FUNCTION_LIST_CHR reduce using rule 163 (empty -> .)
+    FUNCTION_LIST_STR reduce using rule 163 (empty -> .)
+    FUNCTION_LIST_BLN reduce using rule 163 (empty -> .)
 
-  ! NEWLINE         [ reduce using rule 164 (empty -> .) ]
+  ! NEWLINE         [ reduce using rule 163 (empty -> .) ]
 
     maybe_newline                  shift and go to state 15
     empty                          shift and go to state 16
@@ -630,24 +629,24 @@ state 15
     (86) function_statements -> . empty
     (2) maybe_newline -> . empty
     (3) maybe_newline -> . NEWLINE maybe_newline
-    (164) empty -> .
+    (163) empty -> .
 
   ! shift/reduce conflict for NEWLINE resolved as shift
     NEWLINE         shift and go to state 17
-    MAIN_CASPER     reduce using rule 164 (empty -> .)
-    FUNCTION        reduce using rule 164 (empty -> .)
-    FUNCTION_INT    reduce using rule 164 (empty -> .)
-    FUNCTION_FLT    reduce using rule 164 (empty -> .)
-    FUNCTION_CHR    reduce using rule 164 (empty -> .)
-    FUNCTION_BLN    reduce using rule 164 (empty -> .)
-    FUNCTION_STR    reduce using rule 164 (empty -> .)
-    FUNCTION_LIST_INT reduce using rule 164 (empty -> .)
-    FUNCTION_LIST_FLT reduce using rule 164 (empty -> .)
-    FUNCTION_LIST_CHR reduce using rule 164 (empty -> .)
-    FUNCTION_LIST_STR reduce using rule 164 (empty -> .)
-    FUNCTION_LIST_BLN reduce using rule 164 (empty -> .)
+    MAIN_CASPER     reduce using rule 163 (empty -> .)
+    FUNCTION        reduce using rule 163 (empty -> .)
+    FUNCTION_INT    reduce using rule 163 (empty -> .)
+    FUNCTION_FLT    reduce using rule 163 (empty -> .)
+    FUNCTION_CHR    reduce using rule 163 (empty -> .)
+    FUNCTION_BLN    reduce using rule 163 (empty -> .)
+    FUNCTION_STR    reduce using rule 163 (empty -> .)
+    FUNCTION_LIST_INT reduce using rule 163 (empty -> .)
+    FUNCTION_LIST_FLT reduce using rule 163 (empty -> .)
+    FUNCTION_LIST_CHR reduce using rule 163 (empty -> .)
+    FUNCTION_LIST_STR reduce using rule 163 (empty -> .)
+    FUNCTION_LIST_BLN reduce using rule 163 (empty -> .)
 
-  ! NEWLINE         [ reduce using rule 164 (empty -> .) ]
+  ! NEWLINE         [ reduce using rule 163 (empty -> .) ]
 
     maybe_newline                  shift and go to state 20
     function_statements            shift and go to state 21
@@ -696,43 +695,43 @@ state 17
     (3) maybe_newline -> NEWLINE . maybe_newline
     (2) maybe_newline -> . empty
     (3) maybe_newline -> . NEWLINE maybe_newline
-    (164) empty -> .
+    (163) empty -> .
 
   ! shift/reduce conflict for NEWLINE resolved as shift
     NEWLINE         shift and go to state 17
-    MAIN_CASPER     reduce using rule 164 (empty -> .)
-    FUNCTION        reduce using rule 164 (empty -> .)
-    FUNCTION_INT    reduce using rule 164 (empty -> .)
-    FUNCTION_FLT    reduce using rule 164 (empty -> .)
-    FUNCTION_CHR    reduce using rule 164 (empty -> .)
-    FUNCTION_BLN    reduce using rule 164 (empty -> .)
-    FUNCTION_STR    reduce using rule 164 (empty -> .)
-    FUNCTION_LIST_INT reduce using rule 164 (empty -> .)
-    FUNCTION_LIST_FLT reduce using rule 164 (empty -> .)
-    FUNCTION_LIST_CHR reduce using rule 164 (empty -> .)
-    FUNCTION_LIST_STR reduce using rule 164 (empty -> .)
-    FUNCTION_LIST_BLN reduce using rule 164 (empty -> .)
-    LBRACE          reduce using rule 164 (empty -> .)
-    INT             reduce using rule 164 (empty -> .)
-    FLT             reduce using rule 164 (empty -> .)
-    BLN             reduce using rule 164 (empty -> .)
-    CHR             reduce using rule 164 (empty -> .)
-    STR             reduce using rule 164 (empty -> .)
-    RBRACE          reduce using rule 164 (empty -> .)
-    CHECK           reduce using rule 164 (empty -> .)
-    SWAP            reduce using rule 164 (empty -> .)
-    FUNCTION_NAME   reduce using rule 164 (empty -> .)
-    DISPLAY         reduce using rule 164 (empty -> .)
-    IDENT           reduce using rule 164 (empty -> .)
-    FOR             reduce using rule 164 (empty -> .)
-    UNTIL           reduce using rule 164 (empty -> .)
-    REPEAT          reduce using rule 164 (empty -> .)
-    INPUT           reduce using rule 164 (empty -> .)
-    REVIVE          reduce using rule 164 (empty -> .)
-    SHIFT           reduce using rule 164 (empty -> .)
-    OTHERWISE       reduce using rule 164 (empty -> .)
+    MAIN_CASPER     reduce using rule 163 (empty -> .)
+    FUNCTION        reduce using rule 163 (empty -> .)
+    FUNCTION_INT    reduce using rule 163 (empty -> .)
+    FUNCTION_FLT    reduce using rule 163 (empty -> .)
+    FUNCTION_CHR    reduce using rule 163 (empty -> .)
+    FUNCTION_BLN    reduce using rule 163 (empty -> .)
+    FUNCTION_STR    reduce using rule 163 (empty -> .)
+    FUNCTION_LIST_INT reduce using rule 163 (empty -> .)
+    FUNCTION_LIST_FLT reduce using rule 163 (empty -> .)
+    FUNCTION_LIST_CHR reduce using rule 163 (empty -> .)
+    FUNCTION_LIST_STR reduce using rule 163 (empty -> .)
+    FUNCTION_LIST_BLN reduce using rule 163 (empty -> .)
+    LBRACE          reduce using rule 163 (empty -> .)
+    INT             reduce using rule 163 (empty -> .)
+    FLT             reduce using rule 163 (empty -> .)
+    BLN             reduce using rule 163 (empty -> .)
+    CHR             reduce using rule 163 (empty -> .)
+    STR             reduce using rule 163 (empty -> .)
+    RBRACE          reduce using rule 163 (empty -> .)
+    CHECK           reduce using rule 163 (empty -> .)
+    SWAP            reduce using rule 163 (empty -> .)
+    FUNCTION_NAME   reduce using rule 163 (empty -> .)
+    DISPLAY         reduce using rule 163 (empty -> .)
+    IDENT           reduce using rule 163 (empty -> .)
+    FOR             reduce using rule 163 (empty -> .)
+    UNTIL           reduce using rule 163 (empty -> .)
+    REPEAT          reduce using rule 163 (empty -> .)
+    INPUT           reduce using rule 163 (empty -> .)
+    REVIVE          reduce using rule 163 (empty -> .)
+    SHIFT           reduce using rule 163 (empty -> .)
+    OTHERWISE       reduce using rule 163 (empty -> .)
 
-  ! NEWLINE         [ reduce using rule 164 (empty -> .) ]
+  ! NEWLINE         [ reduce using rule 163 (empty -> .) ]
 
     maybe_newline                  shift and go to state 23
     empty                          shift and go to state 16
@@ -744,7 +743,7 @@ state 18
     (10) global_tail -> . empty
     (7) global_dec -> . global_statement unli_newline global_tail
     (8) global_dec -> . empty
-    (164) empty -> .
+    (163) empty -> .
     (11) global_statement -> . data_type IDENT global_statement_tail
     (34) data_type -> . INT
     (35) data_type -> . FLT
@@ -752,19 +751,19 @@ state 18
     (37) data_type -> . CHR
     (38) data_type -> . STR
 
-    NEWLINE         reduce using rule 164 (empty -> .)
-    MAIN_CASPER     reduce using rule 164 (empty -> .)
-    FUNCTION        reduce using rule 164 (empty -> .)
-    FUNCTION_INT    reduce using rule 164 (empty -> .)
-    FUNCTION_FLT    reduce using rule 164 (empty -> .)
-    FUNCTION_CHR    reduce using rule 164 (empty -> .)
-    FUNCTION_BLN    reduce using rule 164 (empty -> .)
-    FUNCTION_STR    reduce using rule 164 (empty -> .)
-    FUNCTION_LIST_INT reduce using rule 164 (empty -> .)
-    FUNCTION_LIST_FLT reduce using rule 164 (empty -> .)
-    FUNCTION_LIST_CHR reduce using rule 164 (empty -> .)
-    FUNCTION_LIST_STR reduce using rule 164 (empty -> .)
-    FUNCTION_LIST_BLN reduce using rule 164 (empty -> .)
+    NEWLINE         reduce using rule 163 (empty -> .)
+    MAIN_CASPER     reduce using rule 163 (empty -> .)
+    FUNCTION        reduce using rule 163 (empty -> .)
+    FUNCTION_INT    reduce using rule 163 (empty -> .)
+    FUNCTION_FLT    reduce using rule 163 (empty -> .)
+    FUNCTION_CHR    reduce using rule 163 (empty -> .)
+    FUNCTION_BLN    reduce using rule 163 (empty -> .)
+    FUNCTION_STR    reduce using rule 163 (empty -> .)
+    FUNCTION_LIST_INT reduce using rule 163 (empty -> .)
+    FUNCTION_LIST_FLT reduce using rule 163 (empty -> .)
+    FUNCTION_LIST_CHR reduce using rule 163 (empty -> .)
+    FUNCTION_LIST_STR reduce using rule 163 (empty -> .)
+    FUNCTION_LIST_BLN reduce using rule 163 (empty -> .)
     INT             shift and go to state 9
     FLT             shift and go to state 10
     BLN             shift and go to state 11
@@ -783,11 +782,11 @@ state 19
     (12) global_statement_tail -> . empty
     (13) global_statement_tail -> . COMMA IDENT global_statement_tail
     (14) global_statement_tail -> . EQ global_dec_value global_tail2
-    (164) empty -> .
+    (163) empty -> .
 
     COMMA           shift and go to state 29
     EQ              shift and go to state 30
-    NEWLINE         reduce using rule 164 (empty -> .)
+    NEWLINE         reduce using rule 163 (empty -> .)
 
     global_statement_tail          shift and go to state 27
     empty                          shift and go to state 28
@@ -828,10 +827,10 @@ state 21
     (1) program -> BIRTH unli_newline global_dec maybe_newline function_statements . maybe_newline main_function unli_newline GHOST
     (2) maybe_newline -> . empty
     (3) maybe_newline -> . NEWLINE maybe_newline
-    (164) empty -> .
+    (163) empty -> .
 
     NEWLINE         shift and go to state 17
-    MAIN_CASPER     reduce using rule 164 (empty -> .)
+    MAIN_CASPER     reduce using rule 163 (empty -> .)
 
     maybe_newline                  shift and go to state 44
     empty                          shift and go to state 16
@@ -1148,11 +1147,11 @@ state 45
     (12) global_statement_tail -> . empty
     (13) global_statement_tail -> . COMMA IDENT global_statement_tail
     (14) global_statement_tail -> . EQ global_dec_value global_tail2
-    (164) empty -> .
+    (163) empty -> .
 
     COMMA           shift and go to state 29
     EQ              shift and go to state 30
-    NEWLINE         reduce using rule 164 (empty -> .)
+    NEWLINE         reduce using rule 163 (empty -> .)
 
     global_statement_tail          shift and go to state 67
     empty                          shift and go to state 28
@@ -1162,10 +1161,10 @@ state 46
     (14) global_statement_tail -> EQ global_dec_value . global_tail2
     (15) global_tail2 -> . empty
     (16) global_tail2 -> . COMMA IDENT global_statement_tail
-    (164) empty -> .
+    (163) empty -> .
 
     COMMA           shift and go to state 70
-    NEWLINE         reduce using rule 164 (empty -> .)
+    NEWLINE         reduce using rule 163 (empty -> .)
 
     global_tail2                   shift and go to state 68
     empty                          shift and go to state 69
@@ -1210,7 +1209,7 @@ state 49
     (69) factor_tail -> . DIVISION expression
     (70) factor_tail -> . MODULO expression
     (71) factor_tail -> . EXPONENT expression
-    (164) empty -> .
+    (163) empty -> .
 
   ! reduce/reduce conflict for COMMA resolved using rule 19 (global_value -> factor .)
   ! reduce/reduce conflict for NEWLINE resolved using rule 19 (global_value -> factor .)
@@ -1222,17 +1221,17 @@ state 49
     DIVISION        shift and go to state 78
     MODULO          shift and go to state 79
     EXPONENT        shift and go to state 80
-    GT              reduce using rule 164 (empty -> .)
-    LT              reduce using rule 164 (empty -> .)
-    EQ_EQ           reduce using rule 164 (empty -> .)
-    GT_EQ           reduce using rule 164 (empty -> .)
-    LT_EQ           reduce using rule 164 (empty -> .)
-    NOT_EQ          reduce using rule 164 (empty -> .)
-    AND             reduce using rule 164 (empty -> .)
-    OR              reduce using rule 164 (empty -> .)
+    GT              reduce using rule 163 (empty -> .)
+    LT              reduce using rule 163 (empty -> .)
+    EQ_EQ           reduce using rule 163 (empty -> .)
+    GT_EQ           reduce using rule 163 (empty -> .)
+    LT_EQ           reduce using rule 163 (empty -> .)
+    NOT_EQ          reduce using rule 163 (empty -> .)
+    AND             reduce using rule 163 (empty -> .)
+    OR              reduce using rule 163 (empty -> .)
 
-  ! COMMA           [ reduce using rule 164 (empty -> .) ]
-  ! NEWLINE         [ reduce using rule 164 (empty -> .) ]
+  ! COMMA           [ reduce using rule 163 (empty -> .) ]
+  ! NEWLINE         [ reduce using rule 163 (empty -> .) ]
 
     factor_tail                    shift and go to state 73
     empty                          shift and go to state 74
@@ -1391,44 +1390,44 @@ state 55
     (79) expr_tail -> . empty
     (80) expr_tail -> . AND expression
     (81) expr_tail -> . OR expression
-    (164) empty -> .
+    (163) empty -> .
 
   ! shift/reduce conflict for AND resolved as shift
   ! shift/reduce conflict for OR resolved as shift
     AND             shift and go to state 86
     OR              shift and go to state 87
-    GT              reduce using rule 164 (empty -> .)
-    LT              reduce using rule 164 (empty -> .)
-    EQ_EQ           reduce using rule 164 (empty -> .)
-    GT_EQ           reduce using rule 164 (empty -> .)
-    LT_EQ           reduce using rule 164 (empty -> .)
-    NOT_EQ          reduce using rule 164 (empty -> .)
-    COMMA           reduce using rule 164 (empty -> .)
-    NEWLINE         reduce using rule 164 (empty -> .)
-    RPAREN          reduce using rule 164 (empty -> .)
-    CHECK           reduce using rule 164 (empty -> .)
-    SWAP            reduce using rule 164 (empty -> .)
-    FUNCTION_NAME   reduce using rule 164 (empty -> .)
-    DISPLAY         reduce using rule 164 (empty -> .)
-    IDENT           reduce using rule 164 (empty -> .)
-    FOR             reduce using rule 164 (empty -> .)
-    UNTIL           reduce using rule 164 (empty -> .)
-    REPEAT          reduce using rule 164 (empty -> .)
-    INPUT           reduce using rule 164 (empty -> .)
-    INT             reduce using rule 164 (empty -> .)
-    FLT             reduce using rule 164 (empty -> .)
-    BLN             reduce using rule 164 (empty -> .)
-    CHR             reduce using rule 164 (empty -> .)
-    STR             reduce using rule 164 (empty -> .)
-    RBRACE          reduce using rule 164 (empty -> .)
-    REVIVE          reduce using rule 164 (empty -> .)
-    SHIFT           reduce using rule 164 (empty -> .)
-    OTHERWISE       reduce using rule 164 (empty -> .)
-    COLON           reduce using rule 164 (empty -> .)
-    SEMICOLON       reduce using rule 164 (empty -> .)
+    GT              reduce using rule 163 (empty -> .)
+    LT              reduce using rule 163 (empty -> .)
+    EQ_EQ           reduce using rule 163 (empty -> .)
+    GT_EQ           reduce using rule 163 (empty -> .)
+    LT_EQ           reduce using rule 163 (empty -> .)
+    NOT_EQ          reduce using rule 163 (empty -> .)
+    COMMA           reduce using rule 163 (empty -> .)
+    NEWLINE         reduce using rule 163 (empty -> .)
+    RPAREN          reduce using rule 163 (empty -> .)
+    CHECK           reduce using rule 163 (empty -> .)
+    SWAP            reduce using rule 163 (empty -> .)
+    FUNCTION_NAME   reduce using rule 163 (empty -> .)
+    DISPLAY         reduce using rule 163 (empty -> .)
+    IDENT           reduce using rule 163 (empty -> .)
+    FOR             reduce using rule 163 (empty -> .)
+    UNTIL           reduce using rule 163 (empty -> .)
+    REPEAT          reduce using rule 163 (empty -> .)
+    INPUT           reduce using rule 163 (empty -> .)
+    INT             reduce using rule 163 (empty -> .)
+    FLT             reduce using rule 163 (empty -> .)
+    BLN             reduce using rule 163 (empty -> .)
+    CHR             reduce using rule 163 (empty -> .)
+    STR             reduce using rule 163 (empty -> .)
+    RBRACE          reduce using rule 163 (empty -> .)
+    REVIVE          reduce using rule 163 (empty -> .)
+    SHIFT           reduce using rule 163 (empty -> .)
+    OTHERWISE       reduce using rule 163 (empty -> .)
+    COLON           reduce using rule 163 (empty -> .)
+    SEMICOLON       reduce using rule 163 (empty -> .)
 
-  ! AND             [ reduce using rule 164 (empty -> .) ]
-  ! OR              [ reduce using rule 164 (empty -> .) ]
+  ! AND             [ reduce using rule 163 (empty -> .) ]
+  ! OR              [ reduce using rule 163 (empty -> .) ]
 
     expr_tail                      shift and go to state 84
     empty                          shift and go to state 85
@@ -1438,54 +1437,54 @@ state 56
     (82) var_call -> IDENT . var_call_tail
     (83) var_call_tail -> . empty
     (84) var_call_tail -> . LBRACKET index RBRACKET
-    (164) empty -> .
+    (163) empty -> .
 
     LBRACKET        shift and go to state 90
-    PLUS            reduce using rule 164 (empty -> .)
-    MINUS           reduce using rule 164 (empty -> .)
-    MULTIPLY        reduce using rule 164 (empty -> .)
-    DIVISION        reduce using rule 164 (empty -> .)
-    MODULO          reduce using rule 164 (empty -> .)
-    EXPONENT        reduce using rule 164 (empty -> .)
-    COMMA           reduce using rule 164 (empty -> .)
-    NEWLINE         reduce using rule 164 (empty -> .)
-    GT              reduce using rule 164 (empty -> .)
-    LT              reduce using rule 164 (empty -> .)
-    EQ_EQ           reduce using rule 164 (empty -> .)
-    GT_EQ           reduce using rule 164 (empty -> .)
-    LT_EQ           reduce using rule 164 (empty -> .)
-    NOT_EQ          reduce using rule 164 (empty -> .)
-    AND             reduce using rule 164 (empty -> .)
-    OR              reduce using rule 164 (empty -> .)
-    RPAREN          reduce using rule 164 (empty -> .)
-    CHECK           reduce using rule 164 (empty -> .)
-    SWAP            reduce using rule 164 (empty -> .)
-    FUNCTION_NAME   reduce using rule 164 (empty -> .)
-    DISPLAY         reduce using rule 164 (empty -> .)
-    IDENT           reduce using rule 164 (empty -> .)
-    FOR             reduce using rule 164 (empty -> .)
-    UNTIL           reduce using rule 164 (empty -> .)
-    REPEAT          reduce using rule 164 (empty -> .)
-    INPUT           reduce using rule 164 (empty -> .)
-    INT             reduce using rule 164 (empty -> .)
-    FLT             reduce using rule 164 (empty -> .)
-    BLN             reduce using rule 164 (empty -> .)
-    CHR             reduce using rule 164 (empty -> .)
-    STR             reduce using rule 164 (empty -> .)
-    RBRACE          reduce using rule 164 (empty -> .)
-    REVIVE          reduce using rule 164 (empty -> .)
-    SHIFT           reduce using rule 164 (empty -> .)
-    OTHERWISE       reduce using rule 164 (empty -> .)
-    COLON           reduce using rule 164 (empty -> .)
-    SEMICOLON       reduce using rule 164 (empty -> .)
-    PLUS_EQ         reduce using rule 164 (empty -> .)
-    MINUS_EQ        reduce using rule 164 (empty -> .)
-    MUL_EQ          reduce using rule 164 (empty -> .)
-    DIV_EQ          reduce using rule 164 (empty -> .)
-    MOD_EQ          reduce using rule 164 (empty -> .)
-    EQ              reduce using rule 164 (empty -> .)
-    PLUS_PLUS       reduce using rule 164 (empty -> .)
-    MINUS_MINUS     reduce using rule 164 (empty -> .)
+    PLUS            reduce using rule 163 (empty -> .)
+    MINUS           reduce using rule 163 (empty -> .)
+    MULTIPLY        reduce using rule 163 (empty -> .)
+    DIVISION        reduce using rule 163 (empty -> .)
+    MODULO          reduce using rule 163 (empty -> .)
+    EXPONENT        reduce using rule 163 (empty -> .)
+    COMMA           reduce using rule 163 (empty -> .)
+    NEWLINE         reduce using rule 163 (empty -> .)
+    GT              reduce using rule 163 (empty -> .)
+    LT              reduce using rule 163 (empty -> .)
+    EQ_EQ           reduce using rule 163 (empty -> .)
+    GT_EQ           reduce using rule 163 (empty -> .)
+    LT_EQ           reduce using rule 163 (empty -> .)
+    NOT_EQ          reduce using rule 163 (empty -> .)
+    AND             reduce using rule 163 (empty -> .)
+    OR              reduce using rule 163 (empty -> .)
+    RPAREN          reduce using rule 163 (empty -> .)
+    CHECK           reduce using rule 163 (empty -> .)
+    SWAP            reduce using rule 163 (empty -> .)
+    FUNCTION_NAME   reduce using rule 163 (empty -> .)
+    DISPLAY         reduce using rule 163 (empty -> .)
+    IDENT           reduce using rule 163 (empty -> .)
+    FOR             reduce using rule 163 (empty -> .)
+    UNTIL           reduce using rule 163 (empty -> .)
+    REPEAT          reduce using rule 163 (empty -> .)
+    INPUT           reduce using rule 163 (empty -> .)
+    INT             reduce using rule 163 (empty -> .)
+    FLT             reduce using rule 163 (empty -> .)
+    BLN             reduce using rule 163 (empty -> .)
+    CHR             reduce using rule 163 (empty -> .)
+    STR             reduce using rule 163 (empty -> .)
+    RBRACE          reduce using rule 163 (empty -> .)
+    REVIVE          reduce using rule 163 (empty -> .)
+    SHIFT           reduce using rule 163 (empty -> .)
+    OTHERWISE       reduce using rule 163 (empty -> .)
+    COLON           reduce using rule 163 (empty -> .)
+    SEMICOLON       reduce using rule 163 (empty -> .)
+    PLUS_PLUS       reduce using rule 163 (empty -> .)
+    MINUS_MINUS     reduce using rule 163 (empty -> .)
+    PLUS_EQ         reduce using rule 163 (empty -> .)
+    MINUS_EQ        reduce using rule 163 (empty -> .)
+    MUL_EQ          reduce using rule 163 (empty -> .)
+    DIV_EQ          reduce using rule 163 (empty -> .)
+    MOD_EQ          reduce using rule 163 (empty -> .)
+    EQ              reduce using rule 163 (empty -> .)
 
     var_call_tail                  shift and go to state 88
     empty                          shift and go to state 89
@@ -1764,7 +1763,7 @@ state 63
     (76) term_tail -> . GT_EQ expression
     (77) term_tail -> . LT_EQ expression
     (78) term_tail -> . NOT_EQ expression
-    (164) empty -> .
+    (163) empty -> .
 
   ! shift/reduce conflict for GT resolved as shift
   ! shift/reduce conflict for LT resolved as shift
@@ -1778,38 +1777,38 @@ state 63
     GT_EQ           shift and go to state 96
     LT_EQ           shift and go to state 97
     NOT_EQ          shift and go to state 98
-    AND             reduce using rule 164 (empty -> .)
-    OR              reduce using rule 164 (empty -> .)
-    COMMA           reduce using rule 164 (empty -> .)
-    NEWLINE         reduce using rule 164 (empty -> .)
-    RPAREN          reduce using rule 164 (empty -> .)
-    CHECK           reduce using rule 164 (empty -> .)
-    SWAP            reduce using rule 164 (empty -> .)
-    FUNCTION_NAME   reduce using rule 164 (empty -> .)
-    DISPLAY         reduce using rule 164 (empty -> .)
-    IDENT           reduce using rule 164 (empty -> .)
-    FOR             reduce using rule 164 (empty -> .)
-    UNTIL           reduce using rule 164 (empty -> .)
-    REPEAT          reduce using rule 164 (empty -> .)
-    INPUT           reduce using rule 164 (empty -> .)
-    INT             reduce using rule 164 (empty -> .)
-    FLT             reduce using rule 164 (empty -> .)
-    BLN             reduce using rule 164 (empty -> .)
-    CHR             reduce using rule 164 (empty -> .)
-    STR             reduce using rule 164 (empty -> .)
-    RBRACE          reduce using rule 164 (empty -> .)
-    REVIVE          reduce using rule 164 (empty -> .)
-    SHIFT           reduce using rule 164 (empty -> .)
-    OTHERWISE       reduce using rule 164 (empty -> .)
-    COLON           reduce using rule 164 (empty -> .)
-    SEMICOLON       reduce using rule 164 (empty -> .)
+    AND             reduce using rule 163 (empty -> .)
+    OR              reduce using rule 163 (empty -> .)
+    COMMA           reduce using rule 163 (empty -> .)
+    NEWLINE         reduce using rule 163 (empty -> .)
+    RPAREN          reduce using rule 163 (empty -> .)
+    CHECK           reduce using rule 163 (empty -> .)
+    SWAP            reduce using rule 163 (empty -> .)
+    FUNCTION_NAME   reduce using rule 163 (empty -> .)
+    DISPLAY         reduce using rule 163 (empty -> .)
+    IDENT           reduce using rule 163 (empty -> .)
+    FOR             reduce using rule 163 (empty -> .)
+    UNTIL           reduce using rule 163 (empty -> .)
+    REPEAT          reduce using rule 163 (empty -> .)
+    INPUT           reduce using rule 163 (empty -> .)
+    INT             reduce using rule 163 (empty -> .)
+    FLT             reduce using rule 163 (empty -> .)
+    BLN             reduce using rule 163 (empty -> .)
+    CHR             reduce using rule 163 (empty -> .)
+    STR             reduce using rule 163 (empty -> .)
+    RBRACE          reduce using rule 163 (empty -> .)
+    REVIVE          reduce using rule 163 (empty -> .)
+    SHIFT           reduce using rule 163 (empty -> .)
+    OTHERWISE       reduce using rule 163 (empty -> .)
+    COLON           reduce using rule 163 (empty -> .)
+    SEMICOLON       reduce using rule 163 (empty -> .)
 
-  ! GT              [ reduce using rule 164 (empty -> .) ]
-  ! LT              [ reduce using rule 164 (empty -> .) ]
-  ! EQ_EQ           [ reduce using rule 164 (empty -> .) ]
-  ! GT_EQ           [ reduce using rule 164 (empty -> .) ]
-  ! LT_EQ           [ reduce using rule 164 (empty -> .) ]
-  ! NOT_EQ          [ reduce using rule 164 (empty -> .) ]
+  ! GT              [ reduce using rule 163 (empty -> .) ]
+  ! LT              [ reduce using rule 163 (empty -> .) ]
+  ! EQ_EQ           [ reduce using rule 163 (empty -> .) ]
+  ! GT_EQ           [ reduce using rule 163 (empty -> .) ]
+  ! LT_EQ           [ reduce using rule 163 (empty -> .) ]
+  ! NOT_EQ          [ reduce using rule 163 (empty -> .) ]
 
     term_tail                      shift and go to state 91
     empty                          shift and go to state 92
@@ -1878,10 +1877,10 @@ state 72
     (29) list_element -> literal . element_tail
     (30) element_tail -> . empty
     (31) element_tail -> . COMMA list_element
-    (164) empty -> .
+    (163) empty -> .
 
     COMMA           shift and go to state 106
-    RBRACKET        reduce using rule 164 (empty -> .)
+    RBRACKET        reduce using rule 163 (empty -> .)
 
     element_tail                   shift and go to state 104
     empty                          shift and go to state 105
@@ -2230,7 +2229,7 @@ state 83
     (69) factor_tail -> . DIVISION expression
     (70) factor_tail -> . MODULO expression
     (71) factor_tail -> . EXPONENT expression
-    (164) empty -> .
+    (163) empty -> .
 
     PLUS            shift and go to state 75
     MINUS           shift and go to state 76
@@ -2238,37 +2237,37 @@ state 83
     DIVISION        shift and go to state 78
     MODULO          shift and go to state 79
     EXPONENT        shift and go to state 80
-    GT              reduce using rule 164 (empty -> .)
-    LT              reduce using rule 164 (empty -> .)
-    EQ_EQ           reduce using rule 164 (empty -> .)
-    GT_EQ           reduce using rule 164 (empty -> .)
-    LT_EQ           reduce using rule 164 (empty -> .)
-    NOT_EQ          reduce using rule 164 (empty -> .)
-    AND             reduce using rule 164 (empty -> .)
-    OR              reduce using rule 164 (empty -> .)
-    COMMA           reduce using rule 164 (empty -> .)
-    NEWLINE         reduce using rule 164 (empty -> .)
-    RPAREN          reduce using rule 164 (empty -> .)
-    CHECK           reduce using rule 164 (empty -> .)
-    SWAP            reduce using rule 164 (empty -> .)
-    FUNCTION_NAME   reduce using rule 164 (empty -> .)
-    DISPLAY         reduce using rule 164 (empty -> .)
-    IDENT           reduce using rule 164 (empty -> .)
-    FOR             reduce using rule 164 (empty -> .)
-    UNTIL           reduce using rule 164 (empty -> .)
-    REPEAT          reduce using rule 164 (empty -> .)
-    INPUT           reduce using rule 164 (empty -> .)
-    INT             reduce using rule 164 (empty -> .)
-    FLT             reduce using rule 164 (empty -> .)
-    BLN             reduce using rule 164 (empty -> .)
-    CHR             reduce using rule 164 (empty -> .)
-    STR             reduce using rule 164 (empty -> .)
-    RBRACE          reduce using rule 164 (empty -> .)
-    REVIVE          reduce using rule 164 (empty -> .)
-    SHIFT           reduce using rule 164 (empty -> .)
-    OTHERWISE       reduce using rule 164 (empty -> .)
-    COLON           reduce using rule 164 (empty -> .)
-    SEMICOLON       reduce using rule 164 (empty -> .)
+    GT              reduce using rule 163 (empty -> .)
+    LT              reduce using rule 163 (empty -> .)
+    EQ_EQ           reduce using rule 163 (empty -> .)
+    GT_EQ           reduce using rule 163 (empty -> .)
+    LT_EQ           reduce using rule 163 (empty -> .)
+    NOT_EQ          reduce using rule 163 (empty -> .)
+    AND             reduce using rule 163 (empty -> .)
+    OR              reduce using rule 163 (empty -> .)
+    COMMA           reduce using rule 163 (empty -> .)
+    NEWLINE         reduce using rule 163 (empty -> .)
+    RPAREN          reduce using rule 163 (empty -> .)
+    CHECK           reduce using rule 163 (empty -> .)
+    SWAP            reduce using rule 163 (empty -> .)
+    FUNCTION_NAME   reduce using rule 163 (empty -> .)
+    DISPLAY         reduce using rule 163 (empty -> .)
+    IDENT           reduce using rule 163 (empty -> .)
+    FOR             reduce using rule 163 (empty -> .)
+    UNTIL           reduce using rule 163 (empty -> .)
+    REPEAT          reduce using rule 163 (empty -> .)
+    INPUT           reduce using rule 163 (empty -> .)
+    INT             reduce using rule 163 (empty -> .)
+    FLT             reduce using rule 163 (empty -> .)
+    BLN             reduce using rule 163 (empty -> .)
+    CHR             reduce using rule 163 (empty -> .)
+    STR             reduce using rule 163 (empty -> .)
+    RBRACE          reduce using rule 163 (empty -> .)
+    REVIVE          reduce using rule 163 (empty -> .)
+    SHIFT           reduce using rule 163 (empty -> .)
+    OTHERWISE       reduce using rule 163 (empty -> .)
+    COLON           reduce using rule 163 (empty -> .)
+    SEMICOLON       reduce using rule 163 (empty -> .)
 
     factor_tail                    shift and go to state 73
     empty                          shift and go to state 74
@@ -2458,14 +2457,14 @@ state 88
     OTHERWISE       reduce using rule 82 (var_call -> IDENT var_call_tail .)
     COLON           reduce using rule 82 (var_call -> IDENT var_call_tail .)
     SEMICOLON       reduce using rule 82 (var_call -> IDENT var_call_tail .)
+    PLUS_PLUS       reduce using rule 82 (var_call -> IDENT var_call_tail .)
+    MINUS_MINUS     reduce using rule 82 (var_call -> IDENT var_call_tail .)
     PLUS_EQ         reduce using rule 82 (var_call -> IDENT var_call_tail .)
     MINUS_EQ        reduce using rule 82 (var_call -> IDENT var_call_tail .)
     MUL_EQ          reduce using rule 82 (var_call -> IDENT var_call_tail .)
     DIV_EQ          reduce using rule 82 (var_call -> IDENT var_call_tail .)
     MOD_EQ          reduce using rule 82 (var_call -> IDENT var_call_tail .)
     EQ              reduce using rule 82 (var_call -> IDENT var_call_tail .)
-    PLUS_PLUS       reduce using rule 82 (var_call -> IDENT var_call_tail .)
-    MINUS_MINUS     reduce using rule 82 (var_call -> IDENT var_call_tail .)
 
 
 state 89
@@ -2509,14 +2508,14 @@ state 89
     OTHERWISE       reduce using rule 83 (var_call_tail -> empty .)
     COLON           reduce using rule 83 (var_call_tail -> empty .)
     SEMICOLON       reduce using rule 83 (var_call_tail -> empty .)
+    PLUS_PLUS       reduce using rule 83 (var_call_tail -> empty .)
+    MINUS_MINUS     reduce using rule 83 (var_call_tail -> empty .)
     PLUS_EQ         reduce using rule 83 (var_call_tail -> empty .)
     MINUS_EQ        reduce using rule 83 (var_call_tail -> empty .)
     MUL_EQ          reduce using rule 83 (var_call_tail -> empty .)
     DIV_EQ          reduce using rule 83 (var_call_tail -> empty .)
     MOD_EQ          reduce using rule 83 (var_call_tail -> empty .)
     EQ              reduce using rule 83 (var_call_tail -> empty .)
-    PLUS_PLUS       reduce using rule 83 (var_call_tail -> empty .)
-    MINUS_MINUS     reduce using rule 83 (var_call_tail -> empty .)
 
 
 state 90
@@ -2824,14 +2823,14 @@ state 99
     (36) data_type -> . BLN
     (37) data_type -> . CHR
     (38) data_type -> . STR
-    (164) empty -> .
+    (163) empty -> .
 
     INT             shift and go to state 9
     FLT             shift and go to state 10
     BLN             shift and go to state 11
     CHR             shift and go to state 12
     STR             shift and go to state 13
-    RPAREN          reduce using rule 164 (empty -> .)
+    RPAREN          reduce using rule 163 (empty -> .)
 
     parameters                     shift and go to state 125
     data_type                      shift and go to state 126
@@ -2857,11 +2856,11 @@ state 102
     (12) global_statement_tail -> . empty
     (13) global_statement_tail -> . COMMA IDENT global_statement_tail
     (14) global_statement_tail -> . EQ global_dec_value global_tail2
-    (164) empty -> .
+    (163) empty -> .
 
     COMMA           shift and go to state 29
     EQ              shift and go to state 30
-    NEWLINE         reduce using rule 164 (empty -> .)
+    NEWLINE         reduce using rule 163 (empty -> .)
 
     global_statement_tail          shift and go to state 130
     empty                          shift and go to state 28
@@ -3581,14 +3580,14 @@ state 132
     OTHERWISE       reduce using rule 84 (var_call_tail -> LBRACKET index RBRACKET .)
     COLON           reduce using rule 84 (var_call_tail -> LBRACKET index RBRACKET .)
     SEMICOLON       reduce using rule 84 (var_call_tail -> LBRACKET index RBRACKET .)
+    PLUS_PLUS       reduce using rule 84 (var_call_tail -> LBRACKET index RBRACKET .)
+    MINUS_MINUS     reduce using rule 84 (var_call_tail -> LBRACKET index RBRACKET .)
     PLUS_EQ         reduce using rule 84 (var_call_tail -> LBRACKET index RBRACKET .)
     MINUS_EQ        reduce using rule 84 (var_call_tail -> LBRACKET index RBRACKET .)
     MUL_EQ          reduce using rule 84 (var_call_tail -> LBRACKET index RBRACKET .)
     DIV_EQ          reduce using rule 84 (var_call_tail -> LBRACKET index RBRACKET .)
     MOD_EQ          reduce using rule 84 (var_call_tail -> LBRACKET index RBRACKET .)
     EQ              reduce using rule 84 (var_call_tail -> LBRACKET index RBRACKET .)
-    PLUS_PLUS       reduce using rule 84 (var_call_tail -> LBRACKET index RBRACKET .)
-    MINUS_MINUS     reduce using rule 84 (var_call_tail -> LBRACKET index RBRACKET .)
 
 
 state 133
@@ -3596,10 +3595,10 @@ state 133
     (85) function_statements -> maybe_newline ret_type FUNCTION_NAME LPAREN parameters RPAREN . maybe_newline LBRACE unli_newline statements revive maybe_newline RBRACE
     (2) maybe_newline -> . empty
     (3) maybe_newline -> . NEWLINE maybe_newline
-    (164) empty -> .
+    (163) empty -> .
 
     NEWLINE         shift and go to state 17
-    LBRACE          reduce using rule 164 (empty -> .)
+    LBRACE          reduce using rule 163 (empty -> .)
 
     maybe_newline                  shift and go to state 136
     empty                          shift and go to state 16
@@ -3609,10 +3608,10 @@ state 134
     (99) parameters -> data_type IDENT . parameters_tail
     (101) parameters_tail -> . empty
     (102) parameters_tail -> . COMMA data_type IDENT parameters_tail
-    (164) empty -> .
+    (163) empty -> .
 
     COMMA           shift and go to state 139
-    RPAREN          reduce using rule 164 (empty -> .)
+    RPAREN          reduce using rule 163 (empty -> .)
 
     parameters_tail                shift and go to state 137
     empty                          shift and go to state 138
@@ -3622,27 +3621,27 @@ state 135
     (6) main_function -> MAIN_CASPER LPAREN RPAREN LBRACE . maybe_newline statements maybe_newline RBRACE
     (2) maybe_newline -> . empty
     (3) maybe_newline -> . NEWLINE maybe_newline
-    (164) empty -> .
+    (163) empty -> .
 
   ! shift/reduce conflict for NEWLINE resolved as shift
     NEWLINE         shift and go to state 17
-    INT             reduce using rule 164 (empty -> .)
-    FLT             reduce using rule 164 (empty -> .)
-    BLN             reduce using rule 164 (empty -> .)
-    CHR             reduce using rule 164 (empty -> .)
-    STR             reduce using rule 164 (empty -> .)
-    RBRACE          reduce using rule 164 (empty -> .)
-    CHECK           reduce using rule 164 (empty -> .)
-    SWAP            reduce using rule 164 (empty -> .)
-    FUNCTION_NAME   reduce using rule 164 (empty -> .)
-    DISPLAY         reduce using rule 164 (empty -> .)
-    IDENT           reduce using rule 164 (empty -> .)
-    FOR             reduce using rule 164 (empty -> .)
-    UNTIL           reduce using rule 164 (empty -> .)
-    REPEAT          reduce using rule 164 (empty -> .)
-    INPUT           reduce using rule 164 (empty -> .)
+    INT             reduce using rule 163 (empty -> .)
+    FLT             reduce using rule 163 (empty -> .)
+    BLN             reduce using rule 163 (empty -> .)
+    CHR             reduce using rule 163 (empty -> .)
+    STR             reduce using rule 163 (empty -> .)
+    RBRACE          reduce using rule 163 (empty -> .)
+    CHECK           reduce using rule 163 (empty -> .)
+    SWAP            reduce using rule 163 (empty -> .)
+    FUNCTION_NAME   reduce using rule 163 (empty -> .)
+    DISPLAY         reduce using rule 163 (empty -> .)
+    IDENT           reduce using rule 163 (empty -> .)
+    FOR             reduce using rule 163 (empty -> .)
+    UNTIL           reduce using rule 163 (empty -> .)
+    REPEAT          reduce using rule 163 (empty -> .)
+    INPUT           reduce using rule 163 (empty -> .)
 
-  ! NEWLINE         [ reduce using rule 164 (empty -> .) ]
+  ! NEWLINE         [ reduce using rule 163 (empty -> .) ]
 
     maybe_newline                  shift and go to state 140
     empty                          shift and go to state 16
@@ -3690,7 +3689,7 @@ state 140
     (6) main_function -> MAIN_CASPER LPAREN RPAREN LBRACE maybe_newline . statements maybe_newline RBRACE
     (105) statements -> . empty
     (106) statements -> . local_dec maybe_newline statements_tail
-    (164) empty -> .
+    (163) empty -> .
     (115) local_dec -> . empty
     (116) local_dec -> . var_statement
     (21) var_statement -> . data_type IDENT var_tail
@@ -3705,28 +3704,28 @@ state 140
   ! shift/reduce conflict for BLN resolved as shift
   ! shift/reduce conflict for CHR resolved as shift
   ! shift/reduce conflict for STR resolved as shift
-    NEWLINE         reduce using rule 164 (empty -> .)
-    RBRACE          reduce using rule 164 (empty -> .)
-    CHECK           reduce using rule 164 (empty -> .)
-    SWAP            reduce using rule 164 (empty -> .)
-    FUNCTION_NAME   reduce using rule 164 (empty -> .)
-    DISPLAY         reduce using rule 164 (empty -> .)
-    IDENT           reduce using rule 164 (empty -> .)
-    FOR             reduce using rule 164 (empty -> .)
-    UNTIL           reduce using rule 164 (empty -> .)
-    REPEAT          reduce using rule 164 (empty -> .)
-    INPUT           reduce using rule 164 (empty -> .)
+    NEWLINE         reduce using rule 163 (empty -> .)
+    RBRACE          reduce using rule 163 (empty -> .)
+    CHECK           reduce using rule 163 (empty -> .)
+    SWAP            reduce using rule 163 (empty -> .)
+    FUNCTION_NAME   reduce using rule 163 (empty -> .)
+    DISPLAY         reduce using rule 163 (empty -> .)
+    IDENT           reduce using rule 163 (empty -> .)
+    FOR             reduce using rule 163 (empty -> .)
+    UNTIL           reduce using rule 163 (empty -> .)
+    REPEAT          reduce using rule 163 (empty -> .)
+    INPUT           reduce using rule 163 (empty -> .)
     INT             shift and go to state 9
     FLT             shift and go to state 10
     BLN             shift and go to state 11
     CHR             shift and go to state 12
     STR             shift and go to state 13
 
-  ! INT             [ reduce using rule 164 (empty -> .) ]
-  ! FLT             [ reduce using rule 164 (empty -> .) ]
-  ! BLN             [ reduce using rule 164 (empty -> .) ]
-  ! CHR             [ reduce using rule 164 (empty -> .) ]
-  ! STR             [ reduce using rule 164 (empty -> .) ]
+  ! INT             [ reduce using rule 163 (empty -> .) ]
+  ! FLT             [ reduce using rule 163 (empty -> .) ]
+  ! BLN             [ reduce using rule 163 (empty -> .) ]
+  ! CHR             [ reduce using rule 163 (empty -> .) ]
+  ! STR             [ reduce using rule 163 (empty -> .) ]
 
     statements                     shift and go to state 143
     empty                          shift and go to state 144
@@ -3756,10 +3755,10 @@ state 143
     (6) main_function -> MAIN_CASPER LPAREN RPAREN LBRACE maybe_newline statements . maybe_newline RBRACE
     (2) maybe_newline -> . empty
     (3) maybe_newline -> . NEWLINE maybe_newline
-    (164) empty -> .
+    (163) empty -> .
 
     NEWLINE         shift and go to state 17
-    RBRACE          reduce using rule 164 (empty -> .)
+    RBRACE          reduce using rule 163 (empty -> .)
 
     maybe_newline                  shift and go to state 150
     empty                          shift and go to state 16
@@ -3806,30 +3805,30 @@ state 145
     (106) statements -> local_dec . maybe_newline statements_tail
     (2) maybe_newline -> . empty
     (3) maybe_newline -> . NEWLINE maybe_newline
-    (164) empty -> .
+    (163) empty -> .
 
   ! shift/reduce conflict for NEWLINE resolved as shift
     NEWLINE         shift and go to state 17
-    CHECK           reduce using rule 164 (empty -> .)
-    SWAP            reduce using rule 164 (empty -> .)
-    FUNCTION_NAME   reduce using rule 164 (empty -> .)
-    DISPLAY         reduce using rule 164 (empty -> .)
-    IDENT           reduce using rule 164 (empty -> .)
-    FOR             reduce using rule 164 (empty -> .)
-    UNTIL           reduce using rule 164 (empty -> .)
-    REPEAT          reduce using rule 164 (empty -> .)
-    INPUT           reduce using rule 164 (empty -> .)
-    INT             reduce using rule 164 (empty -> .)
-    FLT             reduce using rule 164 (empty -> .)
-    BLN             reduce using rule 164 (empty -> .)
-    CHR             reduce using rule 164 (empty -> .)
-    STR             reduce using rule 164 (empty -> .)
-    RBRACE          reduce using rule 164 (empty -> .)
-    REVIVE          reduce using rule 164 (empty -> .)
-    SHIFT           reduce using rule 164 (empty -> .)
-    OTHERWISE       reduce using rule 164 (empty -> .)
+    CHECK           reduce using rule 163 (empty -> .)
+    SWAP            reduce using rule 163 (empty -> .)
+    FUNCTION_NAME   reduce using rule 163 (empty -> .)
+    DISPLAY         reduce using rule 163 (empty -> .)
+    IDENT           reduce using rule 163 (empty -> .)
+    FOR             reduce using rule 163 (empty -> .)
+    UNTIL           reduce using rule 163 (empty -> .)
+    REPEAT          reduce using rule 163 (empty -> .)
+    INPUT           reduce using rule 163 (empty -> .)
+    INT             reduce using rule 163 (empty -> .)
+    FLT             reduce using rule 163 (empty -> .)
+    BLN             reduce using rule 163 (empty -> .)
+    CHR             reduce using rule 163 (empty -> .)
+    STR             reduce using rule 163 (empty -> .)
+    RBRACE          reduce using rule 163 (empty -> .)
+    REVIVE          reduce using rule 163 (empty -> .)
+    SHIFT           reduce using rule 163 (empty -> .)
+    OTHERWISE       reduce using rule 163 (empty -> .)
 
-  ! NEWLINE         [ reduce using rule 164 (empty -> .) ]
+  ! NEWLINE         [ reduce using rule 163 (empty -> .) ]
 
     maybe_newline                  shift and go to state 151
     empty                          shift and go to state 16
@@ -3871,7 +3870,7 @@ state 148
     (85) function_statements -> maybe_newline ret_type FUNCTION_NAME LPAREN parameters RPAREN maybe_newline LBRACE unli_newline . statements revive maybe_newline RBRACE
     (105) statements -> . empty
     (106) statements -> . local_dec maybe_newline statements_tail
-    (164) empty -> .
+    (163) empty -> .
     (115) local_dec -> . empty
     (116) local_dec -> . var_statement
     (21) var_statement -> . data_type IDENT var_tail
@@ -3886,29 +3885,29 @@ state 148
   ! shift/reduce conflict for BLN resolved as shift
   ! shift/reduce conflict for CHR resolved as shift
   ! shift/reduce conflict for STR resolved as shift
-    REVIVE          reduce using rule 164 (empty -> .)
-    NEWLINE         reduce using rule 164 (empty -> .)
-    RBRACE          reduce using rule 164 (empty -> .)
-    CHECK           reduce using rule 164 (empty -> .)
-    SWAP            reduce using rule 164 (empty -> .)
-    FUNCTION_NAME   reduce using rule 164 (empty -> .)
-    DISPLAY         reduce using rule 164 (empty -> .)
-    IDENT           reduce using rule 164 (empty -> .)
-    FOR             reduce using rule 164 (empty -> .)
-    UNTIL           reduce using rule 164 (empty -> .)
-    REPEAT          reduce using rule 164 (empty -> .)
-    INPUT           reduce using rule 164 (empty -> .)
+    REVIVE          reduce using rule 163 (empty -> .)
+    NEWLINE         reduce using rule 163 (empty -> .)
+    RBRACE          reduce using rule 163 (empty -> .)
+    CHECK           reduce using rule 163 (empty -> .)
+    SWAP            reduce using rule 163 (empty -> .)
+    FUNCTION_NAME   reduce using rule 163 (empty -> .)
+    DISPLAY         reduce using rule 163 (empty -> .)
+    IDENT           reduce using rule 163 (empty -> .)
+    FOR             reduce using rule 163 (empty -> .)
+    UNTIL           reduce using rule 163 (empty -> .)
+    REPEAT          reduce using rule 163 (empty -> .)
+    INPUT           reduce using rule 163 (empty -> .)
     INT             shift and go to state 9
     FLT             shift and go to state 10
     BLN             shift and go to state 11
     CHR             shift and go to state 12
     STR             shift and go to state 13
 
-  ! INT             [ reduce using rule 164 (empty -> .) ]
-  ! FLT             [ reduce using rule 164 (empty -> .) ]
-  ! BLN             [ reduce using rule 164 (empty -> .) ]
-  ! CHR             [ reduce using rule 164 (empty -> .) ]
-  ! STR             [ reduce using rule 164 (empty -> .) ]
+  ! INT             [ reduce using rule 163 (empty -> .) ]
+  ! FLT             [ reduce using rule 163 (empty -> .) ]
+  ! BLN             [ reduce using rule 163 (empty -> .) ]
+  ! CHR             [ reduce using rule 163 (empty -> .) ]
+  ! STR             [ reduce using rule 163 (empty -> .) ]
 
     statements                     shift and go to state 153
     empty                          shift and go to state 144
@@ -3921,10 +3920,10 @@ state 149
     (102) parameters_tail -> COMMA data_type IDENT . parameters_tail
     (101) parameters_tail -> . empty
     (102) parameters_tail -> . COMMA data_type IDENT parameters_tail
-    (164) empty -> .
+    (163) empty -> .
 
     COMMA           shift and go to state 139
-    RPAREN          reduce using rule 164 (empty -> .)
+    RPAREN          reduce using rule 163 (empty -> .)
 
     parameters_tail                shift and go to state 154
     empty                          shift and go to state 138
@@ -3947,7 +3946,7 @@ state 151
     (112) statements_tail -> . loop_statement unli_newline statements_tail
     (113) statements_tail -> . function_call unli_newline statements_tail
     (114) statements_tail -> . output_statement unli_newline statements_tail
-    (164) empty -> .
+    (163) empty -> .
     (115) local_dec -> . empty
     (116) local_dec -> . var_statement
     (150) string_operation_statement -> . var_call string_operation_tail
@@ -3986,11 +3985,11 @@ state 151
   ! shift/reduce conflict for BLN resolved as shift
   ! shift/reduce conflict for CHR resolved as shift
   ! shift/reduce conflict for STR resolved as shift
-    NEWLINE         reduce using rule 164 (empty -> .)
-    RBRACE          reduce using rule 164 (empty -> .)
-    REVIVE          reduce using rule 164 (empty -> .)
-    SHIFT           reduce using rule 164 (empty -> .)
-    OTHERWISE       reduce using rule 164 (empty -> .)
+    NEWLINE         reduce using rule 163 (empty -> .)
+    RBRACE          reduce using rule 163 (empty -> .)
+    REVIVE          reduce using rule 163 (empty -> .)
+    SHIFT           reduce using rule 163 (empty -> .)
+    OTHERWISE       reduce using rule 163 (empty -> .)
     CHECK           shift and go to state 166
     SWAP            shift and go to state 167
     FUNCTION_NAME   shift and go to state 171
@@ -4006,20 +4005,20 @@ state 151
     CHR             shift and go to state 12
     STR             shift and go to state 13
 
-  ! CHECK           [ reduce using rule 164 (empty -> .) ]
-  ! SWAP            [ reduce using rule 164 (empty -> .) ]
-  ! FUNCTION_NAME   [ reduce using rule 164 (empty -> .) ]
-  ! DISPLAY         [ reduce using rule 164 (empty -> .) ]
-  ! IDENT           [ reduce using rule 164 (empty -> .) ]
-  ! FOR             [ reduce using rule 164 (empty -> .) ]
-  ! UNTIL           [ reduce using rule 164 (empty -> .) ]
-  ! REPEAT          [ reduce using rule 164 (empty -> .) ]
-  ! INPUT           [ reduce using rule 164 (empty -> .) ]
-  ! INT             [ reduce using rule 164 (empty -> .) ]
-  ! FLT             [ reduce using rule 164 (empty -> .) ]
-  ! BLN             [ reduce using rule 164 (empty -> .) ]
-  ! CHR             [ reduce using rule 164 (empty -> .) ]
-  ! STR             [ reduce using rule 164 (empty -> .) ]
+  ! CHECK           [ reduce using rule 163 (empty -> .) ]
+  ! SWAP            [ reduce using rule 163 (empty -> .) ]
+  ! FUNCTION_NAME   [ reduce using rule 163 (empty -> .) ]
+  ! DISPLAY         [ reduce using rule 163 (empty -> .) ]
+  ! IDENT           [ reduce using rule 163 (empty -> .) ]
+  ! FOR             [ reduce using rule 163 (empty -> .) ]
+  ! UNTIL           [ reduce using rule 163 (empty -> .) ]
+  ! REPEAT          [ reduce using rule 163 (empty -> .) ]
+  ! INPUT           [ reduce using rule 163 (empty -> .) ]
+  ! INT             [ reduce using rule 163 (empty -> .) ]
+  ! FLT             [ reduce using rule 163 (empty -> .) ]
+  ! BLN             [ reduce using rule 163 (empty -> .) ]
+  ! CHR             [ reduce using rule 163 (empty -> .) ]
+  ! STR             [ reduce using rule 163 (empty -> .) ]
 
     local_dec                      shift and go to state 156
     statements_tail                shift and go to state 157
@@ -4044,29 +4043,29 @@ state 152
     (22) var_tail -> . empty
     (23) var_tail -> . EQ tail_value var_tail2
     (24) var_tail -> . COMMA IDENT var_tail
-    (164) empty -> .
+    (163) empty -> .
 
     EQ              shift and go to state 180
     COMMA           shift and go to state 181
-    NEWLINE         reduce using rule 164 (empty -> .)
-    CHECK           reduce using rule 164 (empty -> .)
-    SWAP            reduce using rule 164 (empty -> .)
-    FUNCTION_NAME   reduce using rule 164 (empty -> .)
-    DISPLAY         reduce using rule 164 (empty -> .)
-    IDENT           reduce using rule 164 (empty -> .)
-    FOR             reduce using rule 164 (empty -> .)
-    UNTIL           reduce using rule 164 (empty -> .)
-    REPEAT          reduce using rule 164 (empty -> .)
-    INPUT           reduce using rule 164 (empty -> .)
-    INT             reduce using rule 164 (empty -> .)
-    FLT             reduce using rule 164 (empty -> .)
-    BLN             reduce using rule 164 (empty -> .)
-    CHR             reduce using rule 164 (empty -> .)
-    STR             reduce using rule 164 (empty -> .)
-    RBRACE          reduce using rule 164 (empty -> .)
-    REVIVE          reduce using rule 164 (empty -> .)
-    SHIFT           reduce using rule 164 (empty -> .)
-    OTHERWISE       reduce using rule 164 (empty -> .)
+    NEWLINE         reduce using rule 163 (empty -> .)
+    CHECK           reduce using rule 163 (empty -> .)
+    SWAP            reduce using rule 163 (empty -> .)
+    FUNCTION_NAME   reduce using rule 163 (empty -> .)
+    DISPLAY         reduce using rule 163 (empty -> .)
+    IDENT           reduce using rule 163 (empty -> .)
+    FOR             reduce using rule 163 (empty -> .)
+    UNTIL           reduce using rule 163 (empty -> .)
+    REPEAT          reduce using rule 163 (empty -> .)
+    INPUT           reduce using rule 163 (empty -> .)
+    INT             reduce using rule 163 (empty -> .)
+    FLT             reduce using rule 163 (empty -> .)
+    BLN             reduce using rule 163 (empty -> .)
+    CHR             reduce using rule 163 (empty -> .)
+    STR             reduce using rule 163 (empty -> .)
+    RBRACE          reduce using rule 163 (empty -> .)
+    REVIVE          reduce using rule 163 (empty -> .)
+    SHIFT           reduce using rule 163 (empty -> .)
+    OTHERWISE       reduce using rule 163 (empty -> .)
 
     var_tail                       shift and go to state 178
     empty                          shift and go to state 179
@@ -4076,11 +4075,11 @@ state 153
     (85) function_statements -> maybe_newline ret_type FUNCTION_NAME LPAREN parameters RPAREN maybe_newline LBRACE unli_newline statements . revive maybe_newline RBRACE
     (103) revive -> . REVIVE value
     (104) revive -> . empty
-    (164) empty -> .
+    (163) empty -> .
 
     REVIVE          shift and go to state 183
-    NEWLINE         reduce using rule 164 (empty -> .)
-    RBRACE          reduce using rule 164 (empty -> .)
+    NEWLINE         reduce using rule 163 (empty -> .)
+    RBRACE          reduce using rule 163 (empty -> .)
 
     revive                         shift and go to state 182
     empty                          shift and go to state 184
@@ -4104,30 +4103,30 @@ state 156
     (108) statements_tail -> local_dec . maybe_newline statements_tail
     (2) maybe_newline -> . empty
     (3) maybe_newline -> . NEWLINE maybe_newline
-    (164) empty -> .
+    (163) empty -> .
 
   ! shift/reduce conflict for NEWLINE resolved as shift
     NEWLINE         shift and go to state 17
-    CHECK           reduce using rule 164 (empty -> .)
-    SWAP            reduce using rule 164 (empty -> .)
-    FUNCTION_NAME   reduce using rule 164 (empty -> .)
-    DISPLAY         reduce using rule 164 (empty -> .)
-    IDENT           reduce using rule 164 (empty -> .)
-    FOR             reduce using rule 164 (empty -> .)
-    UNTIL           reduce using rule 164 (empty -> .)
-    REPEAT          reduce using rule 164 (empty -> .)
-    INPUT           reduce using rule 164 (empty -> .)
-    INT             reduce using rule 164 (empty -> .)
-    FLT             reduce using rule 164 (empty -> .)
-    BLN             reduce using rule 164 (empty -> .)
-    CHR             reduce using rule 164 (empty -> .)
-    STR             reduce using rule 164 (empty -> .)
-    RBRACE          reduce using rule 164 (empty -> .)
-    REVIVE          reduce using rule 164 (empty -> .)
-    SHIFT           reduce using rule 164 (empty -> .)
-    OTHERWISE       reduce using rule 164 (empty -> .)
+    CHECK           reduce using rule 163 (empty -> .)
+    SWAP            reduce using rule 163 (empty -> .)
+    FUNCTION_NAME   reduce using rule 163 (empty -> .)
+    DISPLAY         reduce using rule 163 (empty -> .)
+    IDENT           reduce using rule 163 (empty -> .)
+    FOR             reduce using rule 163 (empty -> .)
+    UNTIL           reduce using rule 163 (empty -> .)
+    REPEAT          reduce using rule 163 (empty -> .)
+    INPUT           reduce using rule 163 (empty -> .)
+    INT             reduce using rule 163 (empty -> .)
+    FLT             reduce using rule 163 (empty -> .)
+    BLN             reduce using rule 163 (empty -> .)
+    CHR             reduce using rule 163 (empty -> .)
+    STR             reduce using rule 163 (empty -> .)
+    RBRACE          reduce using rule 163 (empty -> .)
+    REVIVE          reduce using rule 163 (empty -> .)
+    SHIFT           reduce using rule 163 (empty -> .)
+    OTHERWISE       reduce using rule 163 (empty -> .)
 
-  ! NEWLINE         [ reduce using rule 164 (empty -> .) ]
+  ! NEWLINE         [ reduce using rule 163 (empty -> .) ]
 
     maybe_newline                  shift and go to state 185
     empty                          shift and go to state 16
@@ -4243,34 +4242,33 @@ state 164
 state 165
 
     (150) string_operation_statement -> var_call . string_operation_tail
-    (151) string_operation_tail -> . assign_op value
-    (152) string_operation_tail -> . PLUS string_val stringcon_tail
-    (153) string_operation_tail -> . update_tail
-    (154) assign_op -> . PLUS_EQ
-    (155) assign_op -> . MINUS_EQ
-    (156) assign_op -> . MUL_EQ
-    (157) assign_op -> . DIV_EQ
-    (158) assign_op -> . MOD_EQ
-    (159) assign_op -> . EQ
+    (151) string_operation_tail -> . PLUS string_val stringcon_tail
+    (152) string_operation_tail -> . update_tail
     (133) update_tail -> . postfix
     (134) update_tail -> . assign_op value
     (135) postfix -> . PLUS_PLUS
     (136) postfix -> . MINUS_MINUS
+    (153) assign_op -> . PLUS_EQ
+    (154) assign_op -> . MINUS_EQ
+    (155) assign_op -> . MUL_EQ
+    (156) assign_op -> . DIV_EQ
+    (157) assign_op -> . MOD_EQ
+    (158) assign_op -> . EQ
 
-    PLUS            shift and go to state 194
-    PLUS_EQ         shift and go to state 196
-    MINUS_EQ        shift and go to state 197
-    MUL_EQ          shift and go to state 198
-    DIV_EQ          shift and go to state 199
-    MOD_EQ          shift and go to state 200
-    EQ              shift and go to state 201
-    PLUS_PLUS       shift and go to state 203
-    MINUS_MINUS     shift and go to state 204
+    PLUS            shift and go to state 193
+    PLUS_PLUS       shift and go to state 197
+    MINUS_MINUS     shift and go to state 198
+    PLUS_EQ         shift and go to state 199
+    MINUS_EQ        shift and go to state 200
+    MUL_EQ          shift and go to state 201
+    DIV_EQ          shift and go to state 202
+    MOD_EQ          shift and go to state 203
+    EQ              shift and go to state 204
 
     string_operation_tail          shift and go to state 192
-    assign_op                      shift and go to state 193
-    update_tail                    shift and go to state 195
-    postfix                        shift and go to state 202
+    update_tail                    shift and go to state 194
+    postfix                        shift and go to state 195
+    assign_op                      shift and go to state 196
 
 state 166
 
@@ -4549,10 +4547,10 @@ state 182
     (85) function_statements -> maybe_newline ret_type FUNCTION_NAME LPAREN parameters RPAREN maybe_newline LBRACE unli_newline statements revive . maybe_newline RBRACE
     (2) maybe_newline -> . empty
     (3) maybe_newline -> . NEWLINE maybe_newline
-    (164) empty -> .
+    (163) empty -> .
 
     NEWLINE         shift and go to state 17
-    RBRACE          reduce using rule 164 (empty -> .)
+    RBRACE          reduce using rule 163 (empty -> .)
 
     maybe_newline                  shift and go to state 226
     empty                          shift and go to state 16
@@ -4632,7 +4630,7 @@ state 185
     (112) statements_tail -> . loop_statement unli_newline statements_tail
     (113) statements_tail -> . function_call unli_newline statements_tail
     (114) statements_tail -> . output_statement unli_newline statements_tail
-    (164) empty -> .
+    (163) empty -> .
     (115) local_dec -> . empty
     (116) local_dec -> . var_statement
     (150) string_operation_statement -> . var_call string_operation_tail
@@ -4671,11 +4669,11 @@ state 185
   ! shift/reduce conflict for BLN resolved as shift
   ! shift/reduce conflict for CHR resolved as shift
   ! shift/reduce conflict for STR resolved as shift
-    NEWLINE         reduce using rule 164 (empty -> .)
-    RBRACE          reduce using rule 164 (empty -> .)
-    REVIVE          reduce using rule 164 (empty -> .)
-    SHIFT           reduce using rule 164 (empty -> .)
-    OTHERWISE       reduce using rule 164 (empty -> .)
+    NEWLINE         reduce using rule 163 (empty -> .)
+    RBRACE          reduce using rule 163 (empty -> .)
+    REVIVE          reduce using rule 163 (empty -> .)
+    SHIFT           reduce using rule 163 (empty -> .)
+    OTHERWISE       reduce using rule 163 (empty -> .)
     CHECK           shift and go to state 166
     SWAP            shift and go to state 167
     FUNCTION_NAME   shift and go to state 171
@@ -4691,20 +4689,20 @@ state 185
     CHR             shift and go to state 12
     STR             shift and go to state 13
 
-  ! CHECK           [ reduce using rule 164 (empty -> .) ]
-  ! SWAP            [ reduce using rule 164 (empty -> .) ]
-  ! FUNCTION_NAME   [ reduce using rule 164 (empty -> .) ]
-  ! DISPLAY         [ reduce using rule 164 (empty -> .) ]
-  ! IDENT           [ reduce using rule 164 (empty -> .) ]
-  ! FOR             [ reduce using rule 164 (empty -> .) ]
-  ! UNTIL           [ reduce using rule 164 (empty -> .) ]
-  ! REPEAT          [ reduce using rule 164 (empty -> .) ]
-  ! INPUT           [ reduce using rule 164 (empty -> .) ]
-  ! INT             [ reduce using rule 164 (empty -> .) ]
-  ! FLT             [ reduce using rule 164 (empty -> .) ]
-  ! BLN             [ reduce using rule 164 (empty -> .) ]
-  ! CHR             [ reduce using rule 164 (empty -> .) ]
-  ! STR             [ reduce using rule 164 (empty -> .) ]
+  ! CHECK           [ reduce using rule 163 (empty -> .) ]
+  ! SWAP            [ reduce using rule 163 (empty -> .) ]
+  ! FUNCTION_NAME   [ reduce using rule 163 (empty -> .) ]
+  ! DISPLAY         [ reduce using rule 163 (empty -> .) ]
+  ! IDENT           [ reduce using rule 163 (empty -> .) ]
+  ! FOR             [ reduce using rule 163 (empty -> .) ]
+  ! UNTIL           [ reduce using rule 163 (empty -> .) ]
+  ! REPEAT          [ reduce using rule 163 (empty -> .) ]
+  ! INPUT           [ reduce using rule 163 (empty -> .) ]
+  ! INT             [ reduce using rule 163 (empty -> .) ]
+  ! FLT             [ reduce using rule 163 (empty -> .) ]
+  ! BLN             [ reduce using rule 163 (empty -> .) ]
+  ! CHR             [ reduce using rule 163 (empty -> .) ]
+  ! STR             [ reduce using rule 163 (empty -> .) ]
 
     local_dec                      shift and go to state 156
     statements_tail                shift and go to state 228
@@ -4734,7 +4732,7 @@ state 186
     (112) statements_tail -> . loop_statement unli_newline statements_tail
     (113) statements_tail -> . function_call unli_newline statements_tail
     (114) statements_tail -> . output_statement unli_newline statements_tail
-    (164) empty -> .
+    (163) empty -> .
     (115) local_dec -> . empty
     (116) local_dec -> . var_statement
     (150) string_operation_statement -> . var_call string_operation_tail
@@ -4773,11 +4771,11 @@ state 186
   ! shift/reduce conflict for BLN resolved as shift
   ! shift/reduce conflict for CHR resolved as shift
   ! shift/reduce conflict for STR resolved as shift
-    NEWLINE         reduce using rule 164 (empty -> .)
-    RBRACE          reduce using rule 164 (empty -> .)
-    REVIVE          reduce using rule 164 (empty -> .)
-    SHIFT           reduce using rule 164 (empty -> .)
-    OTHERWISE       reduce using rule 164 (empty -> .)
+    NEWLINE         reduce using rule 163 (empty -> .)
+    RBRACE          reduce using rule 163 (empty -> .)
+    REVIVE          reduce using rule 163 (empty -> .)
+    SHIFT           reduce using rule 163 (empty -> .)
+    OTHERWISE       reduce using rule 163 (empty -> .)
     CHECK           shift and go to state 166
     SWAP            shift and go to state 167
     FUNCTION_NAME   shift and go to state 171
@@ -4793,20 +4791,20 @@ state 186
     CHR             shift and go to state 12
     STR             shift and go to state 13
 
-  ! CHECK           [ reduce using rule 164 (empty -> .) ]
-  ! SWAP            [ reduce using rule 164 (empty -> .) ]
-  ! FUNCTION_NAME   [ reduce using rule 164 (empty -> .) ]
-  ! DISPLAY         [ reduce using rule 164 (empty -> .) ]
-  ! IDENT           [ reduce using rule 164 (empty -> .) ]
-  ! FOR             [ reduce using rule 164 (empty -> .) ]
-  ! UNTIL           [ reduce using rule 164 (empty -> .) ]
-  ! REPEAT          [ reduce using rule 164 (empty -> .) ]
-  ! INPUT           [ reduce using rule 164 (empty -> .) ]
-  ! INT             [ reduce using rule 164 (empty -> .) ]
-  ! FLT             [ reduce using rule 164 (empty -> .) ]
-  ! BLN             [ reduce using rule 164 (empty -> .) ]
-  ! CHR             [ reduce using rule 164 (empty -> .) ]
-  ! STR             [ reduce using rule 164 (empty -> .) ]
+  ! CHECK           [ reduce using rule 163 (empty -> .) ]
+  ! SWAP            [ reduce using rule 163 (empty -> .) ]
+  ! FUNCTION_NAME   [ reduce using rule 163 (empty -> .) ]
+  ! DISPLAY         [ reduce using rule 163 (empty -> .) ]
+  ! IDENT           [ reduce using rule 163 (empty -> .) ]
+  ! FOR             [ reduce using rule 163 (empty -> .) ]
+  ! UNTIL           [ reduce using rule 163 (empty -> .) ]
+  ! REPEAT          [ reduce using rule 163 (empty -> .) ]
+  ! INPUT           [ reduce using rule 163 (empty -> .) ]
+  ! INT             [ reduce using rule 163 (empty -> .) ]
+  ! FLT             [ reduce using rule 163 (empty -> .) ]
+  ! BLN             [ reduce using rule 163 (empty -> .) ]
+  ! CHR             [ reduce using rule 163 (empty -> .) ]
+  ! STR             [ reduce using rule 163 (empty -> .) ]
 
     string_operation_statement     shift and go to state 159
     statements_tail                shift and go to state 229
@@ -4836,7 +4834,7 @@ state 187
     (112) statements_tail -> . loop_statement unli_newline statements_tail
     (113) statements_tail -> . function_call unli_newline statements_tail
     (114) statements_tail -> . output_statement unli_newline statements_tail
-    (164) empty -> .
+    (163) empty -> .
     (115) local_dec -> . empty
     (116) local_dec -> . var_statement
     (150) string_operation_statement -> . var_call string_operation_tail
@@ -4875,11 +4873,11 @@ state 187
   ! shift/reduce conflict for BLN resolved as shift
   ! shift/reduce conflict for CHR resolved as shift
   ! shift/reduce conflict for STR resolved as shift
-    NEWLINE         reduce using rule 164 (empty -> .)
-    RBRACE          reduce using rule 164 (empty -> .)
-    REVIVE          reduce using rule 164 (empty -> .)
-    SHIFT           reduce using rule 164 (empty -> .)
-    OTHERWISE       reduce using rule 164 (empty -> .)
+    NEWLINE         reduce using rule 163 (empty -> .)
+    RBRACE          reduce using rule 163 (empty -> .)
+    REVIVE          reduce using rule 163 (empty -> .)
+    SHIFT           reduce using rule 163 (empty -> .)
+    OTHERWISE       reduce using rule 163 (empty -> .)
     CHECK           shift and go to state 166
     SWAP            shift and go to state 167
     FUNCTION_NAME   shift and go to state 171
@@ -4895,20 +4893,20 @@ state 187
     CHR             shift and go to state 12
     STR             shift and go to state 13
 
-  ! CHECK           [ reduce using rule 164 (empty -> .) ]
-  ! SWAP            [ reduce using rule 164 (empty -> .) ]
-  ! FUNCTION_NAME   [ reduce using rule 164 (empty -> .) ]
-  ! DISPLAY         [ reduce using rule 164 (empty -> .) ]
-  ! IDENT           [ reduce using rule 164 (empty -> .) ]
-  ! FOR             [ reduce using rule 164 (empty -> .) ]
-  ! UNTIL           [ reduce using rule 164 (empty -> .) ]
-  ! REPEAT          [ reduce using rule 164 (empty -> .) ]
-  ! INPUT           [ reduce using rule 164 (empty -> .) ]
-  ! INT             [ reduce using rule 164 (empty -> .) ]
-  ! FLT             [ reduce using rule 164 (empty -> .) ]
-  ! BLN             [ reduce using rule 164 (empty -> .) ]
-  ! CHR             [ reduce using rule 164 (empty -> .) ]
-  ! STR             [ reduce using rule 164 (empty -> .) ]
+  ! CHECK           [ reduce using rule 163 (empty -> .) ]
+  ! SWAP            [ reduce using rule 163 (empty -> .) ]
+  ! FUNCTION_NAME   [ reduce using rule 163 (empty -> .) ]
+  ! DISPLAY         [ reduce using rule 163 (empty -> .) ]
+  ! IDENT           [ reduce using rule 163 (empty -> .) ]
+  ! FOR             [ reduce using rule 163 (empty -> .) ]
+  ! UNTIL           [ reduce using rule 163 (empty -> .) ]
+  ! REPEAT          [ reduce using rule 163 (empty -> .) ]
+  ! INPUT           [ reduce using rule 163 (empty -> .) ]
+  ! INT             [ reduce using rule 163 (empty -> .) ]
+  ! FLT             [ reduce using rule 163 (empty -> .) ]
+  ! BLN             [ reduce using rule 163 (empty -> .) ]
+  ! CHR             [ reduce using rule 163 (empty -> .) ]
+  ! STR             [ reduce using rule 163 (empty -> .) ]
 
     conditional_statement          shift and go to state 160
     statements_tail                shift and go to state 230
@@ -4938,7 +4936,7 @@ state 188
     (112) statements_tail -> . loop_statement unli_newline statements_tail
     (113) statements_tail -> . function_call unli_newline statements_tail
     (114) statements_tail -> . output_statement unli_newline statements_tail
-    (164) empty -> .
+    (163) empty -> .
     (115) local_dec -> . empty
     (116) local_dec -> . var_statement
     (150) string_operation_statement -> . var_call string_operation_tail
@@ -4977,11 +4975,11 @@ state 188
   ! shift/reduce conflict for BLN resolved as shift
   ! shift/reduce conflict for CHR resolved as shift
   ! shift/reduce conflict for STR resolved as shift
-    NEWLINE         reduce using rule 164 (empty -> .)
-    RBRACE          reduce using rule 164 (empty -> .)
-    REVIVE          reduce using rule 164 (empty -> .)
-    SHIFT           reduce using rule 164 (empty -> .)
-    OTHERWISE       reduce using rule 164 (empty -> .)
+    NEWLINE         reduce using rule 163 (empty -> .)
+    RBRACE          reduce using rule 163 (empty -> .)
+    REVIVE          reduce using rule 163 (empty -> .)
+    SHIFT           reduce using rule 163 (empty -> .)
+    OTHERWISE       reduce using rule 163 (empty -> .)
     CHECK           shift and go to state 166
     SWAP            shift and go to state 167
     FUNCTION_NAME   shift and go to state 171
@@ -4997,20 +4995,20 @@ state 188
     CHR             shift and go to state 12
     STR             shift and go to state 13
 
-  ! CHECK           [ reduce using rule 164 (empty -> .) ]
-  ! SWAP            [ reduce using rule 164 (empty -> .) ]
-  ! FUNCTION_NAME   [ reduce using rule 164 (empty -> .) ]
-  ! DISPLAY         [ reduce using rule 164 (empty -> .) ]
-  ! IDENT           [ reduce using rule 164 (empty -> .) ]
-  ! FOR             [ reduce using rule 164 (empty -> .) ]
-  ! UNTIL           [ reduce using rule 164 (empty -> .) ]
-  ! REPEAT          [ reduce using rule 164 (empty -> .) ]
-  ! INPUT           [ reduce using rule 164 (empty -> .) ]
-  ! INT             [ reduce using rule 164 (empty -> .) ]
-  ! FLT             [ reduce using rule 164 (empty -> .) ]
-  ! BLN             [ reduce using rule 164 (empty -> .) ]
-  ! CHR             [ reduce using rule 164 (empty -> .) ]
-  ! STR             [ reduce using rule 164 (empty -> .) ]
+  ! CHECK           [ reduce using rule 163 (empty -> .) ]
+  ! SWAP            [ reduce using rule 163 (empty -> .) ]
+  ! FUNCTION_NAME   [ reduce using rule 163 (empty -> .) ]
+  ! DISPLAY         [ reduce using rule 163 (empty -> .) ]
+  ! IDENT           [ reduce using rule 163 (empty -> .) ]
+  ! FOR             [ reduce using rule 163 (empty -> .) ]
+  ! UNTIL           [ reduce using rule 163 (empty -> .) ]
+  ! REPEAT          [ reduce using rule 163 (empty -> .) ]
+  ! INPUT           [ reduce using rule 163 (empty -> .) ]
+  ! INT             [ reduce using rule 163 (empty -> .) ]
+  ! FLT             [ reduce using rule 163 (empty -> .) ]
+  ! BLN             [ reduce using rule 163 (empty -> .) ]
+  ! CHR             [ reduce using rule 163 (empty -> .) ]
+  ! STR             [ reduce using rule 163 (empty -> .) ]
 
     switch_statement               shift and go to state 161
     statements_tail                shift and go to state 231
@@ -5040,7 +5038,7 @@ state 189
     (112) statements_tail -> . loop_statement unli_newline statements_tail
     (113) statements_tail -> . function_call unli_newline statements_tail
     (114) statements_tail -> . output_statement unli_newline statements_tail
-    (164) empty -> .
+    (163) empty -> .
     (115) local_dec -> . empty
     (116) local_dec -> . var_statement
     (150) string_operation_statement -> . var_call string_operation_tail
@@ -5079,11 +5077,11 @@ state 189
   ! shift/reduce conflict for BLN resolved as shift
   ! shift/reduce conflict for CHR resolved as shift
   ! shift/reduce conflict for STR resolved as shift
-    NEWLINE         reduce using rule 164 (empty -> .)
-    RBRACE          reduce using rule 164 (empty -> .)
-    REVIVE          reduce using rule 164 (empty -> .)
-    SHIFT           reduce using rule 164 (empty -> .)
-    OTHERWISE       reduce using rule 164 (empty -> .)
+    NEWLINE         reduce using rule 163 (empty -> .)
+    RBRACE          reduce using rule 163 (empty -> .)
+    REVIVE          reduce using rule 163 (empty -> .)
+    SHIFT           reduce using rule 163 (empty -> .)
+    OTHERWISE       reduce using rule 163 (empty -> .)
     CHECK           shift and go to state 166
     SWAP            shift and go to state 167
     FUNCTION_NAME   shift and go to state 171
@@ -5099,20 +5097,20 @@ state 189
     CHR             shift and go to state 12
     STR             shift and go to state 13
 
-  ! CHECK           [ reduce using rule 164 (empty -> .) ]
-  ! SWAP            [ reduce using rule 164 (empty -> .) ]
-  ! FUNCTION_NAME   [ reduce using rule 164 (empty -> .) ]
-  ! DISPLAY         [ reduce using rule 164 (empty -> .) ]
-  ! IDENT           [ reduce using rule 164 (empty -> .) ]
-  ! FOR             [ reduce using rule 164 (empty -> .) ]
-  ! UNTIL           [ reduce using rule 164 (empty -> .) ]
-  ! REPEAT          [ reduce using rule 164 (empty -> .) ]
-  ! INPUT           [ reduce using rule 164 (empty -> .) ]
-  ! INT             [ reduce using rule 164 (empty -> .) ]
-  ! FLT             [ reduce using rule 164 (empty -> .) ]
-  ! BLN             [ reduce using rule 164 (empty -> .) ]
-  ! CHR             [ reduce using rule 164 (empty -> .) ]
-  ! STR             [ reduce using rule 164 (empty -> .) ]
+  ! CHECK           [ reduce using rule 163 (empty -> .) ]
+  ! SWAP            [ reduce using rule 163 (empty -> .) ]
+  ! FUNCTION_NAME   [ reduce using rule 163 (empty -> .) ]
+  ! DISPLAY         [ reduce using rule 163 (empty -> .) ]
+  ! IDENT           [ reduce using rule 163 (empty -> .) ]
+  ! FOR             [ reduce using rule 163 (empty -> .) ]
+  ! UNTIL           [ reduce using rule 163 (empty -> .) ]
+  ! REPEAT          [ reduce using rule 163 (empty -> .) ]
+  ! INPUT           [ reduce using rule 163 (empty -> .) ]
+  ! INT             [ reduce using rule 163 (empty -> .) ]
+  ! FLT             [ reduce using rule 163 (empty -> .) ]
+  ! BLN             [ reduce using rule 163 (empty -> .) ]
+  ! CHR             [ reduce using rule 163 (empty -> .) ]
+  ! STR             [ reduce using rule 163 (empty -> .) ]
 
     loop_statement                 shift and go to state 162
     statements_tail                shift and go to state 232
@@ -5142,7 +5140,7 @@ state 190
     (112) statements_tail -> . loop_statement unli_newline statements_tail
     (113) statements_tail -> . function_call unli_newline statements_tail
     (114) statements_tail -> . output_statement unli_newline statements_tail
-    (164) empty -> .
+    (163) empty -> .
     (115) local_dec -> . empty
     (116) local_dec -> . var_statement
     (150) string_operation_statement -> . var_call string_operation_tail
@@ -5181,11 +5179,11 @@ state 190
   ! shift/reduce conflict for BLN resolved as shift
   ! shift/reduce conflict for CHR resolved as shift
   ! shift/reduce conflict for STR resolved as shift
-    NEWLINE         reduce using rule 164 (empty -> .)
-    RBRACE          reduce using rule 164 (empty -> .)
-    REVIVE          reduce using rule 164 (empty -> .)
-    SHIFT           reduce using rule 164 (empty -> .)
-    OTHERWISE       reduce using rule 164 (empty -> .)
+    NEWLINE         reduce using rule 163 (empty -> .)
+    RBRACE          reduce using rule 163 (empty -> .)
+    REVIVE          reduce using rule 163 (empty -> .)
+    SHIFT           reduce using rule 163 (empty -> .)
+    OTHERWISE       reduce using rule 163 (empty -> .)
     CHECK           shift and go to state 166
     SWAP            shift and go to state 167
     FUNCTION_NAME   shift and go to state 171
@@ -5201,20 +5199,20 @@ state 190
     CHR             shift and go to state 12
     STR             shift and go to state 13
 
-  ! CHECK           [ reduce using rule 164 (empty -> .) ]
-  ! SWAP            [ reduce using rule 164 (empty -> .) ]
-  ! FUNCTION_NAME   [ reduce using rule 164 (empty -> .) ]
-  ! DISPLAY         [ reduce using rule 164 (empty -> .) ]
-  ! IDENT           [ reduce using rule 164 (empty -> .) ]
-  ! FOR             [ reduce using rule 164 (empty -> .) ]
-  ! UNTIL           [ reduce using rule 164 (empty -> .) ]
-  ! REPEAT          [ reduce using rule 164 (empty -> .) ]
-  ! INPUT           [ reduce using rule 164 (empty -> .) ]
-  ! INT             [ reduce using rule 164 (empty -> .) ]
-  ! FLT             [ reduce using rule 164 (empty -> .) ]
-  ! BLN             [ reduce using rule 164 (empty -> .) ]
-  ! CHR             [ reduce using rule 164 (empty -> .) ]
-  ! STR             [ reduce using rule 164 (empty -> .) ]
+  ! CHECK           [ reduce using rule 163 (empty -> .) ]
+  ! SWAP            [ reduce using rule 163 (empty -> .) ]
+  ! FUNCTION_NAME   [ reduce using rule 163 (empty -> .) ]
+  ! DISPLAY         [ reduce using rule 163 (empty -> .) ]
+  ! IDENT           [ reduce using rule 163 (empty -> .) ]
+  ! FOR             [ reduce using rule 163 (empty -> .) ]
+  ! UNTIL           [ reduce using rule 163 (empty -> .) ]
+  ! REPEAT          [ reduce using rule 163 (empty -> .) ]
+  ! INPUT           [ reduce using rule 163 (empty -> .) ]
+  ! INT             [ reduce using rule 163 (empty -> .) ]
+  ! FLT             [ reduce using rule 163 (empty -> .) ]
+  ! BLN             [ reduce using rule 163 (empty -> .) ]
+  ! CHR             [ reduce using rule 163 (empty -> .) ]
+  ! STR             [ reduce using rule 163 (empty -> .) ]
 
     function_call                  shift and go to state 163
     statements_tail                shift and go to state 233
@@ -5244,7 +5242,7 @@ state 191
     (112) statements_tail -> . loop_statement unli_newline statements_tail
     (113) statements_tail -> . function_call unli_newline statements_tail
     (114) statements_tail -> . output_statement unli_newline statements_tail
-    (164) empty -> .
+    (163) empty -> .
     (115) local_dec -> . empty
     (116) local_dec -> . var_statement
     (150) string_operation_statement -> . var_call string_operation_tail
@@ -5283,11 +5281,11 @@ state 191
   ! shift/reduce conflict for BLN resolved as shift
   ! shift/reduce conflict for CHR resolved as shift
   ! shift/reduce conflict for STR resolved as shift
-    NEWLINE         reduce using rule 164 (empty -> .)
-    RBRACE          reduce using rule 164 (empty -> .)
-    REVIVE          reduce using rule 164 (empty -> .)
-    SHIFT           reduce using rule 164 (empty -> .)
-    OTHERWISE       reduce using rule 164 (empty -> .)
+    NEWLINE         reduce using rule 163 (empty -> .)
+    RBRACE          reduce using rule 163 (empty -> .)
+    REVIVE          reduce using rule 163 (empty -> .)
+    SHIFT           reduce using rule 163 (empty -> .)
+    OTHERWISE       reduce using rule 163 (empty -> .)
     CHECK           shift and go to state 166
     SWAP            shift and go to state 167
     FUNCTION_NAME   shift and go to state 171
@@ -5303,20 +5301,20 @@ state 191
     CHR             shift and go to state 12
     STR             shift and go to state 13
 
-  ! CHECK           [ reduce using rule 164 (empty -> .) ]
-  ! SWAP            [ reduce using rule 164 (empty -> .) ]
-  ! FUNCTION_NAME   [ reduce using rule 164 (empty -> .) ]
-  ! DISPLAY         [ reduce using rule 164 (empty -> .) ]
-  ! IDENT           [ reduce using rule 164 (empty -> .) ]
-  ! FOR             [ reduce using rule 164 (empty -> .) ]
-  ! UNTIL           [ reduce using rule 164 (empty -> .) ]
-  ! REPEAT          [ reduce using rule 164 (empty -> .) ]
-  ! INPUT           [ reduce using rule 164 (empty -> .) ]
-  ! INT             [ reduce using rule 164 (empty -> .) ]
-  ! FLT             [ reduce using rule 164 (empty -> .) ]
-  ! BLN             [ reduce using rule 164 (empty -> .) ]
-  ! CHR             [ reduce using rule 164 (empty -> .) ]
-  ! STR             [ reduce using rule 164 (empty -> .) ]
+  ! CHECK           [ reduce using rule 163 (empty -> .) ]
+  ! SWAP            [ reduce using rule 163 (empty -> .) ]
+  ! FUNCTION_NAME   [ reduce using rule 163 (empty -> .) ]
+  ! DISPLAY         [ reduce using rule 163 (empty -> .) ]
+  ! IDENT           [ reduce using rule 163 (empty -> .) ]
+  ! FOR             [ reduce using rule 163 (empty -> .) ]
+  ! UNTIL           [ reduce using rule 163 (empty -> .) ]
+  ! REPEAT          [ reduce using rule 163 (empty -> .) ]
+  ! INPUT           [ reduce using rule 163 (empty -> .) ]
+  ! INT             [ reduce using rule 163 (empty -> .) ]
+  ! FLT             [ reduce using rule 163 (empty -> .) ]
+  ! BLN             [ reduce using rule 163 (empty -> .) ]
+  ! CHR             [ reduce using rule 163 (empty -> .) ]
+  ! STR             [ reduce using rule 163 (empty -> .) ]
 
     output_statement               shift and go to state 164
     statements_tail                shift and go to state 234
@@ -5344,7 +5342,34 @@ state 192
 
 state 193
 
-    (151) string_operation_tail -> assign_op . value
+    (151) string_operation_tail -> PLUS . string_val stringcon_tail
+    (161) string_val -> . var_call
+    (162) string_val -> . STR_LIT
+    (82) var_call -> . IDENT var_call_tail
+
+    STR_LIT         shift and go to state 237
+    IDENT           shift and go to state 56
+
+    string_val                     shift and go to state 235
+    var_call                       shift and go to state 236
+
+state 194
+
+    (152) string_operation_tail -> update_tail .
+
+    NEWLINE         reduce using rule 152 (string_operation_tail -> update_tail .)
+
+
+state 195
+
+    (133) update_tail -> postfix .
+
+    NEWLINE         reduce using rule 133 (update_tail -> postfix .)
+    RPAREN          reduce using rule 133 (update_tail -> postfix .)
+
+
+state 196
+
     (134) update_tail -> assign_op . value
     (39) value -> . factor
     (40) value -> . type_cast
@@ -5388,7 +5413,7 @@ state 193
     STR_LIT         shift and go to state 62
     INPUT           shift and go to state 177
 
-    value                          shift and go to state 235
+    value                          shift and go to state 238
     factor                         shift and go to state 210
     type_cast                      shift and go to state 211
     expression                     shift and go to state 212
@@ -5399,161 +5424,7 @@ state 193
     input_statement                shift and go to state 172
     term                           shift and go to state 63
 
-state 194
-
-    (152) string_operation_tail -> PLUS . string_val stringcon_tail
-    (162) string_val -> . var_call
-    (163) string_val -> . STR_LIT
-    (82) var_call -> . IDENT var_call_tail
-
-    STR_LIT         shift and go to state 238
-    IDENT           shift and go to state 56
-
-    string_val                     shift and go to state 236
-    var_call                       shift and go to state 237
-
-state 195
-
-    (153) string_operation_tail -> update_tail .
-
-    NEWLINE         reduce using rule 153 (string_operation_tail -> update_tail .)
-
-
-state 196
-
-    (154) assign_op -> PLUS_EQ .
-
-    TILDE           reduce using rule 154 (assign_op -> PLUS_EQ .)
-    LPAREN          reduce using rule 154 (assign_op -> PLUS_EQ .)
-    CONVERT_TO_INT  reduce using rule 154 (assign_op -> PLUS_EQ .)
-    CONVERT_TO_FLT  reduce using rule 154 (assign_op -> PLUS_EQ .)
-    CONVERT_TO_BLN  reduce using rule 154 (assign_op -> PLUS_EQ .)
-    CONVERT_TO_STR  reduce using rule 154 (assign_op -> PLUS_EQ .)
-    FUNCTION_NAME   reduce using rule 154 (assign_op -> PLUS_EQ .)
-    IDENT           reduce using rule 154 (assign_op -> PLUS_EQ .)
-    INT_LIT         reduce using rule 154 (assign_op -> PLUS_EQ .)
-    FLT_LIT         reduce using rule 154 (assign_op -> PLUS_EQ .)
-    DAY             reduce using rule 154 (assign_op -> PLUS_EQ .)
-    NIGHT           reduce using rule 154 (assign_op -> PLUS_EQ .)
-    CHR_LIT         reduce using rule 154 (assign_op -> PLUS_EQ .)
-    STR_LIT         reduce using rule 154 (assign_op -> PLUS_EQ .)
-    INPUT           reduce using rule 154 (assign_op -> PLUS_EQ .)
-
-
 state 197
-
-    (155) assign_op -> MINUS_EQ .
-
-    TILDE           reduce using rule 155 (assign_op -> MINUS_EQ .)
-    LPAREN          reduce using rule 155 (assign_op -> MINUS_EQ .)
-    CONVERT_TO_INT  reduce using rule 155 (assign_op -> MINUS_EQ .)
-    CONVERT_TO_FLT  reduce using rule 155 (assign_op -> MINUS_EQ .)
-    CONVERT_TO_BLN  reduce using rule 155 (assign_op -> MINUS_EQ .)
-    CONVERT_TO_STR  reduce using rule 155 (assign_op -> MINUS_EQ .)
-    FUNCTION_NAME   reduce using rule 155 (assign_op -> MINUS_EQ .)
-    IDENT           reduce using rule 155 (assign_op -> MINUS_EQ .)
-    INT_LIT         reduce using rule 155 (assign_op -> MINUS_EQ .)
-    FLT_LIT         reduce using rule 155 (assign_op -> MINUS_EQ .)
-    DAY             reduce using rule 155 (assign_op -> MINUS_EQ .)
-    NIGHT           reduce using rule 155 (assign_op -> MINUS_EQ .)
-    CHR_LIT         reduce using rule 155 (assign_op -> MINUS_EQ .)
-    STR_LIT         reduce using rule 155 (assign_op -> MINUS_EQ .)
-    INPUT           reduce using rule 155 (assign_op -> MINUS_EQ .)
-
-
-state 198
-
-    (156) assign_op -> MUL_EQ .
-
-    TILDE           reduce using rule 156 (assign_op -> MUL_EQ .)
-    LPAREN          reduce using rule 156 (assign_op -> MUL_EQ .)
-    CONVERT_TO_INT  reduce using rule 156 (assign_op -> MUL_EQ .)
-    CONVERT_TO_FLT  reduce using rule 156 (assign_op -> MUL_EQ .)
-    CONVERT_TO_BLN  reduce using rule 156 (assign_op -> MUL_EQ .)
-    CONVERT_TO_STR  reduce using rule 156 (assign_op -> MUL_EQ .)
-    FUNCTION_NAME   reduce using rule 156 (assign_op -> MUL_EQ .)
-    IDENT           reduce using rule 156 (assign_op -> MUL_EQ .)
-    INT_LIT         reduce using rule 156 (assign_op -> MUL_EQ .)
-    FLT_LIT         reduce using rule 156 (assign_op -> MUL_EQ .)
-    DAY             reduce using rule 156 (assign_op -> MUL_EQ .)
-    NIGHT           reduce using rule 156 (assign_op -> MUL_EQ .)
-    CHR_LIT         reduce using rule 156 (assign_op -> MUL_EQ .)
-    STR_LIT         reduce using rule 156 (assign_op -> MUL_EQ .)
-    INPUT           reduce using rule 156 (assign_op -> MUL_EQ .)
-
-
-state 199
-
-    (157) assign_op -> DIV_EQ .
-
-    TILDE           reduce using rule 157 (assign_op -> DIV_EQ .)
-    LPAREN          reduce using rule 157 (assign_op -> DIV_EQ .)
-    CONVERT_TO_INT  reduce using rule 157 (assign_op -> DIV_EQ .)
-    CONVERT_TO_FLT  reduce using rule 157 (assign_op -> DIV_EQ .)
-    CONVERT_TO_BLN  reduce using rule 157 (assign_op -> DIV_EQ .)
-    CONVERT_TO_STR  reduce using rule 157 (assign_op -> DIV_EQ .)
-    FUNCTION_NAME   reduce using rule 157 (assign_op -> DIV_EQ .)
-    IDENT           reduce using rule 157 (assign_op -> DIV_EQ .)
-    INT_LIT         reduce using rule 157 (assign_op -> DIV_EQ .)
-    FLT_LIT         reduce using rule 157 (assign_op -> DIV_EQ .)
-    DAY             reduce using rule 157 (assign_op -> DIV_EQ .)
-    NIGHT           reduce using rule 157 (assign_op -> DIV_EQ .)
-    CHR_LIT         reduce using rule 157 (assign_op -> DIV_EQ .)
-    STR_LIT         reduce using rule 157 (assign_op -> DIV_EQ .)
-    INPUT           reduce using rule 157 (assign_op -> DIV_EQ .)
-
-
-state 200
-
-    (158) assign_op -> MOD_EQ .
-
-    TILDE           reduce using rule 158 (assign_op -> MOD_EQ .)
-    LPAREN          reduce using rule 158 (assign_op -> MOD_EQ .)
-    CONVERT_TO_INT  reduce using rule 158 (assign_op -> MOD_EQ .)
-    CONVERT_TO_FLT  reduce using rule 158 (assign_op -> MOD_EQ .)
-    CONVERT_TO_BLN  reduce using rule 158 (assign_op -> MOD_EQ .)
-    CONVERT_TO_STR  reduce using rule 158 (assign_op -> MOD_EQ .)
-    FUNCTION_NAME   reduce using rule 158 (assign_op -> MOD_EQ .)
-    IDENT           reduce using rule 158 (assign_op -> MOD_EQ .)
-    INT_LIT         reduce using rule 158 (assign_op -> MOD_EQ .)
-    FLT_LIT         reduce using rule 158 (assign_op -> MOD_EQ .)
-    DAY             reduce using rule 158 (assign_op -> MOD_EQ .)
-    NIGHT           reduce using rule 158 (assign_op -> MOD_EQ .)
-    CHR_LIT         reduce using rule 158 (assign_op -> MOD_EQ .)
-    STR_LIT         reduce using rule 158 (assign_op -> MOD_EQ .)
-    INPUT           reduce using rule 158 (assign_op -> MOD_EQ .)
-
-
-state 201
-
-    (159) assign_op -> EQ .
-
-    TILDE           reduce using rule 159 (assign_op -> EQ .)
-    LPAREN          reduce using rule 159 (assign_op -> EQ .)
-    CONVERT_TO_INT  reduce using rule 159 (assign_op -> EQ .)
-    CONVERT_TO_FLT  reduce using rule 159 (assign_op -> EQ .)
-    CONVERT_TO_BLN  reduce using rule 159 (assign_op -> EQ .)
-    CONVERT_TO_STR  reduce using rule 159 (assign_op -> EQ .)
-    FUNCTION_NAME   reduce using rule 159 (assign_op -> EQ .)
-    IDENT           reduce using rule 159 (assign_op -> EQ .)
-    INT_LIT         reduce using rule 159 (assign_op -> EQ .)
-    FLT_LIT         reduce using rule 159 (assign_op -> EQ .)
-    DAY             reduce using rule 159 (assign_op -> EQ .)
-    NIGHT           reduce using rule 159 (assign_op -> EQ .)
-    CHR_LIT         reduce using rule 159 (assign_op -> EQ .)
-    STR_LIT         reduce using rule 159 (assign_op -> EQ .)
-    INPUT           reduce using rule 159 (assign_op -> EQ .)
-
-
-state 202
-
-    (133) update_tail -> postfix .
-
-    NEWLINE         reduce using rule 133 (update_tail -> postfix .)
-    RPAREN          reduce using rule 133 (update_tail -> postfix .)
-
-
-state 203
 
     (135) postfix -> PLUS_PLUS .
 
@@ -5561,12 +5432,138 @@ state 203
     RPAREN          reduce using rule 135 (postfix -> PLUS_PLUS .)
 
 
-state 204
+state 198
 
     (136) postfix -> MINUS_MINUS .
 
     NEWLINE         reduce using rule 136 (postfix -> MINUS_MINUS .)
     RPAREN          reduce using rule 136 (postfix -> MINUS_MINUS .)
+
+
+state 199
+
+    (153) assign_op -> PLUS_EQ .
+
+    TILDE           reduce using rule 153 (assign_op -> PLUS_EQ .)
+    LPAREN          reduce using rule 153 (assign_op -> PLUS_EQ .)
+    CONVERT_TO_INT  reduce using rule 153 (assign_op -> PLUS_EQ .)
+    CONVERT_TO_FLT  reduce using rule 153 (assign_op -> PLUS_EQ .)
+    CONVERT_TO_BLN  reduce using rule 153 (assign_op -> PLUS_EQ .)
+    CONVERT_TO_STR  reduce using rule 153 (assign_op -> PLUS_EQ .)
+    FUNCTION_NAME   reduce using rule 153 (assign_op -> PLUS_EQ .)
+    IDENT           reduce using rule 153 (assign_op -> PLUS_EQ .)
+    INT_LIT         reduce using rule 153 (assign_op -> PLUS_EQ .)
+    FLT_LIT         reduce using rule 153 (assign_op -> PLUS_EQ .)
+    DAY             reduce using rule 153 (assign_op -> PLUS_EQ .)
+    NIGHT           reduce using rule 153 (assign_op -> PLUS_EQ .)
+    CHR_LIT         reduce using rule 153 (assign_op -> PLUS_EQ .)
+    STR_LIT         reduce using rule 153 (assign_op -> PLUS_EQ .)
+    INPUT           reduce using rule 153 (assign_op -> PLUS_EQ .)
+
+
+state 200
+
+    (154) assign_op -> MINUS_EQ .
+
+    TILDE           reduce using rule 154 (assign_op -> MINUS_EQ .)
+    LPAREN          reduce using rule 154 (assign_op -> MINUS_EQ .)
+    CONVERT_TO_INT  reduce using rule 154 (assign_op -> MINUS_EQ .)
+    CONVERT_TO_FLT  reduce using rule 154 (assign_op -> MINUS_EQ .)
+    CONVERT_TO_BLN  reduce using rule 154 (assign_op -> MINUS_EQ .)
+    CONVERT_TO_STR  reduce using rule 154 (assign_op -> MINUS_EQ .)
+    FUNCTION_NAME   reduce using rule 154 (assign_op -> MINUS_EQ .)
+    IDENT           reduce using rule 154 (assign_op -> MINUS_EQ .)
+    INT_LIT         reduce using rule 154 (assign_op -> MINUS_EQ .)
+    FLT_LIT         reduce using rule 154 (assign_op -> MINUS_EQ .)
+    DAY             reduce using rule 154 (assign_op -> MINUS_EQ .)
+    NIGHT           reduce using rule 154 (assign_op -> MINUS_EQ .)
+    CHR_LIT         reduce using rule 154 (assign_op -> MINUS_EQ .)
+    STR_LIT         reduce using rule 154 (assign_op -> MINUS_EQ .)
+    INPUT           reduce using rule 154 (assign_op -> MINUS_EQ .)
+
+
+state 201
+
+    (155) assign_op -> MUL_EQ .
+
+    TILDE           reduce using rule 155 (assign_op -> MUL_EQ .)
+    LPAREN          reduce using rule 155 (assign_op -> MUL_EQ .)
+    CONVERT_TO_INT  reduce using rule 155 (assign_op -> MUL_EQ .)
+    CONVERT_TO_FLT  reduce using rule 155 (assign_op -> MUL_EQ .)
+    CONVERT_TO_BLN  reduce using rule 155 (assign_op -> MUL_EQ .)
+    CONVERT_TO_STR  reduce using rule 155 (assign_op -> MUL_EQ .)
+    FUNCTION_NAME   reduce using rule 155 (assign_op -> MUL_EQ .)
+    IDENT           reduce using rule 155 (assign_op -> MUL_EQ .)
+    INT_LIT         reduce using rule 155 (assign_op -> MUL_EQ .)
+    FLT_LIT         reduce using rule 155 (assign_op -> MUL_EQ .)
+    DAY             reduce using rule 155 (assign_op -> MUL_EQ .)
+    NIGHT           reduce using rule 155 (assign_op -> MUL_EQ .)
+    CHR_LIT         reduce using rule 155 (assign_op -> MUL_EQ .)
+    STR_LIT         reduce using rule 155 (assign_op -> MUL_EQ .)
+    INPUT           reduce using rule 155 (assign_op -> MUL_EQ .)
+
+
+state 202
+
+    (156) assign_op -> DIV_EQ .
+
+    TILDE           reduce using rule 156 (assign_op -> DIV_EQ .)
+    LPAREN          reduce using rule 156 (assign_op -> DIV_EQ .)
+    CONVERT_TO_INT  reduce using rule 156 (assign_op -> DIV_EQ .)
+    CONVERT_TO_FLT  reduce using rule 156 (assign_op -> DIV_EQ .)
+    CONVERT_TO_BLN  reduce using rule 156 (assign_op -> DIV_EQ .)
+    CONVERT_TO_STR  reduce using rule 156 (assign_op -> DIV_EQ .)
+    FUNCTION_NAME   reduce using rule 156 (assign_op -> DIV_EQ .)
+    IDENT           reduce using rule 156 (assign_op -> DIV_EQ .)
+    INT_LIT         reduce using rule 156 (assign_op -> DIV_EQ .)
+    FLT_LIT         reduce using rule 156 (assign_op -> DIV_EQ .)
+    DAY             reduce using rule 156 (assign_op -> DIV_EQ .)
+    NIGHT           reduce using rule 156 (assign_op -> DIV_EQ .)
+    CHR_LIT         reduce using rule 156 (assign_op -> DIV_EQ .)
+    STR_LIT         reduce using rule 156 (assign_op -> DIV_EQ .)
+    INPUT           reduce using rule 156 (assign_op -> DIV_EQ .)
+
+
+state 203
+
+    (157) assign_op -> MOD_EQ .
+
+    TILDE           reduce using rule 157 (assign_op -> MOD_EQ .)
+    LPAREN          reduce using rule 157 (assign_op -> MOD_EQ .)
+    CONVERT_TO_INT  reduce using rule 157 (assign_op -> MOD_EQ .)
+    CONVERT_TO_FLT  reduce using rule 157 (assign_op -> MOD_EQ .)
+    CONVERT_TO_BLN  reduce using rule 157 (assign_op -> MOD_EQ .)
+    CONVERT_TO_STR  reduce using rule 157 (assign_op -> MOD_EQ .)
+    FUNCTION_NAME   reduce using rule 157 (assign_op -> MOD_EQ .)
+    IDENT           reduce using rule 157 (assign_op -> MOD_EQ .)
+    INT_LIT         reduce using rule 157 (assign_op -> MOD_EQ .)
+    FLT_LIT         reduce using rule 157 (assign_op -> MOD_EQ .)
+    DAY             reduce using rule 157 (assign_op -> MOD_EQ .)
+    NIGHT           reduce using rule 157 (assign_op -> MOD_EQ .)
+    CHR_LIT         reduce using rule 157 (assign_op -> MOD_EQ .)
+    STR_LIT         reduce using rule 157 (assign_op -> MOD_EQ .)
+    INPUT           reduce using rule 157 (assign_op -> MOD_EQ .)
+
+
+state 204
+
+    (158) assign_op -> EQ .
+
+    TILDE           reduce using rule 158 (assign_op -> EQ .)
+    LPAREN          reduce using rule 158 (assign_op -> EQ .)
+    CONVERT_TO_INT  reduce using rule 158 (assign_op -> EQ .)
+    CONVERT_TO_FLT  reduce using rule 158 (assign_op -> EQ .)
+    CONVERT_TO_BLN  reduce using rule 158 (assign_op -> EQ .)
+    CONVERT_TO_STR  reduce using rule 158 (assign_op -> EQ .)
+    FUNCTION_NAME   reduce using rule 158 (assign_op -> EQ .)
+    IDENT           reduce using rule 158 (assign_op -> EQ .)
+    INT_LIT         reduce using rule 158 (assign_op -> EQ .)
+    FLT_LIT         reduce using rule 158 (assign_op -> EQ .)
+    DAY             reduce using rule 158 (assign_op -> EQ .)
+    NIGHT           reduce using rule 158 (assign_op -> EQ .)
+    CHR_LIT         reduce using rule 158 (assign_op -> EQ .)
+    STR_LIT         reduce using rule 158 (assign_op -> EQ .)
+    INPUT           reduce using rule 158 (assign_op -> EQ .)
 
 
 state 205
@@ -5616,7 +5613,7 @@ state 207
     (137) function_call -> FUNCTION_NAME LPAREN . arguments RPAREN
     (139) arguments -> . empty
     (140) arguments -> . arg_value arg_tail
-    (164) empty -> .
+    (163) empty -> .
     (143) arg_value -> . literal
     (144) arg_value -> . var_call
     (52) literal -> . INT_LIT
@@ -5627,7 +5624,7 @@ state 207
     (57) literal -> . STR_LIT
     (82) var_call -> . IDENT var_call_tail
 
-    RPAREN          reduce using rule 164 (empty -> .)
+    RPAREN          reduce using rule 163 (empty -> .)
     INT_LIT         shift and go to state 57
     FLT_LIT         shift and go to state 58
     DAY             shift and go to state 59
@@ -5647,10 +5644,10 @@ state 208
     (145) output_statement -> DISPLAY value . next_val
     (147) next_val -> . empty
     (148) next_val -> . COMMA value next_val
-    (164) empty -> .
+    (163) empty -> .
 
     COMMA           shift and go to state 248
-    NEWLINE         reduce using rule 164 (empty -> .)
+    NEWLINE         reduce using rule 163 (empty -> .)
 
     next_val                       shift and go to state 246
     empty                          shift and go to state 247
@@ -5723,7 +5720,7 @@ state 210
     (69) factor_tail -> . DIVISION expression
     (70) factor_tail -> . MODULO expression
     (71) factor_tail -> . EXPONENT expression
-    (164) empty -> .
+    (163) empty -> .
 
   ! reduce/reduce conflict for COMMA resolved using rule 39 (value -> factor .)
   ! reduce/reduce conflict for NEWLINE resolved using rule 39 (value -> factor .)
@@ -5775,37 +5772,37 @@ state 210
     DIVISION        shift and go to state 78
     MODULO          shift and go to state 79
     EXPONENT        shift and go to state 80
-    GT              reduce using rule 164 (empty -> .)
-    LT              reduce using rule 164 (empty -> .)
-    EQ_EQ           reduce using rule 164 (empty -> .)
-    GT_EQ           reduce using rule 164 (empty -> .)
-    LT_EQ           reduce using rule 164 (empty -> .)
-    NOT_EQ          reduce using rule 164 (empty -> .)
-    AND             reduce using rule 164 (empty -> .)
-    OR              reduce using rule 164 (empty -> .)
+    GT              reduce using rule 163 (empty -> .)
+    LT              reduce using rule 163 (empty -> .)
+    EQ_EQ           reduce using rule 163 (empty -> .)
+    GT_EQ           reduce using rule 163 (empty -> .)
+    LT_EQ           reduce using rule 163 (empty -> .)
+    NOT_EQ          reduce using rule 163 (empty -> .)
+    AND             reduce using rule 163 (empty -> .)
+    OR              reduce using rule 163 (empty -> .)
 
-  ! COMMA           [ reduce using rule 164 (empty -> .) ]
-  ! NEWLINE         [ reduce using rule 164 (empty -> .) ]
-  ! CHECK           [ reduce using rule 164 (empty -> .) ]
-  ! SWAP            [ reduce using rule 164 (empty -> .) ]
-  ! FUNCTION_NAME   [ reduce using rule 164 (empty -> .) ]
-  ! DISPLAY         [ reduce using rule 164 (empty -> .) ]
-  ! IDENT           [ reduce using rule 164 (empty -> .) ]
-  ! FOR             [ reduce using rule 164 (empty -> .) ]
-  ! UNTIL           [ reduce using rule 164 (empty -> .) ]
-  ! REPEAT          [ reduce using rule 164 (empty -> .) ]
-  ! INPUT           [ reduce using rule 164 (empty -> .) ]
-  ! INT             [ reduce using rule 164 (empty -> .) ]
-  ! FLT             [ reduce using rule 164 (empty -> .) ]
-  ! BLN             [ reduce using rule 164 (empty -> .) ]
-  ! CHR             [ reduce using rule 164 (empty -> .) ]
-  ! STR             [ reduce using rule 164 (empty -> .) ]
-  ! RBRACE          [ reduce using rule 164 (empty -> .) ]
-  ! REVIVE          [ reduce using rule 164 (empty -> .) ]
-  ! SHIFT           [ reduce using rule 164 (empty -> .) ]
-  ! OTHERWISE       [ reduce using rule 164 (empty -> .) ]
-  ! RPAREN          [ reduce using rule 164 (empty -> .) ]
-  ! COLON           [ reduce using rule 164 (empty -> .) ]
+  ! COMMA           [ reduce using rule 163 (empty -> .) ]
+  ! NEWLINE         [ reduce using rule 163 (empty -> .) ]
+  ! CHECK           [ reduce using rule 163 (empty -> .) ]
+  ! SWAP            [ reduce using rule 163 (empty -> .) ]
+  ! FUNCTION_NAME   [ reduce using rule 163 (empty -> .) ]
+  ! DISPLAY         [ reduce using rule 163 (empty -> .) ]
+  ! IDENT           [ reduce using rule 163 (empty -> .) ]
+  ! FOR             [ reduce using rule 163 (empty -> .) ]
+  ! UNTIL           [ reduce using rule 163 (empty -> .) ]
+  ! REPEAT          [ reduce using rule 163 (empty -> .) ]
+  ! INPUT           [ reduce using rule 163 (empty -> .) ]
+  ! INT             [ reduce using rule 163 (empty -> .) ]
+  ! FLT             [ reduce using rule 163 (empty -> .) ]
+  ! BLN             [ reduce using rule 163 (empty -> .) ]
+  ! CHR             [ reduce using rule 163 (empty -> .) ]
+  ! STR             [ reduce using rule 163 (empty -> .) ]
+  ! RBRACE          [ reduce using rule 163 (empty -> .) ]
+  ! REVIVE          [ reduce using rule 163 (empty -> .) ]
+  ! SHIFT           [ reduce using rule 163 (empty -> .) ]
+  ! OTHERWISE       [ reduce using rule 163 (empty -> .) ]
+  ! RPAREN          [ reduce using rule 163 (empty -> .) ]
+  ! COLON           [ reduce using rule 163 (empty -> .) ]
 
     factor_tail                    shift and go to state 73
     empty                          shift and go to state 74
@@ -5971,27 +5968,27 @@ state 220
     (130) repeat_until -> REPEAT LBRACE . maybe_newline statements RBRACE UNTIL LPAREN expression RPAREN
     (2) maybe_newline -> . empty
     (3) maybe_newline -> . NEWLINE maybe_newline
-    (164) empty -> .
+    (163) empty -> .
 
   ! shift/reduce conflict for NEWLINE resolved as shift
     NEWLINE         shift and go to state 17
-    INT             reduce using rule 164 (empty -> .)
-    FLT             reduce using rule 164 (empty -> .)
-    BLN             reduce using rule 164 (empty -> .)
-    CHR             reduce using rule 164 (empty -> .)
-    STR             reduce using rule 164 (empty -> .)
-    RBRACE          reduce using rule 164 (empty -> .)
-    CHECK           reduce using rule 164 (empty -> .)
-    SWAP            reduce using rule 164 (empty -> .)
-    FUNCTION_NAME   reduce using rule 164 (empty -> .)
-    DISPLAY         reduce using rule 164 (empty -> .)
-    IDENT           reduce using rule 164 (empty -> .)
-    FOR             reduce using rule 164 (empty -> .)
-    UNTIL           reduce using rule 164 (empty -> .)
-    REPEAT          reduce using rule 164 (empty -> .)
-    INPUT           reduce using rule 164 (empty -> .)
+    INT             reduce using rule 163 (empty -> .)
+    FLT             reduce using rule 163 (empty -> .)
+    BLN             reduce using rule 163 (empty -> .)
+    CHR             reduce using rule 163 (empty -> .)
+    STR             reduce using rule 163 (empty -> .)
+    RBRACE          reduce using rule 163 (empty -> .)
+    CHECK           reduce using rule 163 (empty -> .)
+    SWAP            reduce using rule 163 (empty -> .)
+    FUNCTION_NAME   reduce using rule 163 (empty -> .)
+    DISPLAY         reduce using rule 163 (empty -> .)
+    IDENT           reduce using rule 163 (empty -> .)
+    FOR             reduce using rule 163 (empty -> .)
+    UNTIL           reduce using rule 163 (empty -> .)
+    REPEAT          reduce using rule 163 (empty -> .)
+    INPUT           reduce using rule 163 (empty -> .)
 
-  ! NEWLINE         [ reduce using rule 164 (empty -> .) ]
+  ! NEWLINE         [ reduce using rule 163 (empty -> .) ]
 
     maybe_newline                  shift and go to state 258
     empty                          shift and go to state 16
@@ -6008,28 +6005,28 @@ state 222
     (23) var_tail -> EQ tail_value . var_tail2
     (25) var_tail2 -> . empty
     (26) var_tail2 -> . COMMA IDENT var_tail
-    (164) empty -> .
+    (163) empty -> .
 
     COMMA           shift and go to state 262
-    NEWLINE         reduce using rule 164 (empty -> .)
-    CHECK           reduce using rule 164 (empty -> .)
-    SWAP            reduce using rule 164 (empty -> .)
-    FUNCTION_NAME   reduce using rule 164 (empty -> .)
-    DISPLAY         reduce using rule 164 (empty -> .)
-    IDENT           reduce using rule 164 (empty -> .)
-    FOR             reduce using rule 164 (empty -> .)
-    UNTIL           reduce using rule 164 (empty -> .)
-    REPEAT          reduce using rule 164 (empty -> .)
-    INPUT           reduce using rule 164 (empty -> .)
-    INT             reduce using rule 164 (empty -> .)
-    FLT             reduce using rule 164 (empty -> .)
-    BLN             reduce using rule 164 (empty -> .)
-    CHR             reduce using rule 164 (empty -> .)
-    STR             reduce using rule 164 (empty -> .)
-    RBRACE          reduce using rule 164 (empty -> .)
-    REVIVE          reduce using rule 164 (empty -> .)
-    SHIFT           reduce using rule 164 (empty -> .)
-    OTHERWISE       reduce using rule 164 (empty -> .)
+    NEWLINE         reduce using rule 163 (empty -> .)
+    CHECK           reduce using rule 163 (empty -> .)
+    SWAP            reduce using rule 163 (empty -> .)
+    FUNCTION_NAME   reduce using rule 163 (empty -> .)
+    DISPLAY         reduce using rule 163 (empty -> .)
+    IDENT           reduce using rule 163 (empty -> .)
+    FOR             reduce using rule 163 (empty -> .)
+    UNTIL           reduce using rule 163 (empty -> .)
+    REPEAT          reduce using rule 163 (empty -> .)
+    INPUT           reduce using rule 163 (empty -> .)
+    INT             reduce using rule 163 (empty -> .)
+    FLT             reduce using rule 163 (empty -> .)
+    BLN             reduce using rule 163 (empty -> .)
+    CHR             reduce using rule 163 (empty -> .)
+    STR             reduce using rule 163 (empty -> .)
+    RBRACE          reduce using rule 163 (empty -> .)
+    REVIVE          reduce using rule 163 (empty -> .)
+    SHIFT           reduce using rule 163 (empty -> .)
+    OTHERWISE       reduce using rule 163 (empty -> .)
 
     var_tail2                      shift and go to state 260
     empty                          shift and go to state 261
@@ -6087,29 +6084,29 @@ state 225
     (22) var_tail -> . empty
     (23) var_tail -> . EQ tail_value var_tail2
     (24) var_tail -> . COMMA IDENT var_tail
-    (164) empty -> .
+    (163) empty -> .
 
     EQ              shift and go to state 180
     COMMA           shift and go to state 181
-    NEWLINE         reduce using rule 164 (empty -> .)
-    CHECK           reduce using rule 164 (empty -> .)
-    SWAP            reduce using rule 164 (empty -> .)
-    FUNCTION_NAME   reduce using rule 164 (empty -> .)
-    DISPLAY         reduce using rule 164 (empty -> .)
-    IDENT           reduce using rule 164 (empty -> .)
-    FOR             reduce using rule 164 (empty -> .)
-    UNTIL           reduce using rule 164 (empty -> .)
-    REPEAT          reduce using rule 164 (empty -> .)
-    INPUT           reduce using rule 164 (empty -> .)
-    INT             reduce using rule 164 (empty -> .)
-    FLT             reduce using rule 164 (empty -> .)
-    BLN             reduce using rule 164 (empty -> .)
-    CHR             reduce using rule 164 (empty -> .)
-    STR             reduce using rule 164 (empty -> .)
-    RBRACE          reduce using rule 164 (empty -> .)
-    REVIVE          reduce using rule 164 (empty -> .)
-    SHIFT           reduce using rule 164 (empty -> .)
-    OTHERWISE       reduce using rule 164 (empty -> .)
+    NEWLINE         reduce using rule 163 (empty -> .)
+    CHECK           reduce using rule 163 (empty -> .)
+    SWAP            reduce using rule 163 (empty -> .)
+    FUNCTION_NAME   reduce using rule 163 (empty -> .)
+    DISPLAY         reduce using rule 163 (empty -> .)
+    IDENT           reduce using rule 163 (empty -> .)
+    FOR             reduce using rule 163 (empty -> .)
+    UNTIL           reduce using rule 163 (empty -> .)
+    REPEAT          reduce using rule 163 (empty -> .)
+    INPUT           reduce using rule 163 (empty -> .)
+    INT             reduce using rule 163 (empty -> .)
+    FLT             reduce using rule 163 (empty -> .)
+    BLN             reduce using rule 163 (empty -> .)
+    CHR             reduce using rule 163 (empty -> .)
+    STR             reduce using rule 163 (empty -> .)
+    RBRACE          reduce using rule 163 (empty -> .)
+    REVIVE          reduce using rule 163 (empty -> .)
+    SHIFT           reduce using rule 163 (empty -> .)
+    OTHERWISE       reduce using rule 163 (empty -> .)
 
     var_tail                       shift and go to state 264
     empty                          shift and go to state 179
@@ -6208,42 +6205,39 @@ state 234
 
 state 235
 
-    (151) string_operation_tail -> assign_op value .
-    (134) update_tail -> assign_op value .
-
-  ! reduce/reduce conflict for NEWLINE resolved using rule 134 (update_tail -> assign_op value .)
-    NEWLINE         reduce using rule 134 (update_tail -> assign_op value .)
-
-  ! NEWLINE         [ reduce using rule 151 (string_operation_tail -> assign_op value .) ]
-
-
-state 236
-
-    (152) string_operation_tail -> PLUS string_val . stringcon_tail
-    (160) stringcon_tail -> . empty
-    (161) stringcon_tail -> . PLUS string_val stringcon_tail
-    (164) empty -> .
+    (151) string_operation_tail -> PLUS string_val . stringcon_tail
+    (159) stringcon_tail -> . empty
+    (160) stringcon_tail -> . PLUS string_val stringcon_tail
+    (163) empty -> .
 
     PLUS            shift and go to state 266
-    NEWLINE         reduce using rule 164 (empty -> .)
+    NEWLINE         reduce using rule 163 (empty -> .)
 
     stringcon_tail                 shift and go to state 267
     empty                          shift and go to state 268
 
+state 236
+
+    (161) string_val -> var_call .
+
+    PLUS            reduce using rule 161 (string_val -> var_call .)
+    NEWLINE         reduce using rule 161 (string_val -> var_call .)
+
+
 state 237
 
-    (162) string_val -> var_call .
+    (162) string_val -> STR_LIT .
 
-    PLUS            reduce using rule 162 (string_val -> var_call .)
-    NEWLINE         reduce using rule 162 (string_val -> var_call .)
+    PLUS            reduce using rule 162 (string_val -> STR_LIT .)
+    NEWLINE         reduce using rule 162 (string_val -> STR_LIT .)
 
 
 state 238
 
-    (163) string_val -> STR_LIT .
+    (134) update_tail -> assign_op value .
 
-    PLUS            reduce using rule 163 (string_val -> STR_LIT .)
-    NEWLINE         reduce using rule 163 (string_val -> STR_LIT .)
+    NEWLINE         reduce using rule 134 (update_tail -> assign_op value .)
+    RPAREN          reduce using rule 134 (update_tail -> assign_op value .)
 
 
 state 239
@@ -6279,10 +6273,10 @@ state 243
     (140) arguments -> arg_value . arg_tail
     (141) arg_tail -> . empty
     (142) arg_tail -> . COMMA arg_value arg_tail
-    (164) empty -> .
+    (163) empty -> .
 
     COMMA           shift and go to state 274
-    RPAREN          reduce using rule 164 (empty -> .)
+    RPAREN          reduce using rule 163 (empty -> .)
 
     arg_tail                       shift and go to state 272
     empty                          shift and go to state 273
@@ -6379,10 +6373,10 @@ state 249
     (146) output_statement -> DISPLAY LPAREN value . next_val RPAREN
     (147) next_val -> . empty
     (148) next_val -> . COMMA value next_val
-    (164) empty -> .
+    (163) empty -> .
 
     COMMA           shift and go to state 248
-    RPAREN          reduce using rule 164 (empty -> .)
+    RPAREN          reduce using rule 163 (empty -> .)
 
     next_val                       shift and go to state 276
     empty                          shift and go to state 247
@@ -6605,7 +6599,7 @@ state 258
     (130) repeat_until -> REPEAT LBRACE maybe_newline . statements RBRACE UNTIL LPAREN expression RPAREN
     (105) statements -> . empty
     (106) statements -> . local_dec maybe_newline statements_tail
-    (164) empty -> .
+    (163) empty -> .
     (115) local_dec -> . empty
     (116) local_dec -> . var_statement
     (21) var_statement -> . data_type IDENT var_tail
@@ -6620,28 +6614,28 @@ state 258
   ! shift/reduce conflict for BLN resolved as shift
   ! shift/reduce conflict for CHR resolved as shift
   ! shift/reduce conflict for STR resolved as shift
-    RBRACE          reduce using rule 164 (empty -> .)
-    NEWLINE         reduce using rule 164 (empty -> .)
-    CHECK           reduce using rule 164 (empty -> .)
-    SWAP            reduce using rule 164 (empty -> .)
-    FUNCTION_NAME   reduce using rule 164 (empty -> .)
-    DISPLAY         reduce using rule 164 (empty -> .)
-    IDENT           reduce using rule 164 (empty -> .)
-    FOR             reduce using rule 164 (empty -> .)
-    UNTIL           reduce using rule 164 (empty -> .)
-    REPEAT          reduce using rule 164 (empty -> .)
-    INPUT           reduce using rule 164 (empty -> .)
+    RBRACE          reduce using rule 163 (empty -> .)
+    NEWLINE         reduce using rule 163 (empty -> .)
+    CHECK           reduce using rule 163 (empty -> .)
+    SWAP            reduce using rule 163 (empty -> .)
+    FUNCTION_NAME   reduce using rule 163 (empty -> .)
+    DISPLAY         reduce using rule 163 (empty -> .)
+    IDENT           reduce using rule 163 (empty -> .)
+    FOR             reduce using rule 163 (empty -> .)
+    UNTIL           reduce using rule 163 (empty -> .)
+    REPEAT          reduce using rule 163 (empty -> .)
+    INPUT           reduce using rule 163 (empty -> .)
     INT             shift and go to state 9
     FLT             shift and go to state 10
     BLN             shift and go to state 11
     CHR             shift and go to state 12
     STR             shift and go to state 13
 
-  ! INT             [ reduce using rule 164 (empty -> .) ]
-  ! FLT             [ reduce using rule 164 (empty -> .) ]
-  ! BLN             [ reduce using rule 164 (empty -> .) ]
-  ! CHR             [ reduce using rule 164 (empty -> .) ]
-  ! STR             [ reduce using rule 164 (empty -> .) ]
+  ! INT             [ reduce using rule 163 (empty -> .) ]
+  ! FLT             [ reduce using rule 163 (empty -> .) ]
+  ! BLN             [ reduce using rule 163 (empty -> .) ]
+  ! CHR             [ reduce using rule 163 (empty -> .) ]
+  ! STR             [ reduce using rule 163 (empty -> .) ]
 
     statements                     shift and go to state 289
     empty                          shift and go to state 144
@@ -6776,29 +6770,29 @@ state 265
 
 state 266
 
-    (161) stringcon_tail -> PLUS . string_val stringcon_tail
-    (162) string_val -> . var_call
-    (163) string_val -> . STR_LIT
+    (160) stringcon_tail -> PLUS . string_val stringcon_tail
+    (161) string_val -> . var_call
+    (162) string_val -> . STR_LIT
     (82) var_call -> . IDENT var_call_tail
 
-    STR_LIT         shift and go to state 238
+    STR_LIT         shift and go to state 237
     IDENT           shift and go to state 56
 
     string_val                     shift and go to state 292
-    var_call                       shift and go to state 237
+    var_call                       shift and go to state 236
 
 state 267
 
-    (152) string_operation_tail -> PLUS string_val stringcon_tail .
+    (151) string_operation_tail -> PLUS string_val stringcon_tail .
 
-    NEWLINE         reduce using rule 152 (string_operation_tail -> PLUS string_val stringcon_tail .)
+    NEWLINE         reduce using rule 151 (string_operation_tail -> PLUS string_val stringcon_tail .)
 
 
 state 268
 
-    (160) stringcon_tail -> empty .
+    (159) stringcon_tail -> empty .
 
-    NEWLINE         reduce using rule 160 (stringcon_tail -> empty .)
+    NEWLINE         reduce using rule 159 (stringcon_tail -> empty .)
 
 
 state 269
@@ -6887,11 +6881,11 @@ state 275
     (148) next_val -> COMMA value . next_val
     (147) next_val -> . empty
     (148) next_val -> . COMMA value next_val
-    (164) empty -> .
+    (163) empty -> .
 
     COMMA           shift and go to state 248
-    NEWLINE         reduce using rule 164 (empty -> .)
-    RPAREN          reduce using rule 164 (empty -> .)
+    NEWLINE         reduce using rule 163 (empty -> .)
+    RPAREN          reduce using rule 163 (empty -> .)
 
     next_val                       shift and go to state 296
     empty                          shift and go to state 247
@@ -6916,27 +6910,27 @@ state 278
     (82) var_call -> IDENT . var_call_tail
     (83) var_call_tail -> . empty
     (84) var_call_tail -> . LBRACKET index RBRACKET
-    (164) empty -> .
+    (163) empty -> .
 
   ! reduce/reduce conflict for RPAREN resolved using rule 47 (typecast_value -> IDENT .)
     RPAREN          reduce using rule 47 (typecast_value -> IDENT .)
     LBRACKET        shift and go to state 90
-    PLUS            reduce using rule 164 (empty -> .)
-    MINUS           reduce using rule 164 (empty -> .)
-    MULTIPLY        reduce using rule 164 (empty -> .)
-    DIVISION        reduce using rule 164 (empty -> .)
-    MODULO          reduce using rule 164 (empty -> .)
-    EXPONENT        reduce using rule 164 (empty -> .)
-    GT              reduce using rule 164 (empty -> .)
-    LT              reduce using rule 164 (empty -> .)
-    EQ_EQ           reduce using rule 164 (empty -> .)
-    GT_EQ           reduce using rule 164 (empty -> .)
-    LT_EQ           reduce using rule 164 (empty -> .)
-    NOT_EQ          reduce using rule 164 (empty -> .)
-    AND             reduce using rule 164 (empty -> .)
-    OR              reduce using rule 164 (empty -> .)
+    PLUS            reduce using rule 163 (empty -> .)
+    MINUS           reduce using rule 163 (empty -> .)
+    MULTIPLY        reduce using rule 163 (empty -> .)
+    DIVISION        reduce using rule 163 (empty -> .)
+    MODULO          reduce using rule 163 (empty -> .)
+    EXPONENT        reduce using rule 163 (empty -> .)
+    GT              reduce using rule 163 (empty -> .)
+    LT              reduce using rule 163 (empty -> .)
+    EQ_EQ           reduce using rule 163 (empty -> .)
+    GT_EQ           reduce using rule 163 (empty -> .)
+    LT_EQ           reduce using rule 163 (empty -> .)
+    NOT_EQ          reduce using rule 163 (empty -> .)
+    AND             reduce using rule 163 (empty -> .)
+    OR              reduce using rule 163 (empty -> .)
 
-  ! RPAREN          [ reduce using rule 164 (empty -> .) ]
+  ! RPAREN          [ reduce using rule 163 (empty -> .) ]
 
     var_call_tail                  shift and go to state 88
     empty                          shift and go to state 89
@@ -7070,29 +7064,29 @@ state 290
     (22) var_tail -> . empty
     (23) var_tail -> . EQ tail_value var_tail2
     (24) var_tail -> . COMMA IDENT var_tail
-    (164) empty -> .
+    (163) empty -> .
 
     EQ              shift and go to state 180
     COMMA           shift and go to state 181
-    NEWLINE         reduce using rule 164 (empty -> .)
-    CHECK           reduce using rule 164 (empty -> .)
-    SWAP            reduce using rule 164 (empty -> .)
-    FUNCTION_NAME   reduce using rule 164 (empty -> .)
-    DISPLAY         reduce using rule 164 (empty -> .)
-    IDENT           reduce using rule 164 (empty -> .)
-    FOR             reduce using rule 164 (empty -> .)
-    UNTIL           reduce using rule 164 (empty -> .)
-    REPEAT          reduce using rule 164 (empty -> .)
-    INPUT           reduce using rule 164 (empty -> .)
-    INT             reduce using rule 164 (empty -> .)
-    FLT             reduce using rule 164 (empty -> .)
-    BLN             reduce using rule 164 (empty -> .)
-    CHR             reduce using rule 164 (empty -> .)
-    STR             reduce using rule 164 (empty -> .)
-    RBRACE          reduce using rule 164 (empty -> .)
-    REVIVE          reduce using rule 164 (empty -> .)
-    SHIFT           reduce using rule 164 (empty -> .)
-    OTHERWISE       reduce using rule 164 (empty -> .)
+    NEWLINE         reduce using rule 163 (empty -> .)
+    CHECK           reduce using rule 163 (empty -> .)
+    SWAP            reduce using rule 163 (empty -> .)
+    FUNCTION_NAME   reduce using rule 163 (empty -> .)
+    DISPLAY         reduce using rule 163 (empty -> .)
+    IDENT           reduce using rule 163 (empty -> .)
+    FOR             reduce using rule 163 (empty -> .)
+    UNTIL           reduce using rule 163 (empty -> .)
+    REPEAT          reduce using rule 163 (empty -> .)
+    INPUT           reduce using rule 163 (empty -> .)
+    INT             reduce using rule 163 (empty -> .)
+    FLT             reduce using rule 163 (empty -> .)
+    BLN             reduce using rule 163 (empty -> .)
+    CHR             reduce using rule 163 (empty -> .)
+    STR             reduce using rule 163 (empty -> .)
+    RBRACE          reduce using rule 163 (empty -> .)
+    REVIVE          reduce using rule 163 (empty -> .)
+    SHIFT           reduce using rule 163 (empty -> .)
+    OTHERWISE       reduce using rule 163 (empty -> .)
 
     var_tail                       shift and go to state 307
     empty                          shift and go to state 179
@@ -7125,13 +7119,13 @@ state 291
 
 state 292
 
-    (161) stringcon_tail -> PLUS string_val . stringcon_tail
-    (160) stringcon_tail -> . empty
-    (161) stringcon_tail -> . PLUS string_val stringcon_tail
-    (164) empty -> .
+    (160) stringcon_tail -> PLUS string_val . stringcon_tail
+    (159) stringcon_tail -> . empty
+    (160) stringcon_tail -> . PLUS string_val stringcon_tail
+    (163) empty -> .
 
     PLUS            shift and go to state 266
-    NEWLINE         reduce using rule 164 (empty -> .)
+    NEWLINE         reduce using rule 163 (empty -> .)
 
     stringcon_tail                 shift and go to state 308
     empty                          shift and go to state 268
@@ -7141,27 +7135,27 @@ state 293
     (117) conditional_statement -> CHECK LPAREN expression RPAREN LBRACE . maybe_newline statements RBRACE conditional_tail
     (2) maybe_newline -> . empty
     (3) maybe_newline -> . NEWLINE maybe_newline
-    (164) empty -> .
+    (163) empty -> .
 
   ! shift/reduce conflict for NEWLINE resolved as shift
     NEWLINE         shift and go to state 17
-    INT             reduce using rule 164 (empty -> .)
-    FLT             reduce using rule 164 (empty -> .)
-    BLN             reduce using rule 164 (empty -> .)
-    CHR             reduce using rule 164 (empty -> .)
-    STR             reduce using rule 164 (empty -> .)
-    RBRACE          reduce using rule 164 (empty -> .)
-    CHECK           reduce using rule 164 (empty -> .)
-    SWAP            reduce using rule 164 (empty -> .)
-    FUNCTION_NAME   reduce using rule 164 (empty -> .)
-    DISPLAY         reduce using rule 164 (empty -> .)
-    IDENT           reduce using rule 164 (empty -> .)
-    FOR             reduce using rule 164 (empty -> .)
-    UNTIL           reduce using rule 164 (empty -> .)
-    REPEAT          reduce using rule 164 (empty -> .)
-    INPUT           reduce using rule 164 (empty -> .)
+    INT             reduce using rule 163 (empty -> .)
+    FLT             reduce using rule 163 (empty -> .)
+    BLN             reduce using rule 163 (empty -> .)
+    CHR             reduce using rule 163 (empty -> .)
+    STR             reduce using rule 163 (empty -> .)
+    RBRACE          reduce using rule 163 (empty -> .)
+    CHECK           reduce using rule 163 (empty -> .)
+    SWAP            reduce using rule 163 (empty -> .)
+    FUNCTION_NAME   reduce using rule 163 (empty -> .)
+    DISPLAY         reduce using rule 163 (empty -> .)
+    IDENT           reduce using rule 163 (empty -> .)
+    FOR             reduce using rule 163 (empty -> .)
+    UNTIL           reduce using rule 163 (empty -> .)
+    REPEAT          reduce using rule 163 (empty -> .)
+    INPUT           reduce using rule 163 (empty -> .)
 
-  ! NEWLINE         [ reduce using rule 164 (empty -> .) ]
+  ! NEWLINE         [ reduce using rule 163 (empty -> .) ]
 
     maybe_newline                  shift and go to state 309
     empty                          shift and go to state 16
@@ -7171,10 +7165,10 @@ state 294
     (121) switch_statement -> SWAP LPAREN IDENT RPAREN LBRACE . maybe_newline switch_condition maybe_newline OTHERWISE maybe_newline LBRACE maybe_newline statements maybe_newline RBRACE maybe_newline RBRACE
     (2) maybe_newline -> . empty
     (3) maybe_newline -> . NEWLINE maybe_newline
-    (164) empty -> .
+    (163) empty -> .
 
     NEWLINE         shift and go to state 17
-    SHIFT           reduce using rule 164 (empty -> .)
+    SHIFT           reduce using rule 163 (empty -> .)
 
     maybe_newline                  shift and go to state 310
     empty                          shift and go to state 16
@@ -7184,10 +7178,10 @@ state 295
     (142) arg_tail -> COMMA arg_value . arg_tail
     (141) arg_tail -> . empty
     (142) arg_tail -> . COMMA arg_value arg_tail
-    (164) empty -> .
+    (163) empty -> .
 
     COMMA           shift and go to state 274
-    RPAREN          reduce using rule 164 (empty -> .)
+    RPAREN          reduce using rule 163 (empty -> .)
 
     arg_tail                       shift and go to state 311
     empty                          shift and go to state 273
@@ -7345,27 +7339,27 @@ state 305
     (129) until_loop -> UNTIL LPAREN expression RPAREN LBRACE . maybe_newline statements RBRACE
     (2) maybe_newline -> . empty
     (3) maybe_newline -> . NEWLINE maybe_newline
-    (164) empty -> .
+    (163) empty -> .
 
   ! shift/reduce conflict for NEWLINE resolved as shift
     NEWLINE         shift and go to state 17
-    INT             reduce using rule 164 (empty -> .)
-    FLT             reduce using rule 164 (empty -> .)
-    BLN             reduce using rule 164 (empty -> .)
-    CHR             reduce using rule 164 (empty -> .)
-    STR             reduce using rule 164 (empty -> .)
-    RBRACE          reduce using rule 164 (empty -> .)
-    CHECK           reduce using rule 164 (empty -> .)
-    SWAP            reduce using rule 164 (empty -> .)
-    FUNCTION_NAME   reduce using rule 164 (empty -> .)
-    DISPLAY         reduce using rule 164 (empty -> .)
-    IDENT           reduce using rule 164 (empty -> .)
-    FOR             reduce using rule 164 (empty -> .)
-    UNTIL           reduce using rule 164 (empty -> .)
-    REPEAT          reduce using rule 164 (empty -> .)
-    INPUT           reduce using rule 164 (empty -> .)
+    INT             reduce using rule 163 (empty -> .)
+    FLT             reduce using rule 163 (empty -> .)
+    BLN             reduce using rule 163 (empty -> .)
+    CHR             reduce using rule 163 (empty -> .)
+    STR             reduce using rule 163 (empty -> .)
+    RBRACE          reduce using rule 163 (empty -> .)
+    CHECK           reduce using rule 163 (empty -> .)
+    SWAP            reduce using rule 163 (empty -> .)
+    FUNCTION_NAME   reduce using rule 163 (empty -> .)
+    DISPLAY         reduce using rule 163 (empty -> .)
+    IDENT           reduce using rule 163 (empty -> .)
+    FOR             reduce using rule 163 (empty -> .)
+    UNTIL           reduce using rule 163 (empty -> .)
+    REPEAT          reduce using rule 163 (empty -> .)
+    INPUT           reduce using rule 163 (empty -> .)
 
-  ! NEWLINE         [ reduce using rule 164 (empty -> .) ]
+  ! NEWLINE         [ reduce using rule 163 (empty -> .) ]
 
     maybe_newline                  shift and go to state 315
     empty                          shift and go to state 16
@@ -7404,9 +7398,9 @@ state 307
 
 state 308
 
-    (161) stringcon_tail -> PLUS string_val stringcon_tail .
+    (160) stringcon_tail -> PLUS string_val stringcon_tail .
 
-    NEWLINE         reduce using rule 161 (stringcon_tail -> PLUS string_val stringcon_tail .)
+    NEWLINE         reduce using rule 160 (stringcon_tail -> PLUS string_val stringcon_tail .)
 
 
 state 309
@@ -7414,7 +7408,7 @@ state 309
     (117) conditional_statement -> CHECK LPAREN expression RPAREN LBRACE maybe_newline . statements RBRACE conditional_tail
     (105) statements -> . empty
     (106) statements -> . local_dec maybe_newline statements_tail
-    (164) empty -> .
+    (163) empty -> .
     (115) local_dec -> . empty
     (116) local_dec -> . var_statement
     (21) var_statement -> . data_type IDENT var_tail
@@ -7429,28 +7423,28 @@ state 309
   ! shift/reduce conflict for BLN resolved as shift
   ! shift/reduce conflict for CHR resolved as shift
   ! shift/reduce conflict for STR resolved as shift
-    RBRACE          reduce using rule 164 (empty -> .)
-    NEWLINE         reduce using rule 164 (empty -> .)
-    CHECK           reduce using rule 164 (empty -> .)
-    SWAP            reduce using rule 164 (empty -> .)
-    FUNCTION_NAME   reduce using rule 164 (empty -> .)
-    DISPLAY         reduce using rule 164 (empty -> .)
-    IDENT           reduce using rule 164 (empty -> .)
-    FOR             reduce using rule 164 (empty -> .)
-    UNTIL           reduce using rule 164 (empty -> .)
-    REPEAT          reduce using rule 164 (empty -> .)
-    INPUT           reduce using rule 164 (empty -> .)
+    RBRACE          reduce using rule 163 (empty -> .)
+    NEWLINE         reduce using rule 163 (empty -> .)
+    CHECK           reduce using rule 163 (empty -> .)
+    SWAP            reduce using rule 163 (empty -> .)
+    FUNCTION_NAME   reduce using rule 163 (empty -> .)
+    DISPLAY         reduce using rule 163 (empty -> .)
+    IDENT           reduce using rule 163 (empty -> .)
+    FOR             reduce using rule 163 (empty -> .)
+    UNTIL           reduce using rule 163 (empty -> .)
+    REPEAT          reduce using rule 163 (empty -> .)
+    INPUT           reduce using rule 163 (empty -> .)
     INT             shift and go to state 9
     FLT             shift and go to state 10
     BLN             shift and go to state 11
     CHR             shift and go to state 12
     STR             shift and go to state 13
 
-  ! INT             [ reduce using rule 164 (empty -> .) ]
-  ! FLT             [ reduce using rule 164 (empty -> .) ]
-  ! BLN             [ reduce using rule 164 (empty -> .) ]
-  ! CHR             [ reduce using rule 164 (empty -> .) ]
-  ! STR             [ reduce using rule 164 (empty -> .) ]
+  ! INT             [ reduce using rule 163 (empty -> .) ]
+  ! FLT             [ reduce using rule 163 (empty -> .) ]
+  ! BLN             [ reduce using rule 163 (empty -> .) ]
+  ! CHR             [ reduce using rule 163 (empty -> .) ]
+  ! STR             [ reduce using rule 163 (empty -> .) ]
 
     statements                     shift and go to state 317
     empty                          shift and go to state 144
@@ -7504,7 +7498,7 @@ state 315
     (129) until_loop -> UNTIL LPAREN expression RPAREN LBRACE maybe_newline . statements RBRACE
     (105) statements -> . empty
     (106) statements -> . local_dec maybe_newline statements_tail
-    (164) empty -> .
+    (163) empty -> .
     (115) local_dec -> . empty
     (116) local_dec -> . var_statement
     (21) var_statement -> . data_type IDENT var_tail
@@ -7519,28 +7513,28 @@ state 315
   ! shift/reduce conflict for BLN resolved as shift
   ! shift/reduce conflict for CHR resolved as shift
   ! shift/reduce conflict for STR resolved as shift
-    RBRACE          reduce using rule 164 (empty -> .)
-    NEWLINE         reduce using rule 164 (empty -> .)
-    CHECK           reduce using rule 164 (empty -> .)
-    SWAP            reduce using rule 164 (empty -> .)
-    FUNCTION_NAME   reduce using rule 164 (empty -> .)
-    DISPLAY         reduce using rule 164 (empty -> .)
-    IDENT           reduce using rule 164 (empty -> .)
-    FOR             reduce using rule 164 (empty -> .)
-    UNTIL           reduce using rule 164 (empty -> .)
-    REPEAT          reduce using rule 164 (empty -> .)
-    INPUT           reduce using rule 164 (empty -> .)
+    RBRACE          reduce using rule 163 (empty -> .)
+    NEWLINE         reduce using rule 163 (empty -> .)
+    CHECK           reduce using rule 163 (empty -> .)
+    SWAP            reduce using rule 163 (empty -> .)
+    FUNCTION_NAME   reduce using rule 163 (empty -> .)
+    DISPLAY         reduce using rule 163 (empty -> .)
+    IDENT           reduce using rule 163 (empty -> .)
+    FOR             reduce using rule 163 (empty -> .)
+    UNTIL           reduce using rule 163 (empty -> .)
+    REPEAT          reduce using rule 163 (empty -> .)
+    INPUT           reduce using rule 163 (empty -> .)
     INT             shift and go to state 9
     FLT             shift and go to state 10
     BLN             shift and go to state 11
     CHR             shift and go to state 12
     STR             shift and go to state 13
 
-  ! INT             [ reduce using rule 164 (empty -> .) ]
-  ! FLT             [ reduce using rule 164 (empty -> .) ]
-  ! BLN             [ reduce using rule 164 (empty -> .) ]
-  ! CHR             [ reduce using rule 164 (empty -> .) ]
-  ! STR             [ reduce using rule 164 (empty -> .) ]
+  ! INT             [ reduce using rule 163 (empty -> .) ]
+  ! FLT             [ reduce using rule 163 (empty -> .) ]
+  ! BLN             [ reduce using rule 163 (empty -> .) ]
+  ! CHR             [ reduce using rule 163 (empty -> .) ]
+  ! STR             [ reduce using rule 163 (empty -> .) ]
 
     statements                     shift and go to state 322
     empty                          shift and go to state 144
@@ -7567,10 +7561,10 @@ state 318
     (121) switch_statement -> SWAP LPAREN IDENT RPAREN LBRACE maybe_newline switch_condition . maybe_newline OTHERWISE maybe_newline LBRACE maybe_newline statements maybe_newline RBRACE maybe_newline RBRACE
     (2) maybe_newline -> . empty
     (3) maybe_newline -> . NEWLINE maybe_newline
-    (164) empty -> .
+    (163) empty -> .
 
     NEWLINE         shift and go to state 17
-    OTHERWISE       reduce using rule 164 (empty -> .)
+    OTHERWISE       reduce using rule 163 (empty -> .)
 
     maybe_newline                  shift and go to state 325
     empty                          shift and go to state 16
@@ -7645,31 +7639,31 @@ state 321
     (134) update_tail -> . assign_op value
     (135) postfix -> . PLUS_PLUS
     (136) postfix -> . MINUS_MINUS
-    (154) assign_op -> . PLUS_EQ
-    (155) assign_op -> . MINUS_EQ
-    (156) assign_op -> . MUL_EQ
-    (157) assign_op -> . DIV_EQ
-    (158) assign_op -> . MOD_EQ
-    (159) assign_op -> . EQ
+    (153) assign_op -> . PLUS_EQ
+    (154) assign_op -> . MINUS_EQ
+    (155) assign_op -> . MUL_EQ
+    (156) assign_op -> . DIV_EQ
+    (157) assign_op -> . MOD_EQ
+    (158) assign_op -> . EQ
 
-    PLUS_PLUS       shift and go to state 203
-    MINUS_MINUS     shift and go to state 204
-    PLUS_EQ         shift and go to state 196
-    MINUS_EQ        shift and go to state 197
-    MUL_EQ          shift and go to state 198
-    DIV_EQ          shift and go to state 199
-    MOD_EQ          shift and go to state 200
-    EQ              shift and go to state 201
+    PLUS_PLUS       shift and go to state 197
+    MINUS_MINUS     shift and go to state 198
+    PLUS_EQ         shift and go to state 199
+    MINUS_EQ        shift and go to state 200
+    MUL_EQ          shift and go to state 201
+    DIV_EQ          shift and go to state 202
+    MOD_EQ          shift and go to state 203
+    EQ              shift and go to state 204
 
     update_tail                    shift and go to state 328
-    postfix                        shift and go to state 202
-    assign_op                      shift and go to state 329
+    postfix                        shift and go to state 195
+    assign_op                      shift and go to state 196
 
 state 322
 
     (129) until_loop -> UNTIL LPAREN expression RPAREN LBRACE maybe_newline statements . RBRACE
 
-    RBRACE          shift and go to state 330
+    RBRACE          shift and go to state 329
 
 
 state 323
@@ -7700,7 +7694,7 @@ state 323
     CHR_LIT         shift and go to state 61
     STR_LIT         shift and go to state 62
 
-    expression                     shift and go to state 331
+    expression                     shift and go to state 330
     expr_head                      shift and go to state 55
     term                           shift and go to state 63
     factor                         shift and go to state 83
@@ -7713,27 +7707,27 @@ state 324
     (118) conditional_tail -> . empty
     (119) conditional_tail -> . OTHERWISE_CHECK LPAREN expression RPAREN LBRACE maybe_newline statements RBRACE
     (120) conditional_tail -> . OTHERWISE LBRACE maybe_newline statements RBRACE
-    (164) empty -> .
+    (163) empty -> .
 
-    OTHERWISE_CHECK shift and go to state 334
-    OTHERWISE       shift and go to state 335
-    NEWLINE         reduce using rule 164 (empty -> .)
+    OTHERWISE_CHECK shift and go to state 333
+    OTHERWISE       shift and go to state 334
+    NEWLINE         reduce using rule 163 (empty -> .)
 
-    conditional_tail               shift and go to state 332
-    empty                          shift and go to state 333
+    conditional_tail               shift and go to state 331
+    empty                          shift and go to state 332
 
 state 325
 
     (121) switch_statement -> SWAP LPAREN IDENT RPAREN LBRACE maybe_newline switch_condition maybe_newline . OTHERWISE maybe_newline LBRACE maybe_newline statements maybe_newline RBRACE maybe_newline RBRACE
 
-    OTHERWISE       shift and go to state 336
+    OTHERWISE       shift and go to state 335
 
 
 state 326
 
     (122) switch_condition -> SHIFT value . COLON maybe_newline statements switchcond_tail
 
-    COLON           shift and go to state 337
+    COLON           shift and go to state 336
 
 
 state 327
@@ -7741,12 +7735,12 @@ state 327
     (128) for_loop -> FOR LPAREN control_variable SEMICOLON expression SEMICOLON update RPAREN . maybe_newline LBRACE maybe_newline statements RBRACE
     (2) maybe_newline -> . empty
     (3) maybe_newline -> . NEWLINE maybe_newline
-    (164) empty -> .
+    (163) empty -> .
 
     NEWLINE         shift and go to state 17
-    LBRACE          reduce using rule 164 (empty -> .)
+    LBRACE          reduce using rule 163 (empty -> .)
 
-    maybe_newline                  shift and go to state 338
+    maybe_newline                  shift and go to state 337
     empty                          shift and go to state 16
 
 state 328
@@ -7758,168 +7752,105 @@ state 328
 
 state 329
 
-    (134) update_tail -> assign_op . value
-    (39) value -> . factor
-    (40) value -> . type_cast
-    (41) value -> . expression
-    (42) value -> . function_call
-    (61) factor -> . var_call
-    (62) factor -> . literal
-    (63) factor -> . TILDE literal
-    (64) factor -> . LPAREN expression RPAREN
-    (43) type_cast -> . CONVERT_TO_INT LPAREN typecast_value RPAREN
-    (44) type_cast -> . CONVERT_TO_FLT LPAREN typecast_value RPAREN
-    (45) type_cast -> . CONVERT_TO_BLN LPAREN typecast_value RPAREN
-    (46) type_cast -> . CONVERT_TO_STR LPAREN typecast_value RPAREN
-    (58) expression -> . expr_head expr_tail
-    (137) function_call -> . FUNCTION_NAME LPAREN arguments RPAREN
-    (138) function_call -> . input_statement
-    (82) var_call -> . IDENT var_call_tail
-    (52) literal -> . INT_LIT
-    (53) literal -> . FLT_LIT
-    (54) literal -> . DAY
-    (55) literal -> . NIGHT
-    (56) literal -> . CHR_LIT
-    (57) literal -> . STR_LIT
-    (59) expr_head -> . term term_tail
-    (149) input_statement -> . INPUT LPAREN RPAREN
-    (60) term -> . factor factor_tail
-
-    TILDE           shift and go to state 53
-    LPAREN          shift and go to state 54
-    CONVERT_TO_INT  shift and go to state 214
-    CONVERT_TO_FLT  shift and go to state 215
-    CONVERT_TO_BLN  shift and go to state 216
-    CONVERT_TO_STR  shift and go to state 217
-    FUNCTION_NAME   shift and go to state 171
-    IDENT           shift and go to state 56
-    INT_LIT         shift and go to state 57
-    FLT_LIT         shift and go to state 58
-    DAY             shift and go to state 59
-    NIGHT           shift and go to state 60
-    CHR_LIT         shift and go to state 61
-    STR_LIT         shift and go to state 62
-    INPUT           shift and go to state 177
-
-    value                          shift and go to state 339
-    factor                         shift and go to state 210
-    type_cast                      shift and go to state 211
-    expression                     shift and go to state 212
-    function_call                  shift and go to state 213
-    var_call                       shift and go to state 51
-    literal                        shift and go to state 52
-    expr_head                      shift and go to state 55
-    input_statement                shift and go to state 172
-    term                           shift and go to state 63
-
-state 330
-
     (129) until_loop -> UNTIL LPAREN expression RPAREN LBRACE maybe_newline statements RBRACE .
 
     NEWLINE         reduce using rule 129 (until_loop -> UNTIL LPAREN expression RPAREN LBRACE maybe_newline statements RBRACE .)
 
 
-state 331
+state 330
 
     (130) repeat_until -> REPEAT LBRACE maybe_newline statements RBRACE UNTIL LPAREN expression . RPAREN
 
-    RPAREN          shift and go to state 340
+    RPAREN          shift and go to state 338
 
 
-state 332
+state 331
 
     (117) conditional_statement -> CHECK LPAREN expression RPAREN LBRACE maybe_newline statements RBRACE conditional_tail .
 
     NEWLINE         reduce using rule 117 (conditional_statement -> CHECK LPAREN expression RPAREN LBRACE maybe_newline statements RBRACE conditional_tail .)
 
 
-state 333
+state 332
 
     (118) conditional_tail -> empty .
 
     NEWLINE         reduce using rule 118 (conditional_tail -> empty .)
 
 
-state 334
+state 333
 
     (119) conditional_tail -> OTHERWISE_CHECK . LPAREN expression RPAREN LBRACE maybe_newline statements RBRACE
 
-    LPAREN          shift and go to state 341
+    LPAREN          shift and go to state 339
+
+
+state 334
+
+    (120) conditional_tail -> OTHERWISE . LBRACE maybe_newline statements RBRACE
+
+    LBRACE          shift and go to state 340
 
 
 state 335
 
-    (120) conditional_tail -> OTHERWISE . LBRACE maybe_newline statements RBRACE
-
-    LBRACE          shift and go to state 342
-
-
-state 336
-
     (121) switch_statement -> SWAP LPAREN IDENT RPAREN LBRACE maybe_newline switch_condition maybe_newline OTHERWISE . maybe_newline LBRACE maybe_newline statements maybe_newline RBRACE maybe_newline RBRACE
     (2) maybe_newline -> . empty
     (3) maybe_newline -> . NEWLINE maybe_newline
-    (164) empty -> .
+    (163) empty -> .
 
     NEWLINE         shift and go to state 17
-    LBRACE          reduce using rule 164 (empty -> .)
+    LBRACE          reduce using rule 163 (empty -> .)
 
-    maybe_newline                  shift and go to state 343
+    maybe_newline                  shift and go to state 341
     empty                          shift and go to state 16
 
-state 337
+state 336
 
     (122) switch_condition -> SHIFT value COLON . maybe_newline statements switchcond_tail
     (2) maybe_newline -> . empty
     (3) maybe_newline -> . NEWLINE maybe_newline
-    (164) empty -> .
+    (163) empty -> .
 
   ! shift/reduce conflict for NEWLINE resolved as shift
     NEWLINE         shift and go to state 17
-    INT             reduce using rule 164 (empty -> .)
-    FLT             reduce using rule 164 (empty -> .)
-    BLN             reduce using rule 164 (empty -> .)
-    CHR             reduce using rule 164 (empty -> .)
-    STR             reduce using rule 164 (empty -> .)
-    SHIFT           reduce using rule 164 (empty -> .)
-    CHECK           reduce using rule 164 (empty -> .)
-    SWAP            reduce using rule 164 (empty -> .)
-    FUNCTION_NAME   reduce using rule 164 (empty -> .)
-    DISPLAY         reduce using rule 164 (empty -> .)
-    IDENT           reduce using rule 164 (empty -> .)
-    FOR             reduce using rule 164 (empty -> .)
-    UNTIL           reduce using rule 164 (empty -> .)
-    REPEAT          reduce using rule 164 (empty -> .)
-    INPUT           reduce using rule 164 (empty -> .)
-    OTHERWISE       reduce using rule 164 (empty -> .)
+    INT             reduce using rule 163 (empty -> .)
+    FLT             reduce using rule 163 (empty -> .)
+    BLN             reduce using rule 163 (empty -> .)
+    CHR             reduce using rule 163 (empty -> .)
+    STR             reduce using rule 163 (empty -> .)
+    SHIFT           reduce using rule 163 (empty -> .)
+    CHECK           reduce using rule 163 (empty -> .)
+    SWAP            reduce using rule 163 (empty -> .)
+    FUNCTION_NAME   reduce using rule 163 (empty -> .)
+    DISPLAY         reduce using rule 163 (empty -> .)
+    IDENT           reduce using rule 163 (empty -> .)
+    FOR             reduce using rule 163 (empty -> .)
+    UNTIL           reduce using rule 163 (empty -> .)
+    REPEAT          reduce using rule 163 (empty -> .)
+    INPUT           reduce using rule 163 (empty -> .)
+    OTHERWISE       reduce using rule 163 (empty -> .)
 
-  ! NEWLINE         [ reduce using rule 164 (empty -> .) ]
+  ! NEWLINE         [ reduce using rule 163 (empty -> .) ]
 
-    maybe_newline                  shift and go to state 344
+    maybe_newline                  shift and go to state 342
     empty                          shift and go to state 16
 
-state 338
+state 337
 
     (128) for_loop -> FOR LPAREN control_variable SEMICOLON expression SEMICOLON update RPAREN maybe_newline . LBRACE maybe_newline statements RBRACE
 
-    LBRACE          shift and go to state 345
+    LBRACE          shift and go to state 343
 
 
-state 339
-
-    (134) update_tail -> assign_op value .
-
-    RPAREN          reduce using rule 134 (update_tail -> assign_op value .)
-
-
-state 340
+state 338
 
     (130) repeat_until -> REPEAT LBRACE maybe_newline statements RBRACE UNTIL LPAREN expression RPAREN .
 
     NEWLINE         reduce using rule 130 (repeat_until -> REPEAT LBRACE maybe_newline statements RBRACE UNTIL LPAREN expression RPAREN .)
 
 
-state 341
+state 339
 
     (119) conditional_tail -> OTHERWISE_CHECK LPAREN . expression RPAREN LBRACE maybe_newline statements RBRACE
     (58) expression -> . expr_head expr_tail
@@ -7947,56 +7878,56 @@ state 341
     CHR_LIT         shift and go to state 61
     STR_LIT         shift and go to state 62
 
-    expression                     shift and go to state 346
+    expression                     shift and go to state 344
     expr_head                      shift and go to state 55
     term                           shift and go to state 63
     factor                         shift and go to state 83
     var_call                       shift and go to state 51
     literal                        shift and go to state 52
 
-state 342
+state 340
 
     (120) conditional_tail -> OTHERWISE LBRACE . maybe_newline statements RBRACE
     (2) maybe_newline -> . empty
     (3) maybe_newline -> . NEWLINE maybe_newline
-    (164) empty -> .
+    (163) empty -> .
 
   ! shift/reduce conflict for NEWLINE resolved as shift
     NEWLINE         shift and go to state 17
-    INT             reduce using rule 164 (empty -> .)
-    FLT             reduce using rule 164 (empty -> .)
-    BLN             reduce using rule 164 (empty -> .)
-    CHR             reduce using rule 164 (empty -> .)
-    STR             reduce using rule 164 (empty -> .)
-    RBRACE          reduce using rule 164 (empty -> .)
-    CHECK           reduce using rule 164 (empty -> .)
-    SWAP            reduce using rule 164 (empty -> .)
-    FUNCTION_NAME   reduce using rule 164 (empty -> .)
-    DISPLAY         reduce using rule 164 (empty -> .)
-    IDENT           reduce using rule 164 (empty -> .)
-    FOR             reduce using rule 164 (empty -> .)
-    UNTIL           reduce using rule 164 (empty -> .)
-    REPEAT          reduce using rule 164 (empty -> .)
-    INPUT           reduce using rule 164 (empty -> .)
+    INT             reduce using rule 163 (empty -> .)
+    FLT             reduce using rule 163 (empty -> .)
+    BLN             reduce using rule 163 (empty -> .)
+    CHR             reduce using rule 163 (empty -> .)
+    STR             reduce using rule 163 (empty -> .)
+    RBRACE          reduce using rule 163 (empty -> .)
+    CHECK           reduce using rule 163 (empty -> .)
+    SWAP            reduce using rule 163 (empty -> .)
+    FUNCTION_NAME   reduce using rule 163 (empty -> .)
+    DISPLAY         reduce using rule 163 (empty -> .)
+    IDENT           reduce using rule 163 (empty -> .)
+    FOR             reduce using rule 163 (empty -> .)
+    UNTIL           reduce using rule 163 (empty -> .)
+    REPEAT          reduce using rule 163 (empty -> .)
+    INPUT           reduce using rule 163 (empty -> .)
 
-  ! NEWLINE         [ reduce using rule 164 (empty -> .) ]
+  ! NEWLINE         [ reduce using rule 163 (empty -> .) ]
 
-    maybe_newline                  shift and go to state 347
+    maybe_newline                  shift and go to state 345
     empty                          shift and go to state 16
 
-state 343
+state 341
 
     (121) switch_statement -> SWAP LPAREN IDENT RPAREN LBRACE maybe_newline switch_condition maybe_newline OTHERWISE maybe_newline . LBRACE maybe_newline statements maybe_newline RBRACE maybe_newline RBRACE
 
-    LBRACE          shift and go to state 348
+    LBRACE          shift and go to state 346
 
 
-state 344
+state 342
 
     (122) switch_condition -> SHIFT value COLON maybe_newline . statements switchcond_tail
     (105) statements -> . empty
     (106) statements -> . local_dec maybe_newline statements_tail
-    (164) empty -> .
+    (163) empty -> .
     (115) local_dec -> . empty
     (116) local_dec -> . var_statement
     (21) var_statement -> . data_type IDENT var_tail
@@ -8011,79 +7942,79 @@ state 344
   ! shift/reduce conflict for BLN resolved as shift
   ! shift/reduce conflict for CHR resolved as shift
   ! shift/reduce conflict for STR resolved as shift
-    SHIFT           reduce using rule 164 (empty -> .)
-    NEWLINE         reduce using rule 164 (empty -> .)
-    OTHERWISE       reduce using rule 164 (empty -> .)
-    CHECK           reduce using rule 164 (empty -> .)
-    SWAP            reduce using rule 164 (empty -> .)
-    FUNCTION_NAME   reduce using rule 164 (empty -> .)
-    DISPLAY         reduce using rule 164 (empty -> .)
-    IDENT           reduce using rule 164 (empty -> .)
-    FOR             reduce using rule 164 (empty -> .)
-    UNTIL           reduce using rule 164 (empty -> .)
-    REPEAT          reduce using rule 164 (empty -> .)
-    INPUT           reduce using rule 164 (empty -> .)
+    SHIFT           reduce using rule 163 (empty -> .)
+    NEWLINE         reduce using rule 163 (empty -> .)
+    OTHERWISE       reduce using rule 163 (empty -> .)
+    CHECK           reduce using rule 163 (empty -> .)
+    SWAP            reduce using rule 163 (empty -> .)
+    FUNCTION_NAME   reduce using rule 163 (empty -> .)
+    DISPLAY         reduce using rule 163 (empty -> .)
+    IDENT           reduce using rule 163 (empty -> .)
+    FOR             reduce using rule 163 (empty -> .)
+    UNTIL           reduce using rule 163 (empty -> .)
+    REPEAT          reduce using rule 163 (empty -> .)
+    INPUT           reduce using rule 163 (empty -> .)
     INT             shift and go to state 9
     FLT             shift and go to state 10
     BLN             shift and go to state 11
     CHR             shift and go to state 12
     STR             shift and go to state 13
 
-  ! INT             [ reduce using rule 164 (empty -> .) ]
-  ! FLT             [ reduce using rule 164 (empty -> .) ]
-  ! BLN             [ reduce using rule 164 (empty -> .) ]
-  ! CHR             [ reduce using rule 164 (empty -> .) ]
-  ! STR             [ reduce using rule 164 (empty -> .) ]
+  ! INT             [ reduce using rule 163 (empty -> .) ]
+  ! FLT             [ reduce using rule 163 (empty -> .) ]
+  ! BLN             [ reduce using rule 163 (empty -> .) ]
+  ! CHR             [ reduce using rule 163 (empty -> .) ]
+  ! STR             [ reduce using rule 163 (empty -> .) ]
 
-    statements                     shift and go to state 349
+    statements                     shift and go to state 347
     empty                          shift and go to state 144
     local_dec                      shift and go to state 145
     var_statement                  shift and go to state 146
     data_type                      shift and go to state 147
 
-state 345
+state 343
 
     (128) for_loop -> FOR LPAREN control_variable SEMICOLON expression SEMICOLON update RPAREN maybe_newline LBRACE . maybe_newline statements RBRACE
     (2) maybe_newline -> . empty
     (3) maybe_newline -> . NEWLINE maybe_newline
-    (164) empty -> .
+    (163) empty -> .
 
   ! shift/reduce conflict for NEWLINE resolved as shift
     NEWLINE         shift and go to state 17
-    INT             reduce using rule 164 (empty -> .)
-    FLT             reduce using rule 164 (empty -> .)
-    BLN             reduce using rule 164 (empty -> .)
-    CHR             reduce using rule 164 (empty -> .)
-    STR             reduce using rule 164 (empty -> .)
-    RBRACE          reduce using rule 164 (empty -> .)
-    CHECK           reduce using rule 164 (empty -> .)
-    SWAP            reduce using rule 164 (empty -> .)
-    FUNCTION_NAME   reduce using rule 164 (empty -> .)
-    DISPLAY         reduce using rule 164 (empty -> .)
-    IDENT           reduce using rule 164 (empty -> .)
-    FOR             reduce using rule 164 (empty -> .)
-    UNTIL           reduce using rule 164 (empty -> .)
-    REPEAT          reduce using rule 164 (empty -> .)
-    INPUT           reduce using rule 164 (empty -> .)
+    INT             reduce using rule 163 (empty -> .)
+    FLT             reduce using rule 163 (empty -> .)
+    BLN             reduce using rule 163 (empty -> .)
+    CHR             reduce using rule 163 (empty -> .)
+    STR             reduce using rule 163 (empty -> .)
+    RBRACE          reduce using rule 163 (empty -> .)
+    CHECK           reduce using rule 163 (empty -> .)
+    SWAP            reduce using rule 163 (empty -> .)
+    FUNCTION_NAME   reduce using rule 163 (empty -> .)
+    DISPLAY         reduce using rule 163 (empty -> .)
+    IDENT           reduce using rule 163 (empty -> .)
+    FOR             reduce using rule 163 (empty -> .)
+    UNTIL           reduce using rule 163 (empty -> .)
+    REPEAT          reduce using rule 163 (empty -> .)
+    INPUT           reduce using rule 163 (empty -> .)
 
-  ! NEWLINE         [ reduce using rule 164 (empty -> .) ]
+  ! NEWLINE         [ reduce using rule 163 (empty -> .) ]
 
-    maybe_newline                  shift and go to state 350
+    maybe_newline                  shift and go to state 348
     empty                          shift and go to state 16
 
-state 346
+state 344
 
     (119) conditional_tail -> OTHERWISE_CHECK LPAREN expression . RPAREN LBRACE maybe_newline statements RBRACE
 
-    RPAREN          shift and go to state 351
+    RPAREN          shift and go to state 349
 
 
-state 347
+state 345
 
     (120) conditional_tail -> OTHERWISE LBRACE maybe_newline . statements RBRACE
     (105) statements -> . empty
     (106) statements -> . local_dec maybe_newline statements_tail
-    (164) empty -> .
+    (163) empty -> .
     (115) local_dec -> . empty
     (116) local_dec -> . var_statement
     (21) var_statement -> . data_type IDENT var_tail
@@ -8098,87 +8029,87 @@ state 347
   ! shift/reduce conflict for BLN resolved as shift
   ! shift/reduce conflict for CHR resolved as shift
   ! shift/reduce conflict for STR resolved as shift
-    RBRACE          reduce using rule 164 (empty -> .)
-    NEWLINE         reduce using rule 164 (empty -> .)
-    CHECK           reduce using rule 164 (empty -> .)
-    SWAP            reduce using rule 164 (empty -> .)
-    FUNCTION_NAME   reduce using rule 164 (empty -> .)
-    DISPLAY         reduce using rule 164 (empty -> .)
-    IDENT           reduce using rule 164 (empty -> .)
-    FOR             reduce using rule 164 (empty -> .)
-    UNTIL           reduce using rule 164 (empty -> .)
-    REPEAT          reduce using rule 164 (empty -> .)
-    INPUT           reduce using rule 164 (empty -> .)
+    RBRACE          reduce using rule 163 (empty -> .)
+    NEWLINE         reduce using rule 163 (empty -> .)
+    CHECK           reduce using rule 163 (empty -> .)
+    SWAP            reduce using rule 163 (empty -> .)
+    FUNCTION_NAME   reduce using rule 163 (empty -> .)
+    DISPLAY         reduce using rule 163 (empty -> .)
+    IDENT           reduce using rule 163 (empty -> .)
+    FOR             reduce using rule 163 (empty -> .)
+    UNTIL           reduce using rule 163 (empty -> .)
+    REPEAT          reduce using rule 163 (empty -> .)
+    INPUT           reduce using rule 163 (empty -> .)
     INT             shift and go to state 9
     FLT             shift and go to state 10
     BLN             shift and go to state 11
     CHR             shift and go to state 12
     STR             shift and go to state 13
 
-  ! INT             [ reduce using rule 164 (empty -> .) ]
-  ! FLT             [ reduce using rule 164 (empty -> .) ]
-  ! BLN             [ reduce using rule 164 (empty -> .) ]
-  ! CHR             [ reduce using rule 164 (empty -> .) ]
-  ! STR             [ reduce using rule 164 (empty -> .) ]
+  ! INT             [ reduce using rule 163 (empty -> .) ]
+  ! FLT             [ reduce using rule 163 (empty -> .) ]
+  ! BLN             [ reduce using rule 163 (empty -> .) ]
+  ! CHR             [ reduce using rule 163 (empty -> .) ]
+  ! STR             [ reduce using rule 163 (empty -> .) ]
 
-    statements                     shift and go to state 352
+    statements                     shift and go to state 350
     empty                          shift and go to state 144
     local_dec                      shift and go to state 145
     var_statement                  shift and go to state 146
     data_type                      shift and go to state 147
 
-state 348
+state 346
 
     (121) switch_statement -> SWAP LPAREN IDENT RPAREN LBRACE maybe_newline switch_condition maybe_newline OTHERWISE maybe_newline LBRACE . maybe_newline statements maybe_newline RBRACE maybe_newline RBRACE
     (2) maybe_newline -> . empty
     (3) maybe_newline -> . NEWLINE maybe_newline
-    (164) empty -> .
+    (163) empty -> .
 
   ! shift/reduce conflict for NEWLINE resolved as shift
     NEWLINE         shift and go to state 17
-    INT             reduce using rule 164 (empty -> .)
-    FLT             reduce using rule 164 (empty -> .)
-    BLN             reduce using rule 164 (empty -> .)
-    CHR             reduce using rule 164 (empty -> .)
-    STR             reduce using rule 164 (empty -> .)
-    RBRACE          reduce using rule 164 (empty -> .)
-    CHECK           reduce using rule 164 (empty -> .)
-    SWAP            reduce using rule 164 (empty -> .)
-    FUNCTION_NAME   reduce using rule 164 (empty -> .)
-    DISPLAY         reduce using rule 164 (empty -> .)
-    IDENT           reduce using rule 164 (empty -> .)
-    FOR             reduce using rule 164 (empty -> .)
-    UNTIL           reduce using rule 164 (empty -> .)
-    REPEAT          reduce using rule 164 (empty -> .)
-    INPUT           reduce using rule 164 (empty -> .)
+    INT             reduce using rule 163 (empty -> .)
+    FLT             reduce using rule 163 (empty -> .)
+    BLN             reduce using rule 163 (empty -> .)
+    CHR             reduce using rule 163 (empty -> .)
+    STR             reduce using rule 163 (empty -> .)
+    RBRACE          reduce using rule 163 (empty -> .)
+    CHECK           reduce using rule 163 (empty -> .)
+    SWAP            reduce using rule 163 (empty -> .)
+    FUNCTION_NAME   reduce using rule 163 (empty -> .)
+    DISPLAY         reduce using rule 163 (empty -> .)
+    IDENT           reduce using rule 163 (empty -> .)
+    FOR             reduce using rule 163 (empty -> .)
+    UNTIL           reduce using rule 163 (empty -> .)
+    REPEAT          reduce using rule 163 (empty -> .)
+    INPUT           reduce using rule 163 (empty -> .)
 
-  ! NEWLINE         [ reduce using rule 164 (empty -> .) ]
+  ! NEWLINE         [ reduce using rule 163 (empty -> .) ]
 
-    maybe_newline                  shift and go to state 353
+    maybe_newline                  shift and go to state 351
     empty                          shift and go to state 16
 
-state 349
+state 347
 
     (122) switch_condition -> SHIFT value COLON maybe_newline statements . switchcond_tail
     (123) switchcond_tail -> . empty
     (124) switchcond_tail -> . switch_condition
-    (164) empty -> .
+    (163) empty -> .
     (122) switch_condition -> . SHIFT value COLON maybe_newline statements switchcond_tail
 
-    NEWLINE         reduce using rule 164 (empty -> .)
-    OTHERWISE       reduce using rule 164 (empty -> .)
+    NEWLINE         reduce using rule 163 (empty -> .)
+    OTHERWISE       reduce using rule 163 (empty -> .)
     SHIFT           shift and go to state 319
 
-    switchcond_tail                shift and go to state 354
-    empty                          shift and go to state 355
-    switch_condition               shift and go to state 356
+    switchcond_tail                shift and go to state 352
+    empty                          shift and go to state 353
+    switch_condition               shift and go to state 354
 
-state 350
+state 348
 
     (128) for_loop -> FOR LPAREN control_variable SEMICOLON expression SEMICOLON update RPAREN maybe_newline LBRACE maybe_newline . statements RBRACE
     (105) statements -> . empty
     (106) statements -> . local_dec maybe_newline statements_tail
-    (164) empty -> .
+    (163) empty -> .
     (115) local_dec -> . empty
     (116) local_dec -> . var_statement
     (21) var_statement -> . data_type IDENT var_tail
@@ -8193,55 +8124,55 @@ state 350
   ! shift/reduce conflict for BLN resolved as shift
   ! shift/reduce conflict for CHR resolved as shift
   ! shift/reduce conflict for STR resolved as shift
-    RBRACE          reduce using rule 164 (empty -> .)
-    NEWLINE         reduce using rule 164 (empty -> .)
-    CHECK           reduce using rule 164 (empty -> .)
-    SWAP            reduce using rule 164 (empty -> .)
-    FUNCTION_NAME   reduce using rule 164 (empty -> .)
-    DISPLAY         reduce using rule 164 (empty -> .)
-    IDENT           reduce using rule 164 (empty -> .)
-    FOR             reduce using rule 164 (empty -> .)
-    UNTIL           reduce using rule 164 (empty -> .)
-    REPEAT          reduce using rule 164 (empty -> .)
-    INPUT           reduce using rule 164 (empty -> .)
+    RBRACE          reduce using rule 163 (empty -> .)
+    NEWLINE         reduce using rule 163 (empty -> .)
+    CHECK           reduce using rule 163 (empty -> .)
+    SWAP            reduce using rule 163 (empty -> .)
+    FUNCTION_NAME   reduce using rule 163 (empty -> .)
+    DISPLAY         reduce using rule 163 (empty -> .)
+    IDENT           reduce using rule 163 (empty -> .)
+    FOR             reduce using rule 163 (empty -> .)
+    UNTIL           reduce using rule 163 (empty -> .)
+    REPEAT          reduce using rule 163 (empty -> .)
+    INPUT           reduce using rule 163 (empty -> .)
     INT             shift and go to state 9
     FLT             shift and go to state 10
     BLN             shift and go to state 11
     CHR             shift and go to state 12
     STR             shift and go to state 13
 
-  ! INT             [ reduce using rule 164 (empty -> .) ]
-  ! FLT             [ reduce using rule 164 (empty -> .) ]
-  ! BLN             [ reduce using rule 164 (empty -> .) ]
-  ! CHR             [ reduce using rule 164 (empty -> .) ]
-  ! STR             [ reduce using rule 164 (empty -> .) ]
+  ! INT             [ reduce using rule 163 (empty -> .) ]
+  ! FLT             [ reduce using rule 163 (empty -> .) ]
+  ! BLN             [ reduce using rule 163 (empty -> .) ]
+  ! CHR             [ reduce using rule 163 (empty -> .) ]
+  ! STR             [ reduce using rule 163 (empty -> .) ]
 
-    statements                     shift and go to state 357
+    statements                     shift and go to state 355
     empty                          shift and go to state 144
     local_dec                      shift and go to state 145
     var_statement                  shift and go to state 146
     data_type                      shift and go to state 147
 
-state 351
+state 349
 
     (119) conditional_tail -> OTHERWISE_CHECK LPAREN expression RPAREN . LBRACE maybe_newline statements RBRACE
 
-    LBRACE          shift and go to state 358
+    LBRACE          shift and go to state 356
 
 
-state 352
+state 350
 
     (120) conditional_tail -> OTHERWISE LBRACE maybe_newline statements . RBRACE
 
-    RBRACE          shift and go to state 359
+    RBRACE          shift and go to state 357
 
 
-state 353
+state 351
 
     (121) switch_statement -> SWAP LPAREN IDENT RPAREN LBRACE maybe_newline switch_condition maybe_newline OTHERWISE maybe_newline LBRACE maybe_newline . statements maybe_newline RBRACE maybe_newline RBRACE
     (105) statements -> . empty
     (106) statements -> . local_dec maybe_newline statements_tail
-    (164) empty -> .
+    (163) empty -> .
     (115) local_dec -> . empty
     (116) local_dec -> . var_statement
     (21) var_statement -> . data_type IDENT var_tail
@@ -8256,36 +8187,36 @@ state 353
   ! shift/reduce conflict for BLN resolved as shift
   ! shift/reduce conflict for CHR resolved as shift
   ! shift/reduce conflict for STR resolved as shift
-    NEWLINE         reduce using rule 164 (empty -> .)
-    RBRACE          reduce using rule 164 (empty -> .)
-    CHECK           reduce using rule 164 (empty -> .)
-    SWAP            reduce using rule 164 (empty -> .)
-    FUNCTION_NAME   reduce using rule 164 (empty -> .)
-    DISPLAY         reduce using rule 164 (empty -> .)
-    IDENT           reduce using rule 164 (empty -> .)
-    FOR             reduce using rule 164 (empty -> .)
-    UNTIL           reduce using rule 164 (empty -> .)
-    REPEAT          reduce using rule 164 (empty -> .)
-    INPUT           reduce using rule 164 (empty -> .)
+    NEWLINE         reduce using rule 163 (empty -> .)
+    RBRACE          reduce using rule 163 (empty -> .)
+    CHECK           reduce using rule 163 (empty -> .)
+    SWAP            reduce using rule 163 (empty -> .)
+    FUNCTION_NAME   reduce using rule 163 (empty -> .)
+    DISPLAY         reduce using rule 163 (empty -> .)
+    IDENT           reduce using rule 163 (empty -> .)
+    FOR             reduce using rule 163 (empty -> .)
+    UNTIL           reduce using rule 163 (empty -> .)
+    REPEAT          reduce using rule 163 (empty -> .)
+    INPUT           reduce using rule 163 (empty -> .)
     INT             shift and go to state 9
     FLT             shift and go to state 10
     BLN             shift and go to state 11
     CHR             shift and go to state 12
     STR             shift and go to state 13
 
-  ! INT             [ reduce using rule 164 (empty -> .) ]
-  ! FLT             [ reduce using rule 164 (empty -> .) ]
-  ! BLN             [ reduce using rule 164 (empty -> .) ]
-  ! CHR             [ reduce using rule 164 (empty -> .) ]
-  ! STR             [ reduce using rule 164 (empty -> .) ]
+  ! INT             [ reduce using rule 163 (empty -> .) ]
+  ! FLT             [ reduce using rule 163 (empty -> .) ]
+  ! BLN             [ reduce using rule 163 (empty -> .) ]
+  ! CHR             [ reduce using rule 163 (empty -> .) ]
+  ! STR             [ reduce using rule 163 (empty -> .) ]
 
-    statements                     shift and go to state 360
+    statements                     shift and go to state 358
     empty                          shift and go to state 144
     local_dec                      shift and go to state 145
     var_statement                  shift and go to state 146
     data_type                      shift and go to state 147
 
-state 354
+state 352
 
     (122) switch_condition -> SHIFT value COLON maybe_newline statements switchcond_tail .
 
@@ -8293,7 +8224,7 @@ state 354
     OTHERWISE       reduce using rule 122 (switch_condition -> SHIFT value COLON maybe_newline statements switchcond_tail .)
 
 
-state 355
+state 353
 
     (123) switchcond_tail -> empty .
 
@@ -8301,7 +8232,7 @@ state 355
     OTHERWISE       reduce using rule 123 (switchcond_tail -> empty .)
 
 
-state 356
+state 354
 
     (124) switchcond_tail -> switch_condition .
 
@@ -8309,76 +8240,76 @@ state 356
     OTHERWISE       reduce using rule 124 (switchcond_tail -> switch_condition .)
 
 
-state 357
+state 355
 
     (128) for_loop -> FOR LPAREN control_variable SEMICOLON expression SEMICOLON update RPAREN maybe_newline LBRACE maybe_newline statements . RBRACE
 
-    RBRACE          shift and go to state 361
+    RBRACE          shift and go to state 359
 
 
-state 358
+state 356
 
     (119) conditional_tail -> OTHERWISE_CHECK LPAREN expression RPAREN LBRACE . maybe_newline statements RBRACE
     (2) maybe_newline -> . empty
     (3) maybe_newline -> . NEWLINE maybe_newline
-    (164) empty -> .
+    (163) empty -> .
 
   ! shift/reduce conflict for NEWLINE resolved as shift
     NEWLINE         shift and go to state 17
-    INT             reduce using rule 164 (empty -> .)
-    FLT             reduce using rule 164 (empty -> .)
-    BLN             reduce using rule 164 (empty -> .)
-    CHR             reduce using rule 164 (empty -> .)
-    STR             reduce using rule 164 (empty -> .)
-    RBRACE          reduce using rule 164 (empty -> .)
-    CHECK           reduce using rule 164 (empty -> .)
-    SWAP            reduce using rule 164 (empty -> .)
-    FUNCTION_NAME   reduce using rule 164 (empty -> .)
-    DISPLAY         reduce using rule 164 (empty -> .)
-    IDENT           reduce using rule 164 (empty -> .)
-    FOR             reduce using rule 164 (empty -> .)
-    UNTIL           reduce using rule 164 (empty -> .)
-    REPEAT          reduce using rule 164 (empty -> .)
-    INPUT           reduce using rule 164 (empty -> .)
+    INT             reduce using rule 163 (empty -> .)
+    FLT             reduce using rule 163 (empty -> .)
+    BLN             reduce using rule 163 (empty -> .)
+    CHR             reduce using rule 163 (empty -> .)
+    STR             reduce using rule 163 (empty -> .)
+    RBRACE          reduce using rule 163 (empty -> .)
+    CHECK           reduce using rule 163 (empty -> .)
+    SWAP            reduce using rule 163 (empty -> .)
+    FUNCTION_NAME   reduce using rule 163 (empty -> .)
+    DISPLAY         reduce using rule 163 (empty -> .)
+    IDENT           reduce using rule 163 (empty -> .)
+    FOR             reduce using rule 163 (empty -> .)
+    UNTIL           reduce using rule 163 (empty -> .)
+    REPEAT          reduce using rule 163 (empty -> .)
+    INPUT           reduce using rule 163 (empty -> .)
 
-  ! NEWLINE         [ reduce using rule 164 (empty -> .) ]
+  ! NEWLINE         [ reduce using rule 163 (empty -> .) ]
 
-    maybe_newline                  shift and go to state 362
+    maybe_newline                  shift and go to state 360
     empty                          shift and go to state 16
 
-state 359
+state 357
 
     (120) conditional_tail -> OTHERWISE LBRACE maybe_newline statements RBRACE .
 
     NEWLINE         reduce using rule 120 (conditional_tail -> OTHERWISE LBRACE maybe_newline statements RBRACE .)
 
 
-state 360
+state 358
 
     (121) switch_statement -> SWAP LPAREN IDENT RPAREN LBRACE maybe_newline switch_condition maybe_newline OTHERWISE maybe_newline LBRACE maybe_newline statements . maybe_newline RBRACE maybe_newline RBRACE
     (2) maybe_newline -> . empty
     (3) maybe_newline -> . NEWLINE maybe_newline
-    (164) empty -> .
+    (163) empty -> .
 
     NEWLINE         shift and go to state 17
-    RBRACE          reduce using rule 164 (empty -> .)
+    RBRACE          reduce using rule 163 (empty -> .)
 
-    maybe_newline                  shift and go to state 363
+    maybe_newline                  shift and go to state 361
     empty                          shift and go to state 16
 
-state 361
+state 359
 
     (128) for_loop -> FOR LPAREN control_variable SEMICOLON expression SEMICOLON update RPAREN maybe_newline LBRACE maybe_newline statements RBRACE .
 
     NEWLINE         reduce using rule 128 (for_loop -> FOR LPAREN control_variable SEMICOLON expression SEMICOLON update RPAREN maybe_newline LBRACE maybe_newline statements RBRACE .)
 
 
-state 362
+state 360
 
     (119) conditional_tail -> OTHERWISE_CHECK LPAREN expression RPAREN LBRACE maybe_newline . statements RBRACE
     (105) statements -> . empty
     (106) statements -> . local_dec maybe_newline statements_tail
-    (164) empty -> .
+    (163) empty -> .
     (115) local_dec -> . empty
     (116) local_dec -> . var_statement
     (21) var_statement -> . data_type IDENT var_tail
@@ -8393,77 +8324,77 @@ state 362
   ! shift/reduce conflict for BLN resolved as shift
   ! shift/reduce conflict for CHR resolved as shift
   ! shift/reduce conflict for STR resolved as shift
-    RBRACE          reduce using rule 164 (empty -> .)
-    NEWLINE         reduce using rule 164 (empty -> .)
-    CHECK           reduce using rule 164 (empty -> .)
-    SWAP            reduce using rule 164 (empty -> .)
-    FUNCTION_NAME   reduce using rule 164 (empty -> .)
-    DISPLAY         reduce using rule 164 (empty -> .)
-    IDENT           reduce using rule 164 (empty -> .)
-    FOR             reduce using rule 164 (empty -> .)
-    UNTIL           reduce using rule 164 (empty -> .)
-    REPEAT          reduce using rule 164 (empty -> .)
-    INPUT           reduce using rule 164 (empty -> .)
+    RBRACE          reduce using rule 163 (empty -> .)
+    NEWLINE         reduce using rule 163 (empty -> .)
+    CHECK           reduce using rule 163 (empty -> .)
+    SWAP            reduce using rule 163 (empty -> .)
+    FUNCTION_NAME   reduce using rule 163 (empty -> .)
+    DISPLAY         reduce using rule 163 (empty -> .)
+    IDENT           reduce using rule 163 (empty -> .)
+    FOR             reduce using rule 163 (empty -> .)
+    UNTIL           reduce using rule 163 (empty -> .)
+    REPEAT          reduce using rule 163 (empty -> .)
+    INPUT           reduce using rule 163 (empty -> .)
     INT             shift and go to state 9
     FLT             shift and go to state 10
     BLN             shift and go to state 11
     CHR             shift and go to state 12
     STR             shift and go to state 13
 
-  ! INT             [ reduce using rule 164 (empty -> .) ]
-  ! FLT             [ reduce using rule 164 (empty -> .) ]
-  ! BLN             [ reduce using rule 164 (empty -> .) ]
-  ! CHR             [ reduce using rule 164 (empty -> .) ]
-  ! STR             [ reduce using rule 164 (empty -> .) ]
+  ! INT             [ reduce using rule 163 (empty -> .) ]
+  ! FLT             [ reduce using rule 163 (empty -> .) ]
+  ! BLN             [ reduce using rule 163 (empty -> .) ]
+  ! CHR             [ reduce using rule 163 (empty -> .) ]
+  ! STR             [ reduce using rule 163 (empty -> .) ]
 
-    statements                     shift and go to state 364
+    statements                     shift and go to state 362
     empty                          shift and go to state 144
     local_dec                      shift and go to state 145
     var_statement                  shift and go to state 146
     data_type                      shift and go to state 147
 
-state 363
+state 361
 
     (121) switch_statement -> SWAP LPAREN IDENT RPAREN LBRACE maybe_newline switch_condition maybe_newline OTHERWISE maybe_newline LBRACE maybe_newline statements maybe_newline . RBRACE maybe_newline RBRACE
 
-    RBRACE          shift and go to state 365
+    RBRACE          shift and go to state 363
 
 
-state 364
+state 362
 
     (119) conditional_tail -> OTHERWISE_CHECK LPAREN expression RPAREN LBRACE maybe_newline statements . RBRACE
 
-    RBRACE          shift and go to state 366
+    RBRACE          shift and go to state 364
 
 
-state 365
+state 363
 
     (121) switch_statement -> SWAP LPAREN IDENT RPAREN LBRACE maybe_newline switch_condition maybe_newline OTHERWISE maybe_newline LBRACE maybe_newline statements maybe_newline RBRACE . maybe_newline RBRACE
     (2) maybe_newline -> . empty
     (3) maybe_newline -> . NEWLINE maybe_newline
-    (164) empty -> .
+    (163) empty -> .
 
     NEWLINE         shift and go to state 17
-    RBRACE          reduce using rule 164 (empty -> .)
+    RBRACE          reduce using rule 163 (empty -> .)
 
-    maybe_newline                  shift and go to state 367
+    maybe_newline                  shift and go to state 365
     empty                          shift and go to state 16
 
-state 366
+state 364
 
     (119) conditional_tail -> OTHERWISE_CHECK LPAREN expression RPAREN LBRACE maybe_newline statements RBRACE .
 
     NEWLINE         reduce using rule 119 (conditional_tail -> OTHERWISE_CHECK LPAREN expression RPAREN LBRACE maybe_newline statements RBRACE .)
 
 
-state 367
+state 365
 
     (121) switch_statement -> SWAP LPAREN IDENT RPAREN LBRACE maybe_newline switch_condition maybe_newline OTHERWISE maybe_newline LBRACE maybe_newline statements maybe_newline RBRACE maybe_newline . RBRACE
 
-    RBRACE          shift and go to state 368
+    RBRACE          shift and go to state 366
 
 
-state 368
+state 366
 
     (121) switch_statement -> SWAP LPAREN IDENT RPAREN LBRACE maybe_newline switch_condition maybe_newline OTHERWISE maybe_newline LBRACE maybe_newline statements maybe_newline RBRACE maybe_newline RBRACE .
 
@@ -8628,36 +8559,36 @@ WARNING: shift/reduce conflict for FLT in state 315 resolved as shift
 WARNING: shift/reduce conflict for BLN in state 315 resolved as shift
 WARNING: shift/reduce conflict for CHR in state 315 resolved as shift
 WARNING: shift/reduce conflict for STR in state 315 resolved as shift
-WARNING: shift/reduce conflict for NEWLINE in state 337 resolved as shift
-WARNING: shift/reduce conflict for NEWLINE in state 342 resolved as shift
-WARNING: shift/reduce conflict for INT in state 344 resolved as shift
-WARNING: shift/reduce conflict for FLT in state 344 resolved as shift
-WARNING: shift/reduce conflict for BLN in state 344 resolved as shift
-WARNING: shift/reduce conflict for CHR in state 344 resolved as shift
-WARNING: shift/reduce conflict for STR in state 344 resolved as shift
-WARNING: shift/reduce conflict for NEWLINE in state 345 resolved as shift
-WARNING: shift/reduce conflict for INT in state 347 resolved as shift
-WARNING: shift/reduce conflict for FLT in state 347 resolved as shift
-WARNING: shift/reduce conflict for BLN in state 347 resolved as shift
-WARNING: shift/reduce conflict for CHR in state 347 resolved as shift
-WARNING: shift/reduce conflict for STR in state 347 resolved as shift
-WARNING: shift/reduce conflict for NEWLINE in state 348 resolved as shift
-WARNING: shift/reduce conflict for INT in state 350 resolved as shift
-WARNING: shift/reduce conflict for FLT in state 350 resolved as shift
-WARNING: shift/reduce conflict for BLN in state 350 resolved as shift
-WARNING: shift/reduce conflict for CHR in state 350 resolved as shift
-WARNING: shift/reduce conflict for STR in state 350 resolved as shift
-WARNING: shift/reduce conflict for INT in state 353 resolved as shift
-WARNING: shift/reduce conflict for FLT in state 353 resolved as shift
-WARNING: shift/reduce conflict for BLN in state 353 resolved as shift
-WARNING: shift/reduce conflict for CHR in state 353 resolved as shift
-WARNING: shift/reduce conflict for STR in state 353 resolved as shift
-WARNING: shift/reduce conflict for NEWLINE in state 358 resolved as shift
-WARNING: shift/reduce conflict for INT in state 362 resolved as shift
-WARNING: shift/reduce conflict for FLT in state 362 resolved as shift
-WARNING: shift/reduce conflict for BLN in state 362 resolved as shift
-WARNING: shift/reduce conflict for CHR in state 362 resolved as shift
-WARNING: shift/reduce conflict for STR in state 362 resolved as shift
+WARNING: shift/reduce conflict for NEWLINE in state 336 resolved as shift
+WARNING: shift/reduce conflict for NEWLINE in state 340 resolved as shift
+WARNING: shift/reduce conflict for INT in state 342 resolved as shift
+WARNING: shift/reduce conflict for FLT in state 342 resolved as shift
+WARNING: shift/reduce conflict for BLN in state 342 resolved as shift
+WARNING: shift/reduce conflict for CHR in state 342 resolved as shift
+WARNING: shift/reduce conflict for STR in state 342 resolved as shift
+WARNING: shift/reduce conflict for NEWLINE in state 343 resolved as shift
+WARNING: shift/reduce conflict for INT in state 345 resolved as shift
+WARNING: shift/reduce conflict for FLT in state 345 resolved as shift
+WARNING: shift/reduce conflict for BLN in state 345 resolved as shift
+WARNING: shift/reduce conflict for CHR in state 345 resolved as shift
+WARNING: shift/reduce conflict for STR in state 345 resolved as shift
+WARNING: shift/reduce conflict for NEWLINE in state 346 resolved as shift
+WARNING: shift/reduce conflict for INT in state 348 resolved as shift
+WARNING: shift/reduce conflict for FLT in state 348 resolved as shift
+WARNING: shift/reduce conflict for BLN in state 348 resolved as shift
+WARNING: shift/reduce conflict for CHR in state 348 resolved as shift
+WARNING: shift/reduce conflict for STR in state 348 resolved as shift
+WARNING: shift/reduce conflict for INT in state 351 resolved as shift
+WARNING: shift/reduce conflict for FLT in state 351 resolved as shift
+WARNING: shift/reduce conflict for BLN in state 351 resolved as shift
+WARNING: shift/reduce conflict for CHR in state 351 resolved as shift
+WARNING: shift/reduce conflict for STR in state 351 resolved as shift
+WARNING: shift/reduce conflict for NEWLINE in state 356 resolved as shift
+WARNING: shift/reduce conflict for INT in state 360 resolved as shift
+WARNING: shift/reduce conflict for FLT in state 360 resolved as shift
+WARNING: shift/reduce conflict for BLN in state 360 resolved as shift
+WARNING: shift/reduce conflict for CHR in state 360 resolved as shift
+WARNING: shift/reduce conflict for STR in state 360 resolved as shift
 WARNING: reduce/reduce conflict in state 26 resolved using rule (global_dec -> empty)
 WARNING: rejected rule (global_tail -> empty) in state 26
 WARNING: reduce/reduce conflict in state 49 resolved using rule (global_value -> factor)
@@ -8668,11 +8599,8 @@ WARNING: reduce/reduce conflict in state 158 resolved using rule (statements_tai
 WARNING: rejected rule (local_dec -> empty) in state 158
 WARNING: reduce/reduce conflict in state 210 resolved using rule (value -> factor)
 WARNING: rejected rule (empty -> <empty>) in state 210
-WARNING: reduce/reduce conflict in state 235 resolved using rule (update_tail -> assign_op value)
-WARNING: rejected rule (string_operation_tail -> assign_op value) in state 235
 WARNING: reduce/reduce conflict in state 278 resolved using rule (typecast_value -> IDENT)
 WARNING: rejected rule (empty -> <empty>) in state 278
 WARNING: reduce/reduce conflict in state 279 resolved using rule (typecast_value -> literal)
 WARNING: rejected rule (factor -> literal) in state 279
 WARNING: Rule (global_tail -> empty) is never reduced
-WARNING: Rule (string_operation_tail -> assign_op value) is never reduced
