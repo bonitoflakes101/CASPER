@@ -27,3 +27,10 @@ document.addEventListener("DOMContentLoaded", function () {
 
     codeEditor.addEventListener("scroll", syncScroll);
 });
+
+
+document.addEventListener("DOMContentLoaded", function () {
+    document.querySelector(".run-button").addEventListener("click", function () {
+        document.querySelector(".form-div").submit(); // Submit the form manually
+    });
+});
