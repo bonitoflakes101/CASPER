@@ -64,7 +64,7 @@ def p_unli_newline(p):
 # -----------------------------------------------------------------------------
 def p_main_function(p):
     """main_function : MAIN_CASPER LPAREN RPAREN LBRACE maybe_newline statements maybe_newline RBRACE"""
-    p[0] = ASTNode("main_function", [p[5]], p[1])
+    p[0] = ASTNode("main_function", [p[6]], p[1])
 
 # -----------------------------------------------------------------------------
 # Production: <global_dec> → <global_statement> <global_tail> | null
@@ -75,7 +75,7 @@ def p_global_dec(p):
     if len(p) == 2:
         p[0] = ASTNode("global_dec", [])
     else:
-        tail = p[2] if p[2] is not None else []
+        tail = p[3] if p[3] is not None else []
         p[0] = ASTNode("global_dec", [p[1]] + tail)
 
 # -----------------------------------------------------------------------------
@@ -256,7 +256,7 @@ def p_typecast_value(p):
     if len(p) == 2:
         p[0] = ASTNode("typecast_value", value=p[1])
     else:
-        p[0] = ASTNode("typecast_value", value=p[1])
+        p[0] = ASTNode("typecast_value", children=[ASTNode("FUNCTION_NAME", value=p[1]), p[2], p[3]])
 
 # -----------------------------------------------------------------------------
 # Production: <literal> → int_literal | float_literal | Day | Night | char_literal | str_literal
@@ -513,7 +513,7 @@ def p_local_dec(p):
 # -----------------------------------------------------------------------------
 def p_conditional_statement(p):
     "conditional_statement : CHECK LPAREN expression RPAREN LBRACE maybe_newline statements RBRACE conditional_tail "
-    p[0] = ASTNode("conditional_statement", [p[3], p[6], p[8]])
+    p[0] = ASTNode("conditional_statement", [p[3], p[7], p[9]])
 
 # -----------------------------------------------------------------------------
 # Production: <conditional_tail> → null | otherwise_check ( <expression> ) { <statements> } | otherwise { <statements> }
@@ -569,7 +569,7 @@ def p_loop_statement(p):
 # -----------------------------------------------------------------------------
 def p_for_loop(p):
     "for_loop : FOR LPAREN control_variable SEMICOLON expression SEMICOLON update RPAREN maybe_newline LBRACE maybe_newline statements RBRACE"
-    p[0] = ASTNode("for_loop", [p[3], p[5], p[7], p[11]])
+    p[0] = ASTNode("for_loop", [p[3], p[5], p[7], p[12]])
 
 # -----------------------------------------------------------------------------
 # Production: <until_loop> → until ( <expression> ) { <statements> }
@@ -665,7 +665,10 @@ def p_arg_value(p):
 def p_output_statement(p):
     """output_statement : DISPLAY value next_val
                         |  DISPLAY LPAREN value next_val RPAREN"""
-    p[0] = ASTNode("output_statement", [p[2], p[3]])
+    if len(p) == 4:  
+        p[0] = ASTNode("output_statement", [p[2], p[3]])
+    else:  
+        p[0] = ASTNode("output_statement", [p[3], p[4]])
 
 # -----------------------------------------------------------------------------
 # Production: <next_val> → null | , <value> <next_val>
