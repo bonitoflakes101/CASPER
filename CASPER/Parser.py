@@ -145,7 +145,7 @@ def p_global_value(p):
 # Production: <var_statement> → <data_type> IDENT <var_tail>
 # -----------------------------------------------------------------------------
 def p_var_statement(p):
-    """var_statement : data_type IDENT var_tail"""
+    """var_statement : data_type IDENT var_tail unli_newline"""
     p[0] = ASTNode("var_statement", [p[1], ASTNode("IDENT", value=p[2]), p[3]])
 
 # -----------------------------------------------------------------------------
@@ -289,6 +289,8 @@ def p_expr_head(p):
         p[0] = p[1]
     else:
         p[0] = ASTNode("expr_head", [p[1], p[2]])
+
+        
 
 # -----------------------------------------------------------------------------
 # Production: <term> → <factor> <factor_tail>
