@@ -63,8 +63,8 @@ def p_unli_newline(p):
 # Production: <main_function> → FUNCTION_NAME LPAREN RPAREN LBRACE <statements> RBRACE
 # -----------------------------------------------------------------------------
 def p_main_function(p):
-    """main_function : MAIN_CASPER LPAREN RPAREN LBRACE maybe_newline statements maybe_newline RBRACE"""
-    p[0] = ASTNode("main_function", [p[6]], p[1])
+    """main_function : MAIN_CASPER LPAREN RPAREN maybe_newline LBRACE maybe_newline statements maybe_newline RBRACE"""
+    p[0] = ASTNode("main_function", [p[7]], p[1])
 
 # -----------------------------------------------------------------------------
 # Production: <global_dec> → <global_statement> <global_tail> | null
