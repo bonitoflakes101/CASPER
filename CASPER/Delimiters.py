@@ -11,7 +11,7 @@ class Delimiters:
     VALID_ID_SYM = ALPHANUM | UNDERSCORE
     BOOLEAN = {'Day', 'Night'}
     OPERATORS = {'+', '-', '*', '/', '%'}
-    LOGEXP = {'||', '&&'}
+    LOGEXP = {'|', '&'}
     COMPARATOR = {'==', '!', '!=', '<', '>', '<=', '>='}
     NULL = {None}
     COMMENT = {'<<', '---'}
@@ -32,7 +32,7 @@ class Delimiters:
     DELIM_ID = OPERATORS | SPACE | NEWLINE | CARRIAGE_RETURN | NULL | {'=', '!', '>', '<', '(', ')', '[', ']', ','}
     DEL1 = SPACE | {'{'}
     DEL2 = SPACE | {'('}
-    DEL3 = SPACE | NUM | BOOLEAN | {'(', '$'} # logical ops
+    DEL3 = SPACE | NUM | BOOLEAN | {'(', '$', '|'} # logical ops
     DEL4 = SPACE | NUM | {'(', '$', '\'', '"', None,'', '\r'} # plus delim
     DEL5 = SPACE | NUM |{'$', '(', '@','',None,'\r'}  # minus, multiply, divide, modulo delims, all assignment ops
     DEL6 = NUM | {'$', '(', '\''} #prefix | **
