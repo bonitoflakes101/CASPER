@@ -13,7 +13,7 @@ class Delimiters:
     OPERATORS = {'+', '-', '*', '/', '%'}
     LOGEXP = {'|', '&'}
     COMPARATOR = {'==', '!', '!=', '<', '>', '<=', '>='}
-    NULL = {None}
+    NULL = {None, ''}
     COMMENT = {'<<', '---'}
     ASCII = {'ascii code'} # mema
     SPX_CHAR1 = {'!', '@', '#', '$', '%', '^', '&', '*'}
@@ -34,15 +34,15 @@ class Delimiters:
     DEL2 = SPACE | {'('}
     DEL3 = SPACE | NUM | BOOLEAN | {'(', '$', '|'} # logical ops
     DEL4 = SPACE | NUM | {'(', '$', '\'', '"', None,'', '\r'} # plus delim
-    DEL5 = SPACE | NUM |{'$', '(', '@','',None,'\r'}  # minus, multiply, divide, modulo delims, all assignment ops
+    DEL5 = SPACE | NUM |{'$', '(', '@','',None,'\r', ''}  # minus, multiply, divide, modulo delims, all assignment ops
     DEL6 = NUM | {'$', '(', '\''} #prefix | **
     DEL7 =  SPACE | ALPHANUM | NEWLINE | {'$', '@', '"', '(', '{', '\'', ')'} # open LPAREN (
-    DEL8 = SPACE | NEWLINE | {'+', '-', '*', '/', '{', '(', ')', ']', '}', ','} # closing RPAREN )
+    DEL8 = SPACE | NEWLINE | NULL | {'+', '-', '*', '/', '{', '(', ')', ']', '}', ','} # closing RPAREN )
     DEL9 = SPACE | NEWLINE | {'(', '{', '$', '@', '"'} # opening LBRACE {
     DEL10 = SPACE | NEWLINE | NULL | OPERATORS | COMPARATOR | LOGEXP | {'"', '(', '{', '[',']',')', ',', ':' ,';'} # closing RBRACE }
     DEL11 = SPACE | NEWLINE | NULL | {',', '(', '{', '[', '+', ')'}
     DEL12 = SPACE | NEWLINE | NULL | {'\r'}
-    DEL13 = SPACE | NULL | {')', '\'', None,'','\r'} # postfix
+    DEL13 = SPACE | NULL | {')', '\'', None,'','\r', ''} # postfix
     DEL14 = SPACE | ALPHA
     DEL15 = SPACE | NEWLINE | ALPHANUM | {'[', ']', '"', '$'} # L bracket
     DEL16 = SPACE | NEWLINE | {'[', ']', '$', '@', ',', '='} 
