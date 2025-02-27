@@ -5,7 +5,7 @@ from Parser import build_parser
 app = Flask(__name__)
 
 LEXER_DEBUG = True
-PARSER_DEBUG = False
+PARSER_DEBUG = True
 
 @app.route("/", methods=["GET", "POST"])
 def home():
