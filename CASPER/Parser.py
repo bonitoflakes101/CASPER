@@ -79,16 +79,12 @@ def p_global_dec(p):
         p[0] = ASTNode("global_dec", [p[1]] + tail)
 
 # -----------------------------------------------------------------------------
-# Production: <global_tail> → <global_dec> | null
+# Production: <global_tail> → <global_dec> 
 # -----------------------------------------------------------------------------
 def p_global_tail(p):
-    """global_tail : global_dec
-                   | empty"""
-    if p[1] is None:
-        p[0] = []
-    else:
-        # Assuming global_dec returns an ASTNode whose children list holds additional declarations
-        p[0] = p[1].children
+    """global_tail : global_dec"""
+    p[0] = p[1].children if hasattr(p[1], 'children') else [p[1]]
+
 
 # -----------------------------------------------------------------------------
 # Production: <global_statement> → <data_type> IDENT<global_statement_tail>
@@ -134,11 +130,10 @@ def p_global_dec_value(p):
         p[0] = ASTNode("global_dec_value_list", [p[2]])
 
 # -----------------------------------------------------------------------------
-# Production: <global_value> → <factor> | <expression>
+# Production: <global_value> → <expression>
 # -----------------------------------------------------------------------------
 def p_global_value(p):
-    """global_value : factor
-                    | expression"""
+    """global_value : expression"""
     p[0] = p[1]
 
 # -----------------------------------------------------------------------------
@@ -225,11 +220,10 @@ def p_data_type(p):
     p[0] = ASTNode("data_type", value=p[1])
 
 # -----------------------------------------------------------------------------
-# Production: <value> → <factor> | <type_cast> | <expression> | <function_call>
+# Production: <value> → <type_cast> | <expression> | <function_call>
 # -----------------------------------------------------------------------------
 def p_value(p):
-    """value : factor
-             | type_cast
+    """value : type_cast
              | expression
              | function_call"""
     p[0] = ASTNode("value", [p[1]])
@@ -245,12 +239,10 @@ def p_type_cast(p):
     p[0] = ASTNode("type_cast", [p[3]], p[1])
 
 # -----------------------------------------------------------------------------
-# Production: <typecast_value> → IDENT | <literal> | <expression> | FUNCTION_NAME() | <input_statement>
+# Production: <typecast_value> → <expression> | FUNCTION_NAME() | <input_statement>
 # -----------------------------------------------------------------------------
 def p_typecast_value(p):
-    """typecast_value : IDENT
-                      | literal
-                      | expression
+    """typecast_value :  expression
                       | FUNCTION_NAME LPAREN RPAREN
                       | input_statement"""
     if len(p) == 2:
@@ -482,32 +474,26 @@ def p_statements(p):
         p[0] = [p[1]] + p[3]
 
 # -----------------------------------------------------------------------------
-# Production: <statements_tail> → null | one of: <conditional_statement> | <switch_statement> | <loop_statement> | <function_call> | <string_operation_statement> | <global_reference> | <output_statement> then <statements_tail>
+# Production: <statements_tail> →  one of: <conditional_statement> | <switch_statement> | <loop_statement> | <function_call> | <string_operation_statement> | <output_statement> then <statements_tail2>
 # -----------------------------------------------------------------------------
 def p_statements_tail(p):
     """
-    statements_tail : empty
-                    | local_dec maybe_newline statements_tail
-                    | string_operation_statement unli_newline statements_tail
-                    | conditional_statement unli_newline statements_tail
-                    | switch_statement unli_newline statements_tail
-                    | loop_statement unli_newline statements_tail
-                    | function_call unli_newline statements_tail
-                    | output_statement unli_newline statements_tail
+    statements_tail : string_operation_statement unli_newline statements_tail2
+                    | conditional_statement unli_newline statements_tail2
+                    | switch_statement unli_newline statements_tail2
+                    | loop_statement unli_newline statements_tail2
+                    | function_call unli_newline statements_tail2
+                    | output_statement unli_newline statements_tail2
                     
     """
-    if len(p) == 2:
-        p[0] = []  # empty
-    # If the alternative starts with string_operation_statement, conditional_statement, etc.
-    elif len(p) == 4:
-        p[0] = [p[1]] + p[3]
-    else:
-        # For the "statements maybe_newline" alternative (when it’s the last alternative)
-        if isinstance(p[1], list):
-            p[0] = p[1]
-        else:
-            p[0] = [p[1]] + p[2]
+    p[0] = [p[1]] + p[3]
 
+
+def p_statements_tail2(p):
+    """
+    statements_tail2 : statements
+    """
+    p[0] = p[1] 
 # -----------------------------------------------------------------------------
 # Production: <local_dec> → <var_statement>
 # -----------------------------------------------------------------------------
@@ -639,7 +625,7 @@ def p_postfix(p):
     p[0] = ASTNode("postfix", value=p[1])
 
 # -----------------------------------------------------------------------------
-# Production: <function_call> → FUNCTION_NAME ( <arguments> ) | <input_statement>
+# Production: <function_call> → FUNCTION_NAME ( <arguments> ) | <output_statement>
 # -----------------------------------------------------------------------------
 def p_function_call(p):
     """function_call : FUNCTION_NAME LPAREN arguments RPAREN
