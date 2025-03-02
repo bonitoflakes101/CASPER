@@ -266,33 +266,12 @@ def p_literal(p):
 # Production: <expression> → <expr_head> <expr_tail>
 # -----------------------------------------------------------------------------
 def p_expression(p):
-    "expression : expr_head expr_tail"
+    "expression : factor factor_tail"
     if p[2] is None:
         p[0] = p[1]
     else:
         p[0] = ASTNode("expression", [p[1], p[2]])
 
-# -----------------------------------------------------------------------------
-# Production: <expr_head> → <term> <term_tail>
-# -----------------------------------------------------------------------------
-def p_expr_head(p):
-    "expr_head : term term_tail"
-    if p[2] is None:
-        p[0] = p[1]
-    else:
-        p[0] = ASTNode("expr_head", [p[1], p[2]])
-
-        
-
-# -----------------------------------------------------------------------------
-# Production: <term> → <factor> <factor_tail>
-# -----------------------------------------------------------------------------
-def p_term(p):
-    "term : factor factor_tail"
-    if p[2] is None:
-        p[0] = p[1]
-    else:
-        p[0] = ASTNode("term", [p[1], p[2]])
 
 # -----------------------------------------------------------------------------
 # Production: <factor> → <var_call> | <literal> | ~<literal> | (<expression>)
@@ -319,44 +298,20 @@ def p_factor_tail(p):
                    | MULTIPLY expression
                    | DIVISION expression
                    | MODULO expression
-                   | EXPONENT expression"""
+                   | EXPONENT expression
+                   | GT expression
+                   | LT expression
+                   | EQ_EQ expression
+                   | GT_EQ expression
+                   | LT_EQ expression
+                   | NOT_EQ expression
+                   | AND expression
+                   | OR expression"""
     if len(p) == 2:
         p[0] = None
     else:
-        p[0] = ASTNode("factor_tail", [p[2]], p[1])
+        p[0] = ASTNode("factor_tail", [p[1], p[2]])
 
-# -----------------------------------------------------------------------------
-# Production: <term_tail> → null | > <expression> | < <expression> | == <expression> | GT_EQ <expression> | LT_EQ <expression> | != <expression>
-# -----------------------------------------------------------------------------
-def p_term_tail(p):
-    """term_tail : empty
-                 | GT expression
-                 | LT expression
-                 | EQ_EQ expression
-                 | GT_EQ expression
-                 | LT_EQ expression
-                 | NOT_EQ expression"""
-    if len(p) == 2:
-        p[0] = None
-    else:
-        op = p[1]
-        if op == "GT_EQ":
-            op = "=>"
-        elif op == "LT_EQ":
-            op = "=<"
-        p[0] = ASTNode("term_tail", [p[2]], op)
-
-# -----------------------------------------------------------------------------
-# Production: <expr_tail> → null | AND <expression> | OR <expression>
-# -----------------------------------------------------------------------------
-def p_expr_tail(p):
-    """expr_tail : empty
-                 | AND expression
-                 | OR expression"""
-    if len(p) == 2:
-        p[0] = None
-    else:
-        p[0] = ASTNode("expr_tail", [p[2]], p[1])
 
 # -----------------------------------------------------------------------------
 # Production: <var_call> → IDENT <var_call_tail>
