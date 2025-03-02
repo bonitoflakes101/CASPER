@@ -504,37 +504,22 @@ def p_local_dec(p):
 
 
 # -----------------------------------------------------------------------------
-# Production: <conditional_statement> → check ( <expression> ) { <statements> } <conditional_tail>
+# Production: <conditional_statement> → check (<expression>) {<statements>} <conditional_tail> otherwise {<statements>}
 # -----------------------------------------------------------------------------
 def p_conditional_statement(p):
-    "conditional_statement : CHECK LPAREN expression RPAREN maybe_newline LBRACE maybe_newline statements RBRACE maybe_newline conditional_tail "
-    p[0] = ASTNode("conditional_statement", [p[3], p[8], p[11]])
+    "conditional_statement : CHECK LPAREN expression RPAREN maybe_newline LBRACE maybe_newline statements RBRACE maybe_newline conditional_tail maybe_newline OTHERWISE maybe_newline LBRACE maybe_newline statements RBRACE"
+    p[0] = ASTNode("conditional_statement", [p[3], p[8], p[10], p[16]])
 
 # -----------------------------------------------------------------------------
-# Production: <conditional_tail> → null | otherwise_check ( <expression> ) { <statements> } | otherwise { <statements> }
+# Production: <conditional_tail> → null | otherwise_check (<expression>) {<statements>}  <conditional_tail> 
 # -----------------------------------------------------------------------------
 def p_conditional_tail(p):
     """conditional_tail : empty
-                        | OTHERWISE_CHECK LPAREN expression RPAREN maybe_newline LBRACE maybe_newline statements RBRACE  maybe_newline conditional_tail2
-                        | OTHERWISE maybe_newline LBRACE maybe_newline statements RBRACE"""
+                        | OTHERWISE_CHECK LPAREN expression RPAREN maybe_newline LBRACE maybe_newline statements RBRACE  maybe_newline conditional_tail"""
     if len(p) == 2:
         p[0] = None
-    elif p[1] == "OTHERWISE_CHECK":
-        p[0] = ASTNode("conditional_tail", [p[3], p[8], p[11]])
     else:
-        p[0] = ASTNode("conditional_tail", [p[5]])
-
-# -----------------------------------------------------------------------------
-# Production: <conditional_tail2> → otherwise_check ( <expression> ) { <statements> } <conditional_tail2> 
-#                            | otherwise { <statements> }
-# -----------------------------------------------------------------------------
-def p_conditional_tail2(p):
-    """conditional_tail2 : OTHERWISE_CHECK LPAREN expression RPAREN maybe_newline LBRACE maybe_newline statements RBRACE maybe_newline conditional_tail2
-                         | OTHERWISE maybe_newline LBRACE maybe_newline statements RBRACE"""
-    if p[1] == "OTHERWISE_CHECK":
-        p[0] = ASTNode("conditional_tail2", [p[3], p[8], p[11]])
-    else:
-        p[0] = ASTNode("conditional_tail2", [p[5]])
+        p[0] = ASTNode("conditional_tail", [p[3], p[8], p[10]])  
 
 # -----------------------------------------------------------------------------
 # Production: <switch_statement> → swap(IDENT){ <switch_condition> otherwise <statements> }
