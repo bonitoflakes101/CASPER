@@ -2,6 +2,7 @@ import ply.yacc as yacc
 from Lexer import tokens
 from Token import TokenType
 
+parser = None 
 tokens = [token.name for token in TokenType]
 
 # Define valid types
@@ -704,16 +705,29 @@ def p_empty(p):
     p[0] = None
 
 
-# Error Handling
+
 def p_error(p):
+    global parser 
     if p:
-        error_message = f"Syntax Error: Unexpected token '{p.value}' at line {p.lineno} (Token Type: {p.type})"
+        state = parser.statestack[-1] if parser and parser.statestack else None
+        expected_tokens = list(parser.action[state].keys()) if state in parser.action else []
+        
+        expected_tokens_str = ", ".join(expected_tokens)  
+        
+        error_message = (
+            f"Syntax Error:\n"
+            f"Unexpected token: '{p.value}' at line {p.lineno}.\n"
+        )
+        if expected_tokens:
+            error_message += f"Expected one of: {expected_tokens_str}"
     else:
-        error_message = "Syntax Error: Unexpected end of input (EOF)"
-    
+        error_message = "Syntax Error:\nUnexpected end of input (EOF)."
+
     raise SyntaxError(error_message)
 
 
 # Build Parser
 def build_parser():
-    return yacc.yacc()
+    global parser
+    parser = yacc.yacc()
+    return parser
