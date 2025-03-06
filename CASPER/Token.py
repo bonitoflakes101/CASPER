@@ -155,7 +155,11 @@ class Token:
         self.position = position
 
     def __str__(self) -> str:
-        return f"Token[{self.type} : {self.literal} : Line {self.line_no} : Position {self.position}]"
+        if self.type == TokenType.ILLEGAL:
+            return f"{self.type.name} Token: '{self.literal}' at Line no:  {self.line_no}"
+        else:
+            return f"Token: {self.type.name} : {self.literal} \nLine no: {self.line_no} - Position no: {self.position}"
+        # return f"Token[{self.type} : {self.literal} : Line {self.line_no} : Position {self.position}]"
     
     def __repr__(self) -> str:
         return str(self)
