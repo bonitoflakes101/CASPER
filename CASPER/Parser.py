@@ -434,22 +434,25 @@ def p_statements(p):
 # -----------------------------------------------------------------------------
 def p_statements_tail(p):
     """
-    statements_tail : string_operation_statement unli_newline statements_tail2
-                    | conditional_statement unli_newline statements_tail2
-                    | switch_statement unli_newline statements_tail2
-                    | loop_statement unli_newline statements_tail2
-                    | function_call unli_newline statements_tail2
-                    | output_statement unli_newline statements_tail2
-                    
+    statements_tail : string_operation_statement unli_newline statements
+                    | conditional_statement unli_newline statements
+                    | switch_statement unli_newline statements
+                    | loop_statement unli_newline statements
+                    | function_call unli_newline statements
+                    | output_statement unli_newline statements
+                    | statements
     """
-    p[0] = [p[1]] + p[3]
+    if len(p) == 4:
+        p[0] = [p[1]] + p[3]
+    else:
+        p[0] = p[1]
 
 
-def p_statements_tail2(p):
-    """
-    statements_tail2 : statements
-    """
-    p[0] = p[1] 
+# def p_statements_tail2(p):
+#     """
+#     statements_tail2 : statements
+#     """
+#     p[0] = p[1] 
 # -----------------------------------------------------------------------------
 # Production: <local_dec> → <var_statement>
 # -----------------------------------------------------------------------------
