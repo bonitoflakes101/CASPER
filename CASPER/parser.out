@@ -110,7 +110,7 @@ Rule 72    factor_tail -> OR expression
 Rule 73    var_call -> IDENT var_call_tail
 Rule 74    var_call_tail -> empty
 Rule 75    var_call_tail -> LBRACKET index RBRACKET
-Rule 76    function_statements -> maybe_newline ret_type FUNCTION_NAME LPAREN parameters RPAREN maybe_newline LBRACE unli_newline statements revive maybe_newline RBRACE maybe_newline function_statements_tail
+Rule 76    function_statements -> maybe_newline ret_type FUNCTION_NAME LPAREN parameters RPAREN maybe_newline LBRACE unli_newline statements revive maybe_newline RBRACE unli_newline function_statements_tail
 Rule 77    function_statements -> empty
 Rule 78    function_statements_tail -> function_statements
 Rule 79    ret_type -> FUNCTION
@@ -331,7 +331,7 @@ literal              : 27 55 56 133
 local_dec            : 98
 loop_statement       : 102
 main_function        : 1
-maybe_newline        : 1 1 3 6 6 6 76 76 76 76 98 108 108 108 108 108 108 110 110 110 111 111 111 111 111 111 112 118 118 119 120
+maybe_newline        : 1 1 3 6 6 6 76 76 76 98 108 108 108 108 108 108 110 110 110 111 111 111 111 111 111 112 118 118 119 120
 next_val             : 135 136 138
 output_statement     : 104 128
 parameters           : 76
@@ -353,7 +353,7 @@ switchcond_tail      : 112
 tail_value           : 21
 type_cast            : 37
 typecast_value       : 40 41 42 43
-unli_newline         : 1 1 5 7 19 76 99 100 101 102 103 104
+unli_newline         : 1 1 5 7 19 76 76 99 100 101 102 103 104
 until_loop           : 116
 update               : 118
 update_tail          : 122 142
@@ -610,7 +610,7 @@ state 14
 state 15
 
     (1) program -> BIRTH unli_newline global_dec maybe_newline . function_statements maybe_newline main_function unli_newline GHOST
-    (76) function_statements -> . maybe_newline ret_type FUNCTION_NAME LPAREN parameters RPAREN maybe_newline LBRACE unli_newline statements revive maybe_newline RBRACE maybe_newline function_statements_tail
+    (76) function_statements -> . maybe_newline ret_type FUNCTION_NAME LPAREN parameters RPAREN maybe_newline LBRACE unli_newline statements revive maybe_newline RBRACE unli_newline function_statements_tail
     (77) function_statements -> . empty
     (2) maybe_newline -> . empty
     (3) maybe_newline -> . NEWLINE maybe_newline
@@ -777,7 +777,7 @@ state 19
 
 state 20
 
-    (76) function_statements -> maybe_newline . ret_type FUNCTION_NAME LPAREN parameters RPAREN maybe_newline LBRACE unli_newline statements revive maybe_newline RBRACE maybe_newline function_statements_tail
+    (76) function_statements -> maybe_newline . ret_type FUNCTION_NAME LPAREN parameters RPAREN maybe_newline LBRACE unli_newline statements revive maybe_newline RBRACE unli_newline function_statements_tail
     (79) ret_type -> . FUNCTION
     (80) ret_type -> . function_dtype
     (81) function_dtype -> . FUNCTION_INT
@@ -975,7 +975,7 @@ state 29
 
 state 30
 
-    (76) function_statements -> maybe_newline ret_type . FUNCTION_NAME LPAREN parameters RPAREN maybe_newline LBRACE unli_newline statements revive maybe_newline RBRACE maybe_newline function_statements_tail
+    (76) function_statements -> maybe_newline ret_type . FUNCTION_NAME LPAREN parameters RPAREN maybe_newline LBRACE unli_newline statements revive maybe_newline RBRACE unli_newline function_statements_tail
 
     FUNCTION_NAME   shift and go to state 61
 
@@ -1488,7 +1488,7 @@ state 60
 
 state 61
 
-    (76) function_statements -> maybe_newline ret_type FUNCTION_NAME . LPAREN parameters RPAREN maybe_newline LBRACE unli_newline statements revive maybe_newline RBRACE maybe_newline function_statements_tail
+    (76) function_statements -> maybe_newline ret_type FUNCTION_NAME . LPAREN parameters RPAREN maybe_newline LBRACE unli_newline statements revive maybe_newline RBRACE unli_newline function_statements_tail
 
     LPAREN          shift and go to state 91
 
@@ -2130,7 +2130,7 @@ state 90
 
 state 91
 
-    (76) function_statements -> maybe_newline ret_type FUNCTION_NAME LPAREN . parameters RPAREN maybe_newline LBRACE unli_newline statements revive maybe_newline RBRACE maybe_newline function_statements_tail
+    (76) function_statements -> maybe_newline ret_type FUNCTION_NAME LPAREN . parameters RPAREN maybe_newline LBRACE unli_newline statements revive maybe_newline RBRACE unli_newline function_statements_tail
     (91) parameters -> . data_type IDENT parameters_tail
     (92) parameters -> . empty
     (32) data_type -> . INT
@@ -2440,7 +2440,7 @@ state 116
 
 state 117
 
-    (76) function_statements -> maybe_newline ret_type FUNCTION_NAME LPAREN parameters . RPAREN maybe_newline LBRACE unli_newline statements revive maybe_newline RBRACE maybe_newline function_statements_tail
+    (76) function_statements -> maybe_newline ret_type FUNCTION_NAME LPAREN parameters . RPAREN maybe_newline LBRACE unli_newline statements revive maybe_newline RBRACE unli_newline function_statements_tail
 
     RPAREN          shift and go to state 125
 
@@ -2529,7 +2529,7 @@ state 124
 
 state 125
 
-    (76) function_statements -> maybe_newline ret_type FUNCTION_NAME LPAREN parameters RPAREN . maybe_newline LBRACE unli_newline statements revive maybe_newline RBRACE maybe_newline function_statements_tail
+    (76) function_statements -> maybe_newline ret_type FUNCTION_NAME LPAREN parameters RPAREN . maybe_newline LBRACE unli_newline statements revive maybe_newline RBRACE unli_newline function_statements_tail
     (2) maybe_newline -> . empty
     (3) maybe_newline -> . NEWLINE maybe_newline
     (153) empty -> .
@@ -2562,7 +2562,7 @@ state 127
 
 state 128
 
-    (76) function_statements -> maybe_newline ret_type FUNCTION_NAME LPAREN parameters RPAREN maybe_newline . LBRACE unli_newline statements revive maybe_newline RBRACE maybe_newline function_statements_tail
+    (76) function_statements -> maybe_newline ret_type FUNCTION_NAME LPAREN parameters RPAREN maybe_newline . LBRACE unli_newline statements revive maybe_newline RBRACE unli_newline function_statements_tail
 
     LBRACE          shift and go to state 133
 
@@ -2629,7 +2629,7 @@ state 132
 
 state 133
 
-    (76) function_statements -> maybe_newline ret_type FUNCTION_NAME LPAREN parameters RPAREN maybe_newline LBRACE . unli_newline statements revive maybe_newline RBRACE maybe_newline function_statements_tail
+    (76) function_statements -> maybe_newline ret_type FUNCTION_NAME LPAREN parameters RPAREN maybe_newline LBRACE . unli_newline statements revive maybe_newline RBRACE unli_newline function_statements_tail
     (4) unli_newline -> . NEWLINE
     (5) unli_newline -> . NEWLINE unli_newline
 
@@ -2694,7 +2694,7 @@ state 135
 
 state 136
 
-    (76) function_statements -> maybe_newline ret_type FUNCTION_NAME LPAREN parameters RPAREN maybe_newline LBRACE unli_newline . statements revive maybe_newline RBRACE maybe_newline function_statements_tail
+    (76) function_statements -> maybe_newline ret_type FUNCTION_NAME LPAREN parameters RPAREN maybe_newline LBRACE unli_newline . statements revive maybe_newline RBRACE unli_newline function_statements_tail
     (97) statements -> . empty
     (98) statements -> . local_dec maybe_newline statements_tail
     (153) empty -> .
@@ -2868,7 +2868,7 @@ state 142
 
 state 143
 
-    (76) function_statements -> maybe_newline ret_type FUNCTION_NAME LPAREN parameters RPAREN maybe_newline LBRACE unli_newline statements . revive maybe_newline RBRACE maybe_newline function_statements_tail
+    (76) function_statements -> maybe_newline ret_type FUNCTION_NAME LPAREN parameters RPAREN maybe_newline LBRACE unli_newline statements . revive maybe_newline RBRACE unli_newline function_statements_tail
     (95) revive -> . REVIVE value
     (96) revive -> . empty
     (153) empty -> .
@@ -3010,7 +3010,7 @@ state 147
 
 state 148
 
-    (76) function_statements -> maybe_newline ret_type FUNCTION_NAME LPAREN parameters RPAREN maybe_newline LBRACE unli_newline statements revive . maybe_newline RBRACE maybe_newline function_statements_tail
+    (76) function_statements -> maybe_newline ret_type FUNCTION_NAME LPAREN parameters RPAREN maybe_newline LBRACE unli_newline statements revive . maybe_newline RBRACE unli_newline function_statements_tail
     (2) maybe_newline -> . empty
     (3) maybe_newline -> . NEWLINE maybe_newline
     (153) empty -> .
@@ -3403,7 +3403,7 @@ state 174
 
 state 175
 
-    (76) function_statements -> maybe_newline ret_type FUNCTION_NAME LPAREN parameters RPAREN maybe_newline LBRACE unli_newline statements revive maybe_newline . RBRACE maybe_newline function_statements_tail
+    (76) function_statements -> maybe_newline ret_type FUNCTION_NAME LPAREN parameters RPAREN maybe_newline LBRACE unli_newline statements revive maybe_newline . RBRACE unli_newline function_statements_tail
 
     RBRACE          shift and go to state 217
 
@@ -4316,30 +4316,13 @@ state 216
 
 state 217
 
-    (76) function_statements -> maybe_newline ret_type FUNCTION_NAME LPAREN parameters RPAREN maybe_newline LBRACE unli_newline statements revive maybe_newline RBRACE . maybe_newline function_statements_tail
-    (2) maybe_newline -> . empty
-    (3) maybe_newline -> . NEWLINE maybe_newline
-    (153) empty -> .
+    (76) function_statements -> maybe_newline ret_type FUNCTION_NAME LPAREN parameters RPAREN maybe_newline LBRACE unli_newline statements revive maybe_newline RBRACE . unli_newline function_statements_tail
+    (4) unli_newline -> . NEWLINE
+    (5) unli_newline -> . NEWLINE unli_newline
 
-  ! shift/reduce conflict for NEWLINE resolved as shift
-    NEWLINE         shift and go to state 17
-    FUNCTION        reduce using rule 153 (empty -> .)
-    FUNCTION_INT    reduce using rule 153 (empty -> .)
-    FUNCTION_FLT    reduce using rule 153 (empty -> .)
-    FUNCTION_CHR    reduce using rule 153 (empty -> .)
-    FUNCTION_BLN    reduce using rule 153 (empty -> .)
-    FUNCTION_STR    reduce using rule 153 (empty -> .)
-    FUNCTION_LIST_INT reduce using rule 153 (empty -> .)
-    FUNCTION_LIST_FLT reduce using rule 153 (empty -> .)
-    FUNCTION_LIST_CHR reduce using rule 153 (empty -> .)
-    FUNCTION_LIST_STR reduce using rule 153 (empty -> .)
-    FUNCTION_LIST_BLN reduce using rule 153 (empty -> .)
-    MAIN_CASPER     reduce using rule 153 (empty -> .)
+    NEWLINE         shift and go to state 4
 
-  ! NEWLINE         [ reduce using rule 153 (empty -> .) ]
-
-    maybe_newline                  shift and go to state 253
-    empty                          shift and go to state 16
+    unli_newline                   shift and go to state 253
 
 state 218
 
@@ -4862,9 +4845,9 @@ state 252
 
 state 253
 
-    (76) function_statements -> maybe_newline ret_type FUNCTION_NAME LPAREN parameters RPAREN maybe_newline LBRACE unli_newline statements revive maybe_newline RBRACE maybe_newline . function_statements_tail
+    (76) function_statements -> maybe_newline ret_type FUNCTION_NAME LPAREN parameters RPAREN maybe_newline LBRACE unli_newline statements revive maybe_newline RBRACE unli_newline . function_statements_tail
     (78) function_statements_tail -> . function_statements
-    (76) function_statements -> . maybe_newline ret_type FUNCTION_NAME LPAREN parameters RPAREN maybe_newline LBRACE unli_newline statements revive maybe_newline RBRACE maybe_newline function_statements_tail
+    (76) function_statements -> . maybe_newline ret_type FUNCTION_NAME LPAREN parameters RPAREN maybe_newline LBRACE unli_newline statements revive maybe_newline RBRACE unli_newline function_statements_tail
     (77) function_statements -> . empty
     (2) maybe_newline -> . empty
     (3) maybe_newline -> . NEWLINE maybe_newline
@@ -5148,10 +5131,10 @@ state 278
 
 state 279
 
-    (76) function_statements -> maybe_newline ret_type FUNCTION_NAME LPAREN parameters RPAREN maybe_newline LBRACE unli_newline statements revive maybe_newline RBRACE maybe_newline function_statements_tail .
+    (76) function_statements -> maybe_newline ret_type FUNCTION_NAME LPAREN parameters RPAREN maybe_newline LBRACE unli_newline statements revive maybe_newline RBRACE unli_newline function_statements_tail .
 
-    NEWLINE         reduce using rule 76 (function_statements -> maybe_newline ret_type FUNCTION_NAME LPAREN parameters RPAREN maybe_newline LBRACE unli_newline statements revive maybe_newline RBRACE maybe_newline function_statements_tail .)
-    MAIN_CASPER     reduce using rule 76 (function_statements -> maybe_newline ret_type FUNCTION_NAME LPAREN parameters RPAREN maybe_newline LBRACE unli_newline statements revive maybe_newline RBRACE maybe_newline function_statements_tail .)
+    NEWLINE         reduce using rule 76 (function_statements -> maybe_newline ret_type FUNCTION_NAME LPAREN parameters RPAREN maybe_newline LBRACE unli_newline statements revive maybe_newline RBRACE unli_newline function_statements_tail .)
+    MAIN_CASPER     reduce using rule 76 (function_statements -> maybe_newline ret_type FUNCTION_NAME LPAREN parameters RPAREN maybe_newline LBRACE unli_newline statements revive maybe_newline RBRACE unli_newline function_statements_tail .)
 
 
 state 280
@@ -6514,7 +6497,6 @@ WARNING: shift/reduce conflict for CHR in state 190 resolved as shift
 WARNING: shift/reduce conflict for STR in state 190 resolved as shift
 WARNING: shift/reduce conflict for COMMA in state 207 resolved as shift
 WARNING: shift/reduce conflict for NEWLINE in state 211 resolved as shift
-WARNING: shift/reduce conflict for NEWLINE in state 217 resolved as shift
 WARNING: shift/reduce conflict for RPAREN in state 243 resolved as shift
 WARNING: shift/reduce conflict for INT in state 247 resolved as shift
 WARNING: shift/reduce conflict for FLT in state 247 resolved as shift
