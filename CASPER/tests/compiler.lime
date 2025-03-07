@@ -1,1 +1,32 @@
-4 % 5
+birth
+ 
+<< Global Declarations  
+int $num  
+
+<< Function Declarations  
+function @checkOddEven(int $num) {  
+    check ($num % 2 == 0) {  display ("The number is Even")
+    } otherwise {  
+        display ("The number is Odd")  
+    }  
+} 
+function_int @cubeIteration(int $num) {  
+    int $result = 1  
+    for (int $i = 1; $i <= 3; $i++) {  
+        $result *= $num  
+    }  
+    revive $result  
+}  
+
+<< Main Casper Function  
+@main_casper() {  
+    display ("Enter a number: ")  
+    $num = to_int(input())  
+
+    @checkOddEven($num)  
+
+    int $cubeResult = @cubeIteration($num)  
+    display ("Cube of ", $num, " is ", $cubeResult)  
+}  
+
+ghost

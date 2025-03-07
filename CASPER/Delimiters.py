@@ -41,7 +41,7 @@ class Delimiters:
     DEL9 = SPACE | NEWLINE | {'(', '{', '$', '@', '"'} # opening LBRACE {
     DEL10 = SPACE | NEWLINE | NULL | OPERATORS | COMPARATOR | LOGEXP | {'"', '(', '{', '[',']',')', ',', ':' ,';'} # closing RBRACE }
     DEL11 = SPACE | NEWLINE | NULL | {',', '(', '{', '[', '+', ')'}
-    DEL12 = SPACE | NEWLINE | NULL | {'\r'}
+    DEL12 = SPACE | NEWLINE | NULL | {'\r', '$'}
     DEL13 = SPACE | NULL | {')', '\'', None,'','\r', ''} # postfix
     DEL14 = SPACE | ALPHA
     DEL15 = SPACE | NEWLINE | ALPHANUM | {'[', ']', '"', '$'} # L bracket
