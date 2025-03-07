@@ -336,7 +336,7 @@ def p_var_call_tail(p):
 # Production: <function_statements> → <ret_type> FUNCTION_NAME ( <parameters> ) { <statements> <revive> }
 # -----------------------------------------------------------------------------
 def p_function_statements(p):
-    """function_statements : maybe_newline ret_type FUNCTION_NAME LPAREN parameters RPAREN maybe_newline LBRACE unli_newline statements revive maybe_newline RBRACE 
+    """function_statements : maybe_newline ret_type FUNCTION_NAME LPAREN parameters RPAREN maybe_newline LBRACE unli_newline statements revive maybe_newline RBRACE maybe_newline function_statements_tail
                          | empty"""
     if len(p) == 2:
     
@@ -354,6 +354,11 @@ def p_function_statements(p):
             statements,
             revive_node
         ])
+
+def p_function_statements_tail(p):
+    """function_statements_tail : function_statements"""
+    p[0] = p[1] 
+
 
 # -----------------------------------------------------------------------------
 # Production: <ret_type> → function | <function_dtype>
