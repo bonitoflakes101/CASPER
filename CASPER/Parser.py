@@ -716,11 +716,142 @@ def p_empty(p):
 
 def p_error(p):
     global parser 
+    token_display = {
+        "EOF": "EOF",
+        "ILLEGAL": "ILLEGAL",
+        
+        "IDENT": "identifier",
+        "INT": "int",
+        "INT_LIT": "integer literal",
+        "FLT": "float",
+        "FLT_LIT": "float literal",
+        "BLN": "boolean",
+        "BLN_LIT": "boolean literal",
+        "STR": "string",
+        "STR_LIT": "string literal",
+        "CHR": "char",
+        "CHR_LIT": "char literal",
+        
+        "FUNCTION": "function",
+        "FUNCTION_INT": "function_int",
+        "FUNCTION_STR": "function_str",
+        "FUNCTION_BLN": "function_bln",
+        "FUNCTION_FLT": "function_flt",
+        "FUNCTION_CHR": "function_chr",
+        "FUNCTION_LIST_INT": "function_list_int",
+        "FUNCTION_LIST_STR": "function_list_str",
+        "FUNCTION_LIST_BLN": "function_list_bln",
+        "FUNCTION_LIST_FLT": "function_list_flt",
+        "FUNCTION_LIST_CHR": "function_list_chr",
+        "FUNCTION_LIST_INT2D": "function_list_int2D",
+        "FUNCTION_LIST_STR2D": "function_list_str2D",
+        "FUNCTION_LIST_BLN2D": "function_list_bln2D",
+        "FUNCTION_LIST_FLT2D": "function_list_flt2D",
+        "FUNCTION_LIST_CHR2D": "function_list_chr2D",
+        
+        "CONVERT_TO_INT": "to_int",
+        "CONVERT_TO_STR": "to_str",
+        "CONVERT_TO_BLN": "to_bln",
+        "CONVERT_TO_FLT": "to_flt",
+        
+        "LIST_INT": "list_int",
+        "LIST_STR": "list_str",
+        "LIST_BLN": "list_bln",
+        "LIST_FLT": "list_flt",
+        "LIST_CHR": "list_chr",
+        "LIST_INT2D": "list_int2D",
+        "LIST_STR2D": "list_str2D",
+        "LIST_BLN2D": "list_bln2D",
+        "LIST_FLT2D": "list_flt2D",
+        "LIST_CHR2D": "list_chr2D",
+        
+        "FUNCTION_NAME": "function_name",
+        "MAIN_CASPER": "main_casper",
+        
+        # Arithmetic Symbols
+        "PLUS": "+",
+        "MINUS": "-",
+        "MULTIPLY": "*",
+        "EXPONENT": "**",   
+        "MODULO": "%",
+        "DIVISION": "/",
+        "DOUBLE_SLASH": "//",
+        "POW": "^",        
+        
+        # Prefix Symbols
+        "TILDE": "~",
+        "NOT": "!",
+        
+        # Postfix Symbols
+        "PLUS_PLUS": "++",
+        "MINUS_MINUS": "--",
+        
+        # Assignment Symbols
+        "EQ": "=",
+        "PLUS_EQ": "+=",
+        "MINUS_EQ": "-=",
+        "MUL_EQ": "*=",
+        "DIV_EQ": "/=",
+        "MOD_EQ": "%=",
+        
+        # Comparison Symbols
+        "EQ_EQ": "==",
+        "NOT_EQ": "!=",
+        "LT": "<",
+        "GT": ">",
+        "LT_EQ": "<=",
+        "GT_EQ": ">=",
+        
+        # Logical Symbols
+        "AND": "&&",
+        "OR": "||",
+        
+        # Comments
+        "COMMENT": "comment",  
+        "DOUBLE_LT": "<<",
+        
+        "COMMA": ",",
+        
+        # Keywords
+        "BIRTH": "birth",
+        "GHOST": "ghost",
+        "INPUT": "input",
+        "DISPLAY": "display",
+        "CHECK": "check",
+        "OTHERWISE": "otherwise",
+        "OTHERWISE_CHECK": "otherwise_check",
+        "FOR": "for",
+        "REPEAT": "repeat",
+        "UNTIL": "until",
+        "STOP": "stop",
+        "SKIP": "skip",
+        "SWAP": "swap",
+        "SHIFT": "shift",
+        "REVIVE": "revive",
+        "DAY": "Day",
+        "NIGHT": "Night",
+        "MEASURE": "measure",
+        "IN": "in",
+        "CARRIAGE_RETURN": "NEWLINE",
+        "NEWLINE": "NEWLINE",
+        "SEMICOLON": ";",
+        "COLON": ":",
+        
+
+        "TYPE": "type",
+        "LPAREN": "(",
+        "RPAREN": ")",
+        "LBRACE": "{",
+        "RBRACE": "}",
+        "LBRACKET": "[",
+        "RBRACKET": "]",
+    }
+    
     if p:
         state = parser.statestack[-1] if parser and parser.statestack else None
         expected_tokens = list(parser.action[state].keys()) if state in parser.action else []
-        
-        expected_tokens_str = ", ".join(expected_tokens)  
+        expected_tokens_disp = [token_display.get(tok, tok) for tok in expected_tokens]
+        expected_tokens_str = ", ".join(expected_tokens_disp)
         
         error_message = (
             f"Syntax Error:\n"
@@ -730,8 +861,9 @@ def p_error(p):
             error_message += f"Expected one of: {expected_tokens_str}"
     else:
         error_message = "Syntax Error:\nUnexpected end of input (EOF)."
-
+    
     raise SyntaxError(error_message)
+
 
 
 # Build Parser
