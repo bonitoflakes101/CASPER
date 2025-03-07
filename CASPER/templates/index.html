@@ -1,244 +1,103 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.33.0/min/vs/loader.min.js"></script>
+  <link rel="stylesheet" href="{{ url_for('static', filename='index.css') }}" />
+  <script src="{{ url_for('static', filename='index.js') }}" defer></script>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.33.0/min/vs/loader.min.js"></script>
+  <title>Casper Compiler</title>
 
-    <link
-      rel="stylesheet"
-      href="{{ url_for('static', filename='index.css') }}"
-    />
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+    }
+    .editor-container {
+      flex: 1;
+      height: 100%;
+    }
+    #monacoEditor {
+      width: 100%;
+      height: 100%;
+    }
+    .output-terminal {
+      padding: 10px;
+      background: #1E1E1E;
+      color: #CCCCCC;
+      overflow-y: auto;
+    }
+  </style>
+</head>
 
-    <script src="{{ url_for('static', filename='index.js') }}" defer></script>
+<body>
+  <header>
+    <div class="main-header">
+      <h1>CASPER Compiler</h1>
+    </div>
+  </header>
 
-    <title>Casper Compiler</title>
+  <section id="main">
+    <div class="main-container">
+      <div class="code-div">
+        <div class="label-container">
+          <label id="code-label">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 512" height="20" width="20">
+              <path d="M392.8 1.2c-17-4.9-34.7 5-39.6 22l-128 448c-4.9 17 5 34.7 22 39.6s34.7-5 39.6-22l128-448c4.9-17-5-34.7-22-39.6zm80.6 120.1c-12.5 12.5-12.5 32.8 0 45.3L562.7 256l-89.4 89.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0l112-112c12.5-12.5 12.5-32.8 0-45.3l-112-112c-12.5-12.5-32.8-12.5-45.3 0zm-306.7 0c-12.5 12.5-32.8 12.5-45.3 0l-112 112c-12.5 12.5-12.5 32.8 0 45.3l112 112c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L77.3 256l89.4-89.4c12.5-12.5 12.5-32.8 0-45.3z"/>
+            </svg>
+            main.casper
+          </label>
 
-    <style>
-      html,
-      body {
-        margin: 0;
-        padding: 0;
-        height: 100%;
-      }
-      body {
-        display: flex;
-        flex-direction: column;
-      }
-      #main {
-        flex: 1;
-        display: flex;
-        flex-direction: column;
-      }
-      .main-container {
-        display: flex;
-        flex: 1;
-      }
+          <button type="submit" class="run-button" form="codeForm">Run Code</button>
+        </div>
 
-      .code-div {
-        flex: 1;
-        display: flex;
-        flex-direction: column;
-      }
-
-      #monacoEditor {
-        flex: 1;
-      }
-
-      #codeEditor {
-        display: none;
-      }
-    </style>
-  </head>
-
-  <body>
-    <header>
-      <div class="main-header">
-        <h1>CASPER</h1>
+        <form method="POST" action="/" class="form-div" id="codeForm" onsubmit="copyMonacoToTextarea()">
+          <div class="editor-container">
+            <div id="monacoEditor"></div>
+            <textarea name="code_input" id="codeEditor" class="code-editor">{{ code }}</textarea>
+          </div>
+        </form>
       </div>
-    </header>
 
-    <section id="main">
-      <div class="main-container">
-        <div class="code-div">
-          <div class="label-container">
-            <label id="code-label">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                viewBox="0 0 640 512"
-                height="20"
-                width="20"
-              >
-                <path
-                  d="M392.8 1.2c-17-4.9-34.7 5-39.6 22l-128 448c-4.9 17 5 34.7 22 39.6s34.7-5 39.6-22l128-448c4.9-17-5-34.7-22-39.6zm80.6 120.1c-12.5 12.5-12.5 32.8 0 45.3L562.7 256l-89.4 89.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0l112-112c12.5-12.5 12.5-32.8 0-45.3l-112-112c-12.5-12.5-32.8-12.5-45.3 0zm-306.7 0c-12.5 12.5-32.8 12.5-45.3 0l-112 112c-12.5 12.5-12.5 32.8 0 45.3l112 112c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L77.3 256l89.4-89.4c12.5-12.5 12.5-32.8 0-45.3z"
-                />
-              </svg>
-              main.casper
-            </label>
-
-            <button type="submit" class="run-button" form="codeForm">
-              Run Code
-            </button>
-          </div>
-
-          <form
-            method="POST"
-            action="/"
-            class="form-div"
-            id="codeForm"
-            onsubmit="copyMonacoToTextarea()"
-          >
-            <div
-              class="text-area-div"
-              style="flex: 1; display: flex; flex-direction: column"
-            >
-              <div class="editor-container" style="height: 600px">
-                <div
-                  class="line-numbers"
-                  id="lineNumbers"
-                  style="display: none"
-                >
-                  1
-                </div>
-
-                <div id="monacoEditor" style="width: 100%; height: 100%"></div>
-
-                <textarea name="code_input" id="codeEditor" class="code-editor">
-{{ code }}</textarea
-                >
-              </div>
-            </div>
-          </form>
+      <div class="lexer-div">
+        <div class="lexer-header">
+          <label id="lexer-label">Lexer</label>
+          <label id="token-label">Token</label>
         </div>
-
-        <div class="lexer-div">
-          <div class="lexer-header">
-            <label id="lexer-label">Lexer</label>
-            <label id="token-label">Token</label>
-          </div>
-          <div class="lex-table-container">
-            <table class="lex-table">
-              <tbody>
-                {% for lexeme, token_type in lexer_results %}
-                <tr>
-                  <td>{{ lexeme }}</td>
-                  <td>{{ token_type }}</td>
-                </tr>
-                {% endfor %}
-              </tbody>
-            </table>
-          </div>
-        </div>
+        <div class="lex-table-container">
+          <table class="lex-table">
+            <tbody>
+              {% for lexeme, token_type in lexer_results %}
+              <tr>
+                <td>{{ lexeme }}</td>
+                <td>{{ token_type }}</td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
       </div>
 
       <div class="output-container">
         <div class="terminal-container">
-          <div class="output-label-container">
-            <label id="output-label">Output Terminal</label>
-          </div>
-          <div class="output-terminal">
-            <pre id="output" class="main-output">{{ output }}</pre>
-          </div>
+        
+        </div>
+        <div class="output-label-container">
+          <label id="output-label">Output Terminal</label>
+        </div>
+        
+        <div class="output-terminal">
+          <pre id="output">{{ output }}</pre>
         </div>
       </div>
     </section>
-
     <script>
-      require.config({
-        paths: {
-          vs: "https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.33.0/min/vs",
-        },
-      });
-
-      let monacoEditorInstance = null;
-
-      function defineCasperLanguage(monaco) {
-        monaco.languages.register({ id: "casper" });
-        monaco.languages.setMonarchTokensProvider("casper", {
-          tokenizer: {
-            root: [
-              // 1) Casper Reserved Words => 'keyword'
-              [
-                /\b(?:birth|ghost|check|otherwise|otherwise_check|for|repeat|until|stop|skip|swap|shift|revive|Day|Night|measure|function|function_int|function_str|function_bln|function_flt|function_chr|function_list_int|function_list_str|function_list_bln|function_list_flt|function_list_chr|input|display|to_int|to_str|to_bln|to_flt|int|flt|bln|chr|str)\b/,
-                "keyword",
-              ],
-
-              // 2) Strings (both single & double)
-              [/'([^'\\]|\\.)*'/, "string"],
-              [/"([^"\\]|\\.)*"/, "string"],
-
-              // 3) Function Names (starting with @)
-              [/@[a-zA-Z_]\w*/, "identifier"],
-
-              // 4) Variables (starting with $)
-              [/\$[a-zA-Z_]\w*/, "variable"],
-
-              // 5) Numbers (int or float)
-              [/\b\d+(\.\d+)?\b/, "number"],
-
-              // 6) Operators
-              [/[+\-*/=<>!%]+/, "operator"],
-
-              // 7) Braces, parentheses
-              [/[{}()\[\]]/, "delimiter"],
-
-              // 8) Single-line comments (// ...)
-              [/\/\/.*/, "comment"],
-
-              // You can add more rules for multi-line comments, etc.
-            ],
-          },
-        });
-      }
-
-      function defineCasperMonacoTheme(monaco) {
-        monaco.editor.defineTheme("casperDark", {
-          base: "vs-dark",
-          inherit: true,
-          rules: [
-            { token: "keyword", foreground: "C586C0" },
-            { token: "number", foreground: "B5CEA8" },
-            { token: "string", foreground: "CE9178" },
-            { token: "comment", foreground: "6A9955", fontStyle: "italic" },
-            { token: "variable", foreground: "9CDCFE" },
-            { token: "identifier", foreground: "4FC1FF" },
-            { token: "delimiter", foreground: "FFFFFF" },
-            { token: "operator", foreground: "D4D4D4" },
-          ],
-          colors: {
-            "editor.background": "#1E1E1E",
-            "editor.foreground": "#CCCCCC",
-            "editorCursor.foreground": "#AEAFAD",
-            "editor.lineHighlightBackground": "#2C2C2C",
-            "editorLineNumber.foreground": "#858585",
-            "editor.selectionBackground": "#264F78",
-          },
-        });
-      }
-
-      require(["vs/editor/editor.main"], function () {
-        defineCasperLanguage(monaco);
-        defineCasperMonacoTheme(monaco);
-
-        monacoEditorInstance = monaco.editor.create(
-          document.getElementById("monacoEditor"),
-          {
-            value: `{{ code|safe }}`,
-            language: "casper",
-            theme: "casperDark",
-            automaticLayout: true,
-            lineNumbers: "on",
-          }
-        );
-      });
-
-      function copyMonacoToTextarea() {
-        const hiddenTextarea = document.getElementById("codeEditor");
-        if (monacoEditorInstance) {
-          hiddenTextarea.value = monacoEditorInstance.getValue();
-        }
-      }
+      window.initialCode = {{ code|tojson }};
     </script>
+    
   </body>
 </html>

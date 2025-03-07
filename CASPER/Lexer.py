@@ -405,10 +405,16 @@ class Lexer:
         if self.current_char is None:
             return self.__new_token(TokenType.EOF, "")
         
-        # NEW LINE TOKEN
-        if self.current_char == '\n' or self.current_char == '\r':
+       
+        if self.current_char == '\r':
+            self.__read_char() 
+            if self.current_char == '\n':
+                self.__read_char()  
             self.line_no += 1
-            self.__read_char()  # consume the line break
+            return self.__new_token(TokenType.NEWLINE, "\\n")
+        elif self.current_char == '\n':
+            self.__read_char()  
+            self.line_no += 1
             return self.__new_token(TokenType.NEWLINE, "\\n")
 
 
