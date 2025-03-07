@@ -480,26 +480,31 @@ class Lexer:
                 if self.__peek_char() == '-':  
                     orig_pos = self.position  
                     self.__read_char()  
-    
-                    if self.__peek_char() == '-':  
-                        self.__read_char()                      
-                        self.__read_char()  
-                                                
-                        comment_content = ""
-                        while True:
+                    if self.__peek_char() == '-':
                             self.__read_char()
-                            if self.current_char is None:
-                                return self.__new_token(TokenType.ILLEGAL, comment_content.strip())
-                            if self.current_char == '-' and self.__peek_char() == '-':
+                            self.__read_char()
+
+                            comment_content = ""
+                            while True:
                                 self.__read_char()
-                                if self.__peek_char() == '-':
+
+                                if self.current_char == '\n':
+                                    self.line_no += 1
+
+                                if self.current_char is None:
+                                    return self.__new_token(TokenType.ILLEGAL, comment_content.strip())
+
+                                if self.current_char == '-' and self.__peek_char() == '-':
                                     self.__read_char()
-                                    if self.__peek_char() in {'-'}:
-                                        comment_content += "---"
-                                    else:
+                                    if self.__peek_char() == '-':
                                         self.__read_char()
-                                        return self.__new_token(TokenType.COMMENT, comment_content.strip())
-                            comment_content += self.current_char
+                                        if self.__peek_char() in {'-'}:
+                                            comment_content += "---"
+                                        else:
+                                            self.__read_char()
+                                            return self.__new_token(TokenType.COMMENT, comment_content.strip())
+
+                                comment_content += self.current_char
                        
                     else:
                         if orig_pos > 0 and self.source[orig_pos - 1].isspace():
