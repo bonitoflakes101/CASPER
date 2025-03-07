@@ -471,7 +471,7 @@ def p_local_dec(p):
 # Production: <conditional_statement> → check (<expression>) {<statements>} <conditional_tail> otherwise {<statements>}
 # -----------------------------------------------------------------------------
 def p_conditional_statement(p):
-    "conditional_statement : CHECK LPAREN expression RPAREN maybe_newline LBRACE maybe_newline statements RBRACE maybe_newline conditional_tail maybe_newline OTHERWISE maybe_newline LBRACE maybe_newline statements RBRACE"
+    "conditional_statement : CHECK LPAREN expression RPAREN maybe_newline LBRACE maybe_newline statements RBRACE maybe_newline conditional_tail  OTHERWISE maybe_newline LBRACE maybe_newline statements RBRACE"
     p[0] = ASTNode("conditional_statement", [p[3], p[8], p[10], p[16]])
 
 # -----------------------------------------------------------------------------
