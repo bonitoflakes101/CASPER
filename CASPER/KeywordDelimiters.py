@@ -139,7 +139,7 @@ KEYWORD_DELIMITERS = {
     "AND":           Delimiters.DEL3,  # &&
     "OR":            Delimiters.DEL3,  # ||
  
-    "EXPONENT": Delimiters.DEL6, # 
+    "EXPONENT": Delimiters.DEL5, # 
    
 
     # Brackets, Braces, Parentheses
