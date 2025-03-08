@@ -707,7 +707,6 @@ class Lexer:
                     valid_delims = KEYWORD_DELIMITERS.get(TokenType.NOT.name, set())
                     return self.__return_illegal_token("!", valid_delims=valid_delims)
 
-
             # LOGICAL OPERATORS
 
             # Token Creation for AND (&&)
@@ -717,8 +716,13 @@ class Lexer:
                     if self.__is_valid_delimiter(TokenType.AND):
                         self.__read_char()
                         return self.__new_token(TokenType.AND, "&&")
-                    return self.__return_illegal_token()
-                return self.__return_illegal_token()
+                    else:
+                        valid_delims = KEYWORD_DELIMITERS.get(TokenType.AND.name, set())
+                        return self.__return_illegal_token("&&", valid_delims=valid_delims)
+                else:
+                    valid_delims = KEYWORD_DELIMITERS.get(TokenType.AND.name, set())
+                    return self.__return_illegal_token("&", valid_delims=valid_delims)
+
             # Token Creation for OR (||)
             case '|':
                 if self.__peek_char() == '|':
@@ -726,59 +730,79 @@ class Lexer:
                     if self.__is_valid_delimiter(TokenType.OR):
                         self.__read_char()
                         return self.__new_token(TokenType.OR, "||")   
-                    return self.__consume_single_char_token(TokenType.ILLEGAL)
-                return self.__return_illegal_token()
+                    else:
+                        valid_delims = KEYWORD_DELIMITERS.get(TokenType.OR.name, set())
+                        return self.__return_illegal_token("||", valid_delims=valid_delims)
+                else:
+                    valid_delims = KEYWORD_DELIMITERS.get(TokenType.OR.name, set())
+                    return self.__return_illegal_token("|", valid_delims=valid_delims)
                 
             # Token Creation NEGATIVE OP/TILDE
             case '~':
                 if self.__is_valid_delimiter(TokenType.TILDE):
                     return self.__consume_single_char_token(TokenType.TILDE)
-                return self.__return_illegal_token()
+                else:
+                    valid_delims = KEYWORD_DELIMITERS.get(TokenType.TILDE.name, set())
+                    return self.__return_illegal_token("~", valid_delims=valid_delims)
                 
-
-            case '(': 
+            # Parentheses, Brackets, Braces, and Punctuation
+            case '(':
                 if self.__is_valid_delimiter(TokenType.LPAREN):
                     return self.__consume_single_char_token(TokenType.LPAREN)
-                return self.__return_illegal_token()
-            case ')': 
+                else:
+                    valid_delims = KEYWORD_DELIMITERS.get(TokenType.LPAREN.name, set())
+                    return self.__return_illegal_token("(", valid_delims=valid_delims)
+            case ')':
                 if self.__is_valid_delimiter(TokenType.RPAREN):
                     return self.__consume_single_char_token(TokenType.RPAREN)
-                return self.__return_illegal_token()
-            case '[': 
+                else:
+                    valid_delims = KEYWORD_DELIMITERS.get(TokenType.RPAREN.name, set())
+                    return self.__return_illegal_token(")", valid_delims=valid_delims)
+            case '[':
                 if self.__is_valid_delimiter(TokenType.LBRACKET):
                     return self.__consume_single_char_token(TokenType.LBRACKET)
-                return self.__return_illegal_token()
-            case ']': 
+                else:
+                    valid_delims = KEYWORD_DELIMITERS.get(TokenType.LBRACKET.name, set())
+                    return self.__return_illegal_token("[", valid_delims=valid_delims)
+            case ']':
                 if self.__is_valid_delimiter(TokenType.RBRACKET):
                     return self.__consume_single_char_token(TokenType.RBRACKET)
-                return self.__return_illegal_token()
-            case '{': 
-                if  self.__is_valid_delimiter(TokenType.LBRACE):
+                else:
+                    valid_delims = KEYWORD_DELIMITERS.get(TokenType.RBRACKET.name, set())
+                    return self.__return_illegal_token("]", valid_delims=valid_delims)
+            case '{':
+                if self.__is_valid_delimiter(TokenType.LBRACE):
                     return self.__consume_single_char_token(TokenType.LBRACE)
-                return self.__return_illegal_token()
-            case '}': 
+                else:
+                    valid_delims = KEYWORD_DELIMITERS.get(TokenType.LBRACE.name, set())
+                    return self.__return_illegal_token("{", valid_delims=valid_delims)
+            case '}':
                 if self.__is_valid_delimiter(TokenType.RBRACE):
                     return self.__consume_single_char_token(TokenType.RBRACE)
-                return self.__return_illegal_token()
-            case ',': 
-                if self.__is_valid_delimiter(TokenType.COMMA):
-                    return self.__consume_single_char_token(TokenType.COMMA)
-                return self.__return_illegal_token()
-            case ';': 
-                if self.__is_valid_delimiter(TokenType.SEMICOLON):
-                    return self.__consume_single_char_token(TokenType.SEMICOLON)
-                return self.__return_illegal_token()
-            case ':': 
-                if self.__is_valid_delimiter(TokenType.COLON):
-                    return self.__consume_single_char_token(TokenType.COLON)
-                return self.__return_illegal_token()
+                else:
+                    valid_delims = KEYWORD_DELIMITERS.get(TokenType.RBRACE.name, set())
+                    return self.__return_illegal_token("}", valid_delims=valid_delims)
             case ',':
                 if self.__is_valid_delimiter(TokenType.COMMA):
                     return self.__consume_single_char_token(TokenType.COMMA)
-                return self.__return_illegal_token()
-
+                else:
+                    valid_delims = KEYWORD_DELIMITERS.get(TokenType.COMMA.name, set())
+                    return self.__return_illegal_token(",", valid_delims=valid_delims)
+            case ';':
+                if self.__is_valid_delimiter(TokenType.SEMICOLON):
+                    return self.__consume_single_char_token(TokenType.SEMICOLON)
+                else:
+                    valid_delims = KEYWORD_DELIMITERS.get(TokenType.SEMICOLON.name, set())
+                    return self.__return_illegal_token(";", valid_delims=valid_delims)
+            case ':':
+                if self.__is_valid_delimiter(TokenType.COLON):
+                    return self.__consume_single_char_token(TokenType.COLON)
+                else:
+                    valid_delims = KEYWORD_DELIMITERS.get(TokenType.COLON.name, set())
+                    return self.__return_illegal_token(":", valid_delims=valid_delims)
             case _:
                 return self.__read_illegal_token()
+
     
  
     def __read_illegal_token(self) -> Token:
