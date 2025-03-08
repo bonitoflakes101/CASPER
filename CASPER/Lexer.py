@@ -567,9 +567,6 @@ class Lexer:
 
 
 
-
-
-
             # Token Creation for *, *=, **
             case '*':
                 if self.__peek_char() == '=':
@@ -577,19 +574,24 @@ class Lexer:
                     if self.__is_valid_delimiter(TokenType.MUL_EQ):
                         self.__read_char()
                         return self.__new_token(TokenType.MUL_EQ, "*=")
-                    return self.__return_illegal_token()
+                    else:
+                        valid_delims = KEYWORD_DELIMITERS.get(TokenType.MUL_EQ.name, set())
+                        return self.__return_illegal_token("*=", valid_delims=valid_delims)
                 elif self.current_char == '*':
                     if self.__peek_char() == '*':
                         self.__read_char()
                         if self.__is_valid_delimiter(TokenType.EXPONENT):
                             self.__read_char()
                             return self.__new_token(TokenType.EXPONENT, "**")
-                        return self.__return_illegal_token()
+                        else:
+                            valid_delims = KEYWORD_DELIMITERS.get(TokenType.EXPONENT.name, set())
+                            return self.__return_illegal_token("**", valid_delims=valid_delims)
                     elif self.__is_valid_delimiter(TokenType.MULTIPLY):
                         return self.__consume_single_char_token(TokenType.MULTIPLY)
-                    return self.__return_illegal_token()
+                    else:
+                        valid_delims = KEYWORD_DELIMITERS.get(TokenType.MULTIPLY.name, set())
+                        return self.__return_illegal_token("*", valid_delims=valid_delims)
                     
-
 
             # Token Creation for /, /=
             case '/':
@@ -598,10 +600,14 @@ class Lexer:
                     if self.__is_valid_delimiter(TokenType.DIV_EQ):
                         self.__read_char()
                         return self.__new_token(TokenType.DIV_EQ, "/=")
-                    return self.__return_illegal_token()
+                    else:
+                        valid_delims = KEYWORD_DELIMITERS.get(TokenType.DIV_EQ.name, set())
+                        return self.__return_illegal_token("/=", valid_delims=valid_delims)
                 if self.__is_valid_delimiter(TokenType.DIVISION):
                     return self.__consume_single_char_token(TokenType.DIVISION)
-                return self.__return_illegal_token() 
+                else:
+                    valid_delims = KEYWORD_DELIMITERS.get(TokenType.DIVISION.name, set())
+                    return self.__return_illegal_token("/", valid_delims=valid_delims)
                    
             # Token Creation for Modulo (%, %=)
             case '%':
@@ -610,10 +616,14 @@ class Lexer:
                     if self.__is_valid_delimiter(TokenType.MOD_EQ):
                         self.__read_char()
                         return self.__new_token(TokenType.MOD_EQ, "%=")
-                    return self.__return_illegal_token()
+                    else:
+                        valid_delims = KEYWORD_DELIMITERS.get(TokenType.MOD_EQ.name, set())
+                        return self.__return_illegal_token("%=", valid_delims=valid_delims)
                 if self.__is_valid_delimiter(TokenType.MODULO):
                     return self.__consume_single_char_token(TokenType.MODULO)
-                return self.__return_illegal_token()
+                else:
+                    valid_delims = KEYWORD_DELIMITERS.get(TokenType.MODULO.name, set())
+                    return self.__return_illegal_token("%", valid_delims=valid_delims)
             
 
             # Token Creation for =, ==
@@ -623,10 +633,15 @@ class Lexer:
                     if self.__is_valid_delimiter(TokenType.EQ_EQ):
                         self.__read_char()
                         return self.__new_token(TokenType.EQ_EQ, "==")
-                    return self.__return_illegal_token()
+                    else:
+                        valid_delims = KEYWORD_DELIMITERS.get(TokenType.EQ_EQ.name, set())
+                        return self.__return_illegal_token("==", valid_delims=valid_delims)
                 if self.__is_valid_delimiter(TokenType.EQ):
                     return self.__consume_single_char_token(TokenType.EQ)
-                return self.__return_illegal_token()
+                else:
+                    valid_delims = KEYWORD_DELIMITERS.get(TokenType.EQ.name, set())
+                    return self.__return_illegal_token("=", valid_delims=valid_delims)
+
 
             # COMPARISON OPERATORS
             
