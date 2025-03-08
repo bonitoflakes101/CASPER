@@ -149,10 +149,22 @@ class SemanticAnalyzer:
 
         # If "literal", figure out if it's int, str, etc.
         if node_type == "literal":
-            val = node.value
+            val = node.value  # e.g., "Day", "Night", 5, "hello", or "'a'"
+            print(val)
+            # 1) If it's a Python int => "int"
             if isinstance(val, int):
                 return "int"
-            # If it's e.g. "Hello" or something else, treat as "str"
+
+            # 2) Day or Night => "bln"
+            if val in ("Day", "Night"):
+                return "bln"
+
+            # 3) If it's exactly three characters like "'a'"
+            #    => treat as "chr"
+            if isinstance(val, str) and len(val) == 1:
+                return "chr"
+
+            # 4) Otherwise => "str"
             return "str"
 
         # If "var_call", look up in the symbol table
