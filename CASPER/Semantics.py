@@ -31,6 +31,9 @@ class SemanticAnalyzer:
         self.errors = []
         self.reported_undeclared_vars = set()
 
+        # Track function declarations to disallow duplicates/overloading
+        self.declared_functions = set()
+
     def analyze(self, ast):
         print("=== DEBUG: AST Structure ===")
         debug_print_ast(ast)
@@ -69,6 +72,25 @@ class SemanticAnalyzer:
         if hasattr(node, "children") and node.children:
             for child in node.children:
                 self.visit(child, symtable)
+
+    ######################################################
+    # Function Name Checking (No Overloading Allowed)
+    ######################################################
+    def visit_FUNCTION_NAME(self, node, symtable):
+        """
+        Whenever the AST has a node of type FUNCTION_NAME (e.g., '@myFunction'),
+        we ensure that name hasn't been declared before.
+        Casper does not allow function overloading:
+          - same name, same signature => error
+          - same name, different signature => also error
+        """
+        func_name = node.value  # e.g. "@compute"
+        if func_name in self.declared_functions:
+            self.errors.append(
+                f"Semantic Error: Function '{func_name}' is already declared."
+            )
+        else:
+            self.declared_functions.add(func_name)
 
     ######################################################
     # KEY POINT: Type-checking var_statement + var_tail
@@ -112,7 +134,6 @@ class SemanticAnalyzer:
 
         # If var_tail_node has children, the first child might be "value"
         if hasattr(var_tail_node, "children") and var_tail_node.children:
-            # e.g. node.children = [ ASTNode("value"), ... ]
             for child in var_tail_node.children:
                 if child and getattr(child, "type", None) == "value":
                     rhs_type = self.get_expression_type(child, symtable)
@@ -121,7 +142,6 @@ class SemanticAnalyzer:
                             f"Type Error: Cannot assign '{rhs_type}' to variable '{var_name}' of type '{declared_type}'."
                         )
                 else:
-                    # fallback
                     self.visit(child, symtable)
 
     ######################################################
@@ -159,8 +179,7 @@ class SemanticAnalyzer:
             if val in ("Day", "Night"):
                 return "bln"
 
-            # 3) If it's exactly three characters like "'a'"
-            #    => treat as "chr"
+            # 3) If it's exactly one character => "chr"
             if isinstance(val, str) and len(val) == 1:
                 return "chr"
 
@@ -173,7 +192,6 @@ class SemanticAnalyzer:
             try:
                 return symtable.lookup(var_name)
             except SemanticError:
-                # The error is handled in visit_var_call, so just return None
                 return None
 
         # Otherwise, do a generic visit

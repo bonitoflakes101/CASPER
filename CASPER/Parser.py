@@ -332,22 +332,21 @@ def p_var_call_tail(p):
     else:
         p[0] = ASTNode("var_call_tail", [p[2]])
 
-# -----------------------------------------------------------------------------
-# Production: <function_statements> → <ret_type> FUNCTION_NAME ( <parameters> ) { <statements> <revive> }
-# -----------------------------------------------------------------------------
+
 def p_function_statements(p):
-    """function_statements : maybe_newline ret_type FUNCTION_NAME LPAREN parameters RPAREN maybe_newline LBRACE unli_newline statements revive maybe_newline RBRACE unli_newline function_statements_tail
-                         | empty"""
+    """function_statements : ret_type FUNCTION_NAME LPAREN parameters RPAREN LBRACE maybe_newline statements revive maybe_newline RBRACE unli_newline function_statements_tail
+                           | empty"""
     if len(p) == 2:
-    
-        p[0] = None
+      
+        p[0] = []
     else:
-        ret_type = p[2]
-        function_name = ASTNode("FUNCTION_NAME", value=p[3])
-        parameters = p[5]
-        statements = p[10]
-        revive_node = p[11] 
-        p[0] = ASTNode("function_statements", children=[
+        ret_type = ASTNode("ret_type", value=p[1])
+        function_name = ASTNode("FUNCTION_NAME", value=p[2])
+        parameters = p[4] if p[4] else ASTNode("parameters", [])
+        statements = p[8] if p[8] else ASTNode("statements", [])
+        revive_node = p[9] if p[9] else ASTNode("revive", [])
+
+        function_node = ASTNode("function_declaration", [
             ret_type,
             function_name,
             parameters,
@@ -355,9 +354,29 @@ def p_function_statements(p):
             revive_node
         ])
 
+   
+        function_tail = p[13] if isinstance(p[13], list) else []
+        p[0] = [function_node] + function_tail
+
+
+
+
 def p_function_statements_tail(p):
-    """function_statements_tail : function_statements"""
-    p[0] = p[1] 
+    """function_statements_tail : function_statements
+                                | empty"""
+    if p[1] is None:
+        
+        p[0] = []
+    else:
+
+        if isinstance(p[1], list):
+            p[0] = p[1]
+        else:
+            p[0] = [p[1]]
+
+
+
+
 
 
 # -----------------------------------------------------------------------------
