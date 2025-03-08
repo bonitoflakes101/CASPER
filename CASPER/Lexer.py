@@ -91,13 +91,19 @@ class Lexer:
     #             self.line_no += 1  # Update line count
     #         self.__read_char()
 
-    def __new_token(self, tt: TokenType, literal: str) -> Token:
-        """Creates and returns a new token."""
-        # self.__read_char()
-        return Token(type=tt, literal=literal, line_no=self.line_no, position=self.position)
+    def __new_token(self, tt: TokenType, literal: str, valid_delims=None):
+        return Token(
+            type=tt,
+            literal=literal,
+            line_no=self.line_no,
+            position=self.position,
+            valid_delims=valid_delims
+        )
+
+
+
+
         
-
-
     # OKAY NA TO BAI
     def __read_identifier_or_keyword(self) -> Token:
         start_pos = self.position
@@ -391,11 +397,23 @@ class Lexer:
         while self.current_char and not self.current_char.isspace():
             self.__read_char()
 
-    def __return_illegal_token(self) -> Token:
-        """Returns an illegal token for invalid characters."""
-        invalid_token = self.current_char
+    def __return_illegal_token(self, literal=None, valid_delims=None) -> Token:
+        """
+        Returns an ILLEGAL token with optional 'literal' and 'valid_delims'.
+        If 'literal' is not provided, it defaults to the current_char.
+        """
+        if literal is None:
+            literal = self.current_char
+        
+        # If we want to consume the current char
         self.__read_char()
-        return self.__new_token(TokenType.ILLEGAL, invalid_token)
+
+        return self.__new_token(
+            TokenType.ILLEGAL,
+            literal,
+            valid_delims=valid_delims
+        )
+
 
 
     def next_token(self) -> Token:
@@ -454,32 +472,39 @@ class Lexer:
             # Token Creation for +, +=, ++
             case '+':
                 if self.__peek_char() == '+':  # Potential "++"
-                    if self.position > 0 and self.source[self.position - 1].isspace():
-                        # If there is whitespace, do not treat it as "++"
+                    # If there's whitespace before, we don't treat it as "++"
+                    if self.position > 0 and self.source[self.position - 1].isspace():      
                         if self.__is_valid_delimiter(TokenType.PLUS):
                             return self.__consume_single_char_token(TokenType.PLUS)
                         else:
-                            return self.__return_illegal_token()
-                    
-                    self.__read_char()  
-                    if self.__is_valid_delimiter(TokenType.PLUS_PLUS):  
-                        self.__read_char()  
-                        return self.__new_token(TokenType.PLUS_PLUS, "++")
-                    return self.__return_illegal_token()
+                            valid_delims = KEYWORD_DELIMITERS.get(TokenType.PLUS.name, set())
+                            return self.__return_illegal_token("+", valid_delims=valid_delims)
 
-                
+                    # Otherwise, attempt "++"
+                    self.__read_char()  # consume second '+'
+                    if self.__is_valid_delimiter(TokenType.PLUS_PLUS):
+                        self.__read_char()  # fully consume "++"
+                        return self.__new_token(TokenType.PLUS_PLUS, "++")
+                    else:
+                        # If the delimiter is invalid for "++"
+                        valid_delims = KEYWORD_DELIMITERS.get(TokenType.PLUS_PLUS.name, set())
+                        return self.__return_illegal_token("++", valid_delims=valid_delims)
+
                 elif self.__peek_char() == '=':  # Handle '+='
-                    self.__read_char()  # Consume the first '+'
-                    
-                    if  self.__is_valid_delimiter(TokenType.PLUS_EQ):  # Validate delimiter
-                        self.__read_char() # Consume the '='
+                    self.__read_char()  # consume the first '+'
+                    if self.__is_valid_delimiter(TokenType.PLUS_EQ):
+                        self.__read_char()  # consume '='
                         return self.__new_token(TokenType.PLUS_EQ, "+=")
-                    return self.__return_illegal_token()
-                
+                    else:
+                        valid_delims = KEYWORD_DELIMITERS.get(TokenType.PLUS_EQ.name, set())
+                        return self.__return_illegal_token("+=", valid_delims=valid_delims)
+
                 # Handles single '+'
                 if self.__is_valid_delimiter(TokenType.PLUS):
                     return self.__consume_single_char_token(TokenType.PLUS)
-                return self.__return_illegal_token()
+                else:
+                    valid_delims = KEYWORD_DELIMITERS.get(TokenType.PLUS.name, set())
+                    return self.__return_illegal_token("+", valid_delims=valid_delims)
             
             # Token Creation for -, -=, --
             case '-':

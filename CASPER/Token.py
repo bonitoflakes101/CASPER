@@ -148,18 +148,27 @@ class TokenType(Enum):
 
 
 class Token:
-    def __init__(self, type: TokenType, literal: Any, line_no: int, position: int) -> None:
+    def __init__(
+        self, 
+        type, 
+        literal, 
+        line_no, 
+        position,
+        valid_delims=None
+    ):
         self.type = type
         self.literal = literal
         self.line_no = line_no
         self.position = position
-
-    def __str__(self) -> str:
+        self.valid_delims = valid_delims  # same name as below
+    
+    def __str__(self):
         if self.type == TokenType.ILLEGAL:
-            return f"{self.type.name} Token: '{self.literal}' at Line no:  {self.line_no}"
-        else:
-            return f"Token: {self.type.name} : {self.literal} \nLine no: {self.line_no} - Position no: {self.position}"
-        # return f"Token[{self.type} : {self.literal} : Line {self.line_no} : Position {self.position}]"
+            if self.valid_delims:
+                return f"Expected delimiters: {self.valid_delims}"
+            else:
+                return f"Lexical Error: '{self.literal}' at line {self.line_no}"
+        return f"Token[{self.type.name}] '{self.literal}' (line {self.line_no})"
     
     def __repr__(self) -> str:
         return str(self)
