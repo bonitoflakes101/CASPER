@@ -505,58 +505,64 @@ class Lexer:
                 else:
                     valid_delims = KEYWORD_DELIMITERS.get(TokenType.PLUS.name, set())
                     return self.__return_illegal_token("+", valid_delims=valid_delims)
-            
-            # Token Creation for -, -=, --
+                        # Token Creation for -, -=, --
             case '-':
                 if self.__peek_char() == '-':  
                     orig_pos = self.position  
                     self.__read_char()  
                     if self.__peek_char() == '-':
-                            self.__read_char()
+                        self.__read_char()
+                        self.__read_char()
+
+                        comment_content = ""
+                        while True:
                             self.__read_char()
 
-                            comment_content = ""
-                            while True:
+                            if self.current_char == '\n':
+                                self.line_no += 1
+
+                            if self.current_char is None:
+                                return self.__new_token(TokenType.ILLEGAL, comment_content.strip())
+
+                            if self.current_char == '-' and self.__peek_char() == '-':
                                 self.__read_char()
-
-                                if self.current_char == '\n':
-                                    self.line_no += 1
-
-                                if self.current_char is None:
-                                    return self.__new_token(TokenType.ILLEGAL, comment_content.strip())
-
-                                if self.current_char == '-' and self.__peek_char() == '-':
+                                if self.__peek_char() == '-':
                                     self.__read_char()
-                                    if self.__peek_char() == '-':
+                                    if self.__peek_char() in {'-'}:
+                                        comment_content += "---"
+                                    else:
                                         self.__read_char()
-                                        if self.__peek_char() in {'-'}:
-                                            comment_content += "---"
-                                        else:
-                                            self.__read_char()
-                                            return self.__new_token(TokenType.COMMENT, comment_content.strip())
+                                        return self.__new_token(TokenType.COMMENT, comment_content.strip())
 
-                                comment_content += self.current_char
+                            comment_content += self.current_char
                        
                     else:
                         if orig_pos > 0 and self.source[orig_pos - 1].isspace():
-                            return self.__return_illegal_token()
+                            valid_delims = KEYWORD_DELIMITERS.get(TokenType.MINUS.name, set())
+                            return self.__return_illegal_token("-", valid_delims=valid_delims)
                         if self.__is_valid_delimiter(TokenType.MINUS_MINUS):
                             self.__read_char() 
                             return self.__new_token(TokenType.MINUS_MINUS, "--")
-                        return self.__return_illegal_token()
+                        else:
+                            valid_delims = KEYWORD_DELIMITERS.get(TokenType.MINUS_MINUS.name, set())
+                            return self.__return_illegal_token("--", valid_delims=valid_delims)
 
                 elif self.__peek_char() == '=':
                     self.__read_char() 
                     if self.__is_valid_delimiter(TokenType.MINUS_EQ):
                         self.__read_char()  
                         return self.__new_token(TokenType.MINUS_EQ, "-=")
-                    return self.__return_illegal_token()
+                    else:
+                        valid_delims = KEYWORD_DELIMITERS.get(TokenType.MINUS_EQ.name, set())
+                        return self.__return_illegal_token("-=", valid_delims=valid_delims)
                                         
 
                 if self.__is_valid_delimiter(TokenType.MINUS):
                     return self.__consume_single_char_token(TokenType.MINUS)
                                         
-                return self.__return_illegal_token()
+                else:
+                    valid_delims = KEYWORD_DELIMITERS.get(TokenType.MINUS.name, set())
+                    return self.__return_illegal_token("-", valid_delims=valid_delims)
 
 
 
