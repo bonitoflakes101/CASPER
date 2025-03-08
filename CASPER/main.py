@@ -69,5 +69,47 @@ def home():
         output=output,
     )
 
+@app.route('/check_errors', methods=['POST'])
+def check_errors():
+    code = request.json.get('code', '')
+    lexer = Lexer(code)
+    illegal_tokens = []
+
+    while lexer.current_char is not None:
+        token = lexer.next_token()
+        if token.type == TokenType.ILLEGAL:
+            illegal_tokens.append({
+                "line": token.line_no ,
+                "startColumn": token.position,
+                "endColumn": token.position + len(token.literal),
+                "message": f"Illegal Token: {token.literal}"
+            })
+
+    if illegal_tokens:
+        return jsonify({"errors": illegal_tokens})
+
+    parser = build_parser()
+    try:
+        parser.parse(lexer=Lexer(code))
+        return jsonify({"errors": []})
+    except SyntaxError as e:
+        # e might look like: "Syntax Error:\nUnexpected token: '@hello' at line 4.\nExpected..."
+        full_msg = str(e)
+        # 1) Find "line <num>"
+        import re
+        match = re.search(r'line\s+(\d+)', full_msg)
+        if match:
+            line_no = int(match.group(1))
+        else:
+            line_no = 1  # fallback
+
+        error_info = {
+            "message": full_msg,
+            "line": line_no,
+            "startColumn": 0,
+            "endColumn": 9999  # or the length of that line
+        }
+        return jsonify({"errors": [error_info]})
+    
 if __name__ == "__main__":
     app.run(debug=True)
