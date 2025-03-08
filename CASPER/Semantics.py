@@ -199,6 +199,42 @@ class SemanticAnalyzer:
                 self.errors.append(str(e))
                 self.reported_undeclared_vars.add(var_name)
 
+    def visit_for_loop(self, node, symtable):
+        """
+        node.children = [control_variable, expression, update, statements]
+        This ensures the loop variable is declared in the current (function) scope,
+        so $i remains visible after the loop.
+        """
+
+        self.visit(node.children[0], symtable)
+
+        self.visit(node.children[1], symtable)
+
+        self.visit(node.children[2], symtable)
+        
+        self.visit(node.children[3], symtable)
+
+    def visit_control_variable(self, node, symtable):
+        """
+        node.children = [ 'int', IDENT_node, maybe an int_literal or expression for initialization ]
+        We declare $i in the current scope so it remains visible after the loop.
+        """
+        if len(node.children) < 2:
+            return  
+    
+        var_type_token = node.children[0]  
+        ident_node = node.children[1]     
+        var_name = ident_node.value
+    
+        try:
+            symtable.add(var_name, var_type_token)
+        except SemanticError as e:
+            self.errors.append(str(e))
+    
+        if len(node.children) > 2 and node.children[2]:
+            self.visit(node.children[2], symtable)  
+
+
     # def visit_FUNCTION_NAME(self, node, symtable):
     #     func_name = node.value
     #     if func_name in self.declared_functions:
