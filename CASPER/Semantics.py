@@ -27,6 +27,7 @@ class SymbolTable:
 
 class SemanticAnalyzer:
     def __init__(self):
+        # Store global vars in a SymbolTable
         self.global_symbols = SymbolTable()
         self.errors = []
         self.reported_undeclared_vars = set()
@@ -41,7 +42,7 @@ class SemanticAnalyzer:
 
         self.visit(ast, self.global_symbols)
 
-        # If we see 'str $num' but no assignment error, add a debug note.
+        # Example debug note for 'str $num = 3' usage
         if "str $num" in str(ast) and not any("Cannot assign" in e for e in self.errors):
             self.errors.append(
                 "[DEBUG NOTE] The analyzer did NOT detect a type mismatch for 'str $num = 3'."
@@ -73,66 +74,76 @@ class SemanticAnalyzer:
             for child in node.children:
                 self.visit(child, symtable)
 
-    ######################################################
-    # Function Name Checking (No Overloading Allowed)
-    ######################################################
-    def visit_FUNCTION_NAME(self, node, symtable):
-        """
-        Whenever the AST has a node of type FUNCTION_NAME (e.g., '@myFunction'),
-        we ensure that name hasn't been declared before.
-        Casper does not allow function overloading:
-          - same name, same signature => error
-          - same name, different signature => also error
-        """
-        func_name = node.value  # e.g. "@compute"
-        if func_name in self.declared_functions:
-            self.errors.append(
-                f"Semantic Error: Function '{func_name}' is already declared."
-            )
-        else:
-            self.declared_functions.add(func_name)
+    def visit_program(self, node, symtable):
+        if len(node.children) > 0 and node.children[0]:
+            self.visit(node.children[0], symtable)  
+        if len(node.children) > 1 and node.children[1]:
+            self.visit(node.children[1], symtable)  
+        if len(node.children) > 2 and node.children[2]:
+    
+            main_scope = SymbolTable(parent=symtable)
+            self.visit(node.children[2], main_scope)
 
-    ######################################################
-    # KEY POINT: Type-checking var_statement + var_tail
-    ######################################################
+    def visit_global_dec(self, node, symtable):
+        for child in node.children:
+            self.visit(child, symtable)
+
+    def visit_global_statement(self, node, symtable):
+
+        data_type_node = node.children[0]
+        ident_node = node.children[1]
+        var_name = ident_node.value
+        var_type = data_type_node.value
+
+        try:
+            self.global_symbols.add(var_name, var_type)
+        except SemanticError as e:
+           
+            self.errors.append(str(e))
+
+       
+        if len(node.children) > 2 and node.children[2]:
+            self.visit(node.children[2], symtable)
+
+
     def visit_var_statement(self, node, symtable):
         """
-        Example node structure from your debug:
-          var_statement
-            data_type (value=str)
-            IDENT (value=$num)
-            var_tail (value=)
-              value
-                factor
-                  literal (value=3)
+        node.children = [data_type_node, IDENT_node, var_tail_node]
         """
         if len(node.children) < 3:
             self.generic_visit(node, symtable)
             return
 
-        data_type_node = node.children[0]  # data_type(value=str)
-        ident_node = node.children[1]      # IDENT(value=$num)
-        var_tail_node = node.children[2]   # var_tail(value=)
+        data_type_node = node.children[0]
+        ident_node = node.children[1]
+        var_tail_node = node.children[2]
 
         declared_type = getattr(data_type_node, "value", None)
         var_name = getattr(ident_node, "value", None)
 
-        # Insert symbol
-        try:
-            if var_name and declared_type:
-                symtable.add(var_name, declared_type)
-        except SemanticError as e:
-            self.errors.append(str(e))
+     
+        if var_name in self.global_symbols.symbols:
+   
+            self.errors.append(
+                f"Semantic Error: Local variable '{var_name}' conflicts with global variable '{var_name}'."
+            )
+            return 
+        else:
+        
+            try:
+                if var_name and declared_type:
+                    symtable.add(var_name, declared_type)
+            except SemanticError as e:
+                self.errors.append(str(e))
 
-        # Now check if var_tail contains a literal or expression
+
         self.check_var_tail(var_tail_node, symtable, declared_type, var_name)
 
+  
     def check_var_tail(self, var_tail_node, symtable, declared_type, var_name):
-        """Looks for 'value -> factor -> literal(...)' in var_tail."""
         if var_tail_node is None:
             return
 
-        # If var_tail_node has children, the first child might be "value"
         if hasattr(var_tail_node, "children") and var_tail_node.children:
             for child in var_tail_node.children:
                 if child and getattr(child, "type", None) == "value":
@@ -144,49 +155,31 @@ class SemanticAnalyzer:
                 else:
                     self.visit(child, symtable)
 
-    ######################################################
-    # Expression Type Inference
-    ######################################################
     def get_expression_type(self, node, symtable):
-        """
-        We see from debug: value -> factor -> literal(3)
-        We'll recursively check 'value', 'factor', 'literal'.
-        """
         if node is None:
             return None
 
         node_type = getattr(node, "type", None)
 
-        # If "value", check its children (often "factor")
         if node_type == "value":
             if node.children:
                 return self.get_expression_type(node.children[0], symtable)
 
-        # If "factor", check its children (often "literal" or var_call)
         if node_type == "factor":
             if node.children:
                 return self.get_expression_type(node.children[0], symtable)
 
-        # If "literal", figure out if it's int, str, etc.
         if node_type == "literal":
-            val = node.value  # e.g., "Day", "Night", 5, "hello", or "'a'"
+            val = node.value
             print(val)
-            # 1) If it's a Python int => "int"
             if isinstance(val, int):
                 return "int"
-
-            # 2) Day or Night => "bln"
             if val in ("Day", "Night"):
                 return "bln"
-
-            # 3) If it's exactly one character => "chr"
             if isinstance(val, str) and len(val) == 1:
                 return "chr"
-
-            # 4) Otherwise => "str"
             return "str"
 
-        # If "var_call", look up in the symbol table
         if node_type == "var_call":
             var_name = node.value
             try:
@@ -194,13 +187,9 @@ class SemanticAnalyzer:
             except SemanticError:
                 return None
 
-        # Otherwise, do a generic visit
         self.generic_visit(node, symtable)
         return None
 
-    ######################################################
-    # Catch undeclared usage
-    ######################################################
     def visit_var_call(self, node, symtable):
         var_name = node.value
         try:
@@ -210,11 +199,17 @@ class SemanticAnalyzer:
                 self.errors.append(str(e))
                 self.reported_undeclared_vars.add(var_name)
 
-######################################################
-# Debug printing
-######################################################
+    def visit_FUNCTION_NAME(self, node, symtable):
+        func_name = node.value
+        if func_name in self.declared_functions:
+            self.errors.append(
+                f"Semantic Error: Function '{func_name}' is already declared."
+            )
+        else:
+            self.declared_functions.add(func_name)
+
+
 def debug_print_ast(node, indent=0):
-    """Recursively print the AST structure for debugging."""
     if node is None:
         print(" " * indent + "None")
         return
