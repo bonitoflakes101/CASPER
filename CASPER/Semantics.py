@@ -1,4 +1,5 @@
 # Semantics.py
+
 from Parser import ASTNode
 from Token import TokenType
 
@@ -27,18 +28,31 @@ class SymbolTable:
 class SemanticAnalyzer:
     def __init__(self):
         self.global_symbols = SymbolTable()
-        self.errors = [] 
-        self.reported_undeclared_vars = set()  
+        self.errors = []
+        self.reported_undeclared_vars = set()
 
-    def analyze(self, ast: ASTNode):
+    def analyze(self, ast):
+        print("=== DEBUG: AST Structure ===")
+        debug_print_ast(ast)
+        print("=== END DEBUG ===\n")
+
         self.visit(ast, self.global_symbols)
+
+        # If we see 'str $num' but no assignment error, add a debug note.
+        if "str $num" in str(ast) and not any("Cannot assign" in e for e in self.errors):
+            self.errors.append(
+                "[DEBUG NOTE] The analyzer did NOT detect a type mismatch for 'str $num = 3'."
+            )
+            self.errors.append(
+                "Check your var_tail logic or expand get_expression_type if you still expect an error."
+            )
+
         return self.errors
 
-    def visit(self, node, symtable: SymbolTable):
+    def visit(self, node, symtable):
         if node is None:
             return
 
-   
         if isinstance(node, list):
             for item in node:
                 self.visit(item, symtable)
@@ -51,82 +65,149 @@ class SemanticAnalyzer:
         visitor = getattr(self, method_name, self.generic_visit)
         return visitor(node, symtable)
 
-    def generic_visit(self, node: ASTNode, symtable: SymbolTable):
-        if node.children:
+    def generic_visit(self, node, symtable):
+        if hasattr(node, "children") and node.children:
             for child in node.children:
                 self.visit(child, symtable)
 
-    def visit_program(self, node: ASTNode, symtable: SymbolTable):
-     
-        if len(node.children) > 0 and node.children[0]:
-            self.visit(node.children[0], symtable)
-        if len(node.children) > 1 and node.children[1]:
-            self.visit(node.children[1], symtable)
-        if len(node.children) > 2 and node.children[2]:
+    ######################################################
+    # KEY POINT: Type-checking var_statement + var_tail
+    ######################################################
+    def visit_var_statement(self, node, symtable):
+        """
+        Example node structure from your debug:
+          var_statement
+            data_type (value=str)
+            IDENT (value=$num)
+            var_tail (value=)
+              value
+                factor
+                  literal (value=3)
+        """
+        if len(node.children) < 3:
+            self.generic_visit(node, symtable)
+            return
 
-            main_scope = SymbolTable(parent=symtable)
-            self.visit(node.children[2], main_scope)
+        data_type_node = node.children[0]  # data_type(value=str)
+        ident_node = node.children[1]      # IDENT(value=$num)
+        var_tail_node = node.children[2]   # var_tail(value=)
 
-    def visit_global_dec(self, node: ASTNode, symtable: SymbolTable):
-        if node.children:
-            for child in node.children:
-                self.visit(child, symtable)
+        declared_type = getattr(data_type_node, "value", None)
+        var_name = getattr(ident_node, "value", None)
 
-    def visit_global_statement(self, node: ASTNode, symtable: SymbolTable):
-
-        data_type_node = node.children[0]
-        ident_node = node.children[1]
-        var_name = ident_node.value
-        var_type = data_type_node.value
-
+        # Insert symbol
         try:
-            symtable.add(var_name, var_type)
+            if var_name and declared_type:
+                symtable.add(var_name, declared_type)
         except SemanticError as e:
             self.errors.append(str(e))
 
-        if len(node.children) > 2 and node.children[2]:
-            self.visit(node.children[2], symtable)
+        # Now check if var_tail contains a literal or expression
+        self.check_var_tail(var_tail_node, symtable, declared_type, var_name)
 
-    def visit_var_statement(self, node: ASTNode, symtable: SymbolTable):
- 
-        data_type_node = node.children[0]
-        ident_node = node.children[1]
-        var_name = ident_node.value
-        var_type = data_type_node.value
+    def check_var_tail(self, var_tail_node, symtable, declared_type, var_name):
+        """Looks for 'value -> factor -> literal(...)' in var_tail."""
+        if var_tail_node is None:
+            return
 
-        try:
-            symtable.add(var_name, var_type)
-        except SemanticError as e:
-            self.errors.append(str(e))
+        # If var_tail_node has children, the first child might be "value"
+        if hasattr(var_tail_node, "children") and var_tail_node.children:
+            # e.g. node.children = [ ASTNode("value"), ... ]
+            for child in var_tail_node.children:
+                if child and getattr(child, "type", None) == "value":
+                    rhs_type = self.get_expression_type(child, symtable)
+                    if rhs_type and declared_type and rhs_type != declared_type:
+                        self.errors.append(
+                            f"Type Error: Cannot assign '{rhs_type}' to variable '{var_name}' of type '{declared_type}'."
+                        )
+                else:
+                    # fallback
+                    self.visit(child, symtable)
 
-        if len(node.children) > 2 and node.children[2]:
-            self.visit(node.children[2], symtable)
+    ######################################################
+    # Expression Type Inference
+    ######################################################
+    def get_expression_type(self, node, symtable):
+        """
+        We see from debug: value -> factor -> literal(3)
+        We'll recursively check 'value', 'factor', 'literal'.
+        """
+        if node is None:
+            return None
 
-    def visit_var_call(self, node: ASTNode, symtable: SymbolTable):
+        node_type = getattr(node, "type", None)
 
+        # If "value", check its children (often "factor")
+        if node_type == "value":
+            if node.children:
+                return self.get_expression_type(node.children[0], symtable)
+
+        # If "factor", check its children (often "literal" or var_call)
+        if node_type == "factor":
+            if node.children:
+                return self.get_expression_type(node.children[0], symtable)
+
+        # If "literal", figure out if it's int, str, etc.
+        if node_type == "literal":
+            val = node.value
+            if isinstance(val, int):
+                return "int"
+            # If it's e.g. "Hello" or something else, treat as "str"
+            return "str"
+
+        # If "var_call", look up in the symbol table
+        if node_type == "var_call":
+            var_name = node.value
+            try:
+                return symtable.lookup(var_name)
+            except SemanticError:
+                # The error is handled in visit_var_call, so just return None
+                return None
+
+        # Otherwise, do a generic visit
+        self.generic_visit(node, symtable)
+        return None
+
+    ######################################################
+    # Catch undeclared usage
+    ######################################################
+    def visit_var_call(self, node, symtable):
         var_name = node.value
         try:
             symtable.lookup(var_name)
         except SemanticError as e:
-   
             if var_name not in self.reported_undeclared_vars:
                 self.errors.append(str(e))
                 self.reported_undeclared_vars.add(var_name)
 
-    def visit_function_statements(self, node: ASTNode, symtable: SymbolTable):
-        if node.children:
-            for child in node.children:
-                self.visit(child, symtable)
+######################################################
+# Debug printing
+######################################################
+def debug_print_ast(node, indent=0):
+    """Recursively print the AST structure for debugging."""
+    if node is None:
+        print(" " * indent + "None")
+        return
 
-    def visit_main_function(self, node: ASTNode, symtable: SymbolTable):
-        if node.children:
-            for child in node.children:
-                self.visit(child, symtable)
+    if isinstance(node, list):
+        for item in node:
+            debug_print_ast(item, indent)
+        return
 
-    def visit_expression(self, node: ASTNode, symtable: SymbolTable):
-        self.generic_visit(node, symtable)
+    if not hasattr(node, "type"):
+        print(" " * indent + f"Non-AST node: {node}")
+        return
 
-def run_semantic_analysis(ast: ASTNode):
+    line = f"{node.type}"
+    if node.value is not None:
+        line += f" (value={node.value})"
+    print(" " * indent + line)
+
+    if hasattr(node, "children") and node.children:
+        for child in node.children:
+            debug_print_ast(child, indent + 2)
+
+def run_semantic_analysis(ast):
     analyzer = SemanticAnalyzer()
     errors = analyzer.analyze(ast)
     return errors

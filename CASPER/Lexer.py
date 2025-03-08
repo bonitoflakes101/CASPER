@@ -40,7 +40,10 @@ class Lexer:
         return 'a' <= ch <= 'z' or 'A' <= ch <= 'Z' or ch == '_'
 
     def __read_number(self) -> Token:
-        """Reads a number from the input and returns a Token."""
+        """
+        Reads a number (integer or float) with up to 9 digits in each part,
+        enforcing DEL10 as a delimiter, and returns the token with int/float value.
+        """
         start_pos = self.position
         dot_count = 0
         output = ""
@@ -48,33 +51,53 @@ class Lexer:
         decimal_part = ""
         is_decimal = False
 
-        while self.current_char is not None and (self.__is_digit(self.current_char) or self.current_char == '.'):
+        # Collect digits and optional single dot
+        while self.current_char and (self.current_char.isdigit() or self.current_char == '.'):
             if self.current_char == '.':
                 dot_count += 1
                 if dot_count > 1:
-           
-                    self.__skip_invalid_characters()
-                    return self.__new_token(TokenType.ILLEGAL, self.source[start_pos:self.position])
-                is_decimal = True  
+                    # More than one dot => break and treat as ILLEGAL
+                    break
+                is_decimal = True
             else:
                 if not is_decimal:
+                    # Building the integer part
+                    if len(integer_part) >= 9:
+                        # Exceeds 9 digits => ILLEGAL
+                        while self.current_char and self.current_char not in Delimiters.DEL10 and self.current_char != '\n':
+                            self.__read_char()
+                        illegal_literal = self.source[start_pos:self.position]
+                        return self.__new_token(TokenType.ILLEGAL, illegal_literal)
                     integer_part += self.current_char
-                    if len(integer_part) > 9:
-                        self.__skip_invalid_characters()
-                        return self.__new_token(TokenType.ILLEGAL, self.source[start_pos:self.position])
                 else:
+                    # Building the decimal part
+                    if len(decimal_part) >= 9:
+                        # Exceeds 9 digits => ILLEGAL
+                        while self.current_char and self.current_char not in Delimiters.DEL10 and self.current_char != '\n':
+                            self.__read_char()
+                        illegal_literal = self.source[start_pos:self.position]
+                        return self.__new_token(TokenType.ILLEGAL, illegal_literal)
                     decimal_part += self.current_char
-                    if len(decimal_part) > 9:
-                        self.__skip_invalid_characters()
-                        return self.__new_token(TokenType.ILLEGAL, self.source[start_pos:self.position])
 
             output += self.current_char
             self.__read_char()
 
-        # Check if it's an integer or float based on the presence of a dot
+        # After collecting digits, check the next character is a valid delimiter
+        if self.current_char not in Delimiters.DEL10:
+            # Read until we find a valid delimiter or newline, then treat as ILLEGAL
+            while self.current_char and self.current_char not in Delimiters.DEL10 and self.current_char != '\n':
+                self.__read_char()
+            illegal_literal = self.source[start_pos:self.position]
+            return self.__new_token(TokenType.ILLEGAL, illegal_literal)
+
+        # Now produce the numeric token
         if dot_count == 0:
+            # It's an integer
             return self.__new_token(TokenType.INT_LIT, int(output))
-        return self.__new_token(TokenType.FLT_LIT, float(output))
+        else:
+            # It's a float
+            return self.__new_token(TokenType.FLT_LIT, float(output))
+
 
 
     # LOOKAHEAD
@@ -257,30 +280,6 @@ class Lexer:
 
 
 
-
-    def __read_number(self) -> Token:
-        """Reads a number (integer or float) with up to 9 digits in each part, enforcing DEL10 as a delimiter."""
-        start_pos = self.position
-        dot_count = 0
-
-        while self.current_char and (self.current_char.isdigit() or self.current_char == '.'):
-            if self.current_char == '.':
-                dot_count += 1
-                if dot_count > 1:
-                    break
-            self.__read_char()
-
-        literal = self.source[start_pos:self.position]
-
-        if self.current_char not in Delimiters.DEL10:
-            while self.current_char and self.current_char not in Delimiters.DEL10 and self.current_char != '\n':
-                self.__read_char()
-            illegal_literal = self.source[start_pos:self.position]
-            return self.__new_token(TokenType.ILLEGAL, illegal_literal)
-        
-        if dot_count == 0:
-            return self.__new_token(TokenType.INT_LIT, literal)
-        return self.__new_token(TokenType.FLT_LIT, literal)
 
 
     def __read_string(self) -> str | None:
