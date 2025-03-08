@@ -645,56 +645,68 @@ class Lexer:
 
             # COMPARISON OPERATORS
             
-            # Token Creation for Less than, Less than Equals (<, <=)
+                       # Token Creation for Less than, Less than Equals (<, <=)
             case '<':
                 if self.__peek_char() == '=':
                     self.__read_char()
                     if self.__is_valid_delimiter(TokenType.LT_EQ):
                         self.__read_char()
                         return self.__new_token(TokenType.LT_EQ, "<=")
-                    return self.__return_illegal_token()
+                    else:
+                        valid_delims = KEYWORD_DELIMITERS.get(TokenType.LT_EQ.name, set())
+                        return self.__return_illegal_token("<=", valid_delims=valid_delims)
                 
                 if self.__peek_char() == '<':  
                     self.__read_char()  
                     if self.__is_valid_delimiter(TokenType.COMMENT):
                         self.__read_char()  
                         self.__skip_whitespace() 
-
                         comment_content = ""
                         while self.current_char and self.current_char != '\n':
                             comment_content += self.current_char
                             self.__read_char()
-
                         return self.__new_token(TokenType.COMMENT, comment_content.strip())  
-                    return self.__return_illegal_token()
+                    else:
+                        valid_delims = KEYWORD_DELIMITERS.get(TokenType.COMMENT.name, set())
+                        return self.__return_illegal_token("<<", valid_delims=valid_delims)
                 if self.__is_valid_delimiter(TokenType.LT):
                     return self.__consume_single_char_token(TokenType.LT)
-                
-                return self.__return_illegal_token()
+                else:
+                    valid_delims = KEYWORD_DELIMITERS.get(TokenType.LT.name, set())
+                    return self.__return_illegal_token("<", valid_delims=valid_delims)
             
-            # Token Creation for Greater than, Greater than Equals (<, <=)
+            # Token Creation for Greater than, Greater than Equals (> , >=)
             case '>':
                 if self.__peek_char() == '=':
                     self.__read_char()
                     if self.__is_valid_delimiter(TokenType.GT_EQ):
                         self.__read_char()
                         return self.__new_token(TokenType.GT_EQ, ">=")
-                    return self.__return_illegal_token()
+                    else:
+                        valid_delims = KEYWORD_DELIMITERS.get(TokenType.GT_EQ.name, set())
+                        return self.__return_illegal_token(">=", valid_delims=valid_delims)
                 if self.__is_valid_delimiter(TokenType.GT):
                     return self.__consume_single_char_token(TokenType.GT)
-                return self.__return_illegal_token()
+                else:
+                    valid_delims = KEYWORD_DELIMITERS.get(TokenType.GT.name, set())
+                    return self.__return_illegal_token(">", valid_delims=valid_delims)
                        
-            # Token Creation for Not,  Not Equals (!, !=)
+            # Token Creation for Not, Not Equals (!, !=)
             case '!':
                 if self.__peek_char() == '=':
                     self.__read_char()
                     if self.__is_valid_delimiter(TokenType.NOT_EQ):
                         self.__read_char()
                         return self.__new_token(TokenType.NOT_EQ, "!=")
-                    return self.__return_illegal_token()
+                    else:
+                        valid_delims = KEYWORD_DELIMITERS.get(TokenType.NOT_EQ.name, set())
+                        return self.__return_illegal_token("!=", valid_delims=valid_delims)
                 if self.__is_valid_delimiter(TokenType.NOT):
                     return self.__consume_single_char_token(TokenType.NOT)
-                return self.__return_illegal_token()
+                else:
+                    valid_delims = KEYWORD_DELIMITERS.get(TokenType.NOT.name, set())
+                    return self.__return_illegal_token("!", valid_delims=valid_delims)
+
 
             # LOGICAL OPERATORS
 
