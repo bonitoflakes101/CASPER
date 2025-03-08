@@ -199,14 +199,34 @@ class SemanticAnalyzer:
                 self.errors.append(str(e))
                 self.reported_undeclared_vars.add(var_name)
 
-    def visit_FUNCTION_NAME(self, node, symtable):
-        func_name = node.value
+    # def visit_FUNCTION_NAME(self, node, symtable):
+    #     func_name = node.value
+    #     if func_name in self.declared_functions:
+    #         self.errors.append(
+    #             f"Semantic Error: Function '{func_name}' is already declared."
+    #         )
+    #     else:
+    #         self.declared_functions.add(func_name)
+    def visit_function_declaration(self, node, symtable):
+        """
+        node.children = [ret_type, FUNCTION_NAME, parameters, statements, revive]
+        We'll do the no-overloading check here, not in visit_FUNCTION_NAME.
+        """
+        if len(node.children) < 2:
+            self.generic_visit(node, symtable)
+            return
+
+
+        func_name_node = node.children[1]  
+        func_name = func_name_node.value
         if func_name in self.declared_functions:
-            self.errors.append(
-                f"Semantic Error: Function '{func_name}' is already declared."
-            )
+            self.errors.append(f"Semantic Error: Function '{func_name}' is already declared.")
         else:
             self.declared_functions.add(func_name)
+
+        func_scope = SymbolTable(parent=symtable)
+
+        self.generic_visit(node, func_scope)
 
 
 def debug_print_ast(node, indent=0):
