@@ -167,7 +167,7 @@ class Token:
             if self.valid_delims:
                 return f"Lexical Error: '{self.literal}' at line {self.line_no}. \nExpected delimiters: {self.valid_delims}"
             else:
-                return f"Lexical Error: '{self.literal}'. No existing token"
+                return f"Lexical Error: '{self.literal}'."
     
         return f"Token[{self.type.name}] '{self.literal}' (line {self.line_no})"
     

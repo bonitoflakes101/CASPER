@@ -30,8 +30,8 @@ class Delimiters:
 
     # Delimiters
     DELIM_ID = OPERATORS | SPACE | NEWLINE | CARRIAGE_RETURN | NULL | {'=', '!', '>', '<', '(', ')', '[', ']', ','}
-    DEL1 = SPACE | {'{'}
-    DEL2 = SPACE | {'('}
+    DEL1 = SPACE | {'{'}  | NEWLINE
+    DEL2 = SPACE | {'('}  | NEWLINE
     DEL3 = SPACE | NUM | BOOLEAN | {'(', '$', '|'} # logical ops
     DEL4 = SPACE | NUM | {'(', '$', '\'', '"', None,'', '\r'} # plus delim
     DEL5 = SPACE | NUM |{'$', '(', '@','',None,'\r', ''}  # minus, multiply, divide, modulo delims, all assignment ops
