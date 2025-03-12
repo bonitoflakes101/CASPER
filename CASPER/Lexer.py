@@ -179,7 +179,7 @@ class Lexer:
                         while self.current_char and self.current_char not in Delimiters.identifier_del:
                             self.__read_char()
                         illegal_literal = self.source[start_pos:self.position]
-                        return self.__new_token(TokenType.ILLEGAL, illegal_literal)
+                        return self.__return_illegal_token(identifier, valid_delims=valid_delims)
                 else:
                     # For any other '@'-prefixed identifier, return FUNCTION_NAME.
                     if self.current_char in valid_delims:
@@ -188,7 +188,7 @@ class Lexer:
                         while self.current_char and self.current_char not in Delimiters.identifier_del:
                             self.__read_char()
                         illegal_literal = self.source[start_pos:self.position]
-                        return self.__new_token(TokenType.ILLEGAL, illegal_literal)
+                        return self.__return_illegal_token(identifier, valid_delims=valid_delims)
 
             # Check if the identifier starts with '$' for IDENT
             elif identifier.startswith('$'):
@@ -199,7 +199,7 @@ class Lexer:
                     while self.current_char and self.current_char not in Delimiters.identifier_del:
                         self.__read_char()
                     illegal_literal = self.source[start_pos:self.position]
-                    return self.__new_token(TokenType.ILLEGAL, illegal_literal)
+                    return self.__return_illegal_token(identifier, valid_delims=valid_delims)
 
             # Otherwise, treat as ILLEGAL
             while self.current_char and self.current_char != ' ':   
@@ -235,7 +235,7 @@ class Lexer:
             if next_char == '\n':
                 return self.__new_token(token_type, identifier)
             else:
-                return self.__new_token(TokenType.ILLEGAL, identifier)
+                return self.__return_illegal_token(identifier, valid_delims=valid_delims)
             
         # General keyword validation for other keywords
         if token_type != TokenType.IDENT:
@@ -252,7 +252,7 @@ class Lexer:
                 illegal_literal = self.source[start_pos:self.position]
                 print(illegal_literal)
 
-                return self.__new_token(TokenType.ILLEGAL, illegal_literal)
+                return self.__return_illegal_token(illegal_literal, valid_delims=valid_delims)
         
         # For identifiers
         if token_type == TokenType.IDENT:
@@ -263,7 +263,7 @@ class Lexer:
                 print(self.current_char)
                 return self.__new_token(token_type, identifier)
             else:
-                return self.__new_token(TokenType.ILLEGAL, identifier)
+                return self.__return_illegal_token(identifier, valid_delims=valid_delims)
  
 
         # Handle as an illegal identifier if it doesn't start with $ or @
