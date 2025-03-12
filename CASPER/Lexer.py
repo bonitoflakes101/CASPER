@@ -800,7 +800,7 @@ class Lexer:
                     valid_delims = KEYWORD_DELIMITERS.get(TokenType.COLON.name, set())
                     return self.__return_illegal_token(":", valid_delims=valid_delims)
             case _:
-                return self.__read_illegal_token()
+                return self.__return_illegal_token()
 
     
  
