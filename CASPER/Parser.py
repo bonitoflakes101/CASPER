@@ -486,23 +486,121 @@ def p_local_dec(p):
     p[0] = p[1] if p[1] is not None else ASTNode("local_dec", [])
 
 
-# -----------------------------------------------------------------------------
-# Production: <conditional_statement> → check (<expression>) {<statements>} <conditional_tail> otherwise {<statements>}
-# -----------------------------------------------------------------------------
-def p_conditional_statement(p):
-    "conditional_statement : CHECK LPAREN expression RPAREN maybe_newline LBRACE maybe_newline statements RBRACE maybe_newline conditional_tail  OTHERWISE maybe_newline LBRACE maybe_newline statements RBRACE"
-    p[0] = ASTNode("conditional_statement", [p[3], p[8], p[10], p[16]])
+#NEW CONDITIONALS
 
-# -----------------------------------------------------------------------------
-# Production: <conditional_tail> → null | otherwise_check (<expression>) {<statements>}  <conditional_tail> 
-# -----------------------------------------------------------------------------
+def p_conditional_statement(p):
+    """
+    conditional_statement : CHECK LPAREN condition RPAREN maybe_newline LBRACE maybe_newline statements RBRACE maybe_newline conditional_tail  OTHERWISE maybe_newline LBRACE maybe_newline statements RBRACE
+    """
+    p[0] = (
+        "conditional_statement",
+        p[3], 
+        p[8],   
+        p[11],  
+        p[16],  
+    )
+
 def p_conditional_tail(p):
-    """conditional_tail : empty
-                        | OTHERWISE_CHECK LPAREN expression RPAREN maybe_newline LBRACE maybe_newline statements RBRACE  maybe_newline conditional_tail"""
+    """
+    conditional_tail : OTHERWISE_CHECK LPAREN condition RPAREN maybe_newline LBRACE maybe_newline statements RBRACE  maybe_newline conditional_tail
+                     | empty
+    """
+  
     if len(p) == 2:
         p[0] = None
     else:
-        p[0] = ASTNode("conditional_tail", [p[3], p[8], p[10]])  
+         p[0] = (
+            "conditional_tail",
+            p[3], 
+            p[8],   
+            p[11],  
+        )
+
+
+def p_condition(p):
+    """
+    condition : arithmetic_expression condition_tail
+    """
+
+    if p[2] is None:
+
+        p[0] = p[1]
+    else:
+       
+        left_expr = p[1]
+        for (op, right_expr) in p[2]:
+            left_expr = ("condition_binop", left_expr, op, right_expr)
+        p[0] = left_expr
+
+
+def p_condition_tail(p):
+    """
+    condition_tail : condition_op arithmetic_expression condition_tail
+               | empty
+    """
+  
+    if len(p) == 2:
+        p[0] = None
+    else:
+
+        if p[3] is None:
+            p[0] = [(p[1], p[2])]
+        else:
+            p[0] = [(p[1], p[2])] + p[3]
+
+
+def p_condition_op(p):
+    """
+    condition_op : AND
+                 | OR
+                 | EQ_EQ
+                 | NOT_EQ
+                 | LT
+                 | GT
+                 | LT_EQ
+                 | GT_EQ
+    """
+    p[0] = p[1]
+
+
+def p_arithmetic_expression(p):
+    """
+    arithmetic_expression : arith_term arith_tail
+    """
+    if p[2] is None:
+        p[0] = p[1]
+    else:
+        p[0] = ("arithmetic_expr", p[1], p[2])
+
+def p_arith_term(p):
+    """
+    arith_term : literal
+               | var_call
+    """
+    p[0] = p[1]
+
+def p_arith_tail(p):
+    """
+    arith_tail : empty
+               | arith_op arithmetic_expression
+    """
+
+    if len(p) == 2:
+        p[0] = None
+    else:
+        p[0] = (p[1], p[2]) 
+
+def p_arith_op(p):
+    """
+    arith_op : PLUS
+             | MINUS
+             | MULTIPLY
+             | DIVISION
+             | MODULO
+    """
+    p[0] = p[1]
+
+
 
 # -----------------------------------------------------------------------------
 # Production: <switch_statement> → swap(IDENT){ <switch_condition> otherwise <statements> }
@@ -542,21 +640,21 @@ def p_loop_statement(p):
 # Production: <for_loop> → for ( <control_variable> ; <expression> ; <update> ) { <statements> }
 # -----------------------------------------------------------------------------
 def p_for_loop(p):
-    "for_loop : FOR LPAREN control_variable SEMICOLON expression SEMICOLON update RPAREN maybe_newline LBRACE maybe_newline statements RBRACE"
+    "for_loop : FOR LPAREN control_variable SEMICOLON condition SEMICOLON update RPAREN maybe_newline LBRACE maybe_newline statements RBRACE"
     p[0] = ASTNode("for_loop", [p[3], p[5], p[7], p[12]])
 
 # -----------------------------------------------------------------------------
 # Production: <until_loop> → until ( <expression> ) { <statements> }
 # -----------------------------------------------------------------------------
 def p_until_loop(p):
-    "until_loop : UNTIL LPAREN expression RPAREN LBRACE maybe_newline statements RBRACE"
+    "until_loop : UNTIL LPAREN condition RPAREN LBRACE maybe_newline statements RBRACE"
     p[0] = ASTNode("until_loop", [p[3], p[7]])
 
 # -----------------------------------------------------------------------------
 # Production: <repeat_until> → repeat { <statements> } until ( <expression> )
 # -----------------------------------------------------------------------------
 def p_repeat_until(p):
-    "repeat_until : REPEAT LBRACE maybe_newline statements RBRACE UNTIL LPAREN expression RPAREN"
+    "repeat_until : REPEAT LBRACE maybe_newline statements RBRACE UNTIL LPAREN condition RPAREN"
     p[0] = ASTNode("repeat_until", [p[3], p[7]])
 
 # -----------------------------------------------------------------------------
