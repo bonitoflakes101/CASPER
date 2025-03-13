@@ -57,17 +57,29 @@ class SemanticAnalyzer:
         if node is None:
             return
 
+        # If node is a list, recurse on each item.
         if isinstance(node, list):
             for item in node:
                 self.visit(item, symtable)
             return
 
+        # NEW: If node is a tuple (e.g. ("condition_binop", left, op, right)),
+        # then recurse into each item. Some may be strings/operators, others may be ASTNodes.
+        if isinstance(node, tuple):
+            for subnode in node:
+                if isinstance(subnode, (ASTNode, list, tuple)):
+                    self.visit(subnode, symtable)
+            return
+
+        # If node is an ASTNode, dispatch to the correct visitor method.
         if not hasattr(node, "type"):
             return
 
         method_name = 'visit_' + node.type
         visitor = getattr(self, method_name, self.generic_visit)
         return visitor(node, symtable)
+
+
 
     def generic_visit(self, node, symtable):
         if hasattr(node, "children") and node.children:
@@ -105,6 +117,22 @@ class SemanticAnalyzer:
         if len(node.children) > 2 and node.children[2]:
             self.visit(node.children[2], symtable)
 
+    def visit_var_call(self, node, symtable):
+        """
+        node.value = the variable name (e.g. '$i')
+        node.children = [maybe an index if it's $i[...]?]
+        """
+        var_name = node.value
+        try:
+            symtable.lookup(var_name)
+        except SemanticError as e:
+            # Only report once
+            if var_name not in self.reported_undeclared_vars:
+                self.errors.append(str(e))
+                self.reported_undeclared_vars.add(var_name)
+
+        # Also visit any children (like array indices)
+        self.generic_visit(node, symtable)
 
     def visit_var_statement(self, node, symtable):
         """
@@ -159,45 +187,52 @@ class SemanticAnalyzer:
         if node is None:
             return None
 
-        node_type = getattr(node, "type", None)
+        # If the node is an ASTNode, process as before.
+        if isinstance(node, ASTNode):
+            node_type = node.type
 
-        if node_type == "value":
-            if node.children:
-                return self.get_expression_type(node.children[0], symtable)
+            if node_type == "value":
+                if node.children:
+                    return self.get_expression_type(node.children[0], symtable)
 
-        if node_type == "factor":
-            if node.children:
-                return self.get_expression_type(node.children[0], symtable)
+            if node_type == "factor":
+                if node.children:
+                    return self.get_expression_type(node.children[0], symtable)
 
-        if node_type == "literal":
-            val = node.value
-            print(val)
-            if isinstance(val, int):
-                return "int"
-            if val in ("Day", "Night"):
+            if node_type == "literal":
+                val = node.value
+                # Determine literal type based on value
+                if isinstance(val, int):
+                    return "int"
+                if val in ("Day", "Night"):
+                    return "bln"
+                if isinstance(val, str) and len(val) == 1:
+                    return "chr"
+                return "str"
+
+            if node_type == "var_call":
+                var_name = node.value
+                try:
+                    return symtable.lookup(var_name)
+                except SemanticError:
+                    return None
+
+            # Otherwise, recursively visit children
+            self.generic_visit(node, symtable)
+            return None
+
+        # NEW: Handle condition expressions (which are built as tuples)
+        elif isinstance(node, tuple):
+            tag = node[0]
+            if tag in ("condition_binop", "for_loop_condition_binop", "until_loop_condition_binop"):
+                # Optionally you can inspect operands (node[1] and node[3]) and enforce that they
+                # are numeric or comparable. For now, we simply assume that any binary condition yields a boolean.
                 return "bln"
-            if isinstance(val, str) and len(val) == 1:
-                return "chr"
-            return "str"
+            # You may also add further cases here if you decide to have arithmetic tuple nodes.
+            return None
 
-        if node_type == "var_call":
-            var_name = node.value
-            try:
-                return symtable.lookup(var_name)
-            except SemanticError:
-                return None
-
-        self.generic_visit(node, symtable)
-        return None
-
-    def visit_var_call(self, node, symtable):
-        var_name = node.value
-        try:
-            symtable.lookup(var_name)
-        except SemanticError as e:
-            if var_name not in self.reported_undeclared_vars:
-                self.errors.append(str(e))
-                self.reported_undeclared_vars.add(var_name)
+        else:
+            return None
 
     def visit_for_loop(self, node, symtable):
         """
