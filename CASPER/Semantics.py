@@ -103,21 +103,25 @@ class SemanticAnalyzer:
             self.visit(child, symtable)
 
     def visit_global_statement(self, node, symtable):
-
         data_type_node = node.children[0]
         ident_node = node.children[1]
         var_name = ident_node.value
         var_type = data_type_node.value
 
+        # Add variable to the global symbols
         try:
             self.global_symbols.add(var_name, var_type)
         except SemanticError as e:
-           
             self.errors.append(str(e))
 
-       
+        # If there's a third child, it might be an assignment or commas
         if len(node.children) > 2 and node.children[2]:
-            self.visit(node.children[2], symtable)
+            tail_node = node.children[2]
+            # Instead of self.visit_global_statement_tail(...)
+            # rename to a private helper method
+            self._process_global_statement_tail(tail_node, symtable, var_type, var_name)
+
+
 
     def visit_var_call(self, node, symtable):
         """
@@ -169,7 +173,32 @@ class SemanticAnalyzer:
 
         self.check_var_tail(var_tail_node, symtable, declared_type, var_name)
 
-  
+    def check_global_assignment(self, assigned_node, symtable, declared_type, var_name):
+        """
+        assigned_node: the AST node that represents the right-hand side of the assignment
+        declared_type: e.g. "int"
+        var_name: e.g. "$hello"
+        """
+        # 1) Get the type of the expression on the RHS
+        rhs_type = self.get_expression_type(assigned_node, symtable)
+        # 2) Compare
+        if rhs_type and declared_type and rhs_type != declared_type:
+            self.errors.append(
+                f"Type Error: Cannot assign '{rhs_type}' to variable '{var_name}' of type '{declared_type}'."
+            )
+
+    def _process_global_statement_tail(self, node, symtable, declared_type, var_name):
+        # same logic you already have
+        if node is None:
+            return
+        # 1) Recursively visit everything
+        self.visit(node, symtable)
+        # 2) Attempt to find an expression node
+        if len(node.children) > 0:
+            assigned_node = node.children[0]
+            if assigned_node is not None:
+                self.check_global_assignment(assigned_node, symtable, declared_type, var_name)
+
     def check_var_tail(self, var_tail_node, symtable, declared_type, var_name):
         if var_tail_node is None:
             return
