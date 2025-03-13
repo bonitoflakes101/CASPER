@@ -250,24 +250,26 @@ class SemanticAnalyzer:
         self.visit(node.children[3], symtable)
 
     def visit_control_variable(self, node, symtable):
-        """
-        node.children = [ 'int', IDENT_node, maybe an int_literal or expression for initialization ]
-        We declare $i in the current scope so it remains visible after the loop.
-        """
         if len(node.children) < 2:
             return  
-    
         var_type_token = node.children[0]  
         ident_node = node.children[1]     
         var_name = ident_node.value
-    
+
+        # Check if variable already exists globally.
+        if var_name in self.global_symbols.symbols:
+            self.errors.append(
+                f"Semantic Error: Local variable '{var_name}' conflicts with global variable '{var_name}'."
+            )
+            return
+
         try:
             symtable.add(var_name, var_type_token)
         except SemanticError as e:
             self.errors.append(str(e))
-    
+
         if len(node.children) > 2 and node.children[2]:
-            self.visit(node.children[2], symtable)  
+            self.visit(node.children[2], symtable)
 
 
     # def visit_FUNCTION_NAME(self, node, symtable):
