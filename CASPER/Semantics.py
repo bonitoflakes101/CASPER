@@ -333,7 +333,6 @@ class SemanticAnalyzer:
     def visit_function_declaration(self, node, symtable):
         """
         node.children = [ret_type, FUNCTION_NAME, parameters, statements, revive]
-        Extracts the function signature and checks for duplicate declarations.
         """
         if len(node.children) < 2:
             self.generic_visit(node, symtable)
@@ -344,21 +343,68 @@ class SemanticAnalyzer:
         if func_name in self.declared_functions:
             self.errors.append(f"Semantic Error: Function '{func_name}' is already declared.")
         else:
-            # NEW: Extract and normalize the return type as a plain string.
+            # Extract and normalize the return type.
             ret_type_node = node.children[0]
             ret_val = ret_type_node.value.value if hasattr(ret_type_node.value, "value") else ret_type_node.value
             ret_type = ret_val if isinstance(ret_val, str) else str(ret_val)
             if ret_type.startswith("function_"):
                 ret_type = ret_type[len("function_"):]
             parameters_node = node.children[2]
+            # You can still extract a list of parameter types (if needed)
             param_types = self.extract_parameters(parameters_node)
-            # Store the normalized return type (e.g. "int") rather than an ASTNode.
             self.declared_functions[func_name] = (ret_type, param_types)
 
-        # NEW: Create a new scope for the function body.
+        # Create a new scope for the function body.
         func_scope = SymbolTable(parent=symtable)
         func_scope.expected_return_type = self.declared_functions[func_name][0]
+
+        # --- NEW CODE: Add function parameters to the function scope ---
+        if parameters_node is not None:
+            params_info = self.extract_parameters_info(parameters_node)
+            for (param_name, param_type) in params_info:
+                try:
+                    func_scope.add(param_name, param_type)
+                except SemanticError as e:
+                    self.errors.append(f"Semantic Error in function '{func_name}': {str(e)}")
+        # --- END NEW CODE ---
+
+        # Process the rest of the function body in the new scope.
         self.generic_visit(node, func_scope)
+    
+# NEW HELPER: Extract parameter names and types from a 'parameters' AST node.
+    def extract_parameters_info(self, node):
+        """
+        Given a parameters node with children [data_type, IDENT, parameters_tail],
+        return a list of (parameter_name, parameter_type) tuples.
+        """
+        params = []
+        if node is None or node.type != "parameters":
+            return params
+        if node.children and len(node.children) >= 2:
+            param_type = node.children[0].value
+            param_name = node.children[1].value
+            params.append((param_name, param_type))
+            tail = node.children[2] if len(node.children) > 2 else None
+            params.extend(self.extract_parameters_tail_info(tail))
+        return params
+
+    def extract_parameters_tail_info(self, node):
+        """
+        Given a parameters_tail node (created from the rule:
+        parameters_tail : empty | COMMA data_type IDENT parameters_tail),
+        return a list of (parameter_name, parameter_type) tuples.
+        """
+        params = []
+        if node is None:
+            return params
+        if node.type == "parameters_tail" and node.children and len(node.children) >= 2:
+            # Expecting children: [data_type, IDENT, parameters_tail]
+            param_type = node.children[0].value
+            param_name = node.children[1].value
+            params.append((param_name, param_type))
+            tail = node.children[2] if len(node.children) > 2 else None
+            params.extend(self.extract_parameters_tail_info(tail))
+        return params
 
     def extract_parameters(self, node):
         """
