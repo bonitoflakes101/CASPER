@@ -186,8 +186,7 @@ class SemanticAnalyzer:
     def get_expression_type(self, node, symtable):
         if node is None:
             return None
-
-        # If the node is an ASTNode, process as before.
+        print("DEBUG get_expression_type node.value:", repr(getattr(node, "value", None)))
         if isinstance(node, ASTNode):
             node_type = node.type
 
@@ -199,15 +198,19 @@ class SemanticAnalyzer:
                 if node.children:
                     return self.get_expression_type(node.children[0], symtable)
 
+            # Check our new literal types first.
+            if node_type == "chr_lit":
+                return "chr"
+            if node_type == "str_lit":
+                return "str"
             if node_type == "literal":
                 val = node.value
-                # Determine literal type based on value
                 if isinstance(val, int):
                     return "int"
                 if val in ("Day", "Night"):
                     return "bln"
-                if isinstance(val, str) and len(val) == 1:
-                    return "chr"
+              
+             
                 return "str"
 
             if node_type == "var_call":
@@ -217,22 +220,18 @@ class SemanticAnalyzer:
                 except SemanticError:
                     return None
 
-            # Otherwise, recursively visit children
             self.generic_visit(node, symtable)
             return None
 
-        # NEW: Handle condition expressions (which are built as tuples)
         elif isinstance(node, tuple):
             tag = node[0]
             if tag in ("condition_binop", "for_loop_condition_binop", "until_loop_condition_binop"):
-                # Optionally you can inspect operands (node[1] and node[3]) and enforce that they
-                # are numeric or comparable. For now, we simply assume that any binary condition yields a boolean.
                 return "bln"
-            # You may also add further cases here if you decide to have arithmetic tuple nodes.
             return None
 
         else:
             return None
+
 
     def visit_for_loop(self, node, symtable):
         """

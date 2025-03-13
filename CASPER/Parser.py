@@ -261,8 +261,12 @@ def p_literal(p):
                | NIGHT
                | CHR_LIT
                | STR_LIT"""
-    p[0] = ASTNode("literal", value=p[1])
-
+    if p.slice[1].type == "CHR_LIT":
+        p[0] = ASTNode("chr_lit", value=p[1])
+    elif p.slice[1].type == "STR_LIT":
+        p[0] = ASTNode("str_lit", value=p[1])
+    else:
+        p[0] = ASTNode("literal", value=p[1])
 # -----------------------------------------------------------------------------
 # Production: <expression> → <expr_head> <expr_tail>
 # -----------------------------------------------------------------------------
