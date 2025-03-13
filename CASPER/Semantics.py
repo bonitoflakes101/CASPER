@@ -12,6 +12,8 @@ class SymbolTable:
         self.symbols = {}
         self.parent = parent
 
+        self.expected_return_type = None
+
     def add(self, name, var_type):
         if name in self.symbols:
             raise SemanticError(f"Symbol '{name}' already declared in this scope.")
@@ -186,7 +188,6 @@ class SemanticAnalyzer:
     def get_expression_type(self, node, symtable):
         if node is None:
             return None
-        print("DEBUG get_expression_type node.value:", repr(getattr(node, "value", None)))
         if isinstance(node, ASTNode):
             node_type = node.type
 
@@ -225,7 +226,6 @@ class SemanticAnalyzer:
                 func_name = node.children[0].value
                 if func_name in self.declared_functions:
                     ret_type = self.declared_functions[func_name][0]
-                    # If ret_type is still an ASTNode, extract its value.
                     if hasattr(ret_type, "value"):
                         ret_type = ret_type.value
                     return ret_type
@@ -317,7 +317,6 @@ class SemanticAnalyzer:
         else:
             # NEW: Extract and normalize the return type as a plain string.
             ret_type_node = node.children[0]
-            # If ret_type_node.value is itself an ASTNode, extract its value.
             ret_val = ret_type_node.value.value if hasattr(ret_type_node.value, "value") else ret_type_node.value
             ret_type = ret_val if isinstance(ret_val, str) else str(ret_val)
             if ret_type.startswith("function_"):
@@ -329,20 +328,24 @@ class SemanticAnalyzer:
 
         # NEW: Create a new scope for the function body.
         func_scope = SymbolTable(parent=symtable)
+        func_scope.expected_return_type = self.declared_functions[func_name][0]
         self.generic_visit(node, func_scope)
 
-
-     # NEW: Helper method to extract parameter types from a 'parameters' AST node.
     def extract_parameters(self, node):
+        """
+        Helper method to extract parameter types from a 'parameters' AST node.
+        Returns a list of types (as strings). If no parameters, returns an empty list.
+        """
         types = []
         if node is None or node.type != "parameters":
             return types
+        # Expecting node.children = [data_type, IDENT, parameters_tail]
         if node.children and len(node.children) >= 2:
             types.append(node.children[0].value)
             tail = node.children[2] if len(node.children) > 2 else None
             types.extend(self.extract_parameters_tail(tail))
         return types
-
+    
     # NEW: Recursively extract parameter types from a 'parameters_tail' AST node.
     def extract_parameters_tail(self, node):
         types = []
@@ -357,7 +360,7 @@ class SemanticAnalyzer:
     def visit_function_call(self, node, symtable):
         """
         node.children = [FUNCTION_NAME_node, arguments_node]
-        NEW: Check that the function is declared and that the argument types match the function signature.
+        NEW: Checks that the function is declared and that the argument types match the function signature.
         """
         func_name = node.children[0].value
         if func_name not in self.declared_functions:
@@ -405,6 +408,22 @@ class SemanticAnalyzer:
             if len(node.children) > 1 and node.children[1] is not None:
                 arg_types.extend(self.extract_arg_tail(node.children[1], symtable))
         return arg_types
+
+    # NEW: Visitor for the revive node.
+    def visit_revive(self, node, symtable):
+        """
+        Checks that the type of the expression in the revive statement
+        matches the function's declared (expected) return type.
+        """
+        expected = getattr(symtable, "expected_return_type", None)
+        if node.children:
+            expr_type = self.get_expression_type(node.children[0], symtable)
+            if expr_type != expected:
+                self.errors.append(
+                    f"Return Type Error: Function expects return type '{expected}', but got '{expr_type}'."
+                )
+        else:
+            self.errors.append("Return Type Error: No return expression provided.")
 
 def debug_print_ast(node, indent=0):
     if node is None:

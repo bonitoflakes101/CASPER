@@ -41,7 +41,7 @@ def home():
                 # Run semantic analysis on the AST
                 errors = run_semantic_analysis(ast)
                 if errors:
-                    semantic_output = "Semantic Errors:\n" + "\n".join(errors)
+                    semantic_output = "Semantic Errors:\n" + "\n".join(errors) 
                 else:
                     semantic_output = "Compilation successful: no lexical, syntax, or semantic errors detected."
 
