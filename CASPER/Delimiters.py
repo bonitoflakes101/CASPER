@@ -49,7 +49,7 @@ class Delimiters:
     DEL17 = SPACE | NEWLINE | NULL | {',', ')', ']'} # R bracket
     DEL18 = {'('}
     DEL19 = {'['}
-    identifier_del = OPERATORS | SPACE | NEWLINE | CARRIAGE_RETURN | NULL | {'<', '-', '+', '*', '/', '%', '=', '<', '>', '!', '(', ')', '[', ']', ',' , '{', '}','&','|'} 
+    identifier_del = OPERATORS | SPACE | NEWLINE | CARRIAGE_RETURN | NULL | {'<', '-', '+', '*', '/', '%', '=', '<', '>', '!', '(', ')', '[', ']', ',' , '{', '}','&','|',';'} 
    
 
 
