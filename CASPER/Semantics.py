@@ -251,12 +251,12 @@ class SemanticAnalyzer:
 
     def visit_control_variable(self, node, symtable):
         if len(node.children) < 2:
-            return  
-        var_type_token = node.children[0]  
-        ident_node = node.children[1]     
+            return
+        data_type_node = node.children[0]
+        ident_node = node.children[1]
         var_name = ident_node.value
-
-        # Check if variable already exists globally.
+        declared_type = data_type_node.value.lower()
+        
         if var_name in self.global_symbols.symbols:
             self.errors.append(
                 f"Semantic Error: Local variable '{var_name}' conflicts with global variable '{var_name}'."
@@ -264,12 +264,21 @@ class SemanticAnalyzer:
             return
 
         try:
-            symtable.add(var_name, var_type_token)
+            symtable.add(var_name, declared_type)
         except SemanticError as e:
             self.errors.append(str(e))
-
+        
         if len(node.children) > 2 and node.children[2]:
-            self.visit(node.children[2], symtable)
+            initializer = node.children[2]
+            init_type = self.get_expression_type(initializer, symtable)
+            if init_type != declared_type:
+                self.errors.append(
+                    f"Type Error: Cannot assign '{init_type}' to control variable '{var_name}' of type '{declared_type}'."
+                )
+            else:
+                # Continue to process initializer if needed.
+                self.visit(initializer, symtable)
+
 
 
     # def visit_FUNCTION_NAME(self, node, symtable):
