@@ -43,7 +43,7 @@ def home():
                 if errors:
                     semantic_output = "Semantic Errors:\n" + "\n".join(errors)
                 else:
-                    semantic_output = "No Semantic Error."
+                    semantic_output = "Compilation successful: no lexical, syntax, or semantic errors detected."
 
                 # # If SEMANTICS_DEBUG is enabled, append additional debug info.
                 # if SEMANTICS_DEBUG:
