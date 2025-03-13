@@ -518,96 +518,60 @@ def p_conditional_tail(p):
 
 
 def p_condition(p):
-    """
-    condition : arithmetic_expression condition_tail
-    """
-
-    if p[2] is None:
-
-        p[0] = p[1]
-    else:
-       
-        left_expr = p[1]
-        for (op, right_expr) in p[2]:
-            left_expr = ("condition_binop", left_expr, op, right_expr)
-        p[0] = left_expr
-
-
-def p_condition_tail(p):
-    """
-    condition_tail : condition_op arithmetic_expression condition_tail
-               | empty
-    """
-  
-    if len(p) == 2:
-        p[0] = None
-    else:
-
-        if p[3] is None:
-            p[0] = [(p[1], p[2])]
-        else:
-            p[0] = [(p[1], p[2])] + p[3]
-
-
-def p_condition_op(p):
-    """
-    condition_op : AND
-                 | OR
-                 | EQ_EQ
-                 | NOT_EQ
-                 | LT
-                 | GT
-                 | LT_EQ
-                 | GT_EQ
-    """
-    p[0] = p[1]
-
-
-def p_arithmetic_expression(p):
-    """
-    arithmetic_expression : arith_term arith_tail
-    """
+    "condition : condition_factor condition_factor_tail"
     if p[2] is None:
         p[0] = p[1]
     else:
-        p[0] = ("arithmetic_expr", p[1], p[2])
+        p[0] = ASTNode("condition", [p[1], p[2]])
 
-def p_arith_term(p):
-    """
-    arith_term : cond_literal
-               | var_call
-    """
-    p[0] = p[1]
 
-def p_arith_tail(p):
-    """
-    arith_tail : empty
-               | arith_op arithmetic_expression
-    """
+# -----------------------------------------------------------------------------
+# Production: <factor> → <var_call> | <literal> | ~<literal> | (<expression>)
+# -----------------------------------------------------------------------------
+def p_condition_factor(p):
+    """condition_factor : var_call
+              | condition_literal
+              | TILDE condition_literal
+              | LPAREN condition RPAREN"""
+    if len(p) == 2:
+        p[0] = ASTNode("condition_factor", [p[1]])
+    elif p[1] == '~':
+        p[0] = ASTNode("condition_factor", [p[2]], "~")
+    else:
+        p[0] = ASTNode("condition_factor", [p[2]])
 
+# -----------------------------------------------------------------------------
+# Production: <factor_tail> → null | + <expression> | - <expression> | * <expression> | / <expression> | % <expression> | ** <expression>
+# -----------------------------------------------------------------------------
+def p_condition_factor_tail(p):
+    """condition_factor_tail : empty
+                   | PLUS condition
+                   | MINUS condition
+                   | MULTIPLY condition
+                   | DIVISION condition
+                   | MODULO condition
+                   | EXPONENT condition
+                   | GT condition
+                   | LT condition
+                   | EQ_EQ condition
+                   | GT_EQ condition
+                   | LT_EQ condition
+                   | NOT_EQ condition
+                   | AND condition
+                   | OR condition"""
     if len(p) == 2:
         p[0] = None
     else:
-        p[0] = (p[1], p[2]) 
+        p[0] = ASTNode("condition_factor_tail", [p[1], p[2]])
 
-def p_arith_op(p):
-    """
-    arith_op : PLUS
-             | MINUS
-             | MULTIPLY
-             | DIVISION
-             | MODULO
-    """
-    p[0] = p[1]
-
-def p_cond_literal(p):
-    """cond_literal : INT_LIT
+def p_condition_literal(p):
+    """condition_literal : INT_LIT
                | FLT_LIT
                | DAY
                | NIGHT
                | CHR_LIT
                | STR_LIT"""
-    p[0] = ASTNode("cond_literal", value=p[1])
+    p[0] = ASTNode("condition_literal", value=p[1])
 
 
 
@@ -652,99 +616,63 @@ def p_for_loop(p):
     "for_loop : FOR LPAREN control_variable SEMICOLON for_loop_condition SEMICOLON update RPAREN maybe_newline LBRACE maybe_newline statements RBRACE"
     p[0] = ASTNode("for_loop", [p[3], p[5], p[7], p[12]])
 
-
-
 def p_for_loop_condition(p):
-    """
-    for_loop_condition : for_loop_arithmetic_expression for_loop_condition_tail
-    """
-
-    if p[2] is None:
-
-        p[0] = p[1]
-    else:
-       
-        left_expr = p[1]
-        for (op, right_expr) in p[2]:
-            left_expr = ("for_loop_condition_binop", left_expr, op, right_expr)
-        p[0] = left_expr
-
-
-def p_for_loop_condition_tail(p):
-    """
-    for_loop_condition_tail : for_loop_condition_op for_loop_arithmetic_expression for_loop_condition_tail
-               | empty
-    """
-  
-    if len(p) == 2:
-        p[0] = None
-    else:
-
-        if p[3] is None:
-            p[0] = [(p[1], p[2])]
-        else:
-            p[0] = [(p[1], p[2])] + p[3]
-
-
-def p_for_loop_condition_op(p):
-    """
-    for_loop_condition_op : AND
-                 | OR
-                 | EQ_EQ
-                 | NOT_EQ
-                 | LT
-                 | GT
-                 | LT_EQ
-                 | GT_EQ
-    """
-    p[0] = p[1]
-
-
-def p_for_loop_arithmetic_expression(p):
-    """
-    for_loop_arithmetic_expression : for_loop_arith_term for_loop_arith_tail
-    """
+    "for_loop_condition : for_loop_condition_factor for_loop_condition_factor_tail"
     if p[2] is None:
         p[0] = p[1]
     else:
-        p[0] = ("for_loop_arithmetic_expr", p[1], p[2])
+        p[0] = ASTNode("for_loop_condition", [p[1], p[2]])
 
-def p_for_loop_arith_term(p):
-    """
-    for_loop_arith_term : for_loop_literal
-               | var_call
-    """
-    p[0] = p[1]
 
-def p_for_loop_arith_tail(p):
-    """
-    for_loop_arith_tail : empty
-               | for_loop_arith_op for_loop_arithmetic_expression
-    """
+# -----------------------------------------------------------------------------
+# Production: <factor> → <var_call> | <literal> | ~<literal> | (<expression>)
+# -----------------------------------------------------------------------------
+def p_for_loop_condition_factor(p):
+    """for_loop_condition_factor : var_call
+              | for_loop_condition_literal
+              | TILDE for_loop_condition_literal
+              | LPAREN for_loop_condition RPAREN"""
+    if len(p) == 2:
+        p[0] = ASTNode("for_loop_condition_factor", [p[1]])
+    elif p[1] == '~':
+        p[0] = ASTNode("for_loop_condition_factor", [p[2]], "~")
+    else:
+        p[0] = ASTNode("for_loop_condition_factor", [p[2]])
 
+# -----------------------------------------------------------------------------
+# Production: <factor_tail> → null | + <expression> | - <expression> | * <expression> | / <expression> | % <expression> | ** <expression>
+# -----------------------------------------------------------------------------
+def p_for_loop_condition_factor_tail(p):
+    """for_loop_condition_factor_tail : empty
+                   | PLUS for_loop_condition
+                   | MINUS for_loop_condition
+                   | MULTIPLY for_loop_condition
+                   | DIVISION for_loop_condition
+                   | MODULO for_loop_condition
+                   | EXPONENT for_loop_condition
+                   | GT for_loop_condition
+                   | LT for_loop_condition
+                   | EQ_EQ for_loop_condition
+                   | GT_EQ for_loop_condition
+                   | LT_EQ for_loop_condition
+                   | NOT_EQ for_loop_condition
+                   | AND for_loop_condition
+                   | OR for_loop_condition"""
     if len(p) == 2:
         p[0] = None
     else:
-        p[0] = (p[1], p[2]) 
+        p[0] = ASTNode("for_loop_condition_factor_tail", [p[1], p[2]])
 
-def p_for_loop_arith_op(p):
-    """
-    for_loop_arith_op : PLUS
-             | MINUS
-             | MULTIPLY
-             | DIVISION
-             | MODULO
-    """
-    p[0] = p[1]
-
-def p_for_loop_literal(p):
-    """for_loop_literal : INT_LIT
+def p_for_loop_condition_literal(p):
+    """for_loop_condition_literal : INT_LIT
                | FLT_LIT
                | DAY
                | NIGHT
                | CHR_LIT
                | STR_LIT"""
-    p[0] = ASTNode("for_loop_literal", value=p[1])
+    p[0] = ASTNode("for_loop_condition_literal", value=p[1])
+
+
 # -----------------------------------------------------------------------------
 # Production: <until_loop> → until ( <expression> ) { <statements> }
 # -----------------------------------------------------------------------------
@@ -760,98 +688,62 @@ def p_repeat_until(p):
     p[0] = ASTNode("repeat_until", [p[3], p[7]])
 
 
-
 def p_until_loop_condition(p):
-    """
-    until_loop_condition : until_loop_arithmetic_expression until_loop_condition_tail
-    """
-
-    if p[2] is None:
-
-        p[0] = p[1]
-    else:
-       
-        left_expr = p[1]
-        for (op, right_expr) in p[2]:
-            left_expr = ("until_loop_condition_binop", left_expr, op, right_expr)
-        p[0] = left_expr
-
-
-def p_until_loop_condition_tail(p):
-    """
-    until_loop_condition_tail : until_loop_condition_op until_loop_arithmetic_expression until_loop_condition_tail
-               | empty
-    """
-  
-    if len(p) == 2:
-        p[0] = None
-    else:
-
-        if p[3] is None:
-            p[0] = [(p[1], p[2])]
-        else:
-            p[0] = [(p[1], p[2])] + p[3]
-
-
-def p_until_loop_condition_op(p):
-    """
-    until_loop_condition_op : AND
-                 | OR
-                 | EQ_EQ
-                 | NOT_EQ
-                 | LT
-                 | GT
-                 | LT_EQ
-                 | GT_EQ
-    """
-    p[0] = p[1]
-
-
-def p_until_loop_arithmetic_expression(p):
-    """
-    until_loop_arithmetic_expression : until_loop_arith_term until_loop_arith_tail
-    """
+    "until_loop_condition : until_loop_condition_factor until_loop_condition_factor_tail"
     if p[2] is None:
         p[0] = p[1]
     else:
-        p[0] = ("for_loop_arithmetic_expr", p[1], p[2])
+        p[0] = ASTNode("until_for_loop_condition", [p[1], p[2]])
 
-def p_until_loop_arith_term(p):
-    """
-    until_loop_arith_term : until_loop_literal
-               | var_call
-    """
-    p[0] = p[1]
 
-def p_until_loop_arith_tail(p):
-    """
-    until_loop_arith_tail : empty
-               | until_loop_arith_op until_loop_arithmetic_expression
-    """
+# -----------------------------------------------------------------------------
+# Production: <factor> → <var_call> | <literal> | ~<literal> | (<expression>)
+# -----------------------------------------------------------------------------
+def p_until_loop_condition_factor(p):
+    """until_loop_condition_factor : var_call
+              | until_loop_condition_literal
+              | TILDE until_loop_condition_literal
+              | LPAREN until_loop_condition RPAREN"""
+    if len(p) == 2:
+        p[0] = ASTNode("until_loop_condition_factor", [p[1]])
+    elif p[1] == '~':
+        p[0] = ASTNode("until_loop_condition_factor", [p[2]], "~")
+    else:
+        p[0] = ASTNode("until_loop_condition_factor", [p[2]])
 
+# -----------------------------------------------------------------------------
+# Production: <factor_tail> → null | + <expression> | - <expression> | * <expression> | / <expression> | % <expression> | ** <expression>
+# -----------------------------------------------------------------------------
+def p_until_loop_condition_factor_tail(p):
+    """until_loop_condition_factor_tail : empty
+                   | PLUS until_loop_condition
+                   | MINUS until_loop_condition
+                   | MULTIPLY until_loop_condition
+                   | DIVISION until_loop_condition
+                   | MODULO until_loop_condition
+                   | EXPONENT until_loop_condition
+                   | GT until_loop_condition
+                   | LT until_loop_condition
+                   | EQ_EQ until_loop_condition
+                   | GT_EQ until_loop_condition
+                   | LT_EQ until_loop_condition
+                   | NOT_EQ until_loop_condition
+                   | AND until_loop_condition
+                   | OR until_loop_condition"""
     if len(p) == 2:
         p[0] = None
     else:
-        p[0] = (p[1], p[2]) 
+        p[0] = ASTNode("until_loop_condition_factor_tail", [p[1], p[2]])
 
-def p_until_loop_arith_op(p):
-    """
-    until_loop_arith_op : PLUS
-             | MINUS
-             | MULTIPLY
-             | DIVISION
-             | MODULO
-    """
-    p[0] = p[1]
-
-def p_until_loop_literal(p):
-    """until_loop_literal : INT_LIT
+def p_until_loop_condition_literal(p):
+    """until_loop_condition_literal : INT_LIT
                | FLT_LIT
                | DAY
                | NIGHT
                | CHR_LIT
                | STR_LIT"""
-    p[0] = ASTNode("until_loop_literal", value=p[1])
+    p[0] = ASTNode("until_loop_condition_literal", value=p[1])
+
 # -----------------------------------------------------------------------------
 # Production: <control_variable> → int IDENT = int_literal
 # -----------------------------------------------------------------------------
