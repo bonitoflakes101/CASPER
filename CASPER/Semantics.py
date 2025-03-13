@@ -33,7 +33,7 @@ class SemanticAnalyzer:
         self.reported_undeclared_vars = set()
 
         # Track function declarations to disallow duplicates/overloading
-        self.declared_functions = set()
+        self.declared_functions = {}
 
     def analyze(self, ast):
         print("=== DEBUG: AST Structure ===")
@@ -220,6 +220,19 @@ class SemanticAnalyzer:
                 except SemanticError:
                     return None
 
+            # NEW: For function calls, return the declared (normalized) return type.
+            if node_type == "function_call":
+                func_name = node.children[0].value
+                if func_name in self.declared_functions:
+                    ret_type = self.declared_functions[func_name][0]
+                    # If ret_type is still an ASTNode, extract its value.
+                    if hasattr(ret_type, "value"):
+                        ret_type = ret_type.value
+                    return ret_type
+                else:
+                    self.errors.append(f"Semantic Error: Function '{func_name}' is not declared.")
+                    return None
+                
             self.generic_visit(node, symtable)
             return None
 
@@ -291,24 +304,107 @@ class SemanticAnalyzer:
     def visit_function_declaration(self, node, symtable):
         """
         node.children = [ret_type, FUNCTION_NAME, parameters, statements, revive]
-        We'll do the no-overloading check here, not in visit_FUNCTION_NAME.
+        Extracts the function signature and checks for duplicate declarations.
         """
         if len(node.children) < 2:
             self.generic_visit(node, symtable)
             return
 
-
-        func_name_node = node.children[1]  
+        func_name_node = node.children[1]
         func_name = func_name_node.value
         if func_name in self.declared_functions:
             self.errors.append(f"Semantic Error: Function '{func_name}' is already declared.")
         else:
-            self.declared_functions.add(func_name)
+            # NEW: Extract and normalize the return type as a plain string.
+            ret_type_node = node.children[0]
+            # If ret_type_node.value is itself an ASTNode, extract its value.
+            ret_val = ret_type_node.value.value if hasattr(ret_type_node.value, "value") else ret_type_node.value
+            ret_type = ret_val if isinstance(ret_val, str) else str(ret_val)
+            if ret_type.startswith("function_"):
+                ret_type = ret_type[len("function_"):]
+            parameters_node = node.children[2]
+            param_types = self.extract_parameters(parameters_node)
+            # Store the normalized return type (e.g. "int") rather than an ASTNode.
+            self.declared_functions[func_name] = (ret_type, param_types)
 
+        # NEW: Create a new scope for the function body.
         func_scope = SymbolTable(parent=symtable)
-
         self.generic_visit(node, func_scope)
 
+
+     # NEW: Helper method to extract parameter types from a 'parameters' AST node.
+    def extract_parameters(self, node):
+        types = []
+        if node is None or node.type != "parameters":
+            return types
+        if node.children and len(node.children) >= 2:
+            types.append(node.children[0].value)
+            tail = node.children[2] if len(node.children) > 2 else None
+            types.extend(self.extract_parameters_tail(tail))
+        return types
+
+    # NEW: Recursively extract parameter types from a 'parameters_tail' AST node.
+    def extract_parameters_tail(self, node):
+        types = []
+        if node is None:
+            return types
+        if node.type == "parameters_tail" and node.children:
+            types.append(node.children[0].value)
+            tail = node.children[2] if len(node.children) > 2 else None
+            types.extend(self.extract_parameters_tail(tail))
+        return types
+
+    def visit_function_call(self, node, symtable):
+        """
+        node.children = [FUNCTION_NAME_node, arguments_node]
+        NEW: Check that the function is declared and that the argument types match the function signature.
+        """
+        func_name = node.children[0].value
+        if func_name not in self.declared_functions:
+            self.errors.append(f"Semantic Error: Function '{func_name}' is not declared.")
+            return
+        signature = self.declared_functions[func_name]  # (return_type, [parameter_types])
+        expected_param_types = signature[1]
+        args_node = node.children[1]
+        arg_types = self.extract_arguments(args_node, symtable)
+        if len(arg_types) != len(expected_param_types):
+            self.errors.append(
+                f"Argument Mismatch Error: Function '{func_name}' expects {len(expected_param_types)} arguments, got {len(arg_types)}."
+            )
+        else:
+            for i, (arg_type, expected_type) in enumerate(zip(arg_types, expected_param_types)):
+                if arg_type != expected_type:
+                    self.errors.append(
+                        f"Type Error: Argument {i+1} of function '{func_name}' expected type '{expected_type}', got '{arg_type}'."
+                    )
+        self.generic_visit(node, symtable)
+
+    # NEW: Helper method to extract argument types from an 'arguments' AST node.
+    def extract_arguments(self, node, symtable):
+        arg_types = []
+        if node is None or node.type != "arguments":
+            return arg_types
+        if node.children:
+            first_arg_type = self.get_expression_type(node.children[0], symtable)
+            if first_arg_type is not None:
+                arg_types.append(first_arg_type)
+            if len(node.children) > 1 and node.children[1] is not None:
+                arg_types.extend(self.extract_arg_tail(node.children[1], symtable))
+        return arg_types
+
+    # NEW: Recursively extract argument types from an 'arg_tail' AST node.
+    def extract_arg_tail(self, node, symtable):
+        arg_types = []
+        if node is None:
+            return arg_types
+        if hasattr(node, "children") and node.children:
+            first_arg = node.children[0]
+            arg_type = self.get_expression_type(first_arg, symtable)
+            if arg_type is not None:
+                arg_types.append(arg_type)
+            if len(node.children) > 1 and node.children[1] is not None:
+                arg_types.extend(self.extract_arg_tail(node.children[1], symtable))
+        return arg_types
 
 def debug_print_ast(node, indent=0):
     if node is None:
