@@ -748,8 +748,21 @@ def p_until_loop_condition_literal(p):
 # Production: <control_variable> → int IDENT = int_literal
 # -----------------------------------------------------------------------------
 def p_control_variable(p):
-    "control_variable : INT IDENT EQ INT_LIT"
-    p[0] = ASTNode("control_variable", [p[1], ASTNode("IDENT", value=p[2]), p[4]])
+    "control_variable : INT IDENT EQ control_var_tail"
+    p[0] = ASTNode("control_variable", [
+        ASTNode("data_type", value=p[1]),
+        ASTNode("IDENT", value=p[2]),
+        p[4]
+    ])
+
+def p_control_var_tail(p):
+    """control_var_tail : INT_LIT
+                        | var_call"""
+    if isinstance(p[1], int):
+        p[0] = ASTNode("literal", value=p[1])
+    else:
+        p[0] = p[1]
+
 
 # -----------------------------------------------------------------------------
 # Production: <update> → <var_call> <update_tail>
