@@ -65,8 +65,6 @@ class SemanticAnalyzer:
                 self.visit(item, symtable)
             return
 
-        # NEW: If node is a tuple (e.g. ("condition_binop", left, op, right)),
-        # then recurse into each item. Some may be strings/operators, others may be ASTNodes.
         if isinstance(node, tuple):
             for subnode in node:
                 if isinstance(subnode, (ASTNode, list, tuple)):
@@ -228,7 +226,7 @@ class SemanticAnalyzer:
                 if node.children:
                     return self.get_expression_type(node.children[0], symtable)
 
-            # Check our new literal types first.
+          
             if node_type == "chr_lit":
                 return "chr"
             if node_type == "str_lit":
@@ -250,7 +248,7 @@ class SemanticAnalyzer:
                 except SemanticError:
                     return None
 
-            # NEW: For function calls, return the declared (normalized) return type.
+         
             if node_type == "function_call":
                 func_name = node.children[0].value
                 if func_name in self.declared_functions:
@@ -317,7 +315,6 @@ class SemanticAnalyzer:
                     f"Type Error: Cannot assign '{init_type}' to control variable '{var_name}' of type '{declared_type}'."
                 )
             else:
-                # Continue to process initializer if needed.
                 self.visit(initializer, symtable)
 
 
@@ -343,22 +340,20 @@ class SemanticAnalyzer:
         if func_name in self.declared_functions:
             self.errors.append(f"Semantic Error: Function '{func_name}' is already declared.")
         else:
-            # Extract and normalize the return type.
             ret_type_node = node.children[0]
             ret_val = ret_type_node.value.value if hasattr(ret_type_node.value, "value") else ret_type_node.value
             ret_type = ret_val if isinstance(ret_val, str) else str(ret_val)
             if ret_type.startswith("function_"):
                 ret_type = ret_type[len("function_"):]
+            if ret_type == "function":
+                ret_type = "void"
             parameters_node = node.children[2]
-            # You can still extract a list of parameter types (if needed)
             param_types = self.extract_parameters(parameters_node)
             self.declared_functions[func_name] = (ret_type, param_types)
 
-        # Create a new scope for the function body.
         func_scope = SymbolTable(parent=symtable)
         func_scope.expected_return_type = self.declared_functions[func_name][0]
 
-        # --- NEW CODE: Add function parameters to the function scope ---
         if parameters_node is not None:
             params_info = self.extract_parameters_info(parameters_node)
             for (param_name, param_type) in params_info:
@@ -366,12 +361,9 @@ class SemanticAnalyzer:
                     func_scope.add(param_name, param_type)
                 except SemanticError as e:
                     self.errors.append(f"Semantic Error in function '{func_name}': {str(e)}")
-        # --- END NEW CODE ---
+            self.generic_visit(node, func_scope)
 
-        # Process the rest of the function body in the new scope.
-        self.generic_visit(node, func_scope)
     
-# NEW HELPER: Extract parameter names and types from a 'parameters' AST node.
     def extract_parameters_info(self, node):
         """
         Given a parameters node with children [data_type, IDENT, parameters_tail],
@@ -421,7 +413,6 @@ class SemanticAnalyzer:
             types.extend(self.extract_parameters_tail(tail))
         return types
     
-    # NEW: Recursively extract parameter types from a 'parameters_tail' AST node.
     def extract_parameters_tail(self, node):
         types = []
         if node is None:
@@ -457,7 +448,6 @@ class SemanticAnalyzer:
                     )
         self.generic_visit(node, symtable)
 
-    # NEW: Helper method to extract argument types from an 'arguments' AST node.
     def extract_arguments(self, node, symtable):
         arg_types = []
         if node is None or node.type != "arguments":
@@ -470,7 +460,6 @@ class SemanticAnalyzer:
                 arg_types.extend(self.extract_arg_tail(node.children[1], symtable))
         return arg_types
 
-    # NEW: Recursively extract argument types from an 'arg_tail' AST node.
     def extract_arg_tail(self, node, symtable):
         arg_types = []
         if node is None:
@@ -484,21 +473,25 @@ class SemanticAnalyzer:
                 arg_types.extend(self.extract_arg_tail(node.children[1], symtable))
         return arg_types
 
-    # NEW: Visitor for the revive node.
     def visit_revive(self, node, symtable):
         """
         Checks that the type of the expression in the revive statement
         matches the function's declared (expected) return type.
+        Mimics Java behavior: if a function is void, it should not return a value.
         """
         expected = getattr(symtable, "expected_return_type", None)
-        if node.children:
-            expr_type = self.get_expression_type(node.children[0], symtable)
-            if expr_type != expected:
-                self.errors.append(
-                    f"Return Type Error: Function expects return type '{expected}', but got '{expr_type}'."
-                )
+        if expected == "void":
+            if node.children:
+                self.errors.append("Return Type Error: Void function should not return a value.")
         else:
-            self.errors.append("Return Type Error: No return expression provided.")
+            if node.children:
+                expr_type = self.get_expression_type(node.children[0], symtable)
+                if expr_type != expected:
+                    self.errors.append(
+                        f"Return Type Error: Function expects return type '{expected}', but got '{expr_type}'."
+                    )
+            else:
+                self.errors.append("Return Type Error: No return expression provided.")
 
 def debug_print_ast(node, indent=0):
     if node is None:
