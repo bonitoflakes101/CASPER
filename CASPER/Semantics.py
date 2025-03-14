@@ -226,6 +226,18 @@ class SemanticAnalyzer:
                 if node.children:
                     return self.get_expression_type(node.children[0], symtable)
 
+            if node_type == "type_cast":
+                conversion_function = node.value 
+                if conversion_function == "to_int":
+                    return "int"
+                elif conversion_function == "to_flt":
+                    return "flt"
+                elif conversion_function == "to_bln":
+                    return "bln"
+                elif conversion_function == "to_str":
+                    return "str"
+                else:
+                    return None
           
             if node_type == "chr_lit":
                 return "chr"
