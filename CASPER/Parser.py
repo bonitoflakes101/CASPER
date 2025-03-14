@@ -799,7 +799,7 @@ def p_postfix(p):
 # -----------------------------------------------------------------------------
 def p_function_call(p):
     """function_call : FUNCTION_NAME LPAREN arguments RPAREN
-                     | output_statement"""
+                     | input_statement"""
     if len(p) == 5:
         p[0] = ASTNode("function_call", [ASTNode("FUNCTION_NAME", value=p[1]), p[3]])
     else:
