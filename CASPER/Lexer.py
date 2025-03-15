@@ -283,52 +283,36 @@ class Lexer:
 
 
     def __read_string(self) -> str | None:
-        """Reads a string literal enclosed in double quotes and handles escape sequences.
-        Unescaped '$' is still ILLEGAL.
-        """
         self.__read_char() 
         literal = ""
 
         while self.current_char is not None and self.current_char != '"':
-            
             if self.current_char == "\\":
                 next_char = self.__peek_char()
-                
                 escape_sequences = {
                     '"': '"',  
                     "'": "'",  
-                    "\\": "\\", 
-                    "$": "$",  
-
-                    # not working as expected
+                    "\\": "\\",  
                     "n": "\n", 
                     "t": "\t",  
                 }
-                
                 if next_char in escape_sequences:
-                    self.__read_char()  
-                    literal += escape_sequences[next_char] 
+                    self.__read_char()  # Consume the escape character
+                    literal += escape_sequences[next_char]
                 else:
+                    # Not a valid escape sequence; treat '\' as literal.
                     literal += self.current_char
-
-    
-            elif self.current_char == "$":
-                return None  
             else:
                 literal += self.current_char  
             
             self.__read_char()
 
-        
         if self.current_char == '"':
             self.__read_char()  
-
-          
             if self.current_char in Delimiters.DEL11:
                 return literal 
             return None  
 
-      
         return None
 
 
