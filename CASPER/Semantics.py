@@ -216,17 +216,29 @@ class SemanticAnalyzer:
         if node is None:
             return None
         if isinstance(node, ASTNode):
-            node_type = node.type
-
-            if node_type == "value":
+            for child in node.children:
+                self.visit(child, symtable)  
+            
+            if node.type == "value":
                 if node.children:
                     return self.get_expression_type(node.children[0], symtable)
-
-            if node_type == "factor":
+            elif node.type == "expression":
+                left_type = self.get_expression_type(node.children[0], symtable)
+                if len(node.children) > 1 and node.children[1]:
+                    tail = node.children[1]
+                    if tail.children and len(tail.children) >= 2:
+                        right_type = self.get_expression_type(tail.children[1], symtable)
+                        if left_type is None or right_type is None:
+                            return None
+                        if left_type == right_type:
+                            return left_type
+                        else:
+                            return None
+                return left_type
+            elif node.type == "factor":
                 if node.children:
                     return self.get_expression_type(node.children[0], symtable)
-
-            if node_type == "type_cast":
+            elif node.type == "type_cast":
                 conversion_function = node.value 
                 if conversion_function == "to_int":
                     return "int"
@@ -238,12 +250,11 @@ class SemanticAnalyzer:
                     return "str"
                 else:
                     return None
-          
-            if node_type == "chr_lit":
+            elif node.type == "chr_lit":
                 return "chr"
-            if node_type == "str_lit":
+            elif node.type == "str_lit":
                 return "str"
-            if node_type == "literal":
+            elif node.type == "literal":
                 val = node.value
                 if isinstance(val, int):
                     return "int"
@@ -252,15 +263,16 @@ class SemanticAnalyzer:
                 elif val in ("Day", "Night"):
                     return "bln"
                 return "str"
-
-            if node_type == "var_call":
+            elif node.type == "var_call":
                 var_name = node.value
                 try:
                     return symtable.lookup(var_name)
-                except SemanticError:
+                except SemanticError as e:
+                    if var_name not in self.reported_undeclared_vars:
+                        self.errors.append(str(e))
+                        self.reported_undeclared_vars.add(var_name)
                     return None
-
-            if node_type == "function_call":
+            elif node.type == "function_call":
                 func_name = node.children[0].value
                 if func_name in self.declared_functions:
                     ret_type = self.declared_functions[func_name][0]
@@ -270,16 +282,14 @@ class SemanticAnalyzer:
                 else:
                     self.errors.append(f"Semantic Error: Function '{func_name}' is not declared.")
                     return None
-                
-            self.generic_visit(node, symtable)
-            return None
-
+            else:
+                self.generic_visit(node, symtable)
+                return None
         elif isinstance(node, tuple):
             tag = node[0]
             if tag in ("condition_binop", "for_loop_condition_binop", "until_loop_condition_binop"):
                 return "bln"
             return None
-
         else:
             return None
 
