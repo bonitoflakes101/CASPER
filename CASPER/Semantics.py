@@ -247,10 +247,10 @@ class SemanticAnalyzer:
                 val = node.value
                 if isinstance(val, int):
                     return "int"
-                if val in ("Day", "Night"):
+                elif isinstance(val, float):
+                    return "flt"
+                elif val in ("Day", "Night"):
                     return "bln"
-              
-             
                 return "str"
 
             if node_type == "var_call":
@@ -260,7 +260,6 @@ class SemanticAnalyzer:
                 except SemanticError:
                     return None
 
-         
             if node_type == "function_call":
                 func_name = node.children[0].value
                 if func_name in self.declared_functions:
@@ -283,6 +282,7 @@ class SemanticAnalyzer:
 
         else:
             return None
+
 
 
     def visit_for_loop(self, node, symtable):
