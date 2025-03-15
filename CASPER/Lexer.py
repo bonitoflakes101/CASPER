@@ -309,7 +309,7 @@ class Lexer:
                     self.__read_char()  
                     literal += escape_sequences[next_char] 
                 else:
-                    return None 
+                    literal += self.current_char
 
     
             elif self.current_char == "$":
