@@ -86,7 +86,6 @@ def check_errors():
     lexer = Lexer(code)
     illegal_tokens = []
 
-    # 1) Lexical checks
     while lexer.current_char is not None:
         token = lexer.next_token()
         if token.type == TokenType.ILLEGAL:
@@ -100,27 +99,30 @@ def check_errors():
     if illegal_tokens:
         return jsonify({"errors": illegal_tokens})
 
-    # 2) If no lexical errors, do a parse check
     parse_result = parse(code)
-    if parse_result.startswith("Syntax error") or parse_result.startswith("Unexpected error"):
-        # We can parse out line # from the error string if needed
+    if parse_result.lower().startswith("syntax error") or parse_result.lower().startswith("unexpected error"):
         import re
-        match = re.search(r'line\s+(\d+)', parse_result)
-        if match:
-            line_no = int(match.group(1))
+        match_line = re.search(r'line\s+(\d+)', parse_result, re.IGNORECASE)
+        match_col = re.search(r'column\s+(\d+)', parse_result, re.IGNORECASE)
+        if match_line:
+            line_no = int(match_line.group(1))
         else:
-            line_no = 1  # fallback
+            line_no = 1  
+        if match_col:
+            col = int(match_col.group(1))
+        else:
+            col = 1 
 
         error_info = {
             "message": parse_result,
             "line": line_no,
-            "startColumn": 0,
-            "endColumn": 9999
+            "startColumn": col,
+            "endColumn": col + 1  
         }
         return jsonify({"errors": [error_info]})
 
-    # 3) Otherwise, no errors found
     return jsonify({"errors": []})
+
 
 if __name__ == "__main__":
     app.run(debug=True)
