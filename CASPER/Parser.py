@@ -1,9 +1,30 @@
-from lark import Lark
-from lark.lexer import Lexer as LarkLexerBase, Token as LarkToken
+from lark import Lark, Transformer, Token as LarkToken
 from lark.exceptions import UnexpectedToken
-from Lexer import Lexer  # orig lexer class ni casper
-from Token import TokenType  # orig tokentype class ni casper
+from Lexer import Lexer  # original Casper lexer
+from Token import TokenType  # original token type enum
+from lark.lexer import Lexer as LarkLexerBase
 
+
+# --------------------------------------------------------------------
+# AST Node definition (to match your semantics)
+# --------------------------------------------------------------------
+class ASTNode:
+    def __init__(self, type, children=None, value=None):
+        self.type = type
+        self.children = children or []
+        self.value = value
+
+    def __repr__(self):
+        return f"ASTNode({self.type}, value={self.value}, children={self.children})"
+
+class ASTBuilder(Transformer):
+    def __default__(self, data, children, meta):
+        return ASTNode(data, children=children)
+    def __default_token__(self, token):
+        return ASTNode(token.type, value=token.value)
+# --------------------------------------------------------------------
+# Mapping for friendly error messages (unchanged)
+# --------------------------------------------------------------------
 token_display = {
     "EOF": "EOF",
     "ILLEGAL": "ILLEGAL",
@@ -134,29 +155,27 @@ token_display = {
     "RBRACKET": "]",
 }
 
-# Custom lexer class for lark
+# --------------------------------------------------------------------
+# Custom lexer class for Lark (unchanged)
+# --------------------------------------------------------------------
 class LarkLexer(LarkLexerBase):
     def __init__(self, lexer_conf):
         pass
 
     def lex(self, data):
-        # Initialize the lexer (orig class natin)
+        # Initialize the original Casper lexer
         lexer = Lexer(data)
         while True:
             tok = lexer.next_token()
-           
             if tok.type == TokenType.EOF:
                 break
-
-            # Calculates column number from position
             column = self._calculate_column(data, tok.position)
-    
             lark_tok = LarkToken(
-                type=tok.type.name,      # Uses the enum name (e.g., "IDENT", "INT_LIT")
+                type=tok.type.name,      # Use the enum name, e.g., "IDENT", "INT_LIT"
                 value=tok.literal,       # The token's literal value
-                start_pos=tok.position,  # Starting position in the source
-                line=tok.line_no,        # Line number
-                column=column            # Calculated column number
+                start_pos=tok.position,
+                line=tok.line_no,
+                column=column
             )
             yield lark_tok
 
@@ -164,7 +183,9 @@ class LarkLexer(LarkLexerBase):
         line_start = data.rfind('\n', 0, position) + 1
         return position - line_start + 1
 
-
+# --------------------------------------------------------------------
+# Grammar string updated with new CFG and terminal declarations
+# --------------------------------------------------------------------
 grammar = """
 // Program structure
 program: BIRTH NEWLINE* global_dec NEWLINE* function_statements NEWLINE* MAIN_CASPER LPAREN RPAREN LBRACE NEWLINE* statements NEWLINE* RBRACE NEWLINE* GHOST
@@ -342,25 +363,37 @@ empty:
 """
 
 # --------------------------------------------------------------------
-# Build the parser using the new grammar and custom lexer
+# Build the parser using the new grammar, custom lexer, and our AST transformer
 # --------------------------------------------------------------------
-parser = Lark(grammar, parser='lalr', lexer=LarkLexer, start='program')
+parser = Lark(grammar, parser='lalr', lexer=LarkLexer, start='program', transformer=ASTBuilder())
 
 def parse(code):
-    from lark.exceptions import UnexpectedToken
+    """
+    # NEW: Instead of returning AST or string,
+    #      we return a dictionary with 'ast' and 'error' keys.
+    """
     try:
-        tree = parser.parse(code)
-        return "No Syntax Errors"
+        ast = parser.parse(code)  
+        return {
+            "ast": ast,        # The AST
+            "error": None      # No error
+        }
     except UnexpectedToken as e:
         friendly_unexpected = token_display.get(e.token.type, e.token.type)
         friendly_expected_list = [token_display.get(t, t) for t in e.accepts]
         friendly_expected_str = ", ".join(friendly_expected_list)
+
         error_message = (
             f"Syntax Error at line {e.token.line}, column {e.token.column}:\n"
             f"  Unexpected token '{e.token.value}'\n"
             f"  Expected one of: {friendly_expected_str}"
         )
-        return error_message
+        return {
+            "ast": None,       # No AST
+            "error": error_message
+        }
     except Exception as e:
-        return f"Unexpected error: {e}"
-
+        return {
+            "ast": None,
+            "error": f"Unexpected error: {e}"
+        }

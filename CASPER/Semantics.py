@@ -87,14 +87,20 @@ class SemanticAnalyzer:
                 self.visit(child, symtable)
 
     def visit_program(self, node, symtable):
-        if len(node.children) > 0 and node.children[0]:
-            self.visit(node.children[0], symtable)  
-        if len(node.children) > 1 and node.children[1]:
-            self.visit(node.children[1], symtable)  
-        if len(node.children) > 2 and node.children[2]:
-    
-            main_scope = SymbolTable(parent=symtable)
-            self.visit(node.children[2], main_scope)
+
+        main_scope_created = False
+
+        for child in node.children:
+            if not child:
+                continue
+
+            if isinstance(child, ASTNode) and child.type == "statements" and not main_scope_created:
+                main_scope = SymbolTable(parent=symtable)
+                self.visit(child, main_scope)
+                main_scope_created = True
+            else:
+                self.visit(child, symtable)
+
 
     def visit_global_dec(self, node, symtable):
         for child in node.children:

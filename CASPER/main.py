@@ -2,15 +2,15 @@
 
 from flask import Flask, request, render_template, jsonify
 from Lexer import Lexer
-from Parser import parse  # <-- New Lark-based parse() function
+from Parser import parse  
 from Token import TokenType
-# from Semantics import run_semantic_analysis  # Only re-enable if you have an AST from the new parser
+from Semantics import run_semantic_analysis  
 
 app = Flask(__name__)
 
 LEXER_DEBUG = True
 PARSER_DEBUG = True
-SEMANTICS_DEBUG = True  # Would be used only if we can do semantics
+SEMANTICS_DEBUG = True  # Only used if we do semantic checks
 
 @app.route("/", methods=["GET", "POST"])
 def home():
@@ -23,54 +23,40 @@ def home():
     if request.method == "POST":
         code = request.form.get("code_input", "")
 
-        # 1) Run the old Casper lexer if you'd like to highlight tokens or detect "ILLEGAL" tokens
+        # 1) Lexical checks
         if LEXER_DEBUG:
             lexer = Lexer(source=code)
             while lexer.current_char is not None:
                 token = lexer.next_token()
                 token_type = str(token.type.name)
-
                 if token_type == "ILLEGAL":
                     illegal_tokens.append(str(token))
                 else:
                     lexer_results.append((token.literal, token_type))
 
-        # 2) If no illegal tokens, we parse the code using the new Lark-based parser
+        # 2) If no lexical errors, parse
         if PARSER_DEBUG and not illegal_tokens:
-            parse_result = parse(code)  # parse() returns either "No Syntax Errors" or an error string
+            # NEW: parse() returns a dict: {"ast": <ASTNode>, "error": <str or None>}
+            result = parse(code)
 
-            # Check if parse_result indicates an error
-            if parse_result.startswith("Syntax error") or parse_result.startswith("Unexpected error"):
-                parser_output = parse_result
+            if result["error"]:
+                parser_output = result["error"]
             else:
-                # No syntax error
-                parser_output = parse_result  # Typically "No Syntax Errors"
-                
-                # -------------------------------------------
-                # (Optional) If you want to run semantic analysis,
-                # you must have an AST or parse-tree from the new parser.
-                # Your current parse(code) function does NOT return an AST;
-                # it only returns a string. So for now, we comment out:
-                #
-                # ast = ???  # You'd need to modify Parser.py to return a parse tree or AST
-                # errors = run_semantic_analysis(ast)
-                # if errors:
-                #     semantic_output = "Semantic Errors:\n" + "\n".join(errors)
-                # else:
-                #     semantic_output = "Compilation successful."
-                #
-                # For demonstration, let's just say no errors from semantics:
-                semantic_output = "Compilation successful: no lexical or syntax errors (semantic checks disabled)."
-                # -------------------------------------------
+                ast = result["ast"]
+                parser_output = "No Syntax Error"
 
-    # 3) Decide which output message to display
+                # Now run semantics
+                errors = run_semantic_analysis(ast)
+                if errors:
+                    semantic_output = "Semantic Errors:\n" + "\n".join(errors)
+                else:
+                    semantic_output = "No lexical, syntax, or semantic errors!"
+    # 3) Decide final output
     if illegal_tokens:
         output = "\n".join(illegal_tokens)
-    elif parser_output != "No Syntax Errors" and not parser_output.startswith("Compilation successful"):
-        # If there's a specific syntax error
+    elif parser_output and parser_output != "No Syntax Error" and not parser_output.startswith("Compilation successful"):
         output = parser_output
     else:
-        # If everything is fine, show semantic result or a success message
         output = semantic_output if semantic_output else "No lexical or syntax errors detected."
 
     return render_template(
@@ -86,6 +72,7 @@ def check_errors():
     lexer = Lexer(code)
     illegal_tokens = []
 
+    # 1) Lexical
     while lexer.current_char is not None:
         token = lexer.next_token()
         if token.type == TokenType.ILLEGAL:
@@ -99,30 +86,29 @@ def check_errors():
     if illegal_tokens:
         return jsonify({"errors": illegal_tokens})
 
-    parse_result = parse(code)
-    if parse_result.lower().startswith("syntax error") or parse_result.lower().startswith("unexpected error"):
+    # 2) Parse with the dictionary approach
+    result = parse(code)
+
+    if result["error"]:
+        parse_result = result["error"]
+
         import re
         match_line = re.search(r'line\s+(\d+)', parse_result, re.IGNORECASE)
         match_col = re.search(r'column\s+(\d+)', parse_result, re.IGNORECASE)
-        if match_line:
-            line_no = int(match_line.group(1))
-        else:
-            line_no = 1  
-        if match_col:
-            col = int(match_col.group(1))
-        else:
-            col = 1 
+
+        line_no = int(match_line.group(1)) if match_line else 1
+        col_no = int(match_col.group(1)) if match_col else 1
 
         error_info = {
             "message": parse_result,
             "line": line_no,
-            "startColumn": col,
-            "endColumn": col + 1  
+            "startColumn": col_no,
+            "endColumn": col_no + 1
         }
         return jsonify({"errors": [error_info]})
-
-    return jsonify({"errors": []})
-
+    else:
+        # No syntax error
+        return jsonify({"errors": []})
 
 if __name__ == "__main__":
     app.run(debug=True)
