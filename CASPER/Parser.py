@@ -179,6 +179,7 @@ def p_tail_value(p):
         p[0] = p[1]
     else:
         p[0] = ASTNode("tail_value_list", [p[2]])
+#ITO
 
 # -----------------------------------------------------------------------------
 # Production: <list_element> → <literal> <element_tail>
@@ -436,12 +437,25 @@ def p_parameters_tail(p):
 # Production: <revive> → revive <value> | null
 # -----------------------------------------------------------------------------
 def p_revive(p):
-    """revive : REVIVE value
+    """revive : REVIVE revive_value
               | empty"""
     if len(p) == 2:
         p[0] = None
     else:
         p[0] = ASTNode("revive", [p[2]])
+
+def p_revive_value(p):
+    """revive_value : revive_type_cast
+             | expression
+             | function_call"""
+    p[0] = ASTNode("revive_value", [p[1]])
+
+def p_revive_type_cast(p):
+    """revive_type_cast : CONVERT_TO_INT LPAREN typecast_value RPAREN
+                 | CONVERT_TO_FLT LPAREN typecast_value RPAREN
+                 | CONVERT_TO_BLN LPAREN typecast_value RPAREN
+                 | CONVERT_TO_STR LPAREN typecast_value RPAREN"""
+    p[0] = ASTNode("revive_type_cast", [p[3]], p[1])
 
 # -----------------------------------------------------------------------------
 # Production: <statements> → null | <local_dec> <statements_tail>
@@ -592,7 +606,7 @@ def p_switch_statement(p):
 def p_switch_condition(p):
     "switch_condition : SHIFT value COLON maybe_newline statements switchcond_tail"
     p[0] = ASTNode("switch_condition", [p[2], p[5], p[6]])
-
+#ITO
 # -----------------------------------------------------------------------------
 # Production: <switchcond_tail> → <switch_condition> | null
 # -----------------------------------------------------------------------------
@@ -785,7 +799,7 @@ def p_update_tail(p):
         p[0] = p[1]
     else:
         p[0] = ASTNode("update_tail", [p[2]], p[1])
-
+#ITO
 # -----------------------------------------------------------------------------
 # Production: <postfix> → ++ | --
 # -----------------------------------------------------------------------------
@@ -839,15 +853,27 @@ def p_arg_value(p):
 # Production: <output_statement> → display <value> <next_val>
 # -----------------------------------------------------------------------------
 def p_output_statement(p):
-    """output_statement : DISPLAY value next_val
-                        |  DISPLAY LPAREN value next_val RPAREN"""
+    """output_statement : DISPLAY output_value next_val
+                        |  DISPLAY LPAREN output_value next_val RPAREN"""
     if len(p) == 4:  
         p[0] = ASTNode("output_statement", [p[2], p[3]])
     else:  
         p[0] = ASTNode("output_statement", [p[3], p[4]])
 
+def p_output_value(p):
+    """output_value : output_type_cast
+             | expression
+             | function_call"""
+    p[0] = ASTNode("output_value", [p[1]])
 
+def p_output_type_cast(p):
+    """output_type_cast : CONVERT_TO_INT LPAREN typecast_value RPAREN
+                 | CONVERT_TO_FLT LPAREN typecast_value RPAREN
+                 | CONVERT_TO_BLN LPAREN typecast_value RPAREN
+                 | CONVERT_TO_STR LPAREN typecast_value RPAREN"""
+    p[0] = ASTNode("output_type_cast", [p[3]], p[1])
 
+#ITO
 # -----------------------------------------------------------------------------
 # Production: <next_val> → null | , <value> <next_val>
 # -----------------------------------------------------------------------------
@@ -858,7 +884,7 @@ def p_next_val(p):
         p[0] = None
     else:
         p[0] = ASTNode("next_val", [p[2], p[3]])
-
+#ITO
 # -----------------------------------------------------------------------------
 # Production: <input_statement> → input()
 # -----------------------------------------------------------------------------
