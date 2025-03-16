@@ -166,221 +166,201 @@ class LarkLexer(LarkLexerBase):
 
 
 grammar = """
-    // Program structure
-    program: BIRTH NEWLINE* global_dec NEWLINE* function_statements NEWLINE* MAIN_CASPER LPAREN RPAREN LBRACE NEWLINE* statements NEWLINE* RBRACE NEWLINE NEWLINE* GHOST
+// Program structure
+program: BIRTH NEWLINE* global_dec NEWLINE* function_statements NEWLINE* MAIN_CASPER LPAREN RPAREN LBRACE NEWLINE* statements NEWLINE* RBRACE NEWLINE* GHOST
 
-    // Literals
-    literal: INT_LIT | FLT_LIT | BLN_LIT | CHR_LIT | STR_LIT
+// Global declarations
+global_dec: (global_statement NEWLINE* global_tail)?
+global_tail: global_dec
+global_statement: data_type IDENT global_statement_tail
+global_statement_tail: (COMMA IDENT global_statement_tail | EQ global_dec_value global_tail2 | empty)
+global_tail2: (COMMA IDENT global_statement_tail | empty)
+global_dec_value: global_value | LBRACKET list_element RBRACKET
+global_value: expression
 
-    // Global declarations
-    global_dec: (global_statement NEWLINE* global_tail)? 
-    global_tail: global_dec
-    global_statement: data_type IDENT global_statement_tail
-    global_statement_tail: | COMMA IDENT global_statement_tail | EQ global_dec_value global_tail2
-    global_tail2: COMMA IDENT global_statement_tail | empty
-    global_dec_value: global_value | LBRACKET list_element RBRACKET
-    global_value: expression
+// Variable statements
+var_statement: data_type IDENT var_tail NEWLINE*
+var_tail: (EQ tail_value var_tail2 | COMMA IDENT var_tail | empty)
+var_tail2: (COMMA IDENT var_tail | empty)
+tail_value: value | LBRACKET list_element RBRACKET
 
-    // Variable statements
-    var_statement: data_type IDENT var_tail NEWLINE*
-    var_tail: | EQ tail_value var_tail2 | COMMA IDENT var_tail
-    var_tail2: COMMA IDENT var_tail | empty
-    tail_value: value | LBRACKET list_element RBRACKET
+// List elements
+list_element: literal element_tail
+element_tail: (COMMA list_element | empty)
 
-    // List elements
-    list_element: literal element_tail
-    element_tail: COMMA list_element | empty
+// Index
+index: INT_LIT | IDENT
 
-    // Index
-    index: INT_LIT | IDENT
+// Data types
+data_type: INT | FLT | BLN | CHR | STR
 
-    // Data types
-    data_type: INT | FLT | BLN | CHR | STR
+// Values
+value: type_cast | expression | function_call
 
-    // Values
-    value: type_cast | expression | function_call
+// Type Casting
+type_cast: CONVERT_TO_INT LPAREN typecast_value RPAREN
+         | CONVERT_TO_FLT LPAREN typecast_value RPAREN
+         | CONVERT_TO_BLN LPAREN typecast_value RPAREN
+         | CONVERT_TO_STR LPAREN typecast_value RPAREN
+typecast_value: expression | FUNCTION_NAME LPAREN RPAREN | input_statement
 
-    // Type Casting
-    type_cast: CONVERT_TO_INT LPAREN typecast_value RPAREN
-            | CONVERT_TO_FLT LPAREN typecast_value RPAREN
-            | CONVERT_TO_BLN LPAREN typecast_value RPAREN
-            | CONVERT_TO_STR LPAREN typecast_value RPAREN
-    typecast_value: expression | FUNCTION_NAME LPAREN RPAREN | input_statement
+// Literals
+literal: INT_LIT | FLT_LIT | BLN_LIT | CHR_LIT | STR_LIT
 
-   
+// Expressions
+expression: factor factor_tail
+factor: var_call | literal | TILDE literal | LPAREN expression RPAREN
+factor_tail: (PLUS | MINUS | MULTIPLY | DIVISION | MODULO | EXPONENT | GT | LT | EQ_EQ | GT_EQ | LT_EQ | NOT_EQ | AND | OR) factor factor_tail | empty
 
-    // Expressions
-    expression: factor factor_tail
-    factor: var_call | literal | TILDE literal | LPAREN expression RPAREN
-    factor_tail: (PLUS | MINUS | MULTIPLY | DIVISION | MODULO | EXPONENT | GT | LT | EQ_EQ | GT_EQ | LT_EQ | NOT_EQ | AND | OR) factor factor_tail | empty
+// Variable calls
+var_call: IDENT var_call_tail
+var_call_tail: (LBRACKET index RBRACKET | empty)
 
-    // Variable calls
-    var_call: IDENT var_call_tail
-    var_call_tail: LBRACKET index RBRACKET | empty
+// Function statements
+function_statements: (function_declaration)*
+function_declaration: ret_type FUNCTION_NAME LPAREN parameters RPAREN LBRACE NEWLINE* statements NEWLINE* revive NEWLINE* RBRACE
 
-    // Function statements
-    function_statements: (ret_type FUNCTION_NAME LPAREN parameters RPAREN LBRACE NEWLINE* statements NEWLINE* revive NEWLINE* RBRACE)?
-    ret_type: FUNCTION | function_dtype
-    function_dtype: FUNCTION_INT | FUNCTION_FLT | FUNCTION_CHR | FUNCTION_BLN | FUNCTION_STR 
-                | FUNCTION_LIST_INT | FUNCTION_LIST_FLT | FUNCTION_LIST_CHR | FUNCTION_LIST_STR | FUNCTION_LIST_BLN
-    parameters: (data_type IDENT parameters_tail)?
-    parameters_tail: COMMA data_type IDENT parameters_tail | empty
-    revive: REVIVE value | empty
+ret_type: FUNCTION | function_dtype
+function_dtype: FUNCTION_INT | FUNCTION_FLT | FUNCTION_CHR | FUNCTION_BLN | FUNCTION_STR 
+              | FUNCTION_LIST_INT | FUNCTION_LIST_FLT | FUNCTION_LIST_CHR | FUNCTION_LIST_STR | FUNCTION_LIST_BLN
 
-    // Statements TRY 1
-    # statements: local_dec statements_tail
-    # statements_tail: conditional_statement | switch_statement | loop_statement | function_call | string_operation_statement | output_statement statements_tail2 | empty
-    # statements_tail2: statements
+parameters: (data_type IDENT parameters_tail)?
+parameters_tail: (COMMA data_type IDENT parameters_tail | empty)
 
-    // Statements TRY 2
-    statements: local_dec statements_tail | empty
-    statements_tail: conditional_statement | switch_statement | loop_statement | function_call | string_operation_statement | output_statement | statements
-   
+revive: (REVIVE value | empty)
 
-    // Local declarations
-    local_dec: var_statement 
-   
+// Statements
+statements: (local_dec | conditional_statement | switch_statement | loop_statement | function_call | string_operation_statement | output_statement)*
+local_dec: var_statement
 
-    // Conditional statements
-    conditional_statement: CHECK LPAREN expression RPAREN LBRACE NEWLINE* statements NEWLINE* RBRACE conditional_tail OTHERWISE LBRACE NEWLINE* statements NEWLINE* RBRACE NEWLINE
+// Conditional statements
+conditional_statement: CHECK LPAREN expression RPAREN LBRACE NEWLINE* statements NEWLINE* RBRACE conditional_tail OTHERWISE LBRACE NEWLINE* statements NEWLINE* RBRACE NEWLINE
+conditional_tail: (otherwise_check_tail | empty)
+otherwise_check_tail: OTHERWISE_CHECK LPAREN expression RPAREN LBRACE statements RBRACE conditional_tail
 
-    //conditional_tail: OTHERWISE_CHECK LPAREN expression RPAREN LBRACE statements RBRACE conditional_tail | empty
+// Switch statements
+switch_statement: SWAP LPAREN IDENT RPAREN LBRACE switch_condition OTHERWISE statements RBRACE
+switch_condition: SHIFT value COLON statements switchcond_tail
+switchcond_tail: (switch_condition | empty)
 
-    conditional_tail: otherwise_check_tail | empty
-    otherwise_check_tail: OTHERWISE_CHECK LPAREN expression RPAREN LBRACE statements RBRACE conditional_tail
+// Loop statements
+loop_statement: for_loop | until_loop | repeat_until
+for_loop: FOR LPAREN control_variable SEMICOLON expression SEMICOLON update RPAREN LBRACE statements RBRACE
+until_loop: UNTIL LPAREN expression RPAREN LBRACE statements RBRACE
+repeat_until: REPEAT LBRACE statements RBRACE UNTIL LPAREN expression RPAREN
 
-    // Switch statements
-    switch_statement: SWAP LPAREN IDENT RPAREN LBRACE switch_condition OTHERWISE statements RBRACE
-    switch_condition: SHIFT value COLON statements switchcond_tail
-    switchcond_tail: switch_condition | empty
+control_variable: INT IDENT EQ control_var_tail
+control_var_tail: INT_LIT | var_call
 
-    // Loop statements
-    loop_statement: for_loop | until_loop | repeat_until
+update: var_call update_tail
+update_tail: (postfix | assign_op value)
+postfix: PLUS_PLUS | MINUS_MINUS
 
-    for_loop: FOR LPAREN control_variable SEMICOLON expression SEMICOLON update RPAREN LBRACE statements RBRACE
+// Function call and arguments
+function_call: (FUNCTION_NAME LPAREN arguments RPAREN) | input_statement
+arguments: (arg_value arg_tail)?
+arg_tail: (COMMA arg_value arg_tail | empty)
+arg_value: literal | var_call
 
-    until_loop: UNTIL LPAREN expression RPAREN LBRACE statements RBRACE
+// Output statement
+output_statement: DISPLAY value next_val
+next_val: (COMMA value next_val | empty)
 
-    repeat_until: REPEAT LBRACE statements RBRACE UNTIL LPAREN expression RPAREN
+// Input statement
+input_statement: INPUT LPAREN RPAREN
 
-    control_variable: INT IDENT EQ INT_LIT
+// String operation statements
+string_operation_statement: var_call string_operation_tail
+string_operation_tail: (PLUS string_val stringcon_tail | update_tail)
+stringcon_tail: (PLUS string_val stringcon_tail | empty)
+string_val: var_call | STR_LIT
 
-    //Update
-    update: var_call update_tail
-    update_tail: postfix | assign_op value
-    postfix: PLUS_PLUS | MINUS_MINUS
+// Assignment operators
+assign_op: PLUS_EQ | MINUS_EQ | MUL_EQ | DIV_EQ | MOD_EQ | EQ
 
-    // Function calls
-    function_call: FUNCTION_NAME LPAREN arguments RPAREN
+// Empty rule
+empty:
 
-    // Arguments
-    arguments: (arg_value arg_tail)?
-    arg_tail: COMMA arg_value arg_tail | empty
-    arg_value: literal | var_call
+// Terminal Symbols
 
-    // Output statements
-    output_statement: DISPLAY value next_val
-    next_val: COMMA value next_val | empty
+// Main Keywords
+%declare BIRTH GHOST MAIN_CASPER
 
-    // Input statements
-    input_statement: INPUT LPAREN RPAREN
+// Identifiers
+%declare IDENT
 
-    // String operation statements
-    string_operation_statement: var_call string_operation_tail
-    string_operation_tail: PLUS string_val stringcon_tail | update_tail
-    stringcon_tail: PLUS string_val stringcon_tail | empty
-    string_val: var_call | STR_LIT
+// Literals
+%declare INT_LIT FLT_LIT BLN_LIT CHR_LIT STR_LIT
 
-    // Assignment operators
-    assign_op: PLUS_EQ | MINUS_EQ | MUL_EQ | DIV_EQ | MOD_EQ | EQ
+// Data Types
+%declare INT FLT BLN CHR STR
 
-    // Empty rule
-    empty:
+// Arithmetic Operators
+%declare PLUS MINUS MULTIPLY DIVISION MODULO EXPONENT
 
+// Assignment Operators
+%declare EQ PLUS_EQ MINUS_EQ MUL_EQ DIV_EQ MOD_EQ
 
+// Relational/Comparison Operators
+%declare GT LT EQ_EQ GT_EQ LT_EQ NOT_EQ
 
-    // Terminal Symbols
+// Logical Operators
+%declare AND OR
 
-    // Main Keywords
-    %declare BIRTH GHOST MAIN_CASPER
+// Prefix Operators
+%declare TILDE NOT
 
-    //Identifiers
-    %declare IDENT
+// Postfix Operators
+%declare PLUS_PLUS MINUS_MINUS
 
-    //literals
-    %declare INT_LIT FLT_LIT BLN_LIT CHR_LIT STR_LIT
+// Conditional Keywords
+%declare CHECK OTHERWISE OTHERWISE_CHECK
 
-    // Data Types
-    %declare INT FLT BLN CHR STR
+// Loop Keywords
+%declare SWAP SHIFT FOR UNTIL REPEAT
 
-    // Arithmetic Operators
-    %declare PLUS MINUS MULTIPLY DIVISION MODULO EXPONENT 
+// Function Types
+%declare FUNCTION FUNCTION_INT FUNCTION_FLT FUNCTION_CHR FUNCTION_BLN FUNCTION_STR FUNCTION_LIST_INT FUNCTION_LIST_FLT FUNCTION_LIST_CHR FUNCTION_LIST_STR FUNCTION_LIST_BLN
 
-    // Assignment Operators
-    %declare EQ PLUS_EQ MINUS_EQ MUL_EQ DIV_EQ MOD_EQ
-    
-    // Relational/Comparison Operatos
-    %declare GT LT EQ_EQ GT_EQ LT_EQ NOT_EQ 
-    
-    // Logical Operators
-    %declare AND OR 
+// Function Keywords
+%declare FUNCTION_NAME REVIVE STOP SKIP
 
-    // Prefix Operators
-    %declare TILDE NOT
+// Input - Output
+%declare INPUT DISPLAY
 
-    // Postfix Operators
-    %declare PLUS_PLUS MINUS_MINUS
+// Type Cast
+%declare CONVERT_TO_INT CONVERT_TO_FLT CONVERT_TO_BLN CONVERT_TO_STR
 
-    // Conditional Keywords
-    %declare CHECK OTHERWISE OTHERWISE_CHECK
+// Parentheses
+%declare LPAREN RPAREN LBRACE RBRACE LBRACKET RBRACKET
 
-    // Loop Keywords
-    %declare SWAP SHIFT FOR UNTIL REPEAT    
-    
-    // Function Types
-    %declare FUNCTION FUNCTION_INT FUNCTION_FLT FUNCTION_CHR FUNCTION_BLN FUNCTION_STR FUNCTION_LIST_INT FUNCTION_LIST_FLT FUNCTION_LIST_CHR FUNCTION_LIST_STR FUNCTION_LIST_BLN
-    
-    // Function Keywords
-    %declare FUNCTION_NAME REVIVE STOP SKIP
+// Comments
+%declare COMMENT DOUBLE_LT
 
-    //Input - Output
-    %declare INPUT DISPLAY
-
-    //Type Cast
-    %declare CONVERT_TO_INT CONVERT_TO_FLT CONVERT_TO_BLN CONVERT_TO_STR
-
-    // Parentheses
-    %declare LPAREN RPAREN LBRACE RBRACE LBRACKET RBRACKET  
-
-    // COMMENTS
-    %declare COMMENT DOUBLE_LT
-
-    // Other Keywords
-    %declare COMMA COLON SEMICOLON NEWLINE CARRIAGE_RETURN IN MEASURE 
-
+// Other Keywords
+%declare COMMA COLON SEMICOLON NEWLINE CARRIAGE_RETURN IN MEASURE
 """
 
-
+# --------------------------------------------------------------------
+# Build the parser using the new grammar and custom lexer
+# --------------------------------------------------------------------
 parser = Lark(grammar, parser='lalr', lexer=LarkLexer, start='program')
 
 def parse(code):
     from lark.exceptions import UnexpectedToken
-
     try:
         tree = parser.parse(code)
         return "No Syntax Errors"
     except UnexpectedToken as e:
-        # Convert Lark's token/expected tokens to user-friendly strings
         friendly_unexpected = token_display.get(e.token.type, e.token.type)
         friendly_expected_list = [token_display.get(t, t) for t in e.accepts]
         friendly_expected_str = ", ".join(friendly_expected_list)
-
         error_message = (
             f"Syntax Error at line {e.token.line}, column {e.token.column}:\n"
             f"  Unexpected token '{e.token.value}'\n"
             f"  Expected one of: {friendly_expected_str}"
         )
         return error_message
-
     except Exception as e:
         return f"Unexpected error: {e}"
+
