@@ -300,6 +300,17 @@ class SemanticAnalyzer:
             return None
 
 
+    def get_ret_type_string(self, node):
+
+        if node.value is not None:
+            return node.value
+
+
+        for child in (node.children or []):
+            val = self.get_ret_type_string(child)
+            if val is not None:
+                return val
+        return None
 
     def visit_for_loop(self, node, symtable):
         """
@@ -358,6 +369,12 @@ class SemanticAnalyzer:
     def visit_function_declaration(self, node, symtable):
         """
         node.children = [ret_type, FUNCTION_NAME, parameters, statements, revive]
+        Example child structure for 'function_int @hey()':
+        node.children[0] => ret_type (value=None) -> has child function_dtype (value=None) -> has child FUNCTION_INT (value="function_int")
+        node.children[1] => FUNCTION_NAME (value="@hey")
+        node.children[2] => parameters
+        node.children[3] => statements
+        node.children[4] => revive
         """
         if len(node.children) < 2:
             self.generic_visit(node, symtable)
@@ -365,23 +382,37 @@ class SemanticAnalyzer:
 
         func_name_node = node.children[1]
         func_name = func_name_node.value
+
+        # Check if function is already declared
         if func_name in self.declared_functions:
             self.errors.append(f"Semantic Error: Function '{func_name}' is already declared.")
-        else:
-            ret_type_node = node.children[0]
-            ret_val = ret_type_node.value.value if hasattr(ret_type_node.value, "value") else ret_type_node.value
-            ret_type = ret_val if isinstance(ret_val, str) else str(ret_val)
-            if ret_type.startswith("function_"):
-                ret_type = ret_type[len("function_"):]
-            if ret_type == "function":
-                ret_type = "void"
-            parameters_node = node.children[2]
-            param_types = self.extract_parameters(parameters_node)
-            self.declared_functions[func_name] = (ret_type, param_types)
+            return
 
+        # 1) Extract the raw return type string from the ret_type node
+        ret_type_node = node.children[0]
+        ret_val = self._extract_return_type_string(ret_type_node)  # e.g. "function_int" or "function"
+
+        # 2) Convert "function_int" -> "int", or "function" -> "void"
+        if not ret_val:
+            # If we still have None, treat as "function" or fallback
+            ret_val = "function"
+        if ret_val.startswith("function_"):
+            ret_val = ret_val[len("function_"):]
+        if ret_val == "function":
+            ret_val = "void"
+
+        # 3) Extract parameters
+        parameters_node = node.children[2] if len(node.children) > 2 else None
+        param_types = self.extract_parameters(parameters_node)
+
+        # 4) Record the function signature in 'declared_functions'
+        self.declared_functions[func_name] = (ret_val, param_types)
+
+        # Create a new scope for the function body
         func_scope = SymbolTable(parent=symtable)
-        func_scope.expected_return_type = self.declared_functions[func_name][0]
+        func_scope.expected_return_type = ret_val  # e.g. "int", "flt", "void", etc.
 
+        # If we have parameters, declare them in the function scope
         if parameters_node is not None:
             params_info = self.extract_parameters_info(parameters_node)
             for (param_name, param_type) in params_info:
@@ -389,7 +420,26 @@ class SemanticAnalyzer:
                     func_scope.add(param_name, param_type)
                 except SemanticError as e:
                     self.errors.append(f"Semantic Error in function '{func_name}': {str(e)}")
-            self.generic_visit(node, func_scope)
+
+        # Finally, visit the rest of the function_declaration node (statements, revive, etc.)
+        self.generic_visit(node, func_scope)
+    def _extract_return_type_string(self, node):
+        """
+        Recursively walk 'node' until we find a token node with a non-None value,
+        such as 'function_int' or 'function_bln'.
+        """
+        if node.value:
+            return node.value
+
+        if not hasattr(node, "children") or not node.children:
+            return None
+
+        for child in node.children:
+            ret = self._extract_return_type_string(child)
+            if ret is not None:
+                return ret
+
+        return None
 
     
     def extract_parameters_info(self, node):
