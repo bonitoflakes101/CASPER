@@ -4,6 +4,136 @@ from lark.exceptions import UnexpectedToken
 from Lexer import Lexer  # orig lexer class ni casper
 from Token import TokenType  # orig tokentype class ni casper
 
+token_display = {
+    "EOF": "EOF",
+    "ILLEGAL": "ILLEGAL",
+
+    "IDENT": "identifier",
+    "INT": "int",
+    "INT_LIT": "integer literal",
+    "FLT": "float",
+    "FLT_LIT": "float literal",
+    "BLN": "boolean",
+    "BLN_LIT": "boolean literal",
+    "STR": "string",
+    "STR_LIT": "string literal",
+    "CHR": "char",
+    "CHR_LIT": "char literal",
+
+    "FUNCTION": "function",
+    "FUNCTION_INT": "function_int",
+    "FUNCTION_STR": "function_str",
+    "FUNCTION_BLN": "function_bln",
+    "FUNCTION_FLT": "function_flt",
+    "FUNCTION_CHR": "function_chr",
+    "FUNCTION_LIST_INT": "function_list_int",
+    "FUNCTION_LIST_STR": "function_list_str",
+    "FUNCTION_LIST_BLN": "function_list_bln",
+    "FUNCTION_LIST_FLT": "function_list_flt",
+    "FUNCTION_LIST_CHR": "function_list_chr",
+    "FUNCTION_LIST_INT2D": "function_list_int2D",
+    "FUNCTION_LIST_STR2D": "function_list_str2D",
+    "FUNCTION_LIST_BLN2D": "function_list_bln2D",
+    "FUNCTION_LIST_FLT2D": "function_list_flt2D",
+    "FUNCTION_LIST_CHR2D": "function_list_chr2D",
+
+    "CONVERT_TO_INT": "to_int",
+    "CONVERT_TO_STR": "to_str",
+    "CONVERT_TO_BLN": "to_bln",
+    "CONVERT_TO_FLT": "to_flt",
+
+    "LIST_INT": "list_int",
+    "LIST_STR": "list_str",
+    "LIST_BLN": "list_bln",
+    "LIST_FLT": "list_flt",
+    "LIST_CHR": "list_chr",
+    "LIST_INT2D": "list_int2D",
+    "LIST_STR2D": "list_str2D",
+    "LIST_BLN2D": "list_bln2D",
+    "LIST_FLT2D": "list_flt2D",
+    "LIST_CHR2D": "list_chr2D",
+
+    "FUNCTION_NAME": "function_name",
+    "MAIN_CASPER": "main_casper",
+
+    # Arithmetic
+    "PLUS": "+",
+    "MINUS": "-",
+    "MULTIPLY": "*",
+    "EXPONENT": "**",
+    "MODULO": "%",
+    "DIVISION": "/",
+    "DOUBLE_SLASH": "//",
+    "POW": "^",
+
+    # Prefix
+    "TILDE": "~",
+    "NOT": "!",
+
+    # Postfix
+    "PLUS_PLUS": "++",
+    "MINUS_MINUS": "--",
+
+    # Assignment
+    "EQ": "=",
+    "PLUS_EQ": "+=",
+    "MINUS_EQ": "-=",
+    "MUL_EQ": "*=",
+    "DIV_EQ": "/=",
+    "MOD_EQ": "%=",
+
+    # Comparison
+    "EQ_EQ": "==",
+    "NOT_EQ": "!=",
+    "LT": "<",
+    "GT": ">",
+    "LT_EQ": "<=",
+    "GT_EQ": ">=",
+
+    # Logical
+    "AND": "&&",
+    "OR": "||",
+
+    # Comments
+    "COMMENT": "comment",
+    "DOUBLE_LT": "<<",
+
+    "COMMA": ",",
+
+    # Keywords
+    "BIRTH": "birth",
+    "GHOST": "ghost",
+    "INPUT": "input",
+    "DISPLAY": "display",
+    "CHECK": "check",
+    "OTHERWISE": "otherwise",
+    "OTHERWISE_CHECK": "otherwise_check",
+    "FOR": "for",
+    "REPEAT": "repeat",
+    "UNTIL": "until",
+    "STOP": "stop",
+    "SKIP": "skip",
+    "SWAP": "swap",
+    "SHIFT": "shift",
+    "REVIVE": "revive",
+    "DAY": "Day",
+    "NIGHT": "Night",
+    "MEASURE": "measure",
+    "IN": "in",
+    "CARRIAGE_RETURN": "NEWLINE",
+    "NEWLINE": "NEWLINE",
+    "SEMICOLON": ";",
+    "COLON": ":",
+
+    "TYPE": "type",
+    "LPAREN": "(",
+    "RPAREN": ")",
+    "LBRACE": "{",
+    "RBRACE": "}",
+    "LBRACKET": "[",
+    "RBRACKET": "]",
+}
+
 # Custom lexer class for lark
 class LarkLexer(LarkLexerBase):
     def __init__(self, lexer_conf):
@@ -89,7 +219,7 @@ grammar = """
     var_call_tail: LBRACKET index RBRACKET | empty
 
     // Function statements
-    function_statements: (ret_type FUNCTION_NAME LPAREN parameters RPAREN LBRACE statements revive RBRACE)?
+    function_statements: (ret_type FUNCTION_NAME LPAREN parameters RPAREN LBRACE NEWLINE* statements NEWLINE* revive NEWLINE* RBRACE)?
     ret_type: FUNCTION | function_dtype
     function_dtype: FUNCTION_INT | FUNCTION_FLT | FUNCTION_CHR | FUNCTION_BLN | FUNCTION_STR 
                 | FUNCTION_LIST_INT | FUNCTION_LIST_FLT | FUNCTION_LIST_CHR | FUNCTION_LIST_STR | FUNCTION_LIST_BLN
@@ -234,18 +364,23 @@ grammar = """
 parser = Lark(grammar, parser='lalr', lexer=LarkLexer, start='program')
 
 def parse(code):
+    from lark.exceptions import UnexpectedToken
+
     try:
         tree = parser.parse(code)
-        # return {"status": "success", "tree": str(tree)}
         return "No Syntax Errors"
     except UnexpectedToken as e:
-        unexpected = e.token
-        expected = e.accepts
-        error_msg = (
-            f"Syntax error at line {unexpected.line}, column {unexpected.column}\n"
-            f"Unexpected token '{unexpected.value}'\n"
-            f"Expected: {', '.join(sorted(expected))}"
+        # Convert Lark's token/expected tokens to user-friendly strings
+        friendly_unexpected = token_display.get(e.token.type, e.token.type)
+        friendly_expected_list = [token_display.get(t, t) for t in e.accepts]
+        friendly_expected_str = ", ".join(friendly_expected_list)
+
+        error_message = (
+            f"Syntax Error at line {e.token.line}, column {e.token.column}:\n"
+            f"  Unexpected token '{e.token.value}'\n"
+            f"  Expected one of: {friendly_expected_str}"
         )
-        return error_msg
+        return error_message
+
     except Exception as e:
         return f"Unexpected error: {e}"
