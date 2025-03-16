@@ -46,10 +46,10 @@ class Delimiters:
     DEL14 = SPACE | ALPHA
     DEL15 = SPACE | NEWLINE | ALPHANUM | {'[', ']', '"', '$'} # L bracket
     DEL16 = SPACE | NEWLINE | {'[', ']', '$', '@', ',', '='} 
-    DEL17 = SPACE | NEWLINE | NULL | OPERATORS |{',', ')', ']'} # R bracket
+    DEL17 = SPACE | NEWLINE | NULL | OPERATORS |{',', ')', ']','.'} # R bracket
     DEL18 = {'('}
     DEL19 = {'['}
-    identifier_del = OPERATORS | SPACE | NEWLINE | CARRIAGE_RETURN | NULL | {'<', '-', '+', '*', '/', '%', '=', '<', '>', '!', '(', ')', '[', ']', ',' , '{', '}','&','|',';'} 
+    identifier_del = OPERATORS | SPACE | NEWLINE | CARRIAGE_RETURN | NULL | {'<', '-', '+', '*', '/', '%', '=', '<', '>', '!', '(', ')', '[', ']', ',' , '{', '}','&','|',';', '.'} 
    
 
 
