@@ -173,17 +173,27 @@ class SemanticAnalyzer:
 
     def check_global_assignment(self, assigned_node, symtable, declared_type, var_name):
         """
-        assigned_node: the AST node that represents the right-hand side of the assignment
+        assigned_node: the AST node for the right-hand side
         declared_type: e.g. "int"
         var_name: e.g. "$hello"
         """
-        # 1) Get the type of the expression on the RHS
+
         rhs_type = self.get_expression_type(assigned_node, symtable)
-        # 2) Compare
-        if rhs_type and declared_type and rhs_type != declared_type:
+
+        if declared_type == "bln" and rhs_type in ("int", "flt"):
+            # int/float -> bln
+            pass
+        elif declared_type == "int" and rhs_type in ("bln", "flt"):
+            # bln/float -> int
+            pass
+        elif declared_type == "flt" and rhs_type in ("bln", "int"):
+            # bln/int -> float
+            pass
+        elif rhs_type != declared_type:
             self.errors.append(
                 f"Type Error: Cannot assign '{rhs_type}' to variable '{var_name}' of type '{declared_type}'."
             )
+
 
     def _process_global_statement_tail(self, node, symtable, declared_type, var_name):
         # same logic you already have
@@ -205,12 +215,24 @@ class SemanticAnalyzer:
             for child in var_tail_node.children:
                 if child and getattr(child, "type", None) == "value":
                     rhs_type = self.get_expression_type(child, symtable)
-                    if rhs_type and declared_type and rhs_type != declared_type:
+
+
+                    if declared_type == "bln" and rhs_type in ("int", "flt"):
+                        # int/float -> bln
+                        pass
+                    elif declared_type == "int" and rhs_type in ("bln", "flt"):
+                        # bln/float -> int
+                        pass
+                    elif declared_type == "flt" and rhs_type in ("bln", "int"):
+                        # bln/int -> float
+                        pass
+                    elif rhs_type != declared_type:
                         self.errors.append(
                             f"Type Error: Cannot assign '{rhs_type}' to variable '{var_name}' of type '{declared_type}'."
                         )
                 else:
                     self.visit(child, symtable)
+
 
     def get_expression_type(self, node, symtable):
         if node is None:
