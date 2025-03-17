@@ -261,23 +261,28 @@ class SemanticAnalyzer:
                 if len(node.children) > 1 and node.children[1]:
                     tail = node.children[1]
                     if tail.children and len(tail.children) >= 2:
-                        operator = tail.children[0] 
+                        operator = tail.children[0]
                         op_val = operator if isinstance(operator, str) else operator.value
                         right_type = self.get_expression_type(tail.children[1], symtable)
-                
-                        if op_val == "+" and (left_type == "chr" or right_type == "chr"):
-                            self.errors.append("Type Error: Cannot add characters.")
-                            return None
+                        
+               
+                        if "str" in (left_type, right_type):
+                        
+                            if left_type == "str" and right_type == "str" and op_val == "+":
+                                return "str"
+                            else:
+                                self.errors.append(f"Type Error: Mixing string values with non-string values is not allowed unless type-casted.")
+                                return None
+                        
                         if left_type is None or right_type is None:
                             return None
-                
+                        
                         if left_type == right_type:
                             common_type = left_type
                         else:
                             common_type = self.combine_numeric_types(left_type, right_type)
                         return common_type
                 return left_type
-
 
             elif node.type == "factor":
                 if node.children:
