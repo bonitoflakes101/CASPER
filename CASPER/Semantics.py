@@ -233,7 +233,19 @@ class SemanticAnalyzer:
                 else:
                     self.visit(child, symtable)
 
-
+    def combine_numeric_types(self, left_type, right_type):
+        # Do not allow arithmetic with characters.
+        if left_type == "chr" or right_type == "chr":
+            self.errors.append("Type Error: Cannot perform arithmetic on characters.")
+            return None
+        # If either type is float or boolean, result is float.
+        if left_type in ("flt", "bln") or right_type in ("flt", "bln"):
+            return "flt"
+        # If both are int, result is int.
+        if left_type == "int" and right_type == "int":
+            return "int"
+        return None
+    
     def get_expression_type(self, node, symtable):
         if node is None:
             return None
@@ -252,15 +264,18 @@ class SemanticAnalyzer:
                         operator = tail.children[0] 
                         op_val = operator if isinstance(operator, str) else operator.value
                         right_type = self.get_expression_type(tail.children[1], symtable)
+                
                         if op_val == "+" and (left_type == "chr" or right_type == "chr"):
                             self.errors.append("Type Error: Cannot add characters.")
                             return None
                         if left_type is None or right_type is None:
                             return None
+                
                         if left_type == right_type:
-                            return left_type
+                            common_type = left_type
                         else:
-                            return None
+                            common_type = self.combine_numeric_types(left_type, right_type)
+                        return common_type
                 return left_type
 
 
