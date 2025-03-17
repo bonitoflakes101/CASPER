@@ -182,7 +182,7 @@ class SemanticAnalyzer:
 
         if declared_type == "bln" and rhs_type in ("int", "flt"):
             # int/float -> bln
-            pass
+            pass    
         elif declared_type == "int" and rhs_type in ("bln", "flt"):
             # bln/float -> int
             pass
@@ -249,7 +249,12 @@ class SemanticAnalyzer:
                 if len(node.children) > 1 and node.children[1]:
                     tail = node.children[1]
                     if tail.children and len(tail.children) >= 2:
+                        operator = tail.children[0] 
+                        op_val = operator if isinstance(operator, str) else operator.value
                         right_type = self.get_expression_type(tail.children[1], symtable)
+                        if op_val == "+" and (left_type == "chr" or right_type == "chr"):
+                            self.errors.append("Type Error: Cannot add characters.")
+                            return None
                         if left_type is None or right_type is None:
                             return None
                         if left_type == right_type:
@@ -257,6 +262,8 @@ class SemanticAnalyzer:
                         else:
                             return None
                 return left_type
+
+
             elif node.type == "factor":
                 if node.children:
                     return self.get_expression_type(node.children[0], symtable)
