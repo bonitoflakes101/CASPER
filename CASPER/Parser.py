@@ -381,20 +381,23 @@ def p_literal2(p):
 # -----------------------------------------------------------------------------
 def p_function_statements(p):
     """
-    function_statements : ret_type FUNCTION_NAME LPAREN parameters RPAREN LBRACE statements revive RBRACE function_statements_tail  
+    function_statements : ret_type FUNCTION_NAME LPAREN parameters RPAREN LBRACE maybe_newline statements maybe_newline revive unli_newline RBRACE function_statements_tail  
                         | empty                                                          
     """
     if len(p) == 2:
         p[0] = []
     else:
-        func_decl = ASTNode("function_declaration", children=[
-            p[1],
-            ASTNode("FUNCTION_NAME", value=p[2]),
-            p[4],
-            p[7],
-            p[8]
-        ])
-        p[0] = [func_decl] + p[10]
+        func_decl = ASTNode(
+            "function_declaration",
+            children=[
+                p[1],  # ret_type
+                ASTNode("FUNCTION_NAME", value=p[2]),
+                p[4],  # parameters
+                p[8],  # statements
+                p[10], # revive
+            ]
+        )
+        p[0] = [func_decl] + p[13]
 
 
 # -----------------------------------------------------------------------------
@@ -485,7 +488,7 @@ def p_parameters_tail(p):
 # -----------------------------------------------------------------------------
 def p_revive(p):
     """
-    revive : REVIVE value  
+    revive : REVIVE revive_value  
            | empty        
     """
     if len(p) == 2:
@@ -493,6 +496,18 @@ def p_revive(p):
     else:
         p[0] = ASTNode("revive_statement", children=[p[2]])
 
+def p_revive_value(p):
+    """revive_value : revive_type_cast
+             | expression
+             | function_call"""
+    p[0] = ASTNode("revive_value", [p[1]])
+
+def p_revive_type_cast(p):
+    """revive_type_cast : CONVERT_TO_INT LPAREN typecast_value RPAREN
+                 | CONVERT_TO_FLT LPAREN typecast_value RPAREN
+                 | CONVERT_TO_BLN LPAREN typecast_value RPAREN
+                 | CONVERT_TO_STR LPAREN typecast_value RPAREN"""
+    p[0] = ASTNode("revive_type_cast", [p[3]], p[1])
 # -----------------------------------------------------------------------------
 # (77) <statements> → <local_dec> <statements_tail>
 # -----------------------------------------------------------------------------
@@ -631,11 +646,23 @@ def p_local_dec_tail2(p):
 # -----------------------------------------------------------------------------
 def p_local_value(p):
     """
-    local_value : value      
+    local_value : local_value_value      
                 | list_value  
     """
     p[0] = p[1]
 
+def p_local_value_value(p):
+    """local_value_value  : local_type_cast
+             | expression
+             | function_call"""
+    p[0] = ASTNode("local_value_value", [p[1]])
+
+def p_local_type_cast(p):
+    """local_type_cast : CONVERT_TO_INT LPAREN typecast_value RPAREN
+                 | CONVERT_TO_FLT LPAREN typecast_value RPAREN
+                 | CONVERT_TO_BLN LPAREN typecast_value RPAREN
+                 | CONVERT_TO_STR LPAREN typecast_value RPAREN"""
+    p[0] = ASTNode("local_type_cast", [p[3]], p[1])
 # -----------------------------------------------------------------------------
 # (96) <conditional_statement> → check(<expression>){<statements>} <conditional_tail> otherwise {<statements>}
 # -----------------------------------------------------------------------------
@@ -678,11 +705,22 @@ def p_switch_statement(p):
 # -----------------------------------------------------------------------------
 def p_switch_condition(p):
     """
-    switch_condition : SHIFT value COLON statements switchcond_tail  
+    switch_condition : SHIFT switch_value COLON statements switchcond_tail  
     """
     p[0] = ASTNode("switch_condition", children=[p[2], p[4], p[5]])
 
+def p_switch_value(p):
+    """switch_value  : switch_type_cast
+             | expression
+             | function_call"""
+    p[0] = ASTNode("switch_value", [p[1]])
 
+def p_switch_type_cast(p):
+    """switch_type_cast : CONVERT_TO_INT LPAREN typecast_value RPAREN
+                 | CONVERT_TO_FLT LPAREN typecast_value RPAREN
+                 | CONVERT_TO_BLN LPAREN typecast_value RPAREN
+                 | CONVERT_TO_STR LPAREN typecast_value RPAREN"""
+    p[0] = ASTNode("local_type_cast", [p[3]], p[1])
 # -----------------------------------------------------------------------------
 # (101) <switchcond_tail> → <switch_condition>
 # (102) <switchcond_tail> → null
@@ -716,9 +754,9 @@ def p_loop_statement(p):
 # -----------------------------------------------------------------------------
 def p_for_loop(p):
     """
-    for_loop : FOR LPAREN control_variable SEMICOLON expression SEMICOLON update RPAREN LBRACE statements RBRACE 
+    for_loop : FOR LPAREN control_variable SEMICOLON expression SEMICOLON update RPAREN LBRACE unli_newline statements unli_newline RBRACE 
     """
-    p[0] = ASTNode("for_loop", children=[p[3], p[5], p[7], p[10]])
+    p[0] = ASTNode("for_loop", children=[p[3], p[5], p[7], p[11]])
 
 # -----------------------------------------------------------------------------
 # (107) <until_loop> → until ( <expression> ) { <statements> }
