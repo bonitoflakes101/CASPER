@@ -61,6 +61,7 @@ def p_unli_newline(p):
     # No AST node is strictly necessary for an optional newline.
     pass
 
+
 def p_main_function(p):
     """main_function : MAIN_CASPER LPAREN RPAREN maybe_newline LBRACE maybe_newline statements maybe_newline RBRACE"""
     p[0] = ASTNode("main_function", [p[7]], p[1])
@@ -102,8 +103,11 @@ def p_global_statement(p):
     """
         global_statement : var_statement global_statement_tail
     """
-    p[0] = ASTNode("global_statement", [p[1], p[2]])
-
+    tail_node = ASTNode("global_statement_tail", children=p[2]) if p[2] else None
+    children = p[1].children.copy()
+    if tail_node is not None:
+        children.append(tail_node)
+    p[0] = ASTNode("global_statement", children=children)
 
 # =============================================================================
 # (6) <var_statement> → <data_type> IDENTIFIER <list_dec>
@@ -162,17 +166,13 @@ def p_global_statement_tail(p):
                           | EQ global_value global_statement_tail2 
     """
     if len(p) == 2:
-        # empty
         p[0] = []
     elif p[1] == ',':
-        # COMMA IDENT global_statement_tail
-        # store in an AST
-        p[0] = [("IDENT", p[2])] + p[3]
+        node = ASTNode("global_statement_tail_item", children=[ASTNode("IDENT", value=p[2])])
+        p[0] = [node] + p[3]
     else:
-        # '=' global_value global_statement_tail2
-        # store in an AST
-        p[0] = [("=", p[2])] + p[3]
-
+        node = ASTNode("global_statement_tail_item", children=[ASTNode("assign_op", value="="), p[2]])
+        p[0] = [node] + p[3]
 
 # =============================================================================
 # (14) <global_statement_tail2> → , IDENTIFIER <global_statement_tail>
@@ -186,7 +186,8 @@ def p_global_statement_tail2(p):
     if len(p) == 2:
         p[0] = []
     else:
-        p[0] = [("IDENT", p[2])] + p[3]
+        node = ASTNode("global_statement_tail_item", children=[ASTNode("IDENT", value=p[2])])
+        p[0] = [node] + p[3]
 
 
 # =============================================================================
@@ -334,8 +335,7 @@ def p_factor_tail(p):
                 | OR factor factor_tail
                 | empty
     """
-    if p[1] is None:
-        # empty
+    if len(p) == 2:
         p[0] = None
     else:
         p[0] = ASTNode("factor_tail_binop", [p[1], p[2], p[3]])
@@ -386,13 +386,17 @@ def p_function_statements(p):
                         | empty                                                          
     """
     if len(p) == 2:
-        # empty => null
         p[0] = []
     else:
-        # ret_type FUNCTION_NAME ( parameters ) { statements revive } function_statements_tail
-        func_decl = ("function_declaration", p[1], p[2], p[4], p[7], p[8])
-        # p[10] is function_statements_tail
+        func_decl = ASTNode("function_declaration", children=[
+            p[1],
+            ASTNode("FUNCTION_NAME", value=p[2]),
+            p[4],
+            p[7],
+            p[8]
+        ])
         p[0] = [func_decl] + p[10]
+
 
 # -----------------------------------------------------------------------------
 # (57) <function_statements_tail> → <function_statements>
@@ -459,11 +463,9 @@ def p_parameters(p):
                | empty                            
     """
     if len(p) == 2:
-        # empty
         p[0] = []
     else:
-        # data_type IDENT parameters_tail
-        p[0] = [("param_decl", p[1], p[2])] + p[3]
+        p[0] = [ASTNode("param_decl", children=[p[1], ASTNode("IDENT", value=p[2])])] + p[3]
 
 # -----------------------------------------------------------------------------
 # (73) <parameters_tail> → , <data_type> IDENTIFIER <parameters_tail>
@@ -475,12 +477,9 @@ def p_parameters_tail(p):
                     | empty                                 
     """
     if len(p) == 2:
-        # empty
         p[0] = []
     else:
-        # COMMA data_type IDENT parameters_tail
-        p[0] = [("param_decl", p[2], p[3])] + p[4]
-
+        p[0] = [ASTNode("param_decl", children=[p[2], ASTNode("IDENT", value=p[3])])] + (p[4] if p[4] is not None else [])
 # -----------------------------------------------------------------------------
 # (75) <revive> → revive <value>
 # (76) <revive> → null
@@ -491,11 +490,9 @@ def p_revive(p):
            | empty        
     """
     if len(p) == 2:
-        # empty => null
         p[0] = None
     else:
-        # 'revive' <value>
-        p[0] = ("revive_statement", p[2])
+        p[0] = ASTNode("revive_statement", children=[p[2]])
 
 # -----------------------------------------------------------------------------
 # (77) <statements> → <local_dec> <statements_tail>
@@ -504,7 +501,7 @@ def p_statements(p):
     """
     statements : local_dec statements_tail  
     """
-    p[0] = ("statements", p[1], p[2])
+    p[0] = ASTNode("statements", children=[p[1], p[2]])
 
 # -----------------------------------------------------------------------------
 # (78) <statements_tail> → <statements_list>
@@ -548,7 +545,7 @@ def p_statements_list2(p):
     """
     statements_list2 : statements 
     """
-    p[0] = p[1] if p[1] else []
+    p[0] = [p[1]] if p[1] is not None else []
 
 # -----------------------------------------------------------------------------
 # (87) <local_dec> → <var_statement> <local_dec_tail>
@@ -578,14 +575,11 @@ def p_local_dec_tail(p):
                    | EQ local_value local_dec_tail2  
     """
     if len(p) == 2:
-        # empty => null
         p[0] = []
     elif p[1] == ',':
-        # COMMA IDENT local_dec_tail
-        p[0] = [("local_var_more", p[2])] + p[3]
+        p[0] = [ASTNode("local_var_more", children=[ASTNode("IDENT", value=p[2])])] + p[3]
     else:
-        # '=' local_value local_dec_tail2
-        p[0] = [("local_var_assign", p[2])] + p[3]
+        p[0] = [ASTNode("local_var_assign", children=[p[2]])] + p[3]
 
 # -----------------------------------------------------------------------------
 # (92) <local_dec_tail2> → , IDENTIFIER <local_dec_tail>
@@ -599,8 +593,8 @@ def p_local_dec_tail2(p):
     if len(p) == 2:
         p[0] = []
     else:
-        # COMMA IDENT local_dec_tail
-        p[0] = [("local_var_more", p[2])] + p[3]
+        p[0] = [ASTNode("local_var_more", children=[ASTNode("IDENT", value=p[2])])] + p[3]
+
 
 # -----------------------------------------------------------------------------
 # (94) <local_value> → <value>
@@ -620,7 +614,8 @@ def p_conditional_statement(p):
     """
     conditional_statement : CHECK LPAREN expression RPAREN LBRACE statements RBRACE conditional_tail OTHERWISE LBRACE statements RBRACE  
     """
-    p[0] = ("conditional_statement", p[3], p[6], p[8], p[11])
+    p[0] = ASTNode("conditional_statement", children=[p[3], p[6], p[8], p[11]])
+
 
 # -----------------------------------------------------------------------------
 # (97) <conditional_tail> → otherwise_check(<expression>){<statements>} <conditional_tail>
@@ -632,10 +627,9 @@ def p_conditional_tail(p):
                      | empty                                            
     """
     if len(p) == 2:
-        # empty => null
         p[0] = []
     else:
-        p[0] = [("otherwise_check", p[3], p[6])] + p[8]
+        p[0] = [ASTNode("otherwise_check", children=[p[3], p[6]])] + p[8]
 
 # -----------------------------------------------------------------------------
 # (99) <switch_statement> → swap(IDENTIFIER){<switch_condition> otherwise <statements>}
@@ -644,7 +638,11 @@ def p_switch_statement(p):
     """
     switch_statement : SWAP LPAREN IDENT RPAREN LBRACE switch_condition OTHERWISE LBRACE statements RBRACE RBRACE 
     """
-    p[0] = ("switch_statement", p[3], p[6], p[9])
+    p[0] = ASTNode("switch_statement", children=[
+        ASTNode("IDENT", value=p[3]),
+        p[6],
+        p[9]
+    ])
 
 # -----------------------------------------------------------------------------
 # (100) <switch_condition> → shift <value> : <statements> <switchcond_tail>
@@ -653,7 +651,8 @@ def p_switch_condition(p):
     """
     switch_condition : SHIFT value COLON statements switchcond_tail  
     """
-    p[0] = ("switch_condition", p[2], p[4], p[5])
+    p[0] = ASTNode("switch_condition", children=[p[2], p[4], p[5]])
+
 
 # -----------------------------------------------------------------------------
 # (101) <switchcond_tail> → <switch_condition>
@@ -664,10 +663,11 @@ def p_switchcond_tail(p):
     switchcond_tail : switch_condition  
                     | empty          
     """
-    if p[1] is None:
-        p[0] = []
-    else:
-        p[0] = [p[1]]
+    if len(p) == 2:
+        if p[1] is None:
+            p[0] = []
+        else:
+            p[0] = [p[1]]
 
 # -----------------------------------------------------------------------------
 # (103) <loop_statement> → <for_loop>
@@ -689,7 +689,7 @@ def p_for_loop(p):
     """
     for_loop : FOR LPAREN control_variable SEMICOLON expression SEMICOLON update RPAREN LBRACE statements RBRACE 
     """
-    p[0] = ("for_loop", p[3], p[5], p[7], p[10])
+    p[0] = ASTNode("for_loop", children=[p[3], p[5], p[7], p[10]])
 
 # -----------------------------------------------------------------------------
 # (107) <until_loop> → until ( <expression> ) { <statements> }
@@ -698,7 +698,7 @@ def p_until_loop(p):
     """
     until_loop : UNTIL LPAREN expression RPAREN LBRACE statements RBRACE  
     """
-    p[0] = ("until_loop", p[3], p[6])
+    p[0] = ASTNode("until_loop", children=[p[3], p[6]])
 
 # -----------------------------------------------------------------------------
 # (108) <repeat_until> → repeat { <statements> } until(<expression>)
@@ -707,7 +707,7 @@ def p_repeat_until(p):
     """
     repeat_until : REPEAT LBRACE statements RBRACE UNTIL LPAREN expression RPAREN 
     """
-    p[0] = ("repeat_until", p[3], p[7])
+    p[0] = ASTNode("repeat_until", children=[p[3], p[7]])
 
 # -----------------------------------------------------------------------------
 # (109) <control_variable> → int IDENTIFIER = <control_var_tail>
@@ -716,7 +716,8 @@ def p_control_variable(p):
     """
     control_variable : INT IDENT EQ control_var_tail
     """
-    p[0] = ("control_variable", p[2], p[4])
+    p[0] = ASTNode("control_variable", children=[ASTNode("IDENT", value=p[2]), p[4]])
+
 
 # -----------------------------------------------------------------------------
 # (110) <control_var_tail> → int_literal
@@ -736,7 +737,7 @@ def p_update(p):
     """
     update : var_call update_tail  
     """
-    p[0] = ("update", p[1], p[2])
+    p[0] = ASTNode("update", children=[p[1], p[2]])
 
 # -----------------------------------------------------------------------------
 # (113) <update_tail> → <postfix_op>
@@ -748,9 +749,9 @@ def p_update_tail(p):
                 | compound_op value   
     """
     if len(p) == 2:
-        p[0] = ("update_tail_postfix", p[1])
+        p[0] = ASTNode("update_tail_postfix", value=p[1])
     else:
-        p[0] = ("update_tail_compound", p[1], p[2])
+        p[0] = ASTNode("update_tail_compound", children=[p[1], p[2]])
 
 # -----------------------------------------------------------------------------
 # (115) <postfix_op> → ++
@@ -773,7 +774,7 @@ def p_function_call(p):
                   | input_statement                      
     """
     if len(p) == 5:
-        p[0] = ("function_call", p[1], p[3])
+        p[0] = ASTNode("function_call", children=[ASTNode("FUNCTION_NAME", value=p[1]), p[3]])
     else:
         p[0] = p[1]
 
@@ -823,7 +824,7 @@ def p_output_statement(p):
     """
     output_statement : DISPLAY value next_val   
     """
-    p[0] = ("output_statement", p[2], p[3])
+    p[0] = ASTNode("output_statement", children=[p[2], p[3]])
 
 # -----------------------------------------------------------------------------
 # (126) <next_val> → , <value> <next_val>
@@ -846,7 +847,8 @@ def p_assignment_statement(p):
     """
     assignment_statement : IDENT assign_tail  
     """
-    p[0] = ("assignment_statement", p[1], p[2])
+    p[0] = ASTNode("assignment_statement", children=[ASTNode("IDENT", value=p[1]), p[2]])
+
 
 # -----------------------------------------------------------------------------
 # (129) <assign_tail> → .splice(<start>, <deleteCount>, <splice_items>)
@@ -860,14 +862,12 @@ def p_assign_tail(p):
                 | assign_op value                                                     
     """
     if len(p) == 10:
-        # .splice( <start>, <deleteCount>, <splice_items> )
-        p[0] = ("assign_tail_splice", p[4], p[6], p[8])
+        p[0] = ASTNode("assign_tail_splice", children=[p[4], p[6], p[8]])
     elif len(p) == 6:
-        # .push( <list_element> )
-        p[0] = ("assign_tail_push", p[4])
+        p[0] = ASTNode("assign_tail_push", children=[p[4]])
     else:
-        # assign_op value
-        p[0] = ("assign_tail_op", p[1], p[2])
+        p[0] = ASTNode("assign_tail_op", children=[p[1], p[2]])
+
 
 # -----------------------------------------------------------------------------
 # (132) <assign_op> → <compound_op>
@@ -941,7 +941,8 @@ def p_var_call(p):
     """
     var_call : IDENT list_index  
     """
-    p[0] = ("var_call", p[1], p[2])
+    p[0] = ASTNode("var_call", children=[ASTNode("IDENT", value=p[1]), p[2]])
+
 
 # -----------------------------------------------------------------------------
 # (145) <list_index> → [<index>]<list_index2>
@@ -1019,7 +1020,8 @@ def p_type_cast(p):
               | CONVERT_TO_BLN LPAREN typecast_value RPAREN  
               | CONVERT_TO_STR LPAREN typecast_value RPAREN 
     """
-    p[0] = ("type_cast", p[1], p[3])
+    p[0] = ASTNode("type_cast", children=[ASTNode("conversion", value=p[1]), p[3]])
+
 
 # -----------------------------------------------------------------------------
 # (160) <typecast_value> → <expression>
@@ -1035,9 +1037,7 @@ def p_typecast_value(p):
     if len(p) == 2:
         p[0] = p[1]
     else:
-        # FUNCTION_NAME ( )
-        p[0] = ("typecast_funcname", p[1])
-
+        p[0] = ASTNode("typecast_funcname", value=p[1])
 # -----------------------------------------------------------------------------
 # (163) <input_statement> → input()
 # -----------------------------------------------------------------------------
@@ -1045,12 +1045,11 @@ def p_input_statement(p):
     """
     input_statement : INPUT LPAREN RPAREN  
     """
-    p[0] = ("input_statement", p[1])
+    p[0] = ASTNode("input_statement", value=p[1])
 
 def p_empty(p):
     """empty :"""
     p[0] = None
-
 
 
 def p_error(p):
