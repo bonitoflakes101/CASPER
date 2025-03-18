@@ -783,6 +783,13 @@ class Lexer:
                 else:
                     valid_delims = KEYWORD_DELIMITERS.get(TokenType.COLON.name, set())
                     return self.__return_illegal_token(":", valid_delims=valid_delims)
+            case '.':
+             
+                if self.__is_valid_delimiter(TokenType.DOT):
+                    return self.__consume_single_char_token(TokenType.DOT)
+                else:
+                    valid_delims = KEYWORD_DELIMITERS.get(TokenType.DOT.name, set())
+                    return self.__return_illegal_token(".", valid_delims=valid_delims)
             case _:
                 return self.__return_illegal_token()
 

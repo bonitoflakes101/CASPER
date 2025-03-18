@@ -133,7 +133,7 @@ class TokenType(Enum):
     NEWLINE = "NEWLINE"
     SEMICOLON = ";"
     COLON = ":"
-
+    DOT = "DOT" 
 
     # Typing
     TYPE = "TYPE"
@@ -249,6 +249,7 @@ KEYWORDS: dict[str, TokenType] = {
 
     "push": TokenType.PUSH,
     "splice": TokenType.SPLICE,
+     "DOT": TokenType.DOT
     }
 
 
