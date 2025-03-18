@@ -11,7 +11,6 @@ class SymbolTable:
     def __init__(self, parent=None):
         self.symbols = {}
         self.parent = parent
-
         self.expected_return_type = None
 
     def add(self, name, var_type):
@@ -29,19 +28,15 @@ class SymbolTable:
 
 class SemanticAnalyzer:
     def __init__(self):
-        # Store global vars in a SymbolTable
         self.global_symbols = SymbolTable()
         self.errors = []
         self.reported_undeclared_vars = set()
-
-        # Track function declarations to disallow duplicates/overloading
-        self.declared_functions = {}
+        self.declared_functions = {}  # maps function name -> (return_type, [parameter_types])
 
     def analyze(self, ast):
         print("=== DEBUG: AST Structure ===")
         debug_print_ast(ast)
         print("=== END DEBUG ===\n")
-
         self.visit(ast, self.global_symbols)
 
         # Example debug note for 'str $num = 3' usage
@@ -52,34 +47,25 @@ class SemanticAnalyzer:
             self.errors.append(
                 "Check your var_tail logic or expand get_expression_type if you still expect an error."
             )
-
         return self.errors
 
     def visit(self, node, symtable):
         if node is None:
             return
-
-        # If node is a list, recurse on each item.
         if isinstance(node, list):
             for item in node:
                 self.visit(item, symtable)
             return
-
         if isinstance(node, tuple):
             for subnode in node:
                 if isinstance(subnode, (ASTNode, list, tuple)):
                     self.visit(subnode, symtable)
             return
-
-        # If node is an ASTNode, dispatch to the correct visitor method.
         if not hasattr(node, "type"):
             return
-
         method_name = 'visit_' + node.type
         visitor = getattr(self, method_name, self.generic_visit)
         return visitor(node, symtable)
-
-
 
     def generic_visit(self, node, symtable):
         if hasattr(node, "children") and node.children:
@@ -88,11 +74,10 @@ class SemanticAnalyzer:
 
     def visit_program(self, node, symtable):
         if len(node.children) > 0 and node.children[0]:
-            self.visit(node.children[0], symtable)  
+            self.visit(node.children[0], symtable)
         if len(node.children) > 1 and node.children[1]:
-            self.visit(node.children[1], symtable)  
+            self.visit(node.children[1], symtable)
         if len(node.children) > 2 and node.children[2]:
-    
             main_scope = SymbolTable(parent=symtable)
             self.visit(node.children[2], main_scope)
 
@@ -101,107 +86,72 @@ class SemanticAnalyzer:
             self.visit(child, symtable)
 
     def visit_global_statement(self, node, symtable):
+        # Expecting children: [data_type, IDENT, (optional var tail)]
         data_type_node = node.children[0]
         ident_node = node.children[1]
         var_name = ident_node.value
         var_type = data_type_node.value
 
-        # Add variable to the global symbols
         try:
             self.global_symbols.add(var_name, var_type)
         except SemanticError as e:
             self.errors.append(str(e))
-
-        # If there's a third child, it might be an assignment or commas
         if len(node.children) > 2 and node.children[2]:
             tail_node = node.children[2]
-            # Instead of self.visit_global_statement_tail(...)
-            # rename to a private helper method
             self._process_global_statement_tail(tail_node, symtable, var_type, var_name)
 
-
-
     def visit_var_call(self, node, symtable):
-        """
-        node.value = the variable name (e.g. '$i')
-        node.children = [maybe an index if it's $i[...]?]
-        """
-        var_name = node.value
+        # In the new AST, the variable name is in the first child (type "IDENT")
+        var_name = node.children[0].value
         try:
             symtable.lookup(var_name)
         except SemanticError as e:
-            # Only report once
             if var_name not in self.reported_undeclared_vars:
                 self.errors.append(str(e))
                 self.reported_undeclared_vars.add(var_name)
-
-        # Also visit any children (like array indices)
         self.generic_visit(node, symtable)
 
     def visit_var_statement(self, node, symtable):
-        """
-        node.children = [data_type_node, IDENT_node, var_tail_node]
-        """
+        # Expecting children: [data_type, IDENT, var_tail]
         if len(node.children) < 3:
             self.generic_visit(node, symtable)
             return
-
         data_type_node = node.children[0]
         ident_node = node.children[1]
         var_tail_node = node.children[2]
+        declared_type = data_type_node.value
+        var_name = ident_node.value
 
-        declared_type = getattr(data_type_node, "value", None)
-        var_name = getattr(ident_node, "value", None)
-
-     
         if var_name in self.global_symbols.symbols:
-   
             self.errors.append(
                 f"Semantic Error: Local variable '{var_name}' conflicts with global variable '{var_name}'."
             )
-            return 
+            return
         else:
-        
             try:
                 if var_name and declared_type:
                     symtable.add(var_name, declared_type)
             except SemanticError as e:
                 self.errors.append(str(e))
-
-
         self.check_var_tail(var_tail_node, symtable, declared_type, var_name)
 
     def check_global_assignment(self, assigned_node, symtable, declared_type, var_name):
-        """
-        assigned_node: the AST node for the right-hand side
-        declared_type: e.g. "int"
-        var_name: e.g. "$hello"
-        """
-
         rhs_type = self.get_expression_type(assigned_node, symtable)
-
         if declared_type == "bln" and rhs_type in ("int", "flt"):
-            # int/float -> bln
-            pass    
+            pass
         elif declared_type == "int" and rhs_type in ("bln", "flt"):
-            # bln/float -> int
             pass
         elif declared_type == "flt" and rhs_type in ("bln", "int"):
-            # bln/int -> float
             pass
         elif rhs_type != declared_type:
             self.errors.append(
                 f"Type Error: Cannot assign '{rhs_type}' to variable '{var_name}' of type '{declared_type}'."
             )
 
-
     def _process_global_statement_tail(self, node, symtable, declared_type, var_name):
-        # same logic you already have
         if node is None:
             return
-        # 1) Recursively visit everything
         self.visit(node, symtable)
-        # 2) Attempt to find an expression node
         if len(node.children) > 0:
             assigned_node = node.children[0]
             if assigned_node is not None:
@@ -210,21 +160,15 @@ class SemanticAnalyzer:
     def check_var_tail(self, var_tail_node, symtable, declared_type, var_name):
         if var_tail_node is None:
             return
-
         if hasattr(var_tail_node, "children") and var_tail_node.children:
             for child in var_tail_node.children:
                 if child and getattr(child, "type", None) == "value":
                     rhs_type = self.get_expression_type(child, symtable)
-
-
                     if declared_type == "bln" and rhs_type in ("int", "flt"):
-                        # int/float -> bln
                         pass
                     elif declared_type == "int" and rhs_type in ("bln", "flt"):
-                        # bln/float -> int
                         pass
                     elif declared_type == "flt" and rhs_type in ("bln", "int"):
-                        # bln/int -> float
                         pass
                     elif rhs_type != declared_type:
                         self.errors.append(
@@ -233,26 +177,12 @@ class SemanticAnalyzer:
                 else:
                     self.visit(child, symtable)
 
-    def combine_numeric_types(self, left_type, right_type):
-        # Do not allow arithmetic with characters.
-        if left_type == "chr" or right_type == "chr":
-            self.errors.append("Type Error: Cannot perform arithmetic on characters.")
-            return None
-        # If either type is float or boolean, result is float.
-        if left_type in ("flt", "bln") or right_type in ("flt", "bln"):
-            return "flt"
-        # If both are int, result is int.
-        if left_type == "int" and right_type == "int":
-            return "int"
-        return None
-    
     def get_expression_type(self, node, symtable):
         if node is None:
             return None
         if isinstance(node, ASTNode):
             for child in node.children:
-                self.visit(child, symtable)  
-            
+                self.visit(child, symtable)
             if node.type == "value":
                 if node.children:
                     return self.get_expression_type(node.children[0], symtable)
@@ -264,31 +194,22 @@ class SemanticAnalyzer:
                         operator = tail.children[0]
                         op_val = operator if isinstance(operator, str) else operator.value
                         right_type = self.get_expression_type(tail.children[1], symtable)
-                        
-               
-                        if "str" in (left_type, right_type):
-                        
-                            if left_type == "str" and right_type == "str" and op_val == "+":
-                                return "str"
-                            else:
-                                self.errors.append(f"Type Error: Mixing string values with non-string values is not allowed unless type-casted.")
-                                return None
-                        
+                        if op_val == "+" and (left_type == "chr" or right_type == "chr"):
+                            self.errors.append("Type Error: Cannot add characters.")
+                            return None
                         if left_type is None or right_type is None:
                             return None
-                        
                         if left_type == right_type:
-                            common_type = left_type
+                            return left_type
                         else:
-                            common_type = self.combine_numeric_types(left_type, right_type)
-                        return common_type
+                            return None
                 return left_type
-
             elif node.type == "factor":
                 if node.children:
                     return self.get_expression_type(node.children[0], symtable)
             elif node.type == "type_cast":
-                conversion_function = node.value 
+                # In new AST, conversion operator is in the first child.
+                conversion_function = node.children[0].value
                 if conversion_function == "to_int":
                     return "int"
                 elif conversion_function == "to_flt":
@@ -313,7 +234,8 @@ class SemanticAnalyzer:
                     return "bln"
                 return "str"
             elif node.type == "var_call":
-                var_name = node.value
+                # Now variable name is in children[0]
+                var_name = node.children[0].value
                 try:
                     return symtable.lookup(var_name)
                 except SemanticError as e:
@@ -342,21 +264,11 @@ class SemanticAnalyzer:
         else:
             return None
 
-
-
     def visit_for_loop(self, node, symtable):
-        """
-        node.children = [control_variable, expression, update, statements]
-        This ensures the loop variable is declared in the current (function) scope,
-        so $i remains visible after the loop.
-        """
-
+        # children: [control_variable, expression, update, statements]
         self.visit(node.children[0], symtable)
-
         self.visit(node.children[1], symtable)
-
         self.visit(node.children[2], symtable)
-        
         self.visit(node.children[3], symtable)
 
     def visit_control_variable(self, node, symtable):
@@ -366,18 +278,15 @@ class SemanticAnalyzer:
         ident_node = node.children[1]
         var_name = ident_node.value
         declared_type = data_type_node.value.lower()
-        
         if var_name in self.global_symbols.symbols:
             self.errors.append(
                 f"Semantic Error: Local variable '{var_name}' conflicts with global variable '{var_name}'."
             )
             return
-
         try:
             symtable.add(var_name, declared_type)
         except SemanticError as e:
             self.errors.append(str(e))
-        
         if len(node.children) > 2 and node.children[2]:
             initializer = node.children[2]
             init_type = self.get_expression_type(initializer, symtable)
@@ -388,43 +297,36 @@ class SemanticAnalyzer:
             else:
                 self.visit(initializer, symtable)
 
-
-
-    # def visit_FUNCTION_NAME(self, node, symtable):
-    #     func_name = node.value
-    #     if func_name in self.declared_functions:
-    #         self.errors.append(
-    #             f"Semantic Error: Function '{func_name}' is already declared."
-    #         )
-    #     else:
-    #         self.declared_functions.add(func_name)
     def visit_function_declaration(self, node, symtable):
-        """
-        node.children = [ret_type, FUNCTION_NAME, parameters, statements, revive]
-        """
+        # children: [ret_type, FUNCTION_NAME, parameters, statements, revive]
         if len(node.children) < 2:
             self.generic_visit(node, symtable)
             return
-
         func_name_node = node.children[1]
         func_name = func_name_node.value
         if func_name in self.declared_functions:
             self.errors.append(f"Semantic Error: Function '{func_name}' is already declared.")
         else:
-            ret_type_node = node.children[0]
-            ret_val = ret_type_node.value.value if hasattr(ret_type_node.value, "value") else ret_type_node.value
-            ret_type = ret_val if isinstance(ret_val, str) else str(ret_val)
-            if ret_type.startswith("function_"):
+            ret_type_info = node.children[0]
+            # ret_type is now returned as a tuple from the parser
+            if isinstance(ret_type_info, tuple):
+                if ret_type_info[0] == "ret_type_void":
+                    ret_type = "void"
+                else:
+                    ret_type = ret_type_info[1]
+            elif hasattr(ret_type_info, "value"):
+                ret_type = ret_type_info.value
+            else:
+                ret_type = str(ret_type_info)
+            if isinstance(ret_type, str) and ret_type.startswith("function_"):
                 ret_type = ret_type[len("function_"):]
             if ret_type == "function":
                 ret_type = "void"
             parameters_node = node.children[2]
             param_types = self.extract_parameters(parameters_node)
             self.declared_functions[func_name] = (ret_type, param_types)
-
         func_scope = SymbolTable(parent=symtable)
         func_scope.expected_return_type = self.declared_functions[func_name][0]
-
         if parameters_node is not None:
             params_info = self.extract_parameters_info(parameters_node)
             for (param_name, param_type) in params_info:
@@ -434,12 +336,7 @@ class SemanticAnalyzer:
                     self.errors.append(f"Semantic Error in function '{func_name}': {str(e)}")
             self.generic_visit(node, func_scope)
 
-    
     def extract_parameters_info(self, node):
-        """
-        Given a parameters node with children [data_type, IDENT, parameters_tail],
-        return a list of (parameter_name, parameter_type) tuples.
-        """
         params = []
         if node is None or node.type != "parameters":
             return params
@@ -452,16 +349,10 @@ class SemanticAnalyzer:
         return params
 
     def extract_parameters_tail_info(self, node):
-        """
-        Given a parameters_tail node (created from the rule:
-        parameters_tail : empty | COMMA data_type IDENT parameters_tail),
-        return a list of (parameter_name, parameter_type) tuples.
-        """
         params = []
         if node is None:
             return params
         if node.type == "parameters_tail" and node.children and len(node.children) >= 2:
-            # Expecting children: [data_type, IDENT, parameters_tail]
             param_type = node.children[0].value
             param_name = node.children[1].value
             params.append((param_name, param_type))
@@ -470,20 +361,15 @@ class SemanticAnalyzer:
         return params
 
     def extract_parameters(self, node):
-        """
-        Helper method to extract parameter types from a 'parameters' AST node.
-        Returns a list of types (as strings). If no parameters, returns an empty list.
-        """
         types = []
         if node is None or node.type != "parameters":
             return types
-        # Expecting node.children = [data_type, IDENT, parameters_tail]
         if node.children and len(node.children) >= 2:
             types.append(node.children[0].value)
             tail = node.children[2] if len(node.children) > 2 else None
             types.extend(self.extract_parameters_tail(tail))
         return types
-    
+
     def extract_parameters_tail(self, node):
         types = []
         if node is None:
@@ -495,10 +381,7 @@ class SemanticAnalyzer:
         return types
 
     def visit_function_call(self, node, symtable):
-        """
-        node.children = [FUNCTION_NAME_node, arguments_node]
-        NEW: Checks that the function is declared and that the argument types match the function signature.
-        """
+        # children: [FUNCTION_NAME node, arguments node]
         func_name = node.children[0].value
         if func_name not in self.declared_functions:
             self.errors.append(f"Semantic Error: Function '{func_name}' is not declared.")
@@ -545,11 +428,6 @@ class SemanticAnalyzer:
         return arg_types
 
     def visit_revive(self, node, symtable):
-        """
-        Checks that the type of the expression in the revive statement
-        matches the function's declared (expected) return type.
-        Mimics Java behavior: if a function is void, it should not return a value.
-        """
         expected = getattr(symtable, "expected_return_type", None)
         if expected == "void":
             if node.children:
@@ -568,21 +446,17 @@ def debug_print_ast(node, indent=0):
     if node is None:
         print(" " * indent + "None")
         return
-
     if isinstance(node, list):
         for item in node:
             debug_print_ast(item, indent)
         return
-
     if not hasattr(node, "type"):
         print(" " * indent + f"Non-AST node: {node}")
         return
-
     line = f"{node.type}"
     if node.value is not None:
         line += f" (value={node.value})"
     print(" " * indent + line)
-
     if hasattr(node, "children") and node.children:
         for child in node.children:
             debug_print_ast(child, indent + 2)

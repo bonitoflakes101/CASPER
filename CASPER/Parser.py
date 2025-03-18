@@ -497,20 +497,46 @@ def p_revive(p):
 # -----------------------------------------------------------------------------
 # (77) <statements> → <local_dec> <statements_tail>
 # -----------------------------------------------------------------------------
-def p_statements(p):
-    """
-    statements : local_dec statements_tail  
-    """
-    p[0] = ASTNode("statements", children=[p[1], p[2]])
 
+def p_statements(p):
+    """statements : empty
+                  | local_dec maybe_newline statements_tail"""
+
+
+    if len(p) == 2:
+        # 'empty'
+        p[0] = []     # Return an empty list instead of None
+    else:
+        # 'local_dec NEWLINE statements_tail'
+        # p[1] is local_dec, p[2] is NEWLINE, p[3] is the remainder
+        p[0] = [p[1]] + p[3]
+
+# -----------------------------------------------------------------------------
+# Production: <statements_tail> →  one of: <conditional_statement> | <switch_statement> | <loop_statement> | <function_call> | <string_operation_statement> | <output_statement> then <statements_tail2>
+# -----------------------------------------------------------------------------
+def p_statements_tail(p):
+    """
+    statements_tail : switch_statement unli_newline statements
+                    | loop_statement unli_newline statements
+                    | function_call unli_newline statements
+                    | assignment_statement unli_newline statements
+                    | output_statement unli_newline statements
+                    | conditional_statement unli_newline statements
+                    | statements
+    """
+    if len(p) == 4:
+        p[0] = [p[1]] + p[3]
+    else:
+        p[0] = p[1]
+            
 # -----------------------------------------------------------------------------
 # (78) <statements_tail> → <statements_list>
 # -----------------------------------------------------------------------------
-def p_statements_tail_list(p):
-    """
-    statements_tail : statements_list  
-    """
-    p[0] = p[1]
+# def p_statements_tail_list(p):
+#     """
+#     statements_tail : statements_list  
+#     """
+#     p[0] = p[1]
 
 # -----------------------------------------------------------------------------
 # (79) <statements_list> → <conditional_statement> <statements_list2>
@@ -521,31 +547,32 @@ def p_statements_tail_list(p):
 # (84) <statements_list> → <output_statement> <statements_list2>
 # (85) <statements_list> → null
 # -----------------------------------------------------------------------------
-def p_statements_list(p):
-    """
-    statements_list : conditional_statement statements_list2 
-                    | switch_statement statements_list2       
-                    | loop_statement statements_list2        
-                    | function_call statements_list2          
-                    | assignment_statement statements_list2    
-                    | output_statement statements_list2       
-                    | empty                                   
-    """
-    if len(p) == 2:
-        # empty => null
-        p[0] = []
-    else:
-        # e.g. conditional_statement statements_list2
-        p[0] = [p[1]] + p[2]
+# def p_statements_list(p):
+#     """
+#     statements_list :   
+#                      switch_statement unli_newline statements_list2       
+#                     | loop_statement unli_newline statements_list2        
+#                     | function_call unli_newline statements_list2          
+#                     | assignment_statement unli_newline statements_list2    
+#                     | output_statement unli_newline statements_list2    
+#                     | conditional_statement unli_newline statements_list2    
+#                     | empty                                   
+#     """
+#     if len(p) == 2:
+#         # empty => null
+#         p[0] = []
+#     else:
+#         # e.g. conditional_statement statements_list2
+#         p[0] = [p[1]] + p[3]
 
 # -----------------------------------------------------------------------------
 # (86) <statements_list2> → <statements>
 # -----------------------------------------------------------------------------
-def p_statements_list2(p):
-    """
-    statements_list2 : statements 
-    """
-    p[0] = [p[1]] if p[1] is not None else []
+# def p_statements_list2(p):
+#     """
+#     statements_list2 : statements 
+#     """
+#     p[0] = [p[1]] if p[1] is not None else []
 
 # -----------------------------------------------------------------------------
 # (87) <local_dec> → <var_statement> <local_dec_tail>
@@ -612,9 +639,9 @@ def p_local_value(p):
 # -----------------------------------------------------------------------------
 def p_conditional_statement(p):
     """
-    conditional_statement : CHECK LPAREN expression RPAREN LBRACE statements RBRACE conditional_tail OTHERWISE LBRACE statements RBRACE  
+    conditional_statement : CHECK LPAREN expression RPAREN LBRACE maybe_newline statements maybe_newline RBRACE  maybe_newline conditional_tail  maybe_newline OTHERWISE  maybe_newline LBRACE  maybe_newline statements  maybe_newline RBRACE  
     """
-    p[0] = ASTNode("conditional_statement", children=[p[3], p[6], p[8], p[11]])
+    p[0] = ASTNode("conditional_statement", children=[p[3], p[7], p[11], p[16]])
 
 
 # -----------------------------------------------------------------------------
