@@ -112,13 +112,20 @@ class SemanticAnalyzer:
         self.generic_visit(node, symtable)
 
     def visit_var_statement(self, node, symtable):
-        # Expecting children: [data_type, IDENT, var_tail]
-        if len(node.children) < 3:
+        """
+        node.children = [
+            data_type_node,   # e.g. str
+            IDENT_node,       # e.g. $hello
+            None,             # from list_dec if empty
+            local_var_assign  # the assignment node
+        ]
+        """
+        if len(node.children) < 2:
             self.generic_visit(node, symtable)
             return
+
         data_type_node = node.children[0]
         ident_node = node.children[1]
-        var_tail_node = node.children[2]
         declared_type = data_type_node.value
         var_name = ident_node.value
 
@@ -133,7 +140,11 @@ class SemanticAnalyzer:
                     symtable.add(var_name, declared_type)
             except SemanticError as e:
                 self.errors.append(str(e))
-        self.check_var_tail(var_tail_node, symtable, declared_type, var_name)
+
+        for child in node.children[2:]:
+            if child is not None:
+                self.check_var_tail(child, symtable, declared_type, var_name)
+
 
     def check_global_assignment(self, assigned_node, symtable, declared_type, var_name):
         rhs_type = self.get_expression_type(assigned_node, symtable)
@@ -160,23 +171,51 @@ class SemanticAnalyzer:
     def check_var_tail(self, var_tail_node, symtable, declared_type, var_name):
         if var_tail_node is None:
             return
+        # If var_tail_node is a list, iterate over each element.
+        if isinstance(var_tail_node, list):
+            for item in var_tail_node:
+                self.check_var_tail(item, symtable, declared_type, var_name)
+            return
+
+        # Process the node: if it has children, check each child.
         if hasattr(var_tail_node, "children") and var_tail_node.children:
             for child in var_tail_node.children:
-                if child and getattr(child, "type", None) == "value":
-                    rhs_type = self.get_expression_type(child, symtable)
-                    if declared_type == "bln" and rhs_type in ("int", "flt"):
-                        pass
-                    elif declared_type == "int" and rhs_type in ("bln", "flt"):
-                        pass
-                    elif declared_type == "flt" and rhs_type in ("bln", "int"):
-                        pass
-                    elif rhs_type != declared_type:
-                        self.errors.append(
-                            f"Type Error: Cannot assign '{rhs_type}' to variable '{var_name}' of type '{declared_type}'."
-                        )
-                else:
-                    self.visit(child, symtable)
+                # Try to get the type of the child regardless of its node type.
+                rhs_type = self.get_expression_type(child, symtable)
+                if rhs_type is None:
+                    continue  # No type deduced; skip.
+                # Allow some implicit conversions for booleans and numerics if desired.
+                if declared_type == "bln" and rhs_type in ("int", "flt"):
+                    continue
+                elif declared_type == "int" and rhs_type in ("bln", "flt"):
+                    continue
+                elif declared_type == "flt" and rhs_type in ("bln", "int"):
+                    continue
+                if rhs_type != declared_type:
+                    self.errors.append(
+                        f"Type Error: Cannot assign '{rhs_type}' to variable '{var_name}' of type '{declared_type}'."
+                    )
+        else:
+            # If the node doesn't have children, try to get its type directly.
+            rhs_type = self.get_expression_type(var_tail_node, symtable)
+            if rhs_type is not None and rhs_type != declared_type:
+                self.errors.append(
+                    f"Type Error: Cannot assign '{rhs_type}' to variable '{var_name}' of type '{declared_type}'."
+                )
 
+
+    def combine_numeric_types(self, left_type, right_type):
+        if left_type == "chr" or right_type == "chr":
+            self.errors.append("Type Error: Cannot perform arithmetic on characters.")
+            return None
+    
+        if left_type in ("flt", "bln") or right_type in ("flt", "bln"):
+            return "flt"
+
+        if left_type == "int" and right_type == "int":
+            return "int"
+        return None
+    
     def get_expression_type(self, node, symtable):
         if node is None:
             return None
@@ -194,21 +233,29 @@ class SemanticAnalyzer:
                         operator = tail.children[0]
                         op_val = operator if isinstance(operator, str) else operator.value
                         right_type = self.get_expression_type(tail.children[1], symtable)
-                        if op_val == "+" and (left_type == "chr" or right_type == "chr"):
-                            self.errors.append("Type Error: Cannot add characters.")
-                            return None
+                        
+                        if "str" in (left_type, right_type):
+                            if left_type == "str" and right_type == "str" and op_val == "+":
+                                return "str"
+                            else:
+                                self.errors.append(
+                                    f"Type Error: Mixing string values with non-string values is not allowed unless type-casted."
+                                )
+                                return None
+                        
                         if left_type is None or right_type is None:
                             return None
+                        
                         if left_type == right_type:
-                            return left_type
+                            common_type = left_type
                         else:
-                            return None
+                            common_type = self.combine_numeric_types(left_type, right_type)
+                        return common_type
                 return left_type
             elif node.type == "factor":
                 if node.children:
                     return self.get_expression_type(node.children[0], symtable)
             elif node.type == "type_cast":
-                # In new AST, conversion operator is in the first child.
                 conversion_function = node.children[0].value
                 if conversion_function == "to_int":
                     return "int"
@@ -233,8 +280,22 @@ class SemanticAnalyzer:
                 elif val in ("Day", "Night"):
                     return "bln"
                 return "str"
+       
+            elif node.type == "factor_literal1":
+                val = node.value
+                if isinstance(val, int):
+                    return "int"
+                elif isinstance(val, float):
+                    return "flt"
+                elif val in ("Day", "Night"):
+                    return "bln"
+                return "str"
+            
+            elif node.type == "local_var_assign":
+                if node.children:
+                    return self.get_expression_type(node.children[0], symtable)
+                return None
             elif node.type == "var_call":
-                # Now variable name is in children[0]
                 var_name = node.children[0].value
                 try:
                     return symtable.lookup(var_name)
@@ -263,6 +324,7 @@ class SemanticAnalyzer:
             return None
         else:
             return None
+
 
     def visit_for_loop(self, node, symtable):
         # children: [control_variable, expression, update, statements]

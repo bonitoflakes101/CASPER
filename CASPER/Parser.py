@@ -75,14 +75,13 @@ def p_main_function(p):
 
 def p_global_dec(p):
     """
-    global_dec : global_statement global_tail     
+    global_dec : global_statement unli_newline global_tail     
                | empty                            
     """
-    if len(p) == 3 and p[1] is not None:  
-        # 'global_statement global_tail'
-        p[0] = [p[1]] + p[2]  
+    if len(p) == 4 and p[1] is not None:  
+        # 'global_statement unli_newline global_tail'
+        p[0] = [p[1]] + p[3]  
     else:
-        # 'empty'
         p[0] = []
 
 
@@ -580,15 +579,18 @@ def p_statements_tail(p):
 # -----------------------------------------------------------------------------
 def p_local_dec(p):
     """
-    local_dec : var_statement local_dec_tail  
-              | empty                      
+    local_dec : var_statement local_dec_tail
+              | empty
     """
     if len(p) == 2:
         # empty
         p[0] = []
     else:
-        # var_statement local_dec_tail
-        p[0] = [p[1]] + p[2]
+        var_node = p[1]             
+        tail_nodes = p[2]         
+        if isinstance(tail_nodes, list):
+            var_node.children.extend(tail_nodes)
+        p[0] = [var_node]
 
 # -----------------------------------------------------------------------------
 # (89) <local_dec_tail> → null
