@@ -173,4 +173,7 @@ KEYWORD_DELIMITERS = {
     "IDENT": Delimiters.identifier_del,
     "FUNCTION_NAME": Delimiters.identifier_del,
 
+    "PUSH": Delimiters.DEL18,  
+    "SPLICE": Delimiters.DEL18
+
 }

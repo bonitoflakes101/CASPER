@@ -146,6 +146,9 @@ class TokenType(Enum):
     LBRACKET = '['
     RBRACKET = ']'
 
+    PUSH = "PUSH"
+    SPLICE = "SPLICE"
+
 
 class Token:
     def __init__(
@@ -231,11 +234,11 @@ KEYWORDS: dict[str, TokenType] = {
     "to_flt": TokenType.CONVERT_TO_FLT,
 
     # List types, MISSING TD
-    "list_int": TokenType.LIST_INT,
-    "list_str": TokenType.LIST_STR,
-    "list_bln": TokenType.LIST_BLN,
-    "list_flt": TokenType.LIST_FLT,
-    "list_chr": TokenType.LIST_CHR,
+    # "list_int": TokenType.LIST_INT,
+    # "list_str": TokenType.LIST_STR,
+    # "list_bln": TokenType.LIST_BLN,
+    # "list_flt": TokenType.LIST_FLT,
+    # "list_chr": TokenType.LIST_CHR,
 
     # REMOVED
     # "list_int2d": TokenType.LIST_INT2D,
@@ -243,7 +246,13 @@ KEYWORDS: dict[str, TokenType] = {
     # "list_bln2d": TokenType.LIST_BLN2D,
     # "list_flt2d": TokenType.LIST_FLT2D,
     # "list_chr2d": TokenType.LIST_CHR2D,
+
+    "push": TokenType.PUSH,
+    "splice": TokenType.SPLICE,
     }
+
+
+
 
 def lookup_ident(ident: str) -> TokenType:
     if ident == "@main_casper":

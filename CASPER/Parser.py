@@ -71,7 +71,7 @@ def p_main_function(p):
 # Production: <global_dec> → <global_statement> <global_tail> | null
 # -----------------------------------------------------------------------------
 def p_global_dec(p):
-    """global_dec : global_statement unli_newline global_tail 
+    """global_dec : global_statement unli_newline global_tail
                   | empty"""
     if len(p) == 2:
         p[0] = ASTNode("global_dec", [])
@@ -79,28 +79,40 @@ def p_global_dec(p):
         tail = p[3] if p[3] is not None else []
         p[0] = ASTNode("global_dec", [p[1]] + tail)
 
-# -----------------------------------------------------------------------------
-# Production: <global_tail> → <global_dec> 
-# -----------------------------------------------------------------------------
 def p_global_tail(p):
     """global_tail : global_dec"""
     p[0] = p[1].children if hasattr(p[1], 'children') else [p[1]]
 
-
-# -----------------------------------------------------------------------------
-# Production: <global_statement> → <data_type> IDENT<global_statement_tail>
-# -----------------------------------------------------------------------------
+# Global variable declarations now come from a var_statement plus a tail.
 def p_global_statement(p):
-    """global_statement : data_type IDENT global_statement_tail """
-    p[0] = ASTNode("global_statement", [p[1], ASTNode("IDENT", value=p[2]), p[3]])
+    """global_statement : var_statement global_statement_tail"""
+    p[0] = ASTNode("global_statement", [p[1], p[2]])
 
-# -----------------------------------------------------------------------------
-# Production: <global_statement_tail> → null | , IDENT <global_statement_tail> | = <global_dec_value> <global_tail2>
-# -----------------------------------------------------------------------------
+def p_var_statement(p):
+    """var_statement : data_type IDENT list_dec unli_newline"""
+    p[0] = ASTNode("var_statement", [p[1], ASTNode("IDENT", value=p[2]), p[3]])
+
+# <list_dec> → empty | LBRACKET RBRACKET <2d_list>
+def p_list_dec(p):
+    """list_dec : empty
+                | LBRACKET RBRACKET two_d_list"""
+    if len(p) == 2:
+        p[0] = None
+    else:
+        p[0] = ASTNode("list_dec", value="[]", children=[p[3]])
+
+def p_two_d_list(p):
+    """two_d_list : empty
+                  | LBRACKET RBRACKET"""
+    if len(p) == 2:
+        p[0] = None
+    else:
+        p[0] = ASTNode("2d_list", value="[]")
+
 def p_global_statement_tail(p):
     """global_statement_tail : empty
                              | COMMA IDENT global_statement_tail
-                             | EQ global_dec_value global_tail2"""
+                             | EQ global_value global_statement_tail2"""
     if len(p) == 2:
         p[0] = None
     elif p[1] == ',':
@@ -108,41 +120,18 @@ def p_global_statement_tail(p):
     else:
         p[0] = ASTNode("global_statement_tail", [p[2], p[3]])
 
-# -----------------------------------------------------------------------------
-# Production: <global_tail2> → , IDENT <global_statement_tail> | null
-# -----------------------------------------------------------------------------
-def p_global_tail2(p):
-    """global_tail2 : empty
-                    | COMMA IDENT global_statement_tail"""
+def p_global_statement_tail2(p):
+    """global_statement_tail2 : empty
+                              | COMMA IDENT global_statement_tail"""
     if len(p) == 2:
         p[0] = None
     else:
-        p[0] = ASTNode("global_tail2", [ASTNode("IDENT", value=p[2]), p[3]])
+        p[0] = ASTNode("global_statement_tail2", [ASTNode("IDENT", value=p[2]), p[3]])
 
-# -----------------------------------------------------------------------------
-# Production: <global_dec_value> → <global_value> | [ <list_element> ]
-# -----------------------------------------------------------------------------
-def p_global_dec_value(p):
-    """global_dec_value : global_value 
-                        | LBRACKET list_element RBRACKET"""
-    if len(p) == 2:
-        p[0] = p[1]
-    else:
-        p[0] = ASTNode("global_dec_value_list", [p[2]])
-
-# -----------------------------------------------------------------------------
-# Production: <global_value> → <expression>
-# -----------------------------------------------------------------------------
 def p_global_value(p):
-    """global_value : expression"""
+    """global_value : expression
+                        | list_value"""
     p[0] = p[1]
-
-# -----------------------------------------------------------------------------
-# Production: <var_statement> → <data_type> IDENT <var_tail>
-# -----------------------------------------------------------------------------
-def p_var_statement(p):
-    """var_statement : data_type IDENT var_tail unli_newline"""
-    p[0] = ASTNode("var_statement", [p[1], ASTNode("IDENT", value=p[2]), p[3]])
 
 # -----------------------------------------------------------------------------
 # Production: <var_tail> → null | = <tail_value> <var_tail2> | , IDENT <var_tail>
