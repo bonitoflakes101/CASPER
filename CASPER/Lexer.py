@@ -224,7 +224,7 @@ class Lexer:
             return self.__new_token(TokenType.ILLEGAL, identifier)
 
         token_type = lookup_ident(identifier)
-        print(token_type)
+        
 
         # Specific logic for the "BIRTH" keyword
         if token_type == TokenType.BIRTH or token_type == TokenType.SKIP or token_type == TokenType.STOP:
@@ -240,27 +240,26 @@ class Lexer:
         # General keyword validation for other keywords
         if token_type != TokenType.IDENT:
             valid_delims = KEYWORD_DELIMITERS.get(token_type.name, set())
-            print("Keyword: ", valid_delims)
+            
             if self.current_char in valid_delims:
                 return self.__new_token(token_type, identifier)
             else:
-                print("HEL12OO")
+              
                 # Continue reading until a space is found
                 while self.current_char and self.current_char != ' ':
                     self.__read_char()
 
                 illegal_literal = self.source[start_pos:self.position]
-                print(illegal_literal)
-
+               
                 return self.__return_illegal_token(illegal_literal, valid_delims=valid_delims)
         
         # For identifiers
         if token_type == TokenType.IDENT:
             valid_delims = KEYWORD_DELIMITERS.get(token_type.name, set())
-            print("Identifiers: ", valid_delims)
-            print(self.current_char) 
+          
+        
             if self.current_char in valid_delims:
-                print(self.current_char)
+              
                 return self.__new_token(token_type, identifier)
             else:
                 return self.__return_illegal_token(identifier, valid_delims=valid_delims)
@@ -364,15 +363,13 @@ class Lexer:
         # Debugging shit
         prev = self.position-1
         prevChar = self.source[prev]
-        print("Prev token: ", prevChar)
-        print("current token: " , self.current_char)
-        print("token type: ", token_type.name)
+      
         valid_delims = KEYWORD_DELIMITERS.get(token_type.name)
-        print("valid delims: ",valid_delims)
+    
 
 
         next_char = self.__peek_char()
-        print("next char: ",next_char)
+       
         return next_char in valid_delims
 
     def __skip_invalid_characters(self) -> None:
@@ -808,7 +805,7 @@ class Lexer:
 
         # Create an ILLEGAL token for the entire invalid sequence
         illegal_literal = self.source[start_pos:self.position]
-        print("ILLEGAL",illegal_literal)
+    
         return self.__new_token(TokenType.ILLEGAL, illegal_literal)
 
     def __consume_single_char_token(self, token_type: TokenType) -> Token:

@@ -653,7 +653,7 @@ def p_revive_type_cast(p):
 
 def p_statements(p):
     """statements : empty
-                  | local_dec maybe_newline statements_tail"""
+                  | local_dec NEWLINE statements_tail"""
 
 
     if len(p) == 2:
@@ -733,7 +733,7 @@ def p_statements_tail(p):
 # -----------------------------------------------------------------------------
 def p_local_dec(p):
     """
-    local_dec : var_statement local_dec_tail
+    local_dec : local_var_statement local_dec_tail
               | empty
     """
     if len(p) == 2:
@@ -745,6 +745,49 @@ def p_local_dec(p):
         if isinstance(tail_nodes, list):
             var_node.children.extend(tail_nodes)
         p[0] = [var_node]
+
+def p_local_var_statement(p):
+    """
+        local_var_statement : local_data_type IDENT local_list_dec
+    """
+    p[0] = ASTNode("local_var_statement", [
+        p[1],
+        ASTNode("IDENT", value=p[2]),
+        p[3]
+    ])
+
+def p_local_data_type(p):
+    """
+    local_data_type : INT   
+              | FLT   
+              | BLN  
+              | CHR  
+              | STR  
+    """
+    p[0] = ASTNode("local_data_type", value=p[1])
+
+def p_local_list_dec(p):
+    """
+    local_list_dec : empty               
+             | LBRACKET RBRACKET local_2d_list 
+    """
+    if len(p) == 2:  
+        p[0] = None
+    else:
+        # LBRACKET RBRACKET _2d_list
+        p[0] = ASTNode("list_dec", [p[3]])
+
+
+def p_local_2d_list(p):
+    """
+    local_2d_list : empty            
+             | LBRACKET RBRACKET 
+    """
+    if len(p) == 2:
+        p[0] = None
+    else:
+        p[0] = ASTNode("2d_list", value="2d")
+
 
 # -----------------------------------------------------------------------------
 # (89) <local_dec_tail> → null
@@ -1719,9 +1762,9 @@ def p_typecast_factor_tail(p):
     else:
         p[0] = ASTNode("local_factor_tail_binop", [p[1], p[2], p[3]])
 
-def p_local_factor1 (p):
+def p_typecast_factor1 (p):
     """
-    local_factor1  : INT_LIT
+    typecast_factor1  : INT_LIT
              | FLT_LIT
              | DAY
              | NIGHT
