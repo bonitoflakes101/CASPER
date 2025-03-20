@@ -568,9 +568,78 @@ def p_revive(p):
 
 def p_revive_value(p):
     """revive_value : revive_type_cast
-             | expression
+             | revive_expression
              | function_call"""
     p[0] = ASTNode("revive_value", [p[1]])
+
+
+def p_revive_expression(p):
+    """
+    revive_expression : revive_factor revive_factor_tail
+    """
+    if p[2] is None:
+        p[0] = ASTNode("factor_expression", [p[1]])
+    else:
+        p[0] = ASTNode("factor_expression", [p[1], p[2]])
+
+
+def p_revive_factor(p):
+    """
+    revive_factor : var_call postfix           
+           | revive_factor1                    
+           | TILDE INT_LIT               
+           | TILDE FLT_LIT                
+           | LPAREN revive_factor RPAREN    
+    """
+    # We must handle each case by length of p
+    if len(p) == 3 and p[2] in ("++", "--", None):  # var_call postfix
+        p[0] = ASTNode("factor_var_postfix", [p[1], p[2]])
+    elif len(p) == 2:
+        # literal1
+        p[0] = ASTNode("factor_literal1", value=p[1])
+    elif len(p) == 3 and p[1] == '~' and isinstance(p[2], int):
+        # TILDE INT_LIT
+        p[0] = ASTNode("factor_neg_int", value=p[2])
+    elif len(p) == 3 and p[1] == '~' and isinstance(p[2], float):
+        # TILDE FLT_LIT
+        p[0] = ASTNode("factor_neg_flt", value=p[2])
+    else:
+        # ( expression )
+        p[0] = ASTNode("factor_paren", [p[2]])
+
+
+def p_revive_factor_tail(p):
+    """
+    revive_factor_tail : PLUS revive_factor revive_factor_tail
+                | MINUS revive_factor revive_factor_tail
+                | MULTIPLY revive_factor revive_factor_tail
+                | DIVISION revive_factor revive_factor_tail
+                | MODULO revive_factor revive_factor_tail
+                | EXPONENT revive_factor revive_factor_tail
+                | GT revive_factor revive_factor_tail
+                | LT revive_factor revive_factor_tail
+                | EQ_EQ revive_factor revive_factor_tail
+                | GT_EQ revive_factor revive_factor_tail
+                | LT_EQ revive_factor revive_factor_tail
+                | NOT_EQ revive_factor revive_factor_tail
+                | AND revive_factor revive_factor_tail
+                | OR revive_factor revive_factor_tail
+                | empty
+    """
+    if len(p) == 2:
+        p[0] = None
+    else:
+        p[0] = ASTNode("factor_tail_binop", [p[1], p[2], p[3]])
+
+def p_revive_factor1 (p):
+    """
+    revive_factor1  : INT_LIT
+             | FLT_LIT
+             | DAY
+             | NIGHT
+             | STR_LIT
+    """
+    p[0] = p[1]  
 
 def p_revive_type_cast(p):
     """revive_type_cast : CONVERT_TO_INT LPAREN typecast_value RPAREN
@@ -723,9 +792,77 @@ def p_local_value(p):
 
 def p_local_value_value(p):
     """local_value_value  : local_type_cast
-             | expression
+             | local_expression
              | function_call"""
     p[0] = ASTNode("local_value_value", [p[1]])
+    
+def p_local_expression(p):
+    """
+    local_expression : local_factor local_factor_tail
+    """
+    if p[2] is None:
+        p[0] = ASTNode("local_expression", [p[1]])
+    else:
+        p[0] = ASTNode("local_expression", [p[1], p[2]])
+
+
+def p_local_factor(p):
+    """
+    local_factor : var_call postfix           
+           | local_factor1                    
+           | TILDE INT_LIT               
+           | TILDE FLT_LIT                
+           | LPAREN local_factor RPAREN    
+    """
+    # We must handle each case by length of p
+    if len(p) == 3 and p[2] in ("++", "--", None):  # var_call postfix
+        p[0] = ASTNode("factor_var_postfix", [p[1], p[2]])
+    elif len(p) == 2:
+        # literal1
+        p[0] = ASTNode("factor_literal1", value=p[1])
+    elif len(p) == 3 and p[1] == '~' and isinstance(p[2], int):
+        # TILDE INT_LIT
+        p[0] = ASTNode("factor_neg_int", value=p[2])
+    elif len(p) == 3 and p[1] == '~' and isinstance(p[2], float):
+        # TILDE FLT_LIT
+        p[0] = ASTNode("factor_neg_flt", value=p[2])
+    else:
+        # ( expression )
+        p[0] = ASTNode("local_factor_paren", [p[2]])
+
+
+def p_local_factor_tail(p):
+    """
+    local_factor_tail : PLUS local_factor local_factor_tail
+                | MINUS local_factor local_factor_tail
+                | MULTIPLY local_factor local_factor_tail
+                | DIVISION local_factor local_factor_tail
+                | MODULO local_factor local_factor_tail
+                | EXPONENT local_factor local_factor_tail
+                | GT local_factor local_factor_tail
+                | LT local_factor local_factor_tail
+                | EQ_EQ local_factor local_factor_tail
+                | GT_EQ local_factor local_factor_tail
+                | LT_EQ local_factor local_factor_tail
+                | NOT_EQ local_factor local_factor_tail
+                | AND local_factor local_factor_tail
+                | OR local_factor local_factor_tail
+                | empty
+    """
+    if len(p) == 2:
+        p[0] = None
+    else:
+        p[0] = ASTNode("local_factor_tail_binop", [p[1], p[2], p[3]])
+
+def p_local_factor1 (p):
+    """
+    local_factor1  : INT_LIT
+             | FLT_LIT
+             | DAY
+             | NIGHT
+             | STR_LIT
+    """
+    p[0] = p[1]  
 
 def p_local_type_cast(p):
     """local_type_cast : CONVERT_TO_INT LPAREN typecast_value RPAREN
@@ -853,9 +990,77 @@ def p_switch_condition(p):
 
 def p_switch_value(p):
     """switch_value  : switch_type_cast
-             | expression
+             | switch_expression
              | function_call"""
     p[0] = ASTNode("switch_value", [p[1]])
+
+def p_switch_expression(p):
+    """
+    switch_expression : switch_factor switch_factor_tail
+    """
+    if p[2] is None:
+        p[0] = ASTNode("switch_expression", [p[1]])
+    else:
+        p[0] = ASTNode("switch_expression", [p[1], p[2]])
+
+
+def p_switch_factor(p):
+    """
+    switch_factor : var_call postfix           
+           | switch_factor1                    
+           | TILDE INT_LIT               
+           | TILDE FLT_LIT                
+           | LPAREN switch_factor RPAREN    
+    """
+    # We must handle each case by length of p
+    if len(p) == 3 and p[2] in ("++", "--", None):  # var_call postfix
+        p[0] = ASTNode("factor_var_postfix", [p[1], p[2]])
+    elif len(p) == 2:
+        # literal1
+        p[0] = ASTNode("factor_literal1", value=p[1])
+    elif len(p) == 3 and p[1] == '~' and isinstance(p[2], int):
+        # TILDE INT_LIT
+        p[0] = ASTNode("factor_neg_int", value=p[2])
+    elif len(p) == 3 and p[1] == '~' and isinstance(p[2], float):
+        # TILDE FLT_LIT
+        p[0] = ASTNode("factor_neg_flt", value=p[2])
+    else:
+        # ( expression )
+        p[0] = ASTNode("factor_paren", [p[2]])
+
+
+def p_switch_factor_tail(p):
+    """
+    switch_factor_tail : PLUS switch_factor switch_factor_tail
+                | MINUS switch_factor switch_factor_tail
+                | MULTIPLY switch_factor switch_factor_tail
+                | DIVISION switch_factor switch_factor_tail
+                | MODULO switch_factor switch_factor_tail
+                | EXPONENT switch_factor switch_factor_tail
+                | GT switch_factor switch_factor_tail
+                | LT switch_factor switch_factor_tail
+                | EQ_EQ switch_factor switch_factor_tail
+                | GT_EQ switch_factor switch_factor_tail
+                | LT_EQ switch_factor switch_factor_tail
+                | NOT_EQ switch_factor switch_factor_tail
+                | AND switch_factor switch_factor_tail
+                | OR switch_factor switch_factor_tail
+                | empty
+    """
+    if len(p) == 2:
+        p[0] = None
+    else:
+        p[0] = ASTNode("factor_tail_binop", [p[1], p[2], p[3]])
+
+def p_switch_factor1 (p):
+    """
+    switch_factor1  : INT_LIT
+             | FLT_LIT
+             | DAY
+             | NIGHT
+             | STR_LIT  
+    """
+    p[0] = p[1]  
 
 def p_switch_type_cast(p):
     """switch_type_cast : CONVERT_TO_INT LPAREN typecast_value RPAREN
@@ -895,26 +1100,159 @@ def p_loop_statement(p):
 # (106) <for_loop> → for ( <control_variable> ; <expression> ; <update> ) { <statements> }
 # -----------------------------------------------------------------------------
 def p_for_loop(p):
-    """
-    for_loop : FOR LPAREN control_variable SEMICOLON expression SEMICOLON update RPAREN LBRACE unli_newline statements unli_newline RBRACE 
-    """
+    """for_loop : FOR LPAREN control_variable SEMICOLON for_expression SEMICOLON update RPAREN LBRACE maybe_newline statements maybe_newline RBRACE"""
     p[0] = ASTNode("for_loop", children=[p[3], p[5], p[7], p[11]])
 
+def p_for_expression(p):
+    """
+    for_expression : for_factor for_factor_tail
+    """
+    if p[2] is None:
+        p[0] = ASTNode("for_expression", [p[1]])
+    else:
+        p[0] = ASTNode("for_expression", [p[1], p[2]])
+
+
+def p_for_factor(p):
+    """
+    for_factor : var_call postfix           
+           | for_factor1                    
+           | TILDE INT_LIT               
+           | TILDE FLT_LIT                
+           | LPAREN for_factor RPAREN    
+    """
+    # We must handle each case by length of p
+    if len(p) == 3 and p[2] in ("++", "--", None):  # var_call postfix
+        p[0] = ASTNode("for_factor_var_postfix", [p[1], p[2]])
+    elif len(p) == 2:
+        # literal1
+        p[0] = ASTNode("for_factor_literal1", value=p[1])
+    elif len(p) == 3 and p[1] == '~' and isinstance(p[2], int):
+        # TILDE INT_LIT
+        p[0] = ASTNode("for_factor_neg_int", value=p[2])
+    elif len(p) == 3 and p[1] == '~' and isinstance(p[2], float):
+        # TILDE FLT_LIT
+        p[0] = ASTNode("for_factor_neg_flt", value=p[2])
+    else:
+        # ( expression )
+        p[0] = ASTNode("for_factor_paren", [p[2]])
+
+
+def p_for_factor_tail(p):
+    """
+    for_factor_tail : PLUS for_factor for_factor_tail
+                | MINUS for_factor for_factor_tail
+                | MULTIPLY for_factor for_factor_tail
+                | DIVISION for_factor for_factor_tail
+                | MODULO for_factor for_factor_tail
+                | EXPONENT for_factor for_factor_tail
+                | GT for_factor for_factor_tail
+                | LT for_factor for_factor_tail
+                | EQ_EQ for_factor for_factor_tail
+                | GT_EQ for_factor for_factor_tail
+                | LT_EQ for_factor for_factor_tail
+                | NOT_EQ for_factor for_factor_tail
+                | AND for_factor for_factor_tail
+                | OR for_factor for_factor_tail
+                | empty
+    """
+    if len(p) == 2:
+        p[0] = None
+    else:
+        p[0] = ASTNode("for_factor_tail_binop", [p[1], p[2], p[3]])
+
+def p_for_factor1 (p):
+    """
+    for_factor1  : INT_LIT
+             | FLT_LIT
+             | DAY
+             | NIGHT
+             | STR_LIT  
+    """
+    p[0] = p[1]  
 # -----------------------------------------------------------------------------
 # (107) <until_loop> → until ( <expression> ) { <statements> }
 # -----------------------------------------------------------------------------
 def p_until_loop(p):
     """
-    until_loop : UNTIL LPAREN expression RPAREN LBRACE statements RBRACE  
+    until_loop : UNTIL LPAREN until_expression RPAREN LBRACE statements RBRACE  
     """
     p[0] = ASTNode("until_loop", children=[p[3], p[6]])
 
+
+def p_until_expression(p):
+    """
+    until_expression : until_factor until_factor_tail
+    """
+    if p[2] is None:
+        p[0] = ASTNode("until_expression", [p[1]])
+    else:
+        p[0] = ASTNode("until_expression", [p[1], p[2]])
+
+
+def p_until_factor(p):
+    """
+    until_factor : var_call postfix           
+           | until_factor1                    
+           | TILDE INT_LIT               
+           | TILDE FLT_LIT                
+           | LPAREN until_factor RPAREN    
+    """
+    # We must handle each case by length of p
+    if len(p) == 3 and p[2] in ("++", "--", None):  # var_call postfix
+        p[0] = ASTNode("for_factor_var_postfix", [p[1], p[2]])
+    elif len(p) == 2:
+        # literal1
+        p[0] = ASTNode("for_factor_literal1", value=p[1])
+    elif len(p) == 3 and p[1] == '~' and isinstance(p[2], int):
+        # TILDE INT_LIT
+        p[0] = ASTNode("for_factor_neg_int", value=p[2])
+    elif len(p) == 3 and p[1] == '~' and isinstance(p[2], float):
+        # TILDE FLT_LIT
+        p[0] = ASTNode("for_factor_neg_flt", value=p[2])
+    else:
+        # ( expression )
+        p[0] = ASTNode("for_factor_paren", [p[2]])
+
+
+def p_until_factor_tail(p):
+    """
+    until_factor_tail : PLUS until_factor until_factor_tail
+                | MINUS until_factor until_factor_tail
+                | MULTIPLY until_factor until_factor_tail
+                | DIVISION until_factor until_factor_tail
+                | MODULO until_factor until_factor_tail
+                | EXPONENT until_factor until_factor_tail
+                | GT until_factor until_factor_tail
+                | LT until_factor until_factor_tail
+                | EQ_EQ until_factor until_factor_tail
+                | GT_EQ until_factor until_factor_tail
+                | LT_EQ until_factor until_factor_tail
+                | NOT_EQ until_factor until_factor_tail
+                | AND until_factor until_factor_tail
+                | OR until_factor until_factor_tail
+                | empty
+    """
+    if len(p) == 2:
+        p[0] = None
+    else:
+        p[0] = ASTNode("for_factor_tail_binop", [p[1], p[2], p[3]])
+
+def p_until_factor1 (p):
+    """
+    until_factor1  : INT_LIT
+             | FLT_LIT
+             | DAY
+             | NIGHT
+             | STR_LIT  
+    """
+    p[0] = p[1]  
 # -----------------------------------------------------------------------------
 # (108) <repeat_until> → repeat { <statements> } until(<expression>)
 # -----------------------------------------------------------------------------
 def p_repeat_until(p):
     """
-    repeat_until : REPEAT LBRACE statements RBRACE UNTIL LPAREN expression RPAREN 
+    repeat_until : REPEAT LBRACE statements RBRACE UNTIL LPAREN until_expression RPAREN 
     """
     p[0] = ASTNode("repeat_until", children=[p[3], p[7]])
 
@@ -922,10 +1260,13 @@ def p_repeat_until(p):
 # (109) <control_variable> → int IDENTIFIER = <control_var_tail>
 # -----------------------------------------------------------------------------
 def p_control_variable(p):
-    """
-    control_variable : INT IDENT EQ control_var_tail
-    """
-    p[0] = ASTNode("control_variable", children=[ASTNode("IDENT", value=p[2]), p[4]])
+    """control_variable : INT IDENT EQ control_var_tail"""
+    p[0] = ASTNode("control_variable", [
+        ASTNode("data_type", value="int"), 
+        ASTNode("IDENT", value=p[2]),
+        p[4]
+    ])
+
 
 
 # -----------------------------------------------------------------------------
@@ -933,11 +1274,14 @@ def p_control_variable(p):
 # (111) <control_var_tail> → <var_call>
 # -----------------------------------------------------------------------------
 def p_control_var_tail(p):
+    """control_var_tail : INT_LIT 
+                        | var_call
     """
-    control_var_tail : INT_LIT   
-                     | var_call 
-    """
-    p[0] = p[1]
+    if isinstance(p[1], int): 
+        p[0] = ASTNode("literal", value=p[1])
+    else:
+        p[0] = p[1]  
+
 
 # -----------------------------------------------------------------------------
 # (112) <update> → <var_call><update_tail>
@@ -1211,11 +1555,79 @@ def p_postfix(p):
 def p_value(p):
     """
     value : type_cast     
-          | expression   
+          | value_expression   
           | function_call 
     """
     p[0] = p[1]
 
+
+def p_value_expression(p):
+    """
+    value_expression : value_factor value_factor_tail
+    """
+    if p[2] is None:
+        p[0] = ASTNode("value_expression", [p[1]])
+    else:
+        p[0] = ASTNode("value_expression", [p[1], p[2]])
+
+
+def p_value_factor(p):
+    """
+    value_factor : var_call postfix           
+           | value_factor1                    
+           | TILDE INT_LIT               
+           | TILDE FLT_LIT                
+           | LPAREN value_factor RPAREN    
+    """
+    # We must handle each case by length of p
+    if len(p) == 3 and p[2] in ("++", "--", None):  # var_call postfix
+        p[0] = ASTNode("for_factor_var_postfix", [p[1], p[2]])
+    elif len(p) == 2:
+        # literal1
+        p[0] = ASTNode("for_factor_literal1", value=p[1])
+    elif len(p) == 3 and p[1] == '~' and isinstance(p[2], int):
+        # TILDE INT_LIT
+        p[0] = ASTNode("for_factor_neg_int", value=p[2])
+    elif len(p) == 3 and p[1] == '~' and isinstance(p[2], float):
+        # TILDE FLT_LIT
+        p[0] = ASTNode("for_factor_neg_flt", value=p[2])
+    else:
+        # ( expression )
+        p[0] = ASTNode("for_factor_paren", [p[2]])
+
+
+def p_value_factor_tail(p):
+    """
+    value_factor_tail : PLUS value_factor value_factor_tail
+                | MINUS value_factor value_factor_tail
+                | MULTIPLY value_factor value_factor_tail
+                | DIVISION value_factor value_factor_tail
+                | MODULO value_factor value_factor_tail
+                | EXPONENT value_factor value_factor_tail
+                | GT value_factor value_factor_tail
+                | LT value_factor value_factor_tail
+                | EQ_EQ value_factor value_factor_tail
+                | GT_EQ value_factor value_factor_tail
+                | LT_EQ value_factor value_factor_tail
+                | NOT_EQ value_factor value_factor_tail
+                | AND value_factor value_factor_tail
+                | OR value_factor value_factor_tail
+                | empty
+    """
+    if len(p) == 2:
+        p[0] = None
+    else:
+        p[0] = ASTNode("for_factor_tail_binop", [p[1], p[2], p[3]])
+
+def p_value_factor1 (p):
+    """
+    value_factor1  : INT_LIT
+             | FLT_LIT
+             | DAY
+             | NIGHT
+             | STR_LIT  
+    """
+    p[0] = p[1]  
 # -----------------------------------------------------------------------------
 # (156) <type_cast> → to_int(<typecast_value>)
 # (157) <type_cast> → to_flt(<typecast_value>)
@@ -1239,7 +1651,7 @@ def p_type_cast(p):
 # -----------------------------------------------------------------------------
 def p_typecast_value(p):
     """
-    typecast_value : expression                           
+    typecast_value : typecast_expression                           
                    | FUNCTION_NAME LPAREN RPAREN          
                    | input_statement                     
     """
@@ -1247,6 +1659,75 @@ def p_typecast_value(p):
         p[0] = p[1]
     else:
         p[0] = ASTNode("typecast_funcname", value=p[1])
+
+
+def p_typecast_expression(p):
+    """
+    typecast_expression : typecast_factor typecast_factor_tail
+    """
+    if p[2] is None:
+        p[0] = ASTNode("typecast_expression", [p[1]])
+    else:
+        p[0] = ASTNode("typecast_expression", [p[1], p[2]])
+
+
+def p_typecast_factor(p):
+    """
+    typecast_factor : var_call postfix           
+           | typecast_factor1                    
+           | TILDE INT_LIT               
+           | TILDE FLT_LIT                
+           | LPAREN typecast_factor RPAREN    
+    """
+    # We must handle each case by length of p
+    if len(p) == 3 and p[2] in ("++", "--", None):  # var_call postfix
+        p[0] = ASTNode("factor_var_postfix", [p[1], p[2]])
+    elif len(p) == 2:
+        # literal1
+        p[0] = ASTNode("factor_literal1", value=p[1])
+    elif len(p) == 3 and p[1] == '~' and isinstance(p[2], int):
+        # TILDE INT_LIT
+        p[0] = ASTNode("factor_neg_int", value=p[2])
+    elif len(p) == 3 and p[1] == '~' and isinstance(p[2], float):
+        # TILDE FLT_LIT
+        p[0] = ASTNode("factor_neg_flt", value=p[2])
+    else:
+        # ( expression )
+        p[0] = ASTNode("local_factor_paren", [p[2]])
+
+
+def p_typecast_factor_tail(p):
+    """
+    typecast_factor_tail : PLUS typecast_factor typecast_factor_tail
+                | MINUS typecast_factor typecast_factor_tail
+                | MULTIPLY typecast_factor typecast_factor_tail
+                | DIVISION typecast_factor typecast_factor_tail
+                | MODULO typecast_factor typecast_factor_tail
+                | EXPONENT typecast_factor typecast_factor_tail
+                | GT typecast_factor typecast_factor_tail
+                | LT typecast_factor typecast_factor_tail
+                | EQ_EQ typecast_factor typecast_factor_tail
+                | GT_EQ typecast_factor typecast_factor_tail
+                | LT_EQ typecast_factor typecast_factor_tail
+                | NOT_EQ typecast_factor typecast_factor_tail
+                | AND typecast_factor typecast_factor_tail
+                | OR typecast_factor typecast_factor_tail
+                | empty
+    """
+    if len(p) == 2:
+        p[0] = None
+    else:
+        p[0] = ASTNode("local_factor_tail_binop", [p[1], p[2], p[3]])
+
+def p_local_factor1 (p):
+    """
+    local_factor1  : INT_LIT
+             | FLT_LIT
+             | DAY
+             | NIGHT
+             | STR_LIT
+    """
+    p[0] = p[1]  
 # -----------------------------------------------------------------------------
 # (163) <input_statement> → input()
 # -----------------------------------------------------------------------------
