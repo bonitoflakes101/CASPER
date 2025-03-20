@@ -653,7 +653,7 @@ def p_revive_type_cast(p):
 
 def p_statements(p):
     """statements : empty
-                  | local_dec NEWLINE statements_tail"""
+                  | local_dec unli_newline statements_tail"""
 
 
     if len(p) == 2:

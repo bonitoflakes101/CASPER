@@ -177,7 +177,7 @@ Rule 139   revive_type_cast -> CONVERT_TO_FLT LPAREN typecast_value RPAREN
 Rule 140   revive_type_cast -> CONVERT_TO_BLN LPAREN typecast_value RPAREN
 Rule 141   revive_type_cast -> CONVERT_TO_STR LPAREN typecast_value RPAREN
 Rule 142   statements -> empty
-Rule 143   statements -> local_dec NEWLINE statements_tail
+Rule 143   statements -> local_dec unli_newline statements_tail
 Rule 144   statements_tail -> switch_statement unli_newline statements
 Rule 145   statements_tail -> loop_statement unli_newline statements
 Rule 146   statements_tail -> function_call unli_newline statements
@@ -551,7 +551,7 @@ MODULO               : 48 68 122 183 216 247 283 310 384 417
 MOD_EQ               : 356
 MULTIPLY             : 46 66 120 181 214 245 281 308 382 415
 MUL_EQ               : 354
-NEWLINE              : 3 4 5 143
+NEWLINE              : 3 4 5
 NIGHT                : 62 84 136 197 230 261 297 324 398 431
 NOT                  : 
 NOT_EQ               : 55 75 129 190 223 254 290 317 391 424
@@ -687,7 +687,7 @@ typecast_factor      : 407 412 413 414 415 416 417 418 419 420 421 422 423 424 4
 typecast_factor1     : 409
 typecast_factor_tail : 407 413 414 415 416 417 418 419 420 421 422 423 424 425 426
 typecast_value       : 138 139 140 141 199 200 201 202 263 264 265 266 400 401 402 403
-unli_newline         : 1 1 5 7 87 144 145 146 147 148 149
+unli_newline         : 1 1 5 7 87 143 144 145 146 147 148 149
 until_expression     : 299 326
 until_factor         : 300 305 306 307 308 309 310 311 312 313 314 315 316 317 318 319
 until_factor1        : 302
@@ -795,8 +795,17 @@ state 4
     FUNCTION_LIST_BLN reduce using rule 4 (unli_newline -> NEWLINE .)
     MAIN_CASPER     reduce using rule 4 (unli_newline -> NEWLINE .)
     GHOST           reduce using rule 4 (unli_newline -> NEWLINE .)
-    RBRACE          reduce using rule 4 (unli_newline -> NEWLINE .)
+    SWAP            reduce using rule 4 (unli_newline -> NEWLINE .)
+    FUNCTION_NAME   reduce using rule 4 (unli_newline -> NEWLINE .)
+    IDENT           reduce using rule 4 (unli_newline -> NEWLINE .)
+    DISPLAY         reduce using rule 4 (unli_newline -> NEWLINE .)
+    CHECK           reduce using rule 4 (unli_newline -> NEWLINE .)
+    FOR             reduce using rule 4 (unli_newline -> NEWLINE .)
+    UNTIL           reduce using rule 4 (unli_newline -> NEWLINE .)
+    REPEAT          reduce using rule 4 (unli_newline -> NEWLINE .)
+    INPUT           reduce using rule 4 (unli_newline -> NEWLINE .)
     REVIVE          reduce using rule 4 (unli_newline -> NEWLINE .)
+    RBRACE          reduce using rule 4 (unli_newline -> NEWLINE .)
     SHIFT           reduce using rule 4 (unli_newline -> NEWLINE .)
     OTHERWISE       reduce using rule 4 (unli_newline -> NEWLINE .)
     NEWLINE         shift and go to state 4
@@ -941,8 +950,17 @@ state 15
     FUNCTION_LIST_BLN reduce using rule 5 (unli_newline -> NEWLINE unli_newline .)
     MAIN_CASPER     reduce using rule 5 (unli_newline -> NEWLINE unli_newline .)
     GHOST           reduce using rule 5 (unli_newline -> NEWLINE unli_newline .)
-    RBRACE          reduce using rule 5 (unli_newline -> NEWLINE unli_newline .)
+    SWAP            reduce using rule 5 (unli_newline -> NEWLINE unli_newline .)
+    FUNCTION_NAME   reduce using rule 5 (unli_newline -> NEWLINE unli_newline .)
+    IDENT           reduce using rule 5 (unli_newline -> NEWLINE unli_newline .)
+    DISPLAY         reduce using rule 5 (unli_newline -> NEWLINE unli_newline .)
+    CHECK           reduce using rule 5 (unli_newline -> NEWLINE unli_newline .)
+    FOR             reduce using rule 5 (unli_newline -> NEWLINE unli_newline .)
+    UNTIL           reduce using rule 5 (unli_newline -> NEWLINE unli_newline .)
+    REPEAT          reduce using rule 5 (unli_newline -> NEWLINE unli_newline .)
+    INPUT           reduce using rule 5 (unli_newline -> NEWLINE unli_newline .)
     REVIVE          reduce using rule 5 (unli_newline -> NEWLINE unli_newline .)
+    RBRACE          reduce using rule 5 (unli_newline -> NEWLINE unli_newline .)
     SHIFT           reduce using rule 5 (unli_newline -> NEWLINE unli_newline .)
     OTHERWISE       reduce using rule 5 (unli_newline -> NEWLINE unli_newline .)
 
@@ -5014,7 +5032,7 @@ state 226
 
     (87) function_statements -> ret_type FUNCTION_NAME LPAREN parameters RPAREN LBRACE maybe_newline . statements maybe_newline revive unli_newline RBRACE function_statements_tail
     (142) statements -> . empty
-    (143) statements -> . local_dec NEWLINE statements_tail
+    (143) statements -> . local_dec unli_newline statements_tail
     (434) empty -> .
     (151) local_dec -> . local_var_statement local_dec_tail
     (152) local_dec -> . empty
@@ -5082,7 +5100,7 @@ state 229
 
     (6) main_function -> MAIN_CASPER LPAREN RPAREN maybe_newline LBRACE maybe_newline . statements maybe_newline RBRACE
     (142) statements -> . empty
-    (143) statements -> . local_dec NEWLINE statements_tail
+    (143) statements -> . local_dec unli_newline statements_tail
     (434) empty -> .
     (151) local_dec -> . local_var_statement local_dec_tail
     (152) local_dec -> . empty
@@ -5140,10 +5158,13 @@ state 231
 
 state 232
 
-    (143) statements -> local_dec . NEWLINE statements_tail
+    (143) statements -> local_dec . unli_newline statements_tail
+    (4) unli_newline -> . NEWLINE
+    (5) unli_newline -> . NEWLINE unli_newline
 
-    NEWLINE         shift and go to state 243
+    NEWLINE         shift and go to state 4
 
+    unli_newline                   shift and go to state 243
 
 state 233
 
@@ -5243,7 +5264,7 @@ state 242
 
 state 243
 
-    (143) statements -> local_dec NEWLINE . statements_tail
+    (143) statements -> local_dec unli_newline . statements_tail
     (144) statements_tail -> . switch_statement unli_newline statements
     (145) statements_tail -> . loop_statement unli_newline statements
     (146) statements_tail -> . function_call unli_newline statements
@@ -5261,7 +5282,7 @@ state 243
     (343) output_statement -> . DISPLAY value next_val
     (203) conditional_statement -> . CHECK LPAREN condition RPAREN LBRACE maybe_newline statements maybe_newline RBRACE maybe_newline conditional_tail maybe_newline OTHERWISE maybe_newline LBRACE maybe_newline statements maybe_newline RBRACE
     (142) statements -> . empty
-    (143) statements -> . local_dec NEWLINE statements_tail
+    (143) statements -> . local_dec unli_newline statements_tail
     (272) for_loop -> . FOR LPAREN control_variable SEMICOLON for_expression SEMICOLON update RPAREN LBRACE maybe_newline statements maybe_newline RBRACE
     (299) until_loop -> . UNTIL LPAREN until_expression RPAREN LBRACE statements RBRACE
     (326) repeat_until -> . REPEAT LBRACE statements RBRACE UNTIL LPAREN until_expression RPAREN
@@ -5488,13 +5509,13 @@ state 253
 
 state 254
 
-    (143) statements -> local_dec NEWLINE statements_tail .
+    (143) statements -> local_dec unli_newline statements_tail .
 
-    NEWLINE         reduce using rule 143 (statements -> local_dec NEWLINE statements_tail .)
-    REVIVE          reduce using rule 143 (statements -> local_dec NEWLINE statements_tail .)
-    RBRACE          reduce using rule 143 (statements -> local_dec NEWLINE statements_tail .)
-    SHIFT           reduce using rule 143 (statements -> local_dec NEWLINE statements_tail .)
-    OTHERWISE       reduce using rule 143 (statements -> local_dec NEWLINE statements_tail .)
+    NEWLINE         reduce using rule 143 (statements -> local_dec unli_newline statements_tail .)
+    REVIVE          reduce using rule 143 (statements -> local_dec unli_newline statements_tail .)
+    RBRACE          reduce using rule 143 (statements -> local_dec unli_newline statements_tail .)
+    SHIFT           reduce using rule 143 (statements -> local_dec unli_newline statements_tail .)
+    OTHERWISE       reduce using rule 143 (statements -> local_dec unli_newline statements_tail .)
 
 
 state 255
@@ -6407,7 +6428,7 @@ state 319
 
     (144) statements_tail -> switch_statement unli_newline . statements
     (142) statements -> . empty
-    (143) statements -> . local_dec NEWLINE statements_tail
+    (143) statements -> . local_dec unli_newline statements_tail
     (434) empty -> .
     (151) local_dec -> . local_var_statement local_dec_tail
     (152) local_dec -> . empty
@@ -6439,7 +6460,7 @@ state 320
 
     (145) statements_tail -> loop_statement unli_newline . statements
     (142) statements -> . empty
-    (143) statements -> . local_dec NEWLINE statements_tail
+    (143) statements -> . local_dec unli_newline statements_tail
     (434) empty -> .
     (151) local_dec -> . local_var_statement local_dec_tail
     (152) local_dec -> . empty
@@ -6471,7 +6492,7 @@ state 321
 
     (146) statements_tail -> function_call unli_newline . statements
     (142) statements -> . empty
-    (143) statements -> . local_dec NEWLINE statements_tail
+    (143) statements -> . local_dec unli_newline statements_tail
     (434) empty -> .
     (151) local_dec -> . local_var_statement local_dec_tail
     (152) local_dec -> . empty
@@ -6503,7 +6524,7 @@ state 322
 
     (147) statements_tail -> assignment_statement unli_newline . statements
     (142) statements -> . empty
-    (143) statements -> . local_dec NEWLINE statements_tail
+    (143) statements -> . local_dec unli_newline statements_tail
     (434) empty -> .
     (151) local_dec -> . local_var_statement local_dec_tail
     (152) local_dec -> . empty
@@ -6535,7 +6556,7 @@ state 323
 
     (148) statements_tail -> output_statement unli_newline . statements
     (142) statements -> . empty
-    (143) statements -> . local_dec NEWLINE statements_tail
+    (143) statements -> . local_dec unli_newline statements_tail
     (434) empty -> .
     (151) local_dec -> . local_var_statement local_dec_tail
     (152) local_dec -> . empty
@@ -6567,7 +6588,7 @@ state 324
 
     (149) statements_tail -> conditional_statement unli_newline . statements
     (142) statements -> . empty
-    (143) statements -> . local_dec NEWLINE statements_tail
+    (143) statements -> . local_dec unli_newline statements_tail
     (434) empty -> .
     (151) local_dec -> . local_var_statement local_dec_tail
     (152) local_dec -> . empty
@@ -7233,7 +7254,7 @@ state 358
 
     (326) repeat_until -> REPEAT LBRACE . statements RBRACE UNTIL LPAREN until_expression RPAREN
     (142) statements -> . empty
-    (143) statements -> . local_dec NEWLINE statements_tail
+    (143) statements -> . local_dec unli_newline statements_tail
     (434) empty -> .
     (151) local_dec -> . local_var_statement local_dec_tail
     (152) local_dec -> . empty
@@ -15095,7 +15116,7 @@ state 724
 
     (299) until_loop -> UNTIL LPAREN until_expression RPAREN LBRACE . statements RBRACE
     (142) statements -> . empty
-    (143) statements -> . local_dec NEWLINE statements_tail
+    (143) statements -> . local_dec unli_newline statements_tail
     (434) empty -> .
     (151) local_dec -> . local_var_statement local_dec_tail
     (152) local_dec -> . empty
@@ -16335,7 +16356,7 @@ state 761
 
     (203) conditional_statement -> CHECK LPAREN condition RPAREN LBRACE maybe_newline . statements maybe_newline RBRACE maybe_newline conditional_tail maybe_newline OTHERWISE maybe_newline LBRACE maybe_newline statements maybe_newline RBRACE
     (142) statements -> . empty
-    (143) statements -> . local_dec NEWLINE statements_tail
+    (143) statements -> . local_dec unli_newline statements_tail
     (434) empty -> .
     (151) local_dec -> . local_var_statement local_dec_tail
     (152) local_dec -> . empty
@@ -18157,7 +18178,7 @@ state 872
 
     (232) switch_statement -> SWAP LPAREN IDENT RPAREN LBRACE switch_condition OTHERWISE LBRACE . statements RBRACE RBRACE
     (142) statements -> . empty
-    (143) statements -> . local_dec NEWLINE statements_tail
+    (143) statements -> . local_dec unli_newline statements_tail
     (434) empty -> .
     (151) local_dec -> . local_var_statement local_dec_tail
     (152) local_dec -> . empty
@@ -18186,7 +18207,7 @@ state 873
 
     (233) switch_condition -> SHIFT switch_value COLON . statements switchcond_tail
     (142) statements -> . empty
-    (143) statements -> . local_dec NEWLINE statements_tail
+    (143) statements -> . local_dec unli_newline statements_tail
     (434) empty -> .
     (151) local_dec -> . local_var_statement local_dec_tail
     (152) local_dec -> . empty
@@ -19920,7 +19941,7 @@ state 970
 
     (272) for_loop -> FOR LPAREN control_variable SEMICOLON for_expression SEMICOLON update RPAREN LBRACE maybe_newline . statements maybe_newline RBRACE
     (142) statements -> . empty
-    (143) statements -> . local_dec NEWLINE statements_tail
+    (143) statements -> . local_dec unli_newline statements_tail
     (434) empty -> .
     (151) local_dec -> . local_var_statement local_dec_tail
     (152) local_dec -> . empty
@@ -20103,7 +20124,7 @@ state 985
 
     (204) conditional_tail -> OTHERWISE_CHECK LPAREN condition RPAREN LBRACE . statements RBRACE conditional_tail
     (142) statements -> . empty
-    (143) statements -> . local_dec NEWLINE statements_tail
+    (143) statements -> . local_dec unli_newline statements_tail
     (434) empty -> .
     (151) local_dec -> . local_var_statement local_dec_tail
     (152) local_dec -> . empty
@@ -20132,7 +20153,7 @@ state 986
 
     (203) conditional_statement -> CHECK LPAREN condition RPAREN LBRACE maybe_newline statements maybe_newline RBRACE maybe_newline conditional_tail maybe_newline OTHERWISE maybe_newline LBRACE maybe_newline . statements maybe_newline RBRACE
     (142) statements -> . empty
-    (143) statements -> . local_dec NEWLINE statements_tail
+    (143) statements -> . local_dec unli_newline statements_tail
     (434) empty -> .
     (151) local_dec -> . local_var_statement local_dec_tail
     (152) local_dec -> . empty
