@@ -580,7 +580,7 @@ def p_revive_value(p):
     """revive_value : revive_type_cast
              | revive_expression
              | function_call"""
-    p[0] = ASTNode("revive_value", [p[1]])
+    p[0] = ASTNode("value", [p[1]])
 
 
 def p_revive_expression(p):
@@ -656,7 +656,7 @@ def p_revive_type_cast(p):
                  | CONVERT_TO_FLT LPAREN typecast_value RPAREN
                  | CONVERT_TO_BLN LPAREN typecast_value RPAREN
                  | CONVERT_TO_STR LPAREN typecast_value RPAREN"""
-    p[0] = ASTNode("revive_type_cast", [p[3]], p[1])
+    p[0] = ASTNode("type_cast", [p[3]], p[1])
 # -----------------------------------------------------------------------------
 # (77) <statements> → <local_dec> <statements_tail>
 # -----------------------------------------------------------------------------
@@ -847,7 +847,7 @@ def p_local_value_value(p):
     """local_value_value  : local_type_cast
              | local_expression
              | function_call"""
-    p[0] = ASTNode("local_value_value", [p[1]])
+    p[0] = ASTNode("value", [p[1]])
     
 def p_local_expression(p):
     """
@@ -922,7 +922,7 @@ def p_local_type_cast(p):
                  | CONVERT_TO_FLT LPAREN typecast_value RPAREN
                  | CONVERT_TO_BLN LPAREN typecast_value RPAREN
                  | CONVERT_TO_STR LPAREN typecast_value RPAREN"""
-    p[0] = ASTNode("local_type_cast", [p[3]], p[1])
+    p[0] = ASTNode("type_cast", [p[3]], p[1])
 # -----------------------------------------------------------------------------
 # (96) <conditional_statement> → check(<expression>){<statements>} <conditional_tail> otherwise {<statements>}
 # -----------------------------------------------------------------------------
@@ -1045,7 +1045,7 @@ def p_switch_value(p):
     """switch_value  : switch_type_cast
              | switch_expression
              | function_call"""
-    p[0] = ASTNode("switch_value", [p[1]])
+    p[0] = ASTNode("value", [p[1]])
 
 def p_switch_expression(p):
     """
