@@ -102,11 +102,21 @@ def p_global_statement(p):
     """
         global_statement : var_statement global_statement_tail
     """
-    tail_node = ASTNode("global_statement_tail", children=p[2]) if p[2] else None
-    children = p[1].children.copy()
-    if tail_node is not None:
-        children.append(tail_node)
-    p[0] = ASTNode("global_statement", children=children)
+    var_children = p[1].children.copy()
+    assign_expr = None
+    if p[2]:
+        for tail_item in p[2]:
+            if hasattr(tail_item, "children") and tail_item.children:
+                if tail_item.children[0].value == "=":
+                    assign_expr = tail_item.children[1]
+                    break
+    if assign_expr is not None:
+        if len(var_children) >= 3:
+            var_children[2] = assign_expr
+        else:
+            var_children.append(assign_expr)
+    p[0] = ASTNode("global_statement", children=var_children)
+
 
 # =============================================================================
 # (6) <var_statement> → <data_type> IDENTIFIER <list_dec>
@@ -251,7 +261,7 @@ def p_data_type(p):
               | CHR  
               | STR  
     """
-    p[0] = ASTNode("data_type", value=p[1])
+    p[0] = ASTNode("data_type", value=p[1].lower())
 
 
 # =============================================================================
@@ -287,7 +297,7 @@ def p_factor(p):
         p[0] = ASTNode("factor_var_postfix", [p[1], p[2]])
     elif len(p) == 2:
         # literal1
-        p[0] = ASTNode("factor_literal1", value=p[1])
+        p[0] = ASTNode("literal", value=p[1])
     elif len(p) == 3 and p[1] == '~' and isinstance(p[2], int):
         # TILDE INT_LIT
         p[0] = ASTNode("factor_neg_int", value=p[2])
@@ -323,7 +333,7 @@ def p_factor_expression_factor(p):
         p[0] = ASTNode("factor_var_postfix", [p[1], p[2]])
     elif len(p) == 2:
         # literal1
-        p[0] = ASTNode("factor_literal1", value=p[1])
+        p[0] = ASTNode("literal", value=p[1])
     elif len(p) == 3 and p[1] == '~' and isinstance(p[2], int):
         # TILDE INT_LIT
         p[0] = ASTNode("factor_neg_int", value=p[2])
@@ -596,7 +606,7 @@ def p_revive_factor(p):
         p[0] = ASTNode("factor_var_postfix", [p[1], p[2]])
     elif len(p) == 2:
         # literal1
-        p[0] = ASTNode("factor_literal1", value=p[1])
+        p[0] = ASTNode("literal", value=p[1])
     elif len(p) == 3 and p[1] == '~' and isinstance(p[2], int):
         # TILDE INT_LIT
         p[0] = ASTNode("factor_neg_int", value=p[2])
@@ -764,7 +774,7 @@ def p_local_data_type(p):
               | CHR  
               | STR  
     """
-    p[0] = ASTNode("local_data_type", value=p[1])
+    p[0] = ASTNode("local_data_type", value=p[1].lower())
 
 def p_local_list_dec(p):
     """
@@ -862,7 +872,7 @@ def p_local_factor(p):
         p[0] = ASTNode("factor_var_postfix", [p[1], p[2]])
     elif len(p) == 2:
         # literal1
-        p[0] = ASTNode("factor_literal1", value=p[1])
+        p[0] = ASTNode("literal", value=p[1])
     elif len(p) == 3 and p[1] == '~' and isinstance(p[2], int):
         # TILDE INT_LIT
         p[0] = ASTNode("factor_neg_int", value=p[2])
@@ -961,7 +971,7 @@ def p_condition_factor(p):
         p[0] = ASTNode("condition_var_postfix", [p[1], p[2]])
     elif len(p) == 2:
         # literal1
-        p[0] = ASTNode("condition_literal1", value=p[1])
+        p[0] = ASTNode("literal", value=p[1])
     elif len(p) == 3 and p[1] == '~' and isinstance(p[2], int):
         # TILDE INT_LIT
         p[0] = ASTNode("condition_neg_int", value=p[2])
@@ -1060,7 +1070,7 @@ def p_switch_factor(p):
         p[0] = ASTNode("factor_var_postfix", [p[1], p[2]])
     elif len(p) == 2:
         # literal1
-        p[0] = ASTNode("factor_literal1", value=p[1])
+        p[0] = ASTNode("literal", value=p[1])
     elif len(p) == 3 and p[1] == '~' and isinstance(p[2], int):
         # TILDE INT_LIT
         p[0] = ASTNode("factor_neg_int", value=p[2])
@@ -1169,7 +1179,7 @@ def p_for_factor(p):
         p[0] = ASTNode("for_factor_var_postfix", [p[1], p[2]])
     elif len(p) == 2:
         # literal1
-        p[0] = ASTNode("for_factor_literal1", value=p[1])
+        p[0] = ASTNode("literal", value=p[1])
     elif len(p) == 3 and p[1] == '~' and isinstance(p[2], int):
         # TILDE INT_LIT
         p[0] = ASTNode("for_factor_neg_int", value=p[2])
@@ -1246,7 +1256,7 @@ def p_until_factor(p):
         p[0] = ASTNode("for_factor_var_postfix", [p[1], p[2]])
     elif len(p) == 2:
         # literal1
-        p[0] = ASTNode("for_factor_literal1", value=p[1])
+        p[0] = ASTNode("literal", value=p[1])
     elif len(p) == 3 and p[1] == '~' and isinstance(p[2], int):
         # TILDE INT_LIT
         p[0] = ASTNode("for_factor_neg_int", value=p[2])
@@ -1627,7 +1637,7 @@ def p_value_factor(p):
         p[0] = ASTNode("for_factor_var_postfix", [p[1], p[2]])
     elif len(p) == 2:
         # literal1
-        p[0] = ASTNode("for_factor_literal1", value=p[1])
+        p[0] = ASTNode("literal", value=p[1])
     elif len(p) == 3 and p[1] == '~' and isinstance(p[2], int):
         # TILDE INT_LIT
         p[0] = ASTNode("for_factor_neg_int", value=p[2])
@@ -1727,7 +1737,7 @@ def p_typecast_factor(p):
         p[0] = ASTNode("factor_var_postfix", [p[1], p[2]])
     elif len(p) == 2:
         # literal1
-        p[0] = ASTNode("factor_literal1", value=p[1])
+        p[0] = ASTNode("literal", value=p[1])
     elif len(p) == 3 and p[1] == '~' and isinstance(p[2], int):
         # TILDE INT_LIT
         p[0] = ASTNode("factor_neg_int", value=p[2])
