@@ -760,7 +760,7 @@ def p_local_var_statement(p):
     """
         local_var_statement : local_data_type IDENT local_list_dec
     """
-    p[0] = ASTNode("local_var_statement", [
+    p[0] = ASTNode("var_statement", [
         p[1],
         ASTNode("IDENT", value=p[2]),
         p[3]

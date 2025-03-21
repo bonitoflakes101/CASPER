@@ -221,85 +221,70 @@ class SemanticAnalyzer:
             return None
 
         if isinstance(node, ASTNode):
-            # Visit child nodes to catch undeclared vars, etc.
+            # Visit child nodes first to catch undeclared vars, etc.
             for child in node.children:
                 self.visit(child, symtable)
 
-            # 1) Treat local expressions exactly like normal 'expression'
-            #    so that numeric/string type checks will happen.
-            if node.type in ("expression", "local_expression", "factor_expression",
-                            "switch_expression", "revive_expression", "for_expression",
-                            "until_expression", "condition"):
-                # Expect children like [ leftSide, maybeTail ]
+            if node.type == "value":
+                # The parser sometimes wraps the RHS in a "value" node.
+                if node.children:
+                    return self.get_expression_type(node.children[0], symtable)
+                return None
+
+            elif node.type == "expression":
+                # Usually has children like [leftSide, maybeTail].
                 left_type = self.get_expression_type(node.children[0], symtable)
                 if len(node.children) > 1 and node.children[1]:
                     tail = node.children[1]
-                    # This tail might be e.g. factor_tail_binop, local_factor_tail_binop, etc.
-                    if tail.type in ("factor_tail_binop", "local_factor_tail_binop",
-                                    "for_factor_tail_binop", "switch_factor_tail_binop"):
+                    if tail.children and len(tail.children) >= 2:
                         operator = tail.children[0]
-                        op_val = operator.value if hasattr(operator, "value") else operator
+                        op_val = operator if isinstance(operator, str) else operator.value
                         right_type = self.get_expression_type(tail.children[1], symtable)
 
-                        # If either side is string, handle string + string, else error.
                         if "str" in (left_type, right_type):
                             if left_type == "str" and right_type == "str" and op_val == "+":
                                 return "str"
                             else:
                                 self.errors.append(
-                                    "Type Error: Mixing string with non-string or using "
-                                    "an invalid operator on strings."
+                                    "Type Error: Mixing string values with non-string values "
+                                    "is not allowed unless type-casted."
                                 )
                                 return None
 
                         if left_type is None or right_type is None:
                             return None
 
-                        # Combine numeric/bool types
                         if left_type == right_type:
                             return left_type
                         else:
                             return self.combine_numeric_types(left_type, right_type)
-
                 return left_type
 
-            # 2) If we see local_value_value or local_var_assign, descend into its child
-            if node.type == "local_value_value":
-                # children can be [ local_type_cast, local_expression, or function_call ]
-                return self.get_expression_type(node.children[0], symtable)
-
-            if node.type == "local_var_assign":
-                # children[0] is the expression node
+            elif node.type == "factor":
+                # If you still have "factor" nodes, handle them here.
                 if node.children:
                     return self.get_expression_type(node.children[0], symtable)
-                return None
 
-            # 3) For “factor_tail_binop” (etc.) that appear outside local expressions
-            if node.type in ("factor_tail_binop", "local_factor_tail_binop",
-                            "for_factor_tail_binop", "switch_factor_tail_binop"):
-                # Typically: [ operator, rightFactor, nextTail ]
-                # We'll do a simple approach: type-check the right factor
-                operator_node = node.children[0]
-                op_val = operator_node.value if hasattr(operator_node, "value") else operator_node
-                right_type = self.get_expression_type(node.children[1], symtable)
+            elif node.type == "type_cast":
+                conversion_function = node.children[0].value
+                if conversion_function == "to_int":
+                    return "int"
+                elif conversion_function == "to_flt":
+                    return "flt"
+                elif conversion_function == "to_bln":
+                    return "bln"
+                elif conversion_function == "to_str":
+                    return "str"
+                else:
+                    return None
 
-                # If there's a next tail node, combine them too
-                next_tail = node.children[2]
-                if next_tail:
-                    left_type = right_type
-                    right_type = self.get_expression_type(next_tail, symtable)
-                    if left_type is None or right_type is None:
-                        return None
-                    if "str" in (left_type, right_type):
-                        self.errors.append("Type Error: Invalid string operation.")
-                        return None
-                    if left_type == right_type:
-                        return left_type
-                    return self.combine_numeric_types(left_type, right_type)
-                return right_type
+            elif node.type == "chr_lit":
+                return "chr"
 
-            # 4) Simple literal nodes
-            if node.type == "literal":
+            elif node.type == "str_lit":
+                return "str"
+
+            elif node.type == "literal":
                 val = node.value
                 if isinstance(val, int):
                     return "int"
@@ -307,31 +292,24 @@ class SemanticAnalyzer:
                     return "flt"
                 elif val in ("Day", "Night"):
                     return "bln"
-                elif isinstance(val, str):
-                    return "str"
-                return None
+                return "str"
 
-            # 5) String/char literal tokens (if you want them separate)
-            if node.type == "chr_lit":
-                return "chr"
-            # If you had 'str_lit' node types, you'd do that here.
-
-            # 6) Type cast node
-            if node.type == "type_cast" or node.type == "revive_type_cast" or node.type == "local_type_cast":
-                # node.children[0] is the expression being cast
-                cast_command = node.value  # e.g. 'to_int', 'to_flt', etc.
-                if cast_command == "to_int" or "INT" in cast_command:
+            elif node.type == "factor_literal1":
+                val = node.value
+                if isinstance(val, int):
                     return "int"
-                elif cast_command == "to_flt" or "FLT" in cast_command:
+                elif isinstance(val, float):
                     return "flt"
-                elif cast_command == "to_bln" or "BLN" in cast_command:
+                elif val in ("Day", "Night"):
                     return "bln"
-                elif cast_command == "to_str" or "STR" in cast_command:
-                    return "str"
+                return "str"
+
+            elif node.type == "local_var_assign":
+                if node.children:
+                    return self.get_expression_type(node.children[0], symtable)
                 return None
 
-            # 7) var_call: look up variable type in the symbol table
-            if node.type == "var_call":
+            elif node.type == "var_call":
                 var_name = node.children[0].value
                 try:
                     return symtable.lookup(var_name)
@@ -341,24 +319,20 @@ class SemanticAnalyzer:
                         self.reported_undeclared_vars.add(var_name)
                     return None
 
-            # 8) function_call: check declared_functions
-            if node.type == "function_call":
+            elif node.type == "function_call":
                 func_name = node.children[0].value
                 if func_name in self.declared_functions:
                     ret_type = self.declared_functions[func_name][0]
-                    if hasattr(ret_type, "value"):
-                        ret_type = ret_type.value
                     return ret_type
                 else:
                     self.errors.append(f"Semantic Error: Function '{func_name}' is not declared.")
                     return None
 
-            # 9) If none of the above matched, just return None
-            #    (the generic_visit call above ensures we still traverse children)
+            # If we haven't handled this node type, just do a generic visit.
+            self.generic_visit(node, symtable)
             return None
 
         elif isinstance(node, tuple):
-            # Possibly condition operators or such
             tag = node[0]
             if tag in ("condition_binop", "for_loop_condition_binop", "until_loop_condition_binop"):
                 return "bln"
@@ -368,8 +342,9 @@ class SemanticAnalyzer:
             return None
 
 
+
     def visit_for_loop(self, node, symtable):
-        # children: [control_variable, expression, update, statements]
+
         self.visit(node.children[0], symtable)
         self.visit(node.children[1], symtable)
         self.visit(node.children[2], symtable)
