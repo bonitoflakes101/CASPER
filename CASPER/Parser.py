@@ -459,25 +459,35 @@ def p_literal2(p):
 # (55) <function_statements> → <ret_type> FUNCTION_NAME ( <parameters> ) { <statements> <revive> } <function_statements_tail>
 # (56) <function_statements> → null
 # -----------------------------------------------------------------------------
+
 def p_function_statements(p):
     """
-    function_statements : ret_type FUNCTION_NAME LPAREN parameters RPAREN LBRACE maybe_newline statements maybe_newline revive unli_newline RBRACE function_statements_tail  
+    function_statements : ret_type FUNCTION_NAME LPAREN parameters RPAREN LBRACE maybe_newline statements revive maybe_newline RBRACE unli_newline function_statements_tail  
                         | empty                                                          
     """
     if len(p) == 2:
         p[0] = []
     else:
+        # Wrap return type into an ASTNode
+        if isinstance(p[1], tuple) and p[1][0] == "ret_type_void":
+            ret_node = ASTNode("ret_type", value="void")
+        elif isinstance(p[1], tuple) and p[1][0] == "ret_type":
+            ret_node = ASTNode("ret_type", value=p[1][1])
+        else:
+            ret_node = p[1]
+
         func_decl = ASTNode(
             "function_declaration",
             children=[
-                p[1],  # ret_type
-                ASTNode("FUNCTION_NAME", value=p[2]),
-                p[4],  # parameters
-                p[8],  # statements
-                p[10], # revive
+                ret_node,                              # ret_type
+                ASTNode("FUNCTION_NAME", value=p[2]),  # function name
+                p[4],                                   # parameters
+                p[7],                                   # statements
+                p[8],                                   # revive
             ]
         )
         p[0] = [func_decl] + p[13]
+
 
 
 # -----------------------------------------------------------------------------
