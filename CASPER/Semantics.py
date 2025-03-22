@@ -435,13 +435,18 @@ class SemanticAnalyzer:
             except SemanticError as e:
                 self.errors.append(f"Semantic Error in function '{func_name}': {str(e)}")
 
-        # ✅ Visit the revive statement (return) to check type match
-        if len(node.children) > 4:
-            revive_node = node.children[4]
-            if revive_node:
-                self.visit_revive(revive_node, func_scope)
+        revive_node = node.children[4] if len(node.children) > 4 else None
+        has_expected_return = func_scope.expected_return_type != "void"
+
+        if revive_node:
+            self.visit_revive(revive_node, func_scope)
+        elif has_expected_return:
+            self.errors.append(
+                f"Return Type Error: Function '{func_name}' expects a return value of type '{func_scope.expected_return_type}', but no 'revive' statement was found."
+            )
 
         self.generic_visit(node, func_scope)
+
 
 
 
