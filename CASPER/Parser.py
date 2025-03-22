@@ -462,13 +462,13 @@ def p_literal2(p):
 
 def p_function_statements(p):
     """
-    function_statements : ret_type FUNCTION_NAME LPAREN parameters RPAREN LBRACE maybe_newline statements revive maybe_newline RBRACE unli_newline function_statements_tail  
+    function_statements : ret_type FUNCTION_NAME LPAREN parameters RPAREN LBRACE maybe_newline statements maybe_newline revive_opt maybe_newline RBRACE unli_newline function_statements_tail  
                         | empty                                                          
     """
     if len(p) == 2:
         p[0] = []
     else:
-        # Wrap return type into an ASTNode
+        # Normalize return type
         if isinstance(p[1], tuple) and p[1][0] == "ret_type_void":
             ret_node = ASTNode("ret_type", value="void")
         elif isinstance(p[1], tuple) and p[1][0] == "ret_type":
@@ -476,19 +476,37 @@ def p_function_statements(p):
         else:
             ret_node = p[1]
 
+        # Ensure statements node
+        statements_node = p[8]
+        if isinstance(statements_node, list):
+            statements_node = ASTNode("statements", statements_node)
+        elif statements_node is None:
+            statements_node = ASTNode("statements", [])
+
+        # ✅ Corrected revive node index
+        revive_node = p[10]
+        if isinstance(revive_node, list):
+            revive_node = revive_node[0] if revive_node else None
+
         func_decl = ASTNode(
             "function_declaration",
             children=[
-                ret_node,                              # ret_type
-                ASTNode("FUNCTION_NAME", value=p[2]),  # function name
-                p[4],                                   # parameters
-                p[7],                                   # statements
-                p[8],                                   # revive
+                ret_node,
+                ASTNode("FUNCTION_NAME", value=p[2]),
+                p[4],                 # parameters
+                statements_node,     # statements
+                revive_node          # revive statement or None
             ]
         )
-        p[0] = [func_decl] + p[13]
+        tail = p[14] if isinstance(p[14], list) else []
+        p[0] = [func_decl] + tail
 
 
+
+def p_revive_opt(p):
+    """revive_opt : revive
+                  | empty"""
+    p[0] = p[1]
 
 # -----------------------------------------------------------------------------
 # (57) <function_statements_tail> → <function_statements>
@@ -499,7 +517,7 @@ def p_function_statements_tail(p):
     function_statements_tail : function_statements 
                              | empty               
     """
-    if len(p) == 2 and p[1] is not None:
+    if isinstance(p[1], list):
         p[0] = p[1]
     else:
         p[0] = []
@@ -555,9 +573,10 @@ def p_parameters(p):
                | empty                            
     """
     if len(p) == 2:
-        p[0] = []
+        p[0] = ASTNode("parameters", [])  
     else:
-        p[0] = [ASTNode("param_decl", children=[p[1], ASTNode("IDENT", value=p[2])])] + p[3]
+        param_list = [ASTNode("param_decl", children=[p[1], ASTNode("IDENT", value=p[2])])] + p[3]
+        p[0] = ASTNode("parameters", param_list)
 
 # -----------------------------------------------------------------------------
 # (73) <parameters_tail> → , <data_type> IDENTIFIER <parameters_tail>
@@ -585,6 +604,8 @@ def p_revive(p):
         p[0] = None
     else:
         p[0] = ASTNode("revive_statement", children=[p[2]])
+
+
 
 def p_revive_value(p):
     """revive_value : revive_type_cast
