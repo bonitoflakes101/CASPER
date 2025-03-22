@@ -462,7 +462,7 @@ def p_literal2(p):
 
 def p_function_statements(p):
     """
-    function_statements : ret_type FUNCTION_NAME LPAREN parameters RPAREN LBRACE maybe_newline statements maybe_newline revive_opt maybe_newline RBRACE unli_newline function_statements_tail  
+    function_statements : ret_type FUNCTION_NAME LPAREN parameters RPAREN LBRACE maybe_newline statements maybe_newline revive maybe_newline RBRACE unli_newline function_statements_tail  
                         | empty                                                          
     """
     if len(p) == 2:
