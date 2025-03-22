@@ -435,7 +435,14 @@ class SemanticAnalyzer:
             except SemanticError as e:
                 self.errors.append(f"Semantic Error in function '{func_name}': {str(e)}")
 
+        # ✅ Visit the revive statement (return) to check type match
+        if len(node.children) > 4:
+            revive_node = node.children[4]
+            if revive_node:
+                self.visit_revive(revive_node, func_scope)
+
         self.generic_visit(node, func_scope)
+
 
 
     def extract_parameters_info(self, node):
@@ -537,12 +544,31 @@ class SemanticAnalyzer:
         else:
             if node.children:
                 expr_type = self.get_expression_type(node.children[0], symtable)
-                if expr_type != expected:
-                    self.errors.append(
-                        f"Return Type Error: Function expects return type '{expected}', but got '{expr_type}'."
-                    )
+
+                # Allow exact match
+                if expr_type == expected:
+                    return
+
+                # Implicit conversion rules
+                allowed_implicit_conversions = {
+                    ("int", "flt"),   # int → float
+                    ("flt", "int"),   # float → int
+                    ("bln", "flt"),   # bool → float
+                    ("flt", "bln"),   # float → bool
+                    ("int", "bln"),   # int → bool
+                    ("bln", "int"),   # bool → int
+                }
+
+                if (expr_type, expected) in allowed_implicit_conversions:
+                    return
+
+                self.errors.append(
+                    f"Return Type Error: Function expects return type '{expected}', but got '{expr_type}'."
+                )
             else:
                 self.errors.append("Return Type Error: No return expression provided.")
+
+
 
 def debug_print_ast(node, indent=0):
     if node is None:
