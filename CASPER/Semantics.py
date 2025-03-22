@@ -73,13 +73,20 @@ class SemanticAnalyzer:
                 self.visit(child, symtable)
 
     def visit_program(self, node, symtable):
+
         if len(node.children) > 0 and node.children[0]:
-            self.visit(node.children[0], symtable)
+            for global_node in node.children[0]:
+                self.visit(global_node, symtable)
+
         if len(node.children) > 1 and node.children[1]:
-            self.visit(node.children[1], symtable)
+            for func_node in node.children[1]:
+                self.visit(func_node, symtable)
+
         if len(node.children) > 2 and node.children[2]:
             main_scope = SymbolTable(parent=symtable)
             self.visit(node.children[2], main_scope)
+
+
 
     def visit_global_dec(self, node, symtable):
         for child in node.children:
@@ -377,17 +384,17 @@ class SemanticAnalyzer:
                 self.visit(initializer, symtable)
 
     def visit_function_declaration(self, node, symtable):
-        # children: [ret_type, FUNCTION_NAME, parameters, statements, revive]
         if len(node.children) < 2:
             self.generic_visit(node, symtable)
             return
+
         func_name_node = node.children[1]
         func_name = func_name_node.value
+
         if func_name in self.declared_functions:
             self.errors.append(f"Semantic Error: Function '{func_name}' is already declared.")
         else:
             ret_type_info = node.children[0]
-            # ret_type is now returned as a tuple from the parser
             if isinstance(ret_type_info, tuple):
                 if ret_type_info[0] == "ret_type_void":
                     ret_type = "void"
@@ -397,23 +404,39 @@ class SemanticAnalyzer:
                 ret_type = ret_type_info.value
             else:
                 ret_type = str(ret_type_info)
+
             if isinstance(ret_type, str) and ret_type.startswith("function_"):
                 ret_type = ret_type[len("function_"):]
             if ret_type == "function":
                 ret_type = "void"
+
             parameters_node = node.children[2]
+            if isinstance(parameters_node, list):
+                parameters_node = ASTNode("parameters", parameters_node)
+
             param_types = self.extract_parameters(parameters_node)
             self.declared_functions[func_name] = (ret_type, param_types)
+
         func_scope = SymbolTable(parent=symtable)
         func_scope.expected_return_type = self.declared_functions[func_name][0]
-        if parameters_node is not None:
-            params_info = self.extract_parameters_info(parameters_node)
-            for (param_name, param_type) in params_info:
-                try:
-                    func_scope.add(param_name, param_type)
-                except SemanticError as e:
-                    self.errors.append(f"Semantic Error in function '{func_name}': {str(e)}")
-            self.generic_visit(node, func_scope)
+
+        statements_node = node.children[3]
+        if isinstance(statements_node, list):
+            statements_node = ASTNode("statements", statements_node)
+            node.children[3] = statements_node
+
+        if isinstance(node.children[2], list):
+            node.children[2] = ASTNode("parameters", node.children[2])
+
+        params_info = self.extract_parameters_info(node.children[2])
+        for (param_name, param_type) in params_info:
+            try:
+                func_scope.add(param_name, param_type)
+            except SemanticError as e:
+                self.errors.append(f"Semantic Error in function '{func_name}': {str(e)}")
+
+        self.generic_visit(node, func_scope)
+
 
     def extract_parameters_info(self, node):
         params = []
