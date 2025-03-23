@@ -366,7 +366,7 @@ def p_factor_postfix(p):
 
 def p_factor_list_index(p):
     """
-    factor_list_index : LBRACKET index RBRACKET factor_list_index2  
+    factor_list_index : LBRACKET factor_index RBRACKET factor_list_index2  
                | empty                                
     """
     if len(p) == 2:
@@ -731,7 +731,7 @@ def p_revive_postfix(p):
 
 def p_revive_list_index(p):
     """
-    revive_list_index : LBRACKET index RBRACKET revive_list_index2  
+    revive_list_index : LBRACKET revive_index RBRACKET revive_list_index2  
                | empty                                
     """
     if len(p) == 2:
@@ -1047,7 +1047,7 @@ def p_local_postfix(p):
 
 def p_local_list_index(p):
     """
-    local_list_index : LBRACKET index RBRACKET local_list_index2  
+    local_list_index : LBRACKET local_index RBRACKET local_list_index2  
                | empty                                
     """
     if len(p) == 2:
@@ -1198,7 +1198,7 @@ def p_condition_postfix(p):
 
 def p_condition_list_index(p):
     """
-    condition_list_index : LBRACKET index RBRACKET condition_list_index2  
+    condition_list_index : LBRACKET condition_index RBRACKET condition_list_index2  
                | empty                                
     """
     if len(p) == 2:
@@ -1307,7 +1307,7 @@ def p_switch_expression(p):
 
 def p_switch_factor(p):
     """
-    switch_factor : var_call postfix           
+    switch_factor : switch_var_call switch_postfix           
            | switch_factor1                    
            | TILDE INT_LIT               
            | TILDE FLT_LIT                
@@ -1328,6 +1328,53 @@ def p_switch_factor(p):
     else:
         # ( expression )
         p[0] = ASTNode("factor_paren", [p[2]])
+
+def p_switch_var_call(p):
+    """
+    switch_var_call : IDENT switch_list_index  
+    """
+    p[0] = ASTNode("var_call", children=[ASTNode("IDENT", value=p[1]), p[2]])
+
+def p_switch_postfix_op(p):
+    """
+    switch_postfix_op : PLUS_PLUS   
+               | MINUS_MINUS 
+    """
+    p[0] = p[1]
+def p_switch_postfix(p):
+    """
+    switch_postfix : empty        
+            | switch_postfix_op  
+    """
+    p[0] = p[1]
+
+def p_switch_list_index(p):
+    """
+    switch_list_index : LBRACKET switch_index RBRACKET switch_list_index2  
+               | empty                                
+    """
+    if len(p) == 2:
+        p[0] = []
+    else:
+        p[0] = [p[2]] + p[4]
+
+
+def p_switch_list_index2(p):
+    """
+    switch_list_index2 : LBRACKET switch_index RBRACKET 
+                | empty                   
+    """
+    if len(p) == 2:
+        p[0] = []
+    else:
+        p[0] = [p[2]]
+
+def p_switch_index(p):
+    """
+    switch_index : INT_LIT    
+          | IDENT      
+    """
+    p[0] = p[1]
 
 
 def p_switch_factor_tail(p):
@@ -1421,7 +1468,7 @@ def p_for_expression(p):
 
 def p_for_factor(p):
     """
-    for_factor : var_call postfix           
+    for_factor : for_var_call for_postfix           
            | for_factor1                    
            | TILDE INT_LIT               
            | TILDE FLT_LIT                
@@ -1443,6 +1490,52 @@ def p_for_factor(p):
         # ( expression )
         p[0] = ASTNode("paren", [p[2]])
 
+def p_for_var_call(p):
+    """
+    for_var_call : IDENT for_list_index  
+    """
+    p[0] = ASTNode("var_call", children=[ASTNode("IDENT", value=p[1]), p[2]])
+
+def p_for_postfix_op(p):
+    """
+    for_postfix_op : PLUS_PLUS   
+               | MINUS_MINUS 
+    """
+    p[0] = p[1]
+def p_for_postfix(p):
+    """
+    for_postfix : empty        
+            | for_postfix_op  
+    """
+    p[0] = p[1]
+
+def p_for_list_index(p):
+    """
+    for_list_index : LBRACKET for_index RBRACKET for_list_index2  
+               | empty                                
+    """
+    if len(p) == 2:
+        p[0] = []
+    else:
+        p[0] = [p[2]] + p[4]
+
+
+def p_for_list_index2(p):
+    """
+    for_list_index2 : LBRACKET for_index RBRACKET 
+                | empty                   
+    """
+    if len(p) == 2:
+        p[0] = []
+    else:
+        p[0] = [p[2]]
+
+def p_for_index(p):
+    """
+    for_index : INT_LIT    
+          | IDENT      
+    """
+    p[0] = p[1]
 
 def p_for_factor_tail(p):
     """
@@ -1503,7 +1596,7 @@ def p_until_expression(p):
 
 def p_until_factor(p):
     """
-    until_factor : var_call postfix           
+    until_factor : until_var_call until_postfix           
            | until_factor1                    
            | TILDE INT_LIT               
            | TILDE FLT_LIT                
@@ -1525,6 +1618,52 @@ def p_until_factor(p):
         # ( expression )
         p[0] = ASTNode("paren", [p[2]])
 
+def p_until_var_call(p):
+    """
+    until_var_call : IDENT until_list_index  
+    """
+    p[0] = ASTNode("var_call", children=[ASTNode("IDENT", value=p[1]), p[2]])
+
+def p_until_postfix_op(p):
+    """
+    until_postfix_op : PLUS_PLUS   
+               | MINUS_MINUS 
+    """
+    p[0] = p[1]
+def p_until_postfix(p):
+    """
+    until_postfix : empty        
+            | until_postfix_op  
+    """
+    p[0] = p[1]
+
+def p_until_list_index(p):
+    """
+    until_list_index : LBRACKET until_index RBRACKET until_list_index2  
+               | empty                                
+    """
+    if len(p) == 2:
+        p[0] = []
+    else:
+        p[0] = [p[2]] + p[4]
+
+
+def p_until_list_index2(p):
+    """
+    until_list_index2 : LBRACKET until_index RBRACKET 
+                | empty                   
+    """
+    if len(p) == 2:
+        p[0] = []
+    else:
+        p[0] = [p[2]]
+
+def p_until_index(p):
+    """
+    until_index : INT_LIT    
+          | IDENT      
+    """
+    p[0] = p[1]
 
 def p_until_factor_tail(p):
     """
@@ -1715,7 +1854,7 @@ def p_output_expression(p):
 
 def p_output_factor(p):
     """
-    output_factor : var_call postfix           
+    output_factor : output_var_call output_postfix           
            | output_factor1                    
            | TILDE INT_LIT               
            | TILDE FLT_LIT                
@@ -1737,6 +1876,52 @@ def p_output_factor(p):
         # ( expression )
         p[0] = ASTNode("paren", [p[2]])
 
+def p_output_var_call(p):
+    """
+    output_var_call : IDENT output_list_index  
+    """
+    p[0] = ASTNode("var_call", children=[ASTNode("IDENT", value=p[1]), p[2]])
+
+def p_output_postfix_op(p):
+    """
+    output_postfix_op : PLUS_PLUS   
+               | MINUS_MINUS 
+    """
+    p[0] = p[1]
+def p_output_postfix(p):
+    """
+    output_postfix : empty        
+            | output_postfix_op  
+    """
+    p[0] = p[1]
+
+def p_output_list_index(p):
+    """
+    output_list_index : LBRACKET output_index RBRACKET output_list_index2  
+               | empty                                
+    """
+    if len(p) == 2:
+        p[0] = []
+    else:
+        p[0] = [p[2]] + p[4]
+
+
+def p_output_list_index2(p):
+    """
+    output_list_index2 : LBRACKET output_index RBRACKET 
+                | empty                   
+    """
+    if len(p) == 2:
+        p[0] = []
+    else:
+        p[0] = [p[2]]
+
+def p_output_index(p):
+    """
+    output_index : INT_LIT    
+          | IDENT      
+    """
+    p[0] = p[1]
 
 def p_output_factor_tail(p):
     """
@@ -1976,7 +2161,7 @@ def p_value_expression(p):
 
 def p_value_factor(p):
     """
-    value_factor : var_call postfix           
+    value_factor : value_var_call value_postfix           
            | value_factor1                    
            | TILDE INT_LIT               
            | TILDE FLT_LIT                
@@ -1998,6 +2183,53 @@ def p_value_factor(p):
         # ( expression )
         p[0] = ASTNode("paren", [p[2]])
 
+
+def p_value_var_call(p):
+    """
+    value_var_call : IDENT value_list_index  
+    """
+    p[0] = ASTNode("var_call", children=[ASTNode("IDENT", value=p[1]), p[2]])
+
+def p_value_postfix_op(p):
+    """
+    value_postfix_op : PLUS_PLUS   
+               | MINUS_MINUS 
+    """
+    p[0] = p[1]
+def p_value_postfix(p):
+    """
+    value_postfix : empty        
+            | value_postfix_op  
+    """
+    p[0] = p[1]
+
+def p_value_list_index(p):
+    """
+    value_list_index : LBRACKET value_index RBRACKET value_list_index2  
+               | empty                                
+    """
+    if len(p) == 2:
+        p[0] = []
+    else:
+        p[0] = [p[2]] + p[4]
+
+
+def p_value_list_index2(p):
+    """
+    value_list_index2 : LBRACKET value_index RBRACKET 
+                | empty                   
+    """
+    if len(p) == 2:
+        p[0] = []
+    else:
+        p[0] = [p[2]]
+
+def p_value_index(p):
+    """
+    value_index : INT_LIT    
+          | IDENT      
+    """
+    p[0] = p[1]
 
 def p_value_factor_tail(p):
     """
