@@ -772,7 +772,7 @@ def p_statements_tail(p):
 # -----------------------------------------------------------------------------
 def p_local_dec(p):
     """
-    local_dec : local_var_statement local_dec_tail
+    local_dec : local_var_statement unli_newline local_dec_tail
               | empty
     """
     if len(p) == 2:
@@ -780,7 +780,7 @@ def p_local_dec(p):
         p[0] = []
     else:
         var_node = p[1]             
-        tail_nodes = p[2]         
+        tail_nodes = p[3]         
         if isinstance(tail_nodes, list):
             var_node.children.extend(tail_nodes)
         p[0] = [var_node]
