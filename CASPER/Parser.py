@@ -322,7 +322,7 @@ def p_factor_expression(p):
 
 def p_factor_expression_factor(p):
     """
-    factor_expression_factor : var_call postfix           
+    factor_expression_factor : factor_var_call factor_postfix           
            | factor_expression1                    
            | TILDE INT_LIT               
            | TILDE FLT_LIT                
@@ -345,6 +345,53 @@ def p_factor_expression_factor(p):
         p[0] = ASTNode("paren", [p[2]])
 
 
+def p_factor_var_call(p):
+    """
+    factor_var_call : IDENT factor_list_index  
+    """
+    p[0] = ASTNode("var_call", children=[ASTNode("IDENT", value=p[1]), p[2]])
+
+def p_factor_postfix_op(p):
+    """
+    factor_postfix_op : PLUS_PLUS   
+               | MINUS_MINUS 
+    """
+    p[0] = p[1]
+def p_factor_postfix(p):
+    """
+    factor_postfix : empty        
+            | factor_postfix_op  
+    """
+    p[0] = p[1]
+
+def p_factor_list_index(p):
+    """
+    factor_list_index : LBRACKET index RBRACKET factor_list_index2  
+               | empty                                
+    """
+    if len(p) == 2:
+        p[0] = []
+    else:
+        p[0] = [p[2]] + p[4]
+
+
+def p_factor_list_index2(p):
+    """
+    factor_list_index2 : LBRACKET factor_index RBRACKET 
+                | empty                   
+    """
+    if len(p) == 2:
+        p[0] = []
+    else:
+        p[0] = [p[2]]
+
+def p_factor_index(p):
+    """
+    factor_index : INT_LIT    
+          | IDENT      
+    """
+    p[0] = p[1]
+
 def p_factor_expression_tail(p):
     """
     factor_expression_tail : PLUS factor_expression_factor factor_expression_tail
@@ -366,7 +413,12 @@ def p_factor_expression_tail(p):
     if len(p) == 2:
         p[0] = None
     else:
-        p[0] = ASTNode("factor_tail_binop", [p[1], p[2], p[3]])
+        p[0] = ASTNode("factor_tail_binop", [
+    ASTNode("operator", value=p[1]),
+    p[2],
+    p[3]
+])
+
 
 def p_factor_expression1 (p):
     """
@@ -417,7 +469,12 @@ def p_factor_tail(p):
     if len(p) == 2:
         p[0] = None
     else:
-        p[0] = ASTNode("factor_tail_binop", [p[1], p[2], p[3]])
+        p[0] = ASTNode("factor_tail_binop", [
+    ASTNode("operator", value=p[1]),
+    p[2],
+    p[3]
+])
+
 
 
 # =============================================================================
@@ -631,7 +688,7 @@ def p_revive_expression(p):
 
 def p_revive_factor(p):
     """
-    revive_factor : var_call postfix           
+    revive_factor : revive_var_call revive_postfix           
            | revive_factor1                    
            | TILDE INT_LIT               
            | TILDE FLT_LIT                
@@ -653,6 +710,52 @@ def p_revive_factor(p):
         # ( expression )
         p[0] = ASTNode("paren", [p[2]])
 
+def p_revive_var_call(p):
+    """
+    revive_var_call : IDENT revive_list_index  
+    """
+    p[0] = ASTNode("var_call", children=[ASTNode("IDENT", value=p[1]), p[2]])
+
+def p_revive_postfix_op(p):
+    """
+    revive_postfix_op : PLUS_PLUS   
+               | MINUS_MINUS 
+    """
+    p[0] = p[1]
+def p_revive_postfix(p):
+    """
+    revive_postfix : empty        
+            | revive_postfix_op  
+    """
+    p[0] = p[1]
+
+def p_revive_list_index(p):
+    """
+    revive_list_index : LBRACKET index RBRACKET revive_list_index2  
+               | empty                                
+    """
+    if len(p) == 2:
+        p[0] = []
+    else:
+        p[0] = [p[2]] + p[4]
+
+
+def p_revive_list_index2(p):
+    """
+    revive_list_index2 : LBRACKET revive_index RBRACKET 
+                | empty                   
+    """
+    if len(p) == 2:
+        p[0] = []
+    else:
+        p[0] = [p[2]]
+
+def p_revive_index(p):
+    """
+    revive_index : INT_LIT    
+          | IDENT      
+    """
+    p[0] = p[1]
 
 def p_revive_factor_tail(p):
     """
@@ -675,7 +778,12 @@ def p_revive_factor_tail(p):
     if len(p) == 2:
         p[0] = None
     else:
-        p[0] = ASTNode("factor_tail_binop", [p[1], p[2], p[3]])
+        p[0] = ASTNode("factor_tail_binop", [
+    ASTNode("operator", value=p[1]),
+    p[2],
+    p[3]
+])
+
 
 def p_revive_factor1 (p):
     """
@@ -895,7 +1003,7 @@ def p_local_expression(p):
 
 def p_local_factor(p):
     """
-    local_factor : var_call postfix           
+    local_factor : local_var_call local_postfix           
            | local_factor1                    
            | TILDE INT_LIT               
            | TILDE FLT_LIT                
@@ -916,6 +1024,54 @@ def p_local_factor(p):
     else:
         # ( expression )
         p[0] = ASTNode("paren", [p[2]])
+
+
+def p_local_var_call(p):
+    """
+    local_var_call : IDENT local_list_index  
+    """
+    p[0] = ASTNode("var_call", children=[ASTNode("IDENT", value=p[1]), p[2]])
+
+def p_local_postfix_op(p):
+    """
+    local_postfix_op : PLUS_PLUS   
+               | MINUS_MINUS 
+    """
+    p[0] = p[1]
+def p_local_postfix(p):
+    """
+    local_postfix : empty        
+            | local_postfix_op  
+    """
+    p[0] = p[1]
+
+def p_local_list_index(p):
+    """
+    local_list_index : LBRACKET index RBRACKET local_list_index2  
+               | empty                                
+    """
+    if len(p) == 2:
+        p[0] = []
+    else:
+        p[0] = [p[2]] + p[4]
+
+
+def p_local_list_index2(p):
+    """
+    local_list_index2 : LBRACKET local_index RBRACKET 
+                | empty                   
+    """
+    if len(p) == 2:
+        p[0] = []
+    else:
+        p[0] = [p[2]]
+
+def p_local_index(p):
+    """
+    local_index : INT_LIT    
+          | IDENT      
+    """
+    p[0] = p[1]
 
 
 def p_local_factor_tail(p):
@@ -939,7 +1095,12 @@ def p_local_factor_tail(p):
     if len(p) == 2:
         p[0] = None
     else:
-        p[0] = ASTNode("local_factor_tail_binop", [p[1], p[2], p[3]])
+        p[0] = ASTNode("factor_tail_binop", [
+    ASTNode("operator", value=p[1]),
+    p[2],
+    p[3]
+])
+
 
 def p_local_factor1 (p):
     """
@@ -973,13 +1134,13 @@ def p_conditional_statement(p):
 # -----------------------------------------------------------------------------
 def p_conditional_tail(p):
     """
-    conditional_tail : OTHERWISE_CHECK LPAREN condition RPAREN LBRACE statements RBRACE conditional_tail 
+    conditional_tail : OTHERWISE_CHECK LPAREN condition RPAREN LBRACE maybe_newline statements maybe_newline RBRACE maybe_newline conditional_tail 
                      | empty                                            
     """
     if len(p) == 2:
         p[0] = []
     else:
-        p[0] = [ASTNode("otherwise_check", children=[p[3], p[6]])] + p[8]
+        p[0] = [ASTNode("otherwise_check", children=[p[3], p[7]])] + p[11]
 
 
 def p_condition(p):
@@ -994,7 +1155,7 @@ def p_condition(p):
 
 def p_condition_factor(p):
     """
-    condition_factor : var_call postfix           
+    condition_factor : condition_var_call condition_postfix           
            | condition1                    
            | TILDE INT_LIT               
            | TILDE FLT_LIT                
@@ -1016,6 +1177,52 @@ def p_condition_factor(p):
         # ( expression )
         p[0] = ASTNode("paren", [p[2]])
 
+def p_condition_var_call(p):
+    """
+    condition_var_call : IDENT list_index  
+    """
+    p[0] = ASTNode("var_call", children=[ASTNode("IDENT", value=p[1]), p[2]])
+
+def p_condition_postfix_op(p):
+    """
+    condition_postfix_op : PLUS_PLUS   
+               | MINUS_MINUS 
+    """
+    p[0] = p[1]
+def p_condition_postfix(p):
+    """
+    condition_postfix : empty        
+            | condition_postfix_op  
+    """
+    p[0] = p[1]
+
+def p_condition_list_index(p):
+    """
+    condition_list_index : LBRACKET index RBRACKET condition_list_index2  
+               | empty                                
+    """
+    if len(p) == 2:
+        p[0] = []
+    else:
+        p[0] = [p[2]] + p[4]
+
+
+def p_condition_list_index2(p):
+    """
+    condition_list_index2 : LBRACKET condition_index RBRACKET 
+                | empty                   
+    """
+    if len(p) == 2:
+        p[0] = []
+    else:
+        p[0] = [p[2]]
+
+def p_condition_index(p):
+    """
+    condition_index : INT_LIT    
+          | IDENT      
+    """
+    p[0] = p[1]
 
 def p_condition_tail(p):
     """
@@ -1038,7 +1245,12 @@ def p_condition_tail(p):
     if len(p) == 2:
         p[0] = None
     else:
-        p[0] = ASTNode("factor_tail_binop", [p[1], p[2], p[3]])
+        p[0] = ASTNode("factor_tail_binop", [
+    ASTNode("operator", value=p[1]),
+    p[2],
+    p[3]
+])
+
 
 def p_condition1(p):
     """
@@ -1139,7 +1351,12 @@ def p_switch_factor_tail(p):
     if len(p) == 2:
         p[0] = None
     else:
-        p[0] = ASTNode("factor_tail_binop", [p[1], p[2], p[3]])
+        p[0] = ASTNode("factor_tail_binop", [
+    ASTNode("operator", value=p[1]),
+    p[2],
+    p[3]
+])
+
 
 def p_switch_factor1 (p):
     """
@@ -1248,7 +1465,12 @@ def p_for_factor_tail(p):
     if len(p) == 2:
         p[0] = None
     else:
-        p[0] = ASTNode("for_factor_tail_binop", [p[1], p[2], p[3]])
+        p[0] = ASTNode("factor_tail_binop", [
+    ASTNode("operator", value=p[1]),
+    p[2],
+    p[3]
+])
+
 
 def p_for_factor1 (p):
     """
@@ -1325,7 +1547,12 @@ def p_until_factor_tail(p):
     if len(p) == 2:
         p[0] = None
     else:
-        p[0] = ASTNode("for_factor_tail_binop", [p[1], p[2], p[3]])
+        p[0] = ASTNode("factor_tail_binop", [
+    ASTNode("operator", value=p[1]),
+    p[2],
+    p[3]
+])
+
 
 def p_until_factor1 (p):
     """
@@ -1532,7 +1759,12 @@ def p_output_factor_tail(p):
     if len(p) == 2:
         p[0] = None
     else:
-        p[0] = ASTNode("factor_tail_binop", [p[1], p[2], p[3]])
+        p[0] = ASTNode("factor_tail_binop", [
+    ASTNode("operator", value=p[1]),
+    p[2],
+    p[3]
+])
+
 
 def p_output_factor1 (p):
     """
@@ -1788,7 +2020,12 @@ def p_value_factor_tail(p):
     if len(p) == 2:
         p[0] = None
     else:
-        p[0] = ASTNode("for_factor_tail_binop", [p[1], p[2], p[3]])
+        p[0] = ASTNode("factor_tail_binop", [
+    ASTNode("operator", value=p[1]),
+    p[2],
+    p[3]
+])
+
 
 def p_value_factor1 (p):
     """
@@ -1888,7 +2125,12 @@ def p_typecast_factor_tail(p):
     if len(p) == 2:
         p[0] = None
     else:
-        p[0] = ASTNode("local_factor_tail_binop", [p[1], p[2], p[3]])
+        p[0] = ASTNode("factor_tail_binop", [
+    ASTNode("operator", value=p[1]),
+    p[2],
+    p[3]
+])
+
 
 def p_typecast_factor1 (p):
     """
