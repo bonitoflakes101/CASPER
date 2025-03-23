@@ -25,7 +25,15 @@ class SymbolTable:
             return self.parent.lookup(name)
         else:
             raise SemanticError(f"Symbol '{name}' not declared.")
-
+        
+allowed_implicit_conversions = {
+    ("int", "flt"),
+    ("flt", "int"),
+    ("bln", "flt"),
+    ("flt", "bln"),
+    ("int", "bln"),
+    ("bln", "int"),
+}
 class SemanticAnalyzer:
     def __init__(self):
         self.global_symbols = SymbolTable()
@@ -526,27 +534,43 @@ class SemanticAnalyzer:
             tail = node.children[2] if len(node.children) > 2 else None
             types.extend(self.extract_parameters_tail(tail))
         return types
+    
+
 
     def visit_function_call(self, node, symtable):
-
         func_name = node.children[0].value
         if func_name not in self.declared_functions:
             self.errors.append(f"Semantic Error: Function '{func_name}' is not declared.")
             return
-        signature = self.declared_functions[func_name]  
+
+        signature = self.declared_functions[func_name] 
         expected_param_types = signature[1]
+
+        # Extract the argument types
         args_node = node.children[1]
         arg_types = self.extract_arguments(args_node, symtable)
+
+        # Check for mismatch in argument count
         if len(arg_types) != len(expected_param_types):
             self.errors.append(
-                f"Argument Mismatch Error: Function '{func_name}' expects {len(expected_param_types)} arguments, got {len(arg_types)}."
+                f"Argument Mismatch Error: Function '{func_name}' expects "
+                f"{len(expected_param_types)} arguments, got {len(arg_types)}."
             )
         else:
             for i, (arg_type, expected_type) in enumerate(zip(arg_types, expected_param_types)):
-                if arg_type != expected_type:
+                if arg_type == expected_type:
+                
+                    continue
+                elif (arg_type, expected_type) in allowed_implicit_conversions:
+                    # e.g. Day (bln) → int
+                    continue
+                else:
                     self.errors.append(
-                        f"Type Error: Argument {i+1} of function '{func_name}' expected type '{expected_type}', got '{arg_type}'."
+                        f"Type Error: Argument {i+1} of function '{func_name}' "
+                        f"expected type '{expected_type}', got '{arg_type}'."
                     )
+
+     
         self.generic_visit(node, symtable)
 
     def extract_arguments(self, node, symtable):

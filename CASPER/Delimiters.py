@@ -44,7 +44,7 @@ class Delimiters:
     DEL12 = SPACE | NEWLINE | NULL | {'\r', '$'}
     DEL13 = SPACE | NULL | {')', '\'', None,'','\r', ''} # postfix
     DEL14 = SPACE | ALPHA
-    DEL15 = SPACE | NEWLINE | ALPHANUM | {'[', ']', '"', '$'} # L bracket
+    DEL15 = SPACE | NEWLINE | ALPHANUM | {'[', ']', '"', '$', '\''} # L bracket
     DEL16 = SPACE | NEWLINE | {'[', ']', '$', '@', ',', '='} 
     DEL17 = SPACE | NEWLINE | NULL | OPERATORS |{',', ')', ']','.','['} # R bracket
     DEL18 = {'('}

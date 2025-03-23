@@ -428,7 +428,13 @@ def p_literal(p):
     literal : literal1
             | literal2
     """
-    p[0] = ASTNode("literal", value=p[1])
+
+    if isinstance(p[1], ASTNode) and p[1].type == "chr_lit":
+        p[0] = p[1]
+    else:
+
+        p[0] = ASTNode("literal", value=p[1])
+
 
 
 # =============================================================================
@@ -447,13 +453,12 @@ def p_literal1(p):
              | NIGHT
              | STR_LIT
     """
-    p[0] = p[1]  # store the actual value
-
+    p[0] = p[1] 
 def p_literal2(p):
     """
     literal2 : CHR_LIT
     """
-    p[0] = p[1]
+    p[0] = ASTNode("chr_lit", value=p[1])
 
 # -----------------------------------------------------------------------------
 # (55) <function_statements> → <ret_type> FUNCTION_NAME ( <parameters> ) { <statements> <revive> } <function_statements_tail>
