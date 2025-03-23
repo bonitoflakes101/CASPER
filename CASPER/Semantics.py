@@ -410,34 +410,31 @@ class SemanticAnalyzer:
             if ret_type == "function":
                 ret_type = "void"
 
-            parameters_node = node.children[2]
-            if isinstance(parameters_node, list):
-                parameters_node = ASTNode("parameters", parameters_node)
-
-            param_types = self.extract_parameters(parameters_node)
+            if isinstance(node.children[2], list):
+                node.children[2] = ASTNode("parameters", node.children[2])
+            params_info = self.extract_parameters_info(node.children[2])
+            param_types = []
+            for (param_name, param_type) in params_info:
+                param_types.append(param_type)
             self.declared_functions[func_name] = (ret_type, param_types)
 
         func_scope = SymbolTable(parent=symtable)
         func_scope.expected_return_type = self.declared_functions[func_name][0]
 
-        statements_node = node.children[3]
-        if isinstance(statements_node, list):
-            statements_node = ASTNode("statements", statements_node)
-            node.children[3] = statements_node
-
-        if isinstance(node.children[2], list):
-            node.children[2] = ASTNode("parameters", node.children[2])
-
-        params_info = self.extract_parameters_info(node.children[2])
-        for (param_name, param_type) in params_info:
+        for (param_name, param_type) in self.extract_parameters_info(node.children[2]):
             try:
                 func_scope.add(param_name, param_type)
             except SemanticError as e:
                 self.errors.append(f"Semantic Error in function '{func_name}': {str(e)}")
 
+        statements_node = node.children[3]
+        if isinstance(statements_node, list):
+            statements_node = ASTNode("statements", statements_node)
+            node.children[3] = statements_node
+        self.visit(statements_node, func_scope)
+
         revive_node = node.children[4] if len(node.children) > 4 else None
         has_expected_return = func_scope.expected_return_type != "void"
-
         if revive_node:
             self.visit_revive(revive_node, func_scope)
         elif has_expected_return:
@@ -445,7 +442,10 @@ class SemanticAnalyzer:
                 f"Return Type Error: Function '{func_name}' expects a return value of type '{func_scope.expected_return_type}', but no 'revive' statement was found."
             )
 
-        self.generic_visit(node, func_scope)
+        if len(node.children) > 5:
+            for child in node.children[5:]:
+                self.visit(child, func_scope)
+
 
 
 
