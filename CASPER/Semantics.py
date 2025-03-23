@@ -335,10 +335,40 @@ class SemanticAnalyzer:
                     self.errors.append(f"Semantic Error: Function '{func_name}' is not declared.")
                     return None
 
-            # If we haven't handled this node type, just do a generic visit.
+            elif node.type in ("neg_int", "factor_neg_int"):
+                return "int"
+            elif node.type in ("neg_flt", "factor_neg_flt"):
+                return "flt"
+
+            elif node.type in ("var_postfix", "factor_var_postfix"):
+                var_type = self.get_expression_type(node.children[0], symtable)
+                return var_type
+
+    
+            elif node.type in ("paren", "factor_paren"):
+                return self.get_expression_type(node.children[0], symtable)
+
+  
+            elif node.type == "factor_tail_binop":    
+                operator_node = node.children[0]
+                right_node = node.children[1]
+                tail_node = node.children[2]
+
+                op = operator_node if isinstance(operator_node, str) else operator_node.value
+                right_type = self.get_expression_type(right_node, symtable)
+
+        
+                if tail_node is not None:
+                    tail_type = self.get_expression_type(tail_node, symtable)
+                    if right_type and tail_type:
+                        return self.combine_numeric_types(right_type, tail_type)
+                    return right_type or tail_type
+
+            
+                return right_type
+
             self.generic_visit(node, symtable)
             return None
-
         elif isinstance(node, tuple):
             tag = node[0]
             if tag in ("condition_binop", "for_loop_condition_binop", "until_loop_condition_binop"):
@@ -548,28 +578,27 @@ class SemanticAnalyzer:
                 self.errors.append("Return Type Error: Void function should not return a value.")
         else:
             if node.children:
+                self.visit(node.children[0], symtable)
                 expr_type = self.get_expression_type(node.children[0], symtable)
-
-                # Allow exact match
+                if expr_type is None:
+                    self.errors.append(f"Return Type Error: Function expects return type '{expected}', but got 'None'.")
+                    return
+                allowed_implicit_conversions = {
+                    ("int", "flt"),
+                    ("flt", "int"),
+                    ("bln", "flt"),
+                    ("flt", "bln"),
+                    ("int", "bln"),
+                    ("bln", "int"),
+                }
                 if expr_type == expected:
                     return
-
-                # Implicit conversion rules
-                allowed_implicit_conversions = {
-                    ("int", "flt"),   # int → float
-                    ("flt", "int"),   # float → int
-                    ("bln", "flt"),   # bool → float
-                    ("flt", "bln"),   # float → bool
-                    ("int", "bln"),   # int → bool
-                    ("bln", "int"),   # bool → int
-                }
-
-                if (expr_type, expected) in allowed_implicit_conversions:
+                elif (expr_type, expected) in allowed_implicit_conversions:
                     return
-
-                self.errors.append(
-                    f"Return Type Error: Function expects return type '{expected}', but got '{expr_type}'."
-                )
+                else:
+                    self.errors.append(
+                        f"Return Type Error: Function expects return type '{expected}', but got '{expr_type}'."
+                    )
             else:
                 self.errors.append("Return Type Error: No return expression provided.")
 
