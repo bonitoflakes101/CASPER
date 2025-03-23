@@ -503,10 +503,10 @@ def p_function_statements(p):
 
 
 
-def p_revive_opt(p):
-    """revive_opt : revive
-                  | empty"""
-    p[0] = p[1]
+# def p_revive_opt(p):
+#     """revive_opt : revive
+#                   | empty"""
+#     p[0] = p[1]
 
 # -----------------------------------------------------------------------------
 # (57) <function_statements_tail> → <function_statements>
@@ -694,17 +694,15 @@ def p_revive_type_cast(p):
 
 def p_statements(p):
     """statements : empty
-                  | local_dec unli_newline statements_tail"""
+           | local_dec maybe_newline statements_tail """
 
 
     if len(p) == 2:
-        # 'empty'
-        p[0] = []     # Return an empty list instead of None
+   
+        p[0] = []     
     else:
-        # 'local_dec NEWLINE statements_tail'
-        # p[1] is local_dec, p[2] is NEWLINE, p[3] is the remainder
+   
         p[0] = [p[1]] + p[3]
-
 # -----------------------------------------------------------------------------
 # Production: <statements_tail> →  one of: <conditional_statement> | <switch_statement> | <loop_statement> | <function_call> | <string_operation_statement> | <output_statement> then <statements_tail2>
 # -----------------------------------------------------------------------------
@@ -1459,10 +1457,93 @@ def p_arg_value(p):
 # -----------------------------------------------------------------------------
 def p_output_statement(p):
     """
-    output_statement : DISPLAY value next_val   
+    output_statement : DISPLAY output_value next_val   
     """
     p[0] = ASTNode("output_statement", children=[p[2], p[3]])
 
+
+
+def p_output_value(p):
+    """output_value : output_type_cast
+             | output_expression
+             | function_call"""
+    p[0] = ASTNode("value", [p[1]])
+
+
+def p_output_expression(p):
+    """
+    output_expression : output_factor output_factor_tail
+    """
+    if p[2] is None:
+        p[0] = ASTNode("expression", [p[1]])
+    else:
+        p[0] = ASTNode("expression", [p[1], p[2]])
+
+
+def p_output_factor(p):
+    """
+    output_factor : var_call postfix           
+           | output_factor1                    
+           | TILDE INT_LIT               
+           | TILDE FLT_LIT                
+           | LPAREN output_factor RPAREN    
+    """
+    # We must handle each case by length of p
+    if len(p) == 3 and p[2] in ("++", "--", None):  # var_call postfix
+        p[0] = ASTNode("var_postfix", [p[1], p[2]])
+    elif len(p) == 2:
+        # literal1
+        p[0] = ASTNode("literal", value=p[1])
+    elif len(p) == 3 and p[1] == '~' and isinstance(p[2], int):
+        # TILDE INT_LIT
+        p[0] = ASTNode("neg_int", value=p[2])
+    elif len(p) == 3 and p[1] == '~' and isinstance(p[2], float):
+        # TILDE FLT_LIT
+        p[0] = ASTNode("neg_flt", value=p[2])
+    else:
+        # ( expression )
+        p[0] = ASTNode("paren", [p[2]])
+
+
+def p_output_factor_tail(p):
+    """
+    output_factor_tail : PLUS output_factor output_factor_tail
+                | MINUS output_factor output_factor_tail
+                | MULTIPLY output_factor output_factor_tail
+                | DIVISION output_factor output_factor_tail
+                | MODULO output_factor output_factor_tail
+                | EXPONENT output_factor output_factor_tail
+                | GT output_factor output_factor_tail
+                | LT output_factor output_factor_tail
+                | EQ_EQ output_factor output_factor_tail
+                | GT_EQ output_factor output_factor_tail
+                | LT_EQ output_factor output_factor_tail
+                | NOT_EQ output_factor output_factor_tail
+                | AND output_factor output_factor_tail
+                | OR output_factor output_factor_tail
+                | empty
+    """
+    if len(p) == 2:
+        p[0] = None
+    else:
+        p[0] = ASTNode("factor_tail_binop", [p[1], p[2], p[3]])
+
+def p_output_factor1 (p):
+    """
+    output_factor1  : INT_LIT
+             | FLT_LIT
+             | DAY
+             | NIGHT
+             | STR_LIT
+    """
+    p[0] = p[1]  
+
+def p_output_type_cast(p):
+    """output_type_cast : CONVERT_TO_INT LPAREN typecast_value RPAREN
+                 | CONVERT_TO_FLT LPAREN typecast_value RPAREN
+                 | CONVERT_TO_BLN LPAREN typecast_value RPAREN
+                 | CONVERT_TO_STR LPAREN typecast_value RPAREN"""
+    p[0] = ASTNode("type_cast", [p[3]], p[1])
 # -----------------------------------------------------------------------------
 # (126) <next_val> → , <value> <next_val>
 # (127) <next_val> → null
