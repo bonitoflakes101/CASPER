@@ -1410,10 +1410,9 @@ def p_function_call(p):
     function_call : FUNCTION_NAME LPAREN arguments RPAREN  
                   | input_statement                      
     """
-    if len(p) == 5:
-        p[0] = ASTNode("function_call", children=[ASTNode("FUNCTION_NAME", value=p[1]), p[3]])
-    else:
-        p[0] = p[1]
+    if len(p) == 5: 
+        p[0] = ASTNode("function_call", children=[ ASTNode("FUNCTION_NAME", value=p[1]), ASTNode("arguments", children=p[3]) ]) 
+    else: p[0] = p[1]
 
 # -----------------------------------------------------------------------------
 # (119) <arguments> → null
