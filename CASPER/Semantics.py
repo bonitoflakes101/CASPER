@@ -484,13 +484,16 @@ class SemanticAnalyzer:
         params = []
         if node is None or node.type != "parameters":
             return params
-        if node.children and len(node.children) >= 2:
-            param_type = node.children[0].value
-            param_name = node.children[1].value
-            params.append((param_name, param_type))
-            tail = node.children[2] if len(node.children) > 2 else None
-            params.extend(self.extract_parameters_tail_info(tail))
+
+        for child in node.children:
+            if hasattr(child, "type") and child.type == "param_decl" and len(child.children) >= 2:
+            
+                param_type = child.children[0].value
+                param_name = child.children[1].value
+                params.append((param_name, param_type))
+
         return params
+
 
     def extract_parameters_tail_info(self, node):
         params = []
@@ -508,11 +511,11 @@ class SemanticAnalyzer:
         types = []
         if node is None or node.type != "parameters":
             return types
-        if node.children and len(node.children) >= 2:
-            types.append(node.children[0].value)
-            tail = node.children[2] if len(node.children) > 2 else None
-            types.extend(self.extract_parameters_tail(tail))
+        for child in node.children:
+            if hasattr(child, "type") and child.type == "param_decl" and len(child.children) >= 2:
+                types.append(child.children[0].value)
         return types
+
 
     def extract_parameters_tail(self, node):
         types = []
@@ -525,12 +528,12 @@ class SemanticAnalyzer:
         return types
 
     def visit_function_call(self, node, symtable):
-        # children: [FUNCTION_NAME node, arguments node]
+
         func_name = node.children[0].value
         if func_name not in self.declared_functions:
             self.errors.append(f"Semantic Error: Function '{func_name}' is not declared.")
             return
-        signature = self.declared_functions[func_name]  # (return_type, [parameter_types])
+        signature = self.declared_functions[func_name]  
         expected_param_types = signature[1]
         args_node = node.children[1]
         arg_types = self.extract_arguments(args_node, symtable)
@@ -550,13 +553,15 @@ class SemanticAnalyzer:
         arg_types = []
         if node is None or node.type != "arguments":
             return arg_types
-        if node.children:
-            first_arg_type = self.get_expression_type(node.children[0], symtable)
-            if first_arg_type is not None:
-                arg_types.append(first_arg_type)
-            if len(node.children) > 1 and node.children[1] is not None:
-                arg_types.extend(self.extract_arg_tail(node.children[1], symtable))
+
+        # Loop over every argument node
+        for child in node.children:
+            arg_type = self.get_expression_type(child, symtable)
+            if arg_type is not None:
+                arg_types.append(arg_type)
+
         return arg_types
+
 
     def extract_arg_tail(self, node, symtable):
         arg_types = []
