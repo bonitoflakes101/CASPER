@@ -772,7 +772,7 @@ def p_statements_tail(p):
 # -----------------------------------------------------------------------------
 def p_local_dec(p):
     """
-    local_dec : local_var_statement unli_newline local_dec_tail
+    local_dec : local_var_statement local_dec_tail unli_newline
               | empty
     """
     if len(p) == 2:
@@ -780,7 +780,7 @@ def p_local_dec(p):
         p[0] = []
     else:
         var_node = p[1]             
-        tail_nodes = p[3]         
+        tail_nodes = p[2]         
         if isinstance(tail_nodes, list):
             var_node.children.extend(tail_nodes)
         p[0] = [var_node]
@@ -1053,22 +1053,24 @@ def p_condition1(p):
 # -----------------------------------------------------------------------------
 def p_switch_statement(p):
     """
-    switch_statement : SWAP LPAREN IDENT RPAREN LBRACE switch_condition OTHERWISE LBRACE statements RBRACE RBRACE 
+    switch_statement : SWAP LPAREN IDENT RPAREN LBRACE maybe_newline switch_condition maybe_newline OTHERWISE maybe_newline LBRACE maybe_newline statements maybe_newline RBRACE maybe_newline RBRACE
     """
     p[0] = ASTNode("switch_statement", children=[
         ASTNode("IDENT", value=p[3]),
-        p[6],
-        p[9]
+        p[7],
+        p[13]
     ])
+
 
 # -----------------------------------------------------------------------------
 # (100) <switch_condition> → shift <value> : <statements> <switchcond_tail>
 # -----------------------------------------------------------------------------
 def p_switch_condition(p):
     """
-    switch_condition : SHIFT switch_value COLON statements switchcond_tail  
+    switch_condition : SHIFT switch_value COLON maybe_newline statements switchcond_tail
     """
-    p[0] = ASTNode("switch_condition", children=[p[2], p[4], p[5]])
+    p[0] = ASTNode("switch_condition", children=[p[2], p[5], p[6]])
+
 
 def p_switch_value(p):
     """switch_value  : switch_type_cast
