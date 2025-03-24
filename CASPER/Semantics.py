@@ -193,33 +193,79 @@ class SemanticAnalyzer:
                 self.check_global_assignment(assigned_node, symtable, declared_type, var_name)
 
     def check_var_tail(self, var_tail_node, symtable, declared_type, var_name):
+        # If the variable is declared as a list (e.g. "int[]", "int[][]", "flt[]", "bln[][]", etc.)
         if '[' in declared_type:
             rhs_type = self.get_expression_type(var_tail_node, symtable)
             print(f"DEBUG: {var_name} declared as {declared_type}, initializer type = {rhs_type}")
 
-            if rhs_type != declared_type:
+            # 1) If the initializer has no type, or is not recognized as a list, mismatch
+            if rhs_type is None or '[' not in rhs_type:
                 self.errors.append(
                     f"Type Error: Cannot assign '{rhs_type}' to variable '{var_name}' of type '{declared_type}'."
                 )
-            return  
+                return
 
+            # 2) Check dimension match by counting how many "[]" pairs each type has
+            declared_dim = declared_type.count("[]")   # e.g. "int[][]" -> 2
+            rhs_dim = rhs_type.count("[]")            # e.g. "int[]"   -> 1
+            if declared_dim != rhs_dim:
+                # Keep your original dimension mismatch error
+                self.errors.append(
+                    f"Type Error: Cannot assign '{rhs_type}' to variable '{var_name}' of type '{declared_type}'."
+                )
+                return
+
+            # 3) Strip off the "[]" pairs to find the base types (e.g. "int[][]" -> "int")
+            declared_base = declared_type.replace("[]", "")
+            rhs_base = rhs_type.replace("[]", "")
+
+            # 4) If base types match exactly (e.g. "int" vs. "int"), no error
+            if declared_base == rhs_base:
+                return
+
+            # 5) Otherwise, apply your “C‐style” numeric/boolean conversions:
+            #    int -> float => add .0
+            #    float -> int => truncate
+            #    bln -> float => 1.0 or 0.0
+            #    float -> bln => 0.0 => false, else true
+            #    int -> bln => 0 => false, else true
+            #    bln -> int => true => 1, false => 0
+
+            if declared_base == "int" and rhs_base in ("flt", "bln"):
+                return
+            if declared_base == "flt" and rhs_base in ("int", "bln"):
+                return
+            if declared_base == "bln" and rhs_base in ("int", "flt"):
+                return
+
+            # 6) If none of the above, we raise a type mismatch
+            self.errors.append(
+                f"Type Error: Cannot assign '{rhs_type}' to variable '{var_name}' of type '{declared_type}'."
+            )
+            return
+
+        # If it's not a list type, fall through to your existing scalar logic:
         if var_tail_node is None:
             return
+
         if isinstance(var_tail_node, list):
             for item in var_tail_node:
                 self.check_var_tail(item, symtable, declared_type, var_name)
             return
+
         if hasattr(var_tail_node, "children") and var_tail_node.children:
             for child in var_tail_node.children:
                 rhs_type = self.get_expression_type(child, symtable)
                 if rhs_type is None:
                     continue
+                # The same numeric/boolean conversions for scalars:
                 if declared_type == "bln" and rhs_type in ("int", "flt"):
                     continue
                 elif declared_type == "int" and rhs_type in ("bln", "flt"):
                     continue
                 elif declared_type == "flt" and rhs_type in ("bln", "int"):
                     continue
+
                 if rhs_type != declared_type:
                     self.errors.append(
                         f"Type Error: Cannot assign '{rhs_type}' to variable '{var_name}' of type '{declared_type}'."
@@ -230,6 +276,7 @@ class SemanticAnalyzer:
                 self.errors.append(
                     f"Type Error: Cannot assign '{rhs_type}' to variable '{var_name}' of type '{declared_type}'."
                 )
+
 
     def combine_numeric_types(self, left_type, right_type):
         if left_type == "chr" or right_type == "chr":
@@ -644,7 +691,6 @@ class SemanticAnalyzer:
                     )
             else:
                 self.errors.append("Return Type Error: No return expression provided.")
-    
     def get_list_dimension(self, node):
         if node.type != "list_value":
             return 0
@@ -656,28 +702,79 @@ class SemanticAnalyzer:
             if hasattr(first_item, "type") and first_item.type == "list_value":
                 return 1 + self.get_list_dimension(first_item)
         return 1
-
+    
     def get_list_literal_type(self, node, symtable):
         if node.type != "list_value":
             return None
-        dim = self.get_list_dimension(node)
+
+        dim = self.get_list_dimension(node)  
         if not node.children:
             return None
+
         list_elem = node.children[0]
         if not list_elem or not list_elem.children:
             return None
+
         first_item = list_elem.children[0]
         base_type = self.get_expression_type(first_item, symtable)
         print(f"DEBUG: list literal dimension={dim}, base_type={base_type}")
 
         if base_type is None:
             return None
+        self._validate_list_items(list_elem, symtable, base_type)
+
+        if len(self.errors) > 0:
+
+            return None
+
+
         if dim == 1:
             return f"{base_type}[]"
         elif dim == 2:
             return f"{base_type}[][]"
         else:
             return f"{base_type}" + "[]" * dim
+
+    def _validate_list_items(self, list_element_node, symtable, base_type):
+        if not list_element_node or not list_element_node.children:
+            return
+
+
+        first_item_node = list_element_node.children[0]
+
+        if first_item_node.type == "nested_list":
+
+            self.errors.append(
+                "Type Error: Nested list found in a 1D list declaration."
+            )
+        else:
+
+            item_type = self.get_expression_type(first_item_node, symtable)
+            if not self._is_cstyle_convertible(item_type, base_type):
+                self.errors.append(
+                    f"Type Error: Cannot convert item of type '{item_type}' to '{base_type}'."
+                )
+
+
+        if len(list_element_node.children) > 1:
+            tail_node = list_element_node.children[1]
+
+            if tail_node and tail_node.type == "list_element":
+                self._validate_list_items(tail_node, symtable, base_type)
+    
+    def _is_cstyle_convertible(self, from_type, to_type):
+ 
+        if from_type == to_type:
+            return True
+
+        if to_type == "int" and from_type in ("flt", "bln"):
+            return True
+        if to_type == "flt" and from_type in ("int", "bln"):
+            return True
+        if to_type == "bln" and from_type in ("int", "flt"):
+            return True
+
+        return False
 
 
 
