@@ -228,12 +228,18 @@ def p_list_value(p):
 # =============================================================================
 def p_list_element(p):
     """
-    list_element : literal element_tail  
+    list_element : literal element_tail
+                 | list_value element_tail
     """
-    if p[2]:
-        p[0] = ASTNode("list_element", [p[1], p[2]])
+    if isinstance(p[1], ASTNode) and p[1].type == "list_value":
+        node = ASTNode("nested_list", [p[1]])
     else:
-        p[0] = ASTNode("list_element", [p[1]])
+        node = ASTNode("literal_element", [p[1]])
+
+    if p[2]:
+        p[0] = ASTNode("list_element", [node, p[2]])
+    else:
+        p[0] = ASTNode("list_element", [node])
 
 def p_element_tail(p):
     """
