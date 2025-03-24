@@ -281,14 +281,23 @@ class SemanticAnalyzer:
                     return self.get_expression_type(node.children[0], symtable)
 
             elif node.type == "type_cast":
-                conversion_function = node.children[0].value
-                if conversion_function == "to_int":
+
+                conv_function = node.value
+                if conv_function is None:
+                    return None
+
+                conv_function = conv_function.lower()
+
+                if node.children and len(node.children) > 0:
+                    self.get_expression_type(node.children[0], symtable)
+
+                if conv_function in ("convert_to_int", "to_int"):
                     return "int"
-                elif conversion_function == "to_flt":
+                elif conv_function in ("convert_to_flt", "to_flt"):
                     return "flt"
-                elif conversion_function == "to_bln":
+                elif conv_function in ("convert_to_bln", "to_bln"):
                     return "bln"
-                elif conversion_function == "to_str":
+                elif conv_function in ("convert_to_str", "to_str"):
                     return "str"
                 else:
                     return None
