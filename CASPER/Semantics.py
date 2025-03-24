@@ -127,23 +127,31 @@ class SemanticAnalyzer:
         self.generic_visit(node, symtable)
 
     def visit_var_statement(self, node, symtable):
-        """
-        node.children = [
-            data_type_node,   # e.g. str
-            IDENT_node,       # e.g. $hello
-            None,             # from list_dec if empty
-            local_var_assign  # the assignment node
-        ]
-        """
+
         if len(node.children) < 2:
             self.generic_visit(node, symtable)
             return
 
+        # 1) Extract basic info
         data_type_node = node.children[0]
         ident_node = node.children[1]
-        declared_type = data_type_node.value
+        base_type = data_type_node.value
         var_name = ident_node.value
+        list_dec = node.children[2]  
 
+        # 2) Distinguish 1D vs. 2D
+        if list_dec is not None:
+            if list_dec.children and list_dec.children[0] is not None:
+                declared_type = f"{base_type}[][]"
+            else:
+                declared_type = f"{base_type}[]"
+        else:
+            declared_type = base_type
+
+        # 3) Print debug info
+        print(f"DEBUG: Declaring variable {var_name} with type {declared_type}")
+
+        # 4) Check local vs. global conflict
         if var_name in self.global_symbols.symbols:
             self.errors.append(
                 f"Semantic Error: Local variable '{var_name}' conflicts with global variable '{var_name}'."
@@ -156,9 +164,10 @@ class SemanticAnalyzer:
             except SemanticError as e:
                 self.errors.append(str(e))
 
-        for child in node.children[2:]:
+        for child in node.children[3:]:
             if child is not None:
                 self.check_var_tail(child, symtable, declared_type, var_name)
+
 
 
     def check_global_assignment(self, assigned_node, symtable, declared_type, var_name):
@@ -184,22 +193,27 @@ class SemanticAnalyzer:
                 self.check_global_assignment(assigned_node, symtable, declared_type, var_name)
 
     def check_var_tail(self, var_tail_node, symtable, declared_type, var_name):
+        if '[' in declared_type:
+            rhs_type = self.get_expression_type(var_tail_node, symtable)
+            print(f"DEBUG: {var_name} declared as {declared_type}, initializer type = {rhs_type}")
+
+            if rhs_type != declared_type:
+                self.errors.append(
+                    f"Type Error: Cannot assign '{rhs_type}' to variable '{var_name}' of type '{declared_type}'."
+                )
+            return  
+
         if var_tail_node is None:
             return
-        # If var_tail_node is a list, iterate over each element.
         if isinstance(var_tail_node, list):
             for item in var_tail_node:
                 self.check_var_tail(item, symtable, declared_type, var_name)
             return
-
-        # Process the node: if it has children, check each child.
         if hasattr(var_tail_node, "children") and var_tail_node.children:
             for child in var_tail_node.children:
-                # Try to get the type of the child regardless of its node type.
                 rhs_type = self.get_expression_type(child, symtable)
                 if rhs_type is None:
-                    continue  # No type deduced; skip.
-                # Allow some implicit conversions for booleans and numerics if desired.
+                    continue
                 if declared_type == "bln" and rhs_type in ("int", "flt"):
                     continue
                 elif declared_type == "int" and rhs_type in ("bln", "flt"):
@@ -211,13 +225,11 @@ class SemanticAnalyzer:
                         f"Type Error: Cannot assign '{rhs_type}' to variable '{var_name}' of type '{declared_type}'."
                     )
         else:
-            # If the node doesn't have children, try to get its type directly.
             rhs_type = self.get_expression_type(var_tail_node, symtable)
             if rhs_type is not None and rhs_type != declared_type:
                 self.errors.append(
                     f"Type Error: Cannot assign '{rhs_type}' to variable '{var_name}' of type '{declared_type}'."
                 )
-
 
     def combine_numeric_types(self, left_type, right_type):
         if left_type == "chr" or right_type == "chr":
@@ -235,165 +247,158 @@ class SemanticAnalyzer:
         if node is None:
             return None
 
-        if isinstance(node, ASTNode):
-            # Visit child nodes first to catch undeclared vars, etc.
-            for child in node.children:
+        # If not an ASTNode, bail out
+        for child in node.children:
                 self.visit(child, symtable)
 
-            if node.type == "value":
-                # The parser sometimes wraps the RHS in a "value" node.
-                if node.children:
-                    return self.get_expression_type(node.children[0], symtable)
-                return None
+        if node.type == "value":
+            if node.children:
+                return self.get_expression_type(node.children[0], symtable)
+            return None
 
-            elif node.type == "expression":
-                # Usually has children like [leftSide, maybeTail].
-                left_type = self.get_expression_type(node.children[0], symtable)
-                if len(node.children) > 1 and node.children[1]:
-                    tail = node.children[1]
-                    if tail.children and len(tail.children) >= 2:
-                        operator = tail.children[0]
-                        op_val = operator if isinstance(operator, str) else operator.value
-                        right_type = self.get_expression_type(tail.children[1], symtable)
+        elif node.type == "expression":
+            left_type = self.get_expression_type(node.children[0], symtable)
+            if len(node.children) > 1 and node.children[1]:
+                tail = node.children[1]
+                if tail.children and len(tail.children) >= 2:
+                    operator = tail.children[0]
+                    op_val = operator if isinstance(operator, str) else operator.value
+                    right_type = self.get_expression_type(tail.children[1], symtable)
 
-                        if "str" in (left_type, right_type):
-                            if left_type == "str" and right_type == "str" and op_val == "+":
-                                return "str"
-                            else:
-                                self.errors.append(
-                                    "Type Error: Mixing string values with non-string values "
-                                    "is not allowed unless type-casted."
-                                )
-                                return None
-
-                        if left_type is None or right_type is None:
+                    if "str" in (left_type, right_type):
+                        if left_type == "str" and right_type == "str" and op_val == "+":
+                            return "str"
+                        else:
+                            self.errors.append(
+                                "Type Error: Mixing string values with non-string values is not allowed unless type-casted."
+                            )
                             return None
 
-                        if left_type == right_type:
-                            return left_type
-                        else:
-                            return self.combine_numeric_types(left_type, right_type)
-                return left_type
+                    if left_type is None or right_type is None:
+                        return None
 
-            elif node.type == "factor":
-                # If you still have "factor" nodes, handle them here.
-                if node.children:
-                    return self.get_expression_type(node.children[0], symtable)
+                    if left_type == right_type:
+                        return left_type
+                    else:
+                        return self.combine_numeric_types(left_type, right_type)
+            return left_type
 
-            elif node.type == "type_cast":
-
-                conv_function = node.value
-                if conv_function is None:
-                    return None
-
-                conv_function = conv_function.lower()
-
-                if node.children and len(node.children) > 0:
-                    self.get_expression_type(node.children[0], symtable)
-
-                if conv_function in ("convert_to_int", "to_int"):
-                    return "int"
-                elif conv_function in ("convert_to_flt", "to_flt"):
-                    return "flt"
-                elif conv_function in ("convert_to_bln", "to_bln"):
-                    return "bln"
-                elif conv_function in ("convert_to_str", "to_str"):
-                    return "str"
-                else:
-                    return None
-
-            elif node.type == "chr_lit":
-                return "chr"
-
-            elif node.type == "str_lit":
-                return "str"
-
-            elif node.type == "literal":
-                val = node.value
-                if isinstance(val, int):
-                    return "int"
-                elif isinstance(val, float):
-                    return "flt"
-                elif val in ("Day", "Night"):
-                    return "bln"
-                return "str"
-
-            elif node.type == "factor_literal1":
-                val = node.value
-                if isinstance(val, int):
-                    return "int"
-                elif isinstance(val, float):
-                    return "flt"
-                elif val in ("Day", "Night"):
-                    return "bln"
-                return "str"
-
-            elif node.type == "local_var_assign":
-                if node.children:
-                    return self.get_expression_type(node.children[0], symtable)
-                return None
-
-            elif node.type == "var_call":
-                var_name = node.children[0].value
-                try:
-                    return symtable.lookup(var_name)
-                except SemanticError as e:
-                    if var_name not in self.reported_undeclared_vars:
-                        self.errors.append(str(e))
-                        self.reported_undeclared_vars.add(var_name)
-                    return None
-
-            elif node.type == "function_call":
-                func_name = node.children[0].value
-                if func_name in self.declared_functions:
-                    ret_type = self.declared_functions[func_name][0]
-                    return ret_type
-                else:
-                    self.errors.append(f"Semantic Error: Function '{func_name}' is not declared.")
-                    return None
-
-            elif node.type in ("neg_int", "factor_neg_int"):
-                return "int"
-            elif node.type in ("neg_flt", "factor_neg_flt"):
-                return "flt"
-
-            elif node.type in ("var_postfix", "factor_var_postfix"):
-                var_type = self.get_expression_type(node.children[0], symtable)
-                return var_type
-
-    
-            elif node.type in ("paren", "factor_paren"):
+        elif node.type == "factor":
+            if node.children:
                 return self.get_expression_type(node.children[0], symtable)
 
-  
-            elif node.type == "factor_tail_binop":    
-                operator_node = node.children[0]
-                right_node = node.children[1]
-                tail_node = node.children[2]
+        elif node.type == "type_cast":
+            conv_function = node.value
+            if conv_function is None:
+                return None
 
-                op = operator_node if isinstance(operator_node, str) else operator_node.value
-                right_type = self.get_expression_type(right_node, symtable)
+            conv_function = conv_function.lower()
 
-        
-                if tail_node is not None:
-                    tail_type = self.get_expression_type(tail_node, symtable)
-                    if right_type and tail_type:
-                        return self.combine_numeric_types(right_type, tail_type)
-                    return right_type or tail_type
+            if node.children and len(node.children) > 0:
+                self.get_expression_type(node.children[0], symtable)
 
-            
-                return right_type
-
-            self.generic_visit(node, symtable)
-            return None
-        elif isinstance(node, tuple):
-            tag = node[0]
-            if tag in ("condition_binop", "for_loop_condition_binop", "until_loop_condition_binop"):
+            if conv_function in ("convert_to_int", "to_int"):
+                return "int"
+            elif conv_function in ("convert_to_flt", "to_flt"):
+                return "flt"
+            elif conv_function in ("convert_to_bln", "to_bln"):
                 return "bln"
+            elif conv_function in ("convert_to_str", "to_str"):
+                return "str"
+            else:
+                return None
+
+        elif node.type == "chr_lit":
+            return "chr"
+
+        elif node.type == "str_lit":
+            return "str"
+
+        elif node.type == "list_value":
+            return self.get_list_literal_type(node, symtable)
+
+        elif node.type == "literal":
+            print("DEBUG in literal:", node.value, type(node.value))
+            val = node.value
+            if isinstance(val, int):
+                return "int"
+            elif isinstance(val, float):
+                return "flt"
+            elif val in ("Day", "Night"):
+                return "bln"
+            return "str"
+        
+        elif node.type == "literal_element":
+            if node.children:
+                return self.get_expression_type(node.children[0], symtable)
+            return None
+    
+        elif node.type == "factor_literal1":
+            val = node.value
+            if isinstance(val, int):
+                return "int"
+            elif isinstance(val, float):
+                return "flt"
+            elif val in ("Day", "Night"):
+                return "bln"
+            return "str"
+
+        elif node.type == "local_var_assign":
+            if node.children:
+                return self.get_expression_type(node.children[0], symtable)
             return None
 
-        else:
-            return None
+        elif node.type == "var_call":
+            var_name = node.children[0].value
+            try:
+                return symtable.lookup(var_name)
+            except SemanticError as e:
+                if var_name not in self.reported_undeclared_vars:
+                    self.errors.append(str(e))
+                    self.reported_undeclared_vars.add(var_name)
+                return None
+
+        elif node.type == "function_call":
+            func_name = node.children[0].value
+            if func_name in self.declared_functions:
+                ret_type = self.declared_functions[func_name][0]
+                return ret_type
+            else:
+                self.errors.append(f"Semantic Error: Function '{func_name}' is not declared.")
+                return None
+
+        elif node.type in ("neg_int", "factor_neg_int"):
+            return "int"
+        elif node.type in ("neg_flt", "factor_neg_flt"):
+            return "flt"
+
+        elif node.type in ("var_postfix", "factor_var_postfix"):
+            var_type = self.get_expression_type(node.children[0], symtable)
+            return var_type
+
+        elif node.type in ("paren", "factor_paren"):
+            return self.get_expression_type(node.children[0], symtable)
+
+        elif node.type == "factor_tail_binop":
+            operator_node = node.children[0]
+            right_node = node.children[1]
+            tail_node = node.children[2]
+
+            op = operator_node if isinstance(operator_node, str) else operator_node.value
+            right_type = self.get_expression_type(right_node, symtable)
+
+            if tail_node is not None:
+                tail_type = self.get_expression_type(tail_node, symtable)
+                if right_type and tail_type:
+                    return self.combine_numeric_types(right_type, tail_type)
+                return right_type or tail_type
+
+            return right_type
+
+        # ### REORDER: Now we do a fallback "visit" last, in case we missed anything
+        self.generic_visit(node, symtable)
+        return None
+
 
 
 
@@ -639,6 +644,40 @@ class SemanticAnalyzer:
                     )
             else:
                 self.errors.append("Return Type Error: No return expression provided.")
+    
+    def get_list_dimension(self, node):
+        if node.type != "list_value":
+            return 0
+        if not node.children:
+            return 1
+        list_elem = node.children[0]  
+        if list_elem and hasattr(list_elem, "children") and list_elem.children:
+            first_item = list_elem.children[0]
+            if hasattr(first_item, "type") and first_item.type == "list_value":
+                return 1 + self.get_list_dimension(first_item)
+        return 1
+
+    def get_list_literal_type(self, node, symtable):
+        if node.type != "list_value":
+            return None
+        dim = self.get_list_dimension(node)
+        if not node.children:
+            return None
+        list_elem = node.children[0]
+        if not list_elem or not list_elem.children:
+            return None
+        first_item = list_elem.children[0]
+        base_type = self.get_expression_type(first_item, symtable)
+        print(f"DEBUG: list literal dimension={dim}, base_type={base_type}")
+
+        if base_type is None:
+            return None
+        if dim == 1:
+            return f"{base_type}[]"
+        elif dim == 2:
+            return f"{base_type}[][]"
+        else:
+            return f"{base_type}" + "[]" * dim
 
 
 
