@@ -707,26 +707,44 @@ class SemanticAnalyzer:
         if node.type != "list_value":
             return None
 
-        dim = self.get_list_dimension(node)  
+        dim = self.get_list_dimension(node)
         if not node.children:
             return None
+
 
         list_elem = node.children[0]
         if not list_elem or not list_elem.children:
             return None
 
         first_item = list_elem.children[0]
-        base_type = self.get_expression_type(first_item, symtable)
+
+        if first_item.type == "list_value":
+            inner_type = self.get_list_literal_type(first_item, symtable)
+
+            if inner_type and inner_type.endswith("[]"):
+                base_type = inner_type[:-2]
+            else:
+                base_type = inner_type
+        elif first_item.type == "nested_list":
+            from Parser import ASTNode
+            fake_list_val = ASTNode("list_value", children=first_item.children)
+            inner_type = self.get_list_literal_type(fake_list_val, symtable)
+            if inner_type and inner_type.endswith("[]"):
+                base_type = inner_type[:-2]
+            else:
+                base_type = inner_type
+        else:
+            base_type = self.get_expression_type(first_item, symtable)
+
         print(f"DEBUG: list literal dimension={dim}, base_type={base_type}")
 
         if base_type is None:
             return None
-        self._validate_list_items(list_elem, symtable, base_type)
+
+        self._validate_list_items(list_elem, symtable, base_type, dim)
 
         if len(self.errors) > 0:
-
             return None
-
 
         if dim == 1:
             return f"{base_type}[]"
@@ -735,32 +753,43 @@ class SemanticAnalyzer:
         else:
             return f"{base_type}" + "[]" * dim
 
-    def _validate_list_items(self, list_element_node, symtable, base_type):
+
+
+    def _validate_list_items(self, list_element_node, symtable, base_type, dim):
+        """
+        Recursively checks each item in 'list_element_node' to ensure
+        it can be assigned to the overall 'base_type' (given 'dim').
+        - If the item is a sub-list_value, we expect it to have dimension=dim-1.
+        - If it's a literal, we do your _is_cstyle_convertible check.
+        """
         if not list_element_node or not list_element_node.children:
             return
 
 
         first_item_node = list_element_node.children[0]
 
-        if first_item_node.type == "nested_list":
+        if first_item_node.type == "list_value":
+            sub_type = self.get_list_literal_type(first_item_node, symtable)
+            if sub_type is None:
+                return  
 
-            self.errors.append(
-                "Type Error: Nested list found in a 1D list declaration."
-            )
+            expected_sub = f"{base_type}{'[]'*(dim-1)}"
+            if sub_type != expected_sub:
+                self.errors.append(
+                    f"Type Error: Row has type '{sub_type}' but expected '{expected_sub}' for dimension={dim}."
+                )
         else:
-
             item_type = self.get_expression_type(first_item_node, symtable)
             if not self._is_cstyle_convertible(item_type, base_type):
                 self.errors.append(
                     f"Type Error: Cannot convert item of type '{item_type}' to '{base_type}'."
                 )
 
-
         if len(list_element_node.children) > 1:
             tail_node = list_element_node.children[1]
-
             if tail_node and tail_node.type == "list_element":
-                self._validate_list_items(tail_node, symtable, base_type)
+                self._validate_list_items(tail_node, symtable, base_type, dim)
+
     
     def _is_cstyle_convertible(self, from_type, to_type):
  
