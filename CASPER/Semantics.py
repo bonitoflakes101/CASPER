@@ -101,19 +101,45 @@ class SemanticAnalyzer:
             self.visit(child, symtable)
 
     def visit_global_statement(self, node, symtable):
-        # Expecting children: [data_type, IDENT, (optional var tail)]
+        """
+        node.children layout:
+        0 -> data_type_node  (e.g. "int")
+        1 -> ident_node      (e.g. "$hello")
+        2 -> list_dec_node   (None or the 'list_dec' AST)
+        3 -> assignment_node (None or 'list_value' / 'expression')
+        """
         data_type_node = node.children[0]
-        ident_node = node.children[1]
-        var_name = ident_node.value
-        var_type = data_type_node.value
+        ident_node     = node.children[1]
+        list_dec_node  = node.children[2]
+        assignment_node = node.children[3]
 
+        base_type = data_type_node.value
+        declared_type = base_type
+
+        # (A) If we see 'list_dec_node', decide 1D vs. 2D
+        if list_dec_node is not None:
+            if list_dec_node.children and list_dec_node.children[0] is not None:
+                declared_type = base_type + "[][]"
+            else:
+                declared_type = base_type + "[]"
+
+        # (B) Add symbol to global table
         try:
-            self.global_symbols.add(var_name, var_type)
+            self.global_symbols.add(ident_node.value, declared_type)
         except SemanticError as e:
             self.errors.append(str(e))
-        if len(node.children) > 2 and node.children[2]:
-            tail_node = node.children[2]
-            self._process_global_statement_tail(tail_node, symtable, var_type, var_name)
+
+        # (C) If there's an assignment, check dimension mismatch or type mismatch
+        if assignment_node is not None:
+            # Example approach:
+            if assignment_node.type == "list_value":
+                # Use get_list_dimension or check_global_assignment
+                self.check_global_assignment(assignment_node, symtable, declared_type, ident_node.value)
+            else:
+                # e.g. expression
+                self.check_global_assignment(assignment_node, symtable, declared_type, ident_node.value)
+
+
 
     def visit_var_call(self, node, symtable):
         # In the new AST, the variable name is in the first child (type "IDENT")
@@ -172,13 +198,58 @@ class SemanticAnalyzer:
 
     def check_global_assignment(self, assigned_node, symtable, declared_type, var_name):
         rhs_type = self.get_expression_type(assigned_node, symtable)
+
+        # 1) If both declared and assigned are lists, compare dimensions
+        if '[' in declared_type and rhs_type and '[' in rhs_type:
+            declared_dim = declared_type.count("[]")
+            rhs_dim = rhs_type.count("[]")
+
+            # Dimension mismatch => error
+            if declared_dim != rhs_dim:
+                self.errors.append(
+                    f"Type Error: Cannot assign '{rhs_type}' to variable '{var_name}' of type '{declared_type}'."
+                )
+                return
+
+            # Compare base types, e.g. 'int' vs. 'flt'
+            declared_base = declared_type.replace("[]", "")
+            rhs_base = rhs_type.replace("[]", "")
+
+            # If base types match => no error
+            if declared_base == rhs_base:
+                return
+
+            # Otherwise, apply your C‐style numeric/boolean conversions:
+            if declared_base == "int" and rhs_base in ("flt", "bln"):
+                return
+            if declared_base == "flt" and rhs_base in ("int", "bln"):
+                return
+            if declared_base == "bln" and rhs_base in ("int", "flt"):
+                return
+
+            # If none of the above => mismatch
+            self.errors.append(
+                f"Type Error: Cannot assign '{rhs_type}' to variable '{var_name}' of type '{declared_type}'."
+            )
+            return
+
+        # 2) If only one side is a list => mismatch
+        if ('[' in declared_type) ^ (rhs_type and '[' in rhs_type):
+            self.errors.append(
+                f"Type Error: Cannot assign '{rhs_type}' to variable '{var_name}' of type '{declared_type}'."
+            )
+            return
+
+        # 3) Otherwise, treat as scalar. Check base type or numeric conversions:
         if declared_type == "bln" and rhs_type in ("int", "flt"):
-            pass
+            return
         elif declared_type == "int" and rhs_type in ("bln", "flt"):
-            pass
+            return
         elif declared_type == "flt" and rhs_type in ("bln", "int"):
-            pass
-        elif rhs_type != declared_type:
+            return
+
+        # Final fallback if none of the above matched
+        if rhs_type != declared_type:
             self.errors.append(
                 f"Type Error: Cannot assign '{rhs_type}' to variable '{var_name}' of type '{declared_type}'."
             )

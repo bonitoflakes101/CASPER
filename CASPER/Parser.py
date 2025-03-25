@@ -100,22 +100,32 @@ def p_global_tail(p):
 # =============================================================================
 def p_global_statement(p):
     """
-        global_statement : var_statement global_statement_tail
+    global_statement : var_statement global_statement_tail
     """
-    var_children = p[1].children.copy()
-    assign_expr = None
-    if p[2]:
-        for tail_item in p[2]:
-            if hasattr(tail_item, "children") and tail_item.children:
-                if tail_item.children[0].value == "=":
-                    assign_expr = tail_item.children[1]
-                    break
-    if assign_expr is not None:
-        if len(var_children) >= 3:
-            var_children[2] = assign_expr
-        else:
-            var_children.append(assign_expr)
-    p[0] = ASTNode("global_statement", children=var_children)
+
+    var_node = p[1]
+    tail = p[2] 
+
+    data_type_node = var_node.children[0]
+    ident_node     = var_node.children[1]
+    list_dec_node  = var_node.children[2]  
+
+    assignment_node = None
+    if tail:
+        for tail_item in tail:
+            if (
+                hasattr(tail_item, "children") 
+                and tail_item.children
+                and tail_item.children[0].value == "="
+            ):
+                assignment_node = tail_item.children[1]
+                break
+
+    p[0] = ASTNode(
+        "global_statement", 
+        children=[data_type_node, ident_node, list_dec_node, assignment_node]
+    )
+
 
 
 # =============================================================================
@@ -1187,7 +1197,7 @@ def p_condition_factor(p):
 
 def p_condition_var_call(p):
     """
-    condition_var_call : IDENT list_index  
+    condition_var_call : IDENT condition_list_index  
     """
     p[0] = ASTNode("var_call", children=[ASTNode("IDENT", value=p[1]), p[2]])
 
