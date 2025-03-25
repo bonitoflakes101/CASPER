@@ -39,7 +39,8 @@ class SemanticAnalyzer:
         self.global_symbols = SymbolTable()
         self.errors = []
         self.reported_undeclared_vars = set()
-        self.declared_functions = {}  # maps function name -> (return_type, [parameter_types])
+        self.declared_functions = {} 
+        self.array_lengths = {}    
 
     def analyze(self, ast):
         print("=== DEBUG: AST Structure ===")
@@ -102,43 +103,36 @@ class SemanticAnalyzer:
             self.visit(child, symtable)
 
     def visit_global_statement(self, node, symtable):
-        """
-        node.children layout:
-        0 -> data_type_node  (e.g. "int")
-        1 -> ident_node      (e.g. "$hello")
-        2 -> list_dec_node   (None or the 'list_dec' AST)
-        3 -> assignment_node (None or 'list_value' / 'expression')
-        """
         data_type_node = node.children[0]
         ident_node     = node.children[1]
         list_dec_node  = node.children[2]
-        assignment_node = node.children[3]
+        assignment_node = None
+        if len(node.children) >= 4:
+            assignment_node = node.children[3]
 
         base_type = data_type_node.value
         declared_type = base_type
 
-        # (A) If we see 'list_dec_node', decide 1D vs. 2D
         if list_dec_node is not None:
             if list_dec_node.children and list_dec_node.children[0] is not None:
                 declared_type = base_type + "[][]"
             else:
                 declared_type = base_type + "[]"
 
-        # (B) Add symbol to global table
         try:
             self.global_symbols.add(ident_node.value, declared_type)
         except SemanticError as e:
             self.errors.append(str(e))
 
-        # (C) If there's an assignment, check dimension mismatch or type mismatch
         if assignment_node is not None:
-            # Example approach:
             if assignment_node.type == "list_value":
-                # Use get_list_dimension or check_global_assignment
+                length = self.get_list_literal_length(assignment_node)
+                # Record the length for later bounds checking.
+                self.array_lengths[ident_node.value] = length
                 self.check_global_assignment(assignment_node, symtable, declared_type, ident_node.value)
             else:
-                # e.g. expression
                 self.check_global_assignment(assignment_node, symtable, declared_type, ident_node.value)
+
 
 
 
@@ -154,7 +148,6 @@ class SemanticAnalyzer:
         self.generic_visit(node, symtable)
 
     def visit_var_statement(self, node, symtable):
-
         if len(node.children) < 2:
             self.generic_visit(node, symtable)
             return
@@ -164,7 +157,7 @@ class SemanticAnalyzer:
         ident_node = node.children[1]
         base_type = data_type_node.value
         var_name = ident_node.value
-        list_dec = node.children[2]  
+        list_dec = node.children[2]
 
         # 2) Distinguish 1D vs. 2D
         if list_dec is not None:
@@ -178,7 +171,7 @@ class SemanticAnalyzer:
         # 3) Print debug info
         print(f"DEBUG: Declaring variable {var_name} with type {declared_type}")
 
-        # 4) Check local vs. global conflict
+        # 4) Check local vs. global conflict and add to the symbol table
         if var_name in self.global_symbols.symbols:
             self.errors.append(
                 f"Semantic Error: Local variable '{var_name}' conflicts with global variable '{var_name}'."
@@ -193,7 +186,22 @@ class SemanticAnalyzer:
 
         for child in node.children[3:]:
             if child is not None:
+                if getattr(child, "type", None) == "list_value":
+                    length = self.get_list_literal_length(child)
+                    self.array_lengths[var_name] = length
+                    break
+                if (getattr(child, "type", None) == "local_var_assign" and child.children):
+                    possible_list = child.children[0]
+                    if possible_list.type == "list_value":
+                        length = self.get_list_literal_length(possible_list)
+                        self.array_lengths[var_name] = length
+                        break
+
+        for child in node.children[3:]:
+            if child is not None:
                 self.check_var_tail(child, symtable, declared_type, var_name)
+
+
 
 
 
@@ -886,14 +894,45 @@ class SemanticAnalyzer:
 
         # 1) Figure out the left variable's type
         if left_node.type == "var_call":
-            # e.g. $arr[2]
             var_name = left_node.children[0].value
+            print("NEW DEBUG: array_lengths =", self.array_lengths)
+            print("NEW DEBUG: Checking var_name =", var_name)
+
+            # If there's a second child, it's the single index node (e.g. literal(value=4)).
+            if len(left_node.children) > 1:
+                index_node = left_node.children[1]
+
+                # If it's a list, pick out the first element
+                if isinstance(index_node, list) and len(index_node) > 0:
+                    index_node = index_node[0]
+
+                if (hasattr(index_node, "type") 
+                    and index_node.type == "literal" 
+                    and isinstance(index_node.value, int)):
+
+                    index_val = index_node.value
+                    if var_name in self.array_lengths:
+                        length = self.array_lengths[var_name]
+                        if index_val >= length:
+                            self.errors.append(
+                                f"Out of bounds error: Index {index_val} is out of bounds "
+                                f"for variable '{var_name}' of length {length}."
+                            )
+
+                # If it's an IDENT, skip or handle differently (e.g. $fruits[i])
+                elif (hasattr(index_node, "type") 
+                    and index_node.type == "IDENT"):
+                    pass
+
+            # Then do your usual lookup
             try:
                 left_type = symtable.lookup(var_name)
             except SemanticError as e:
                 if var_name not in self.reported_undeclared_vars:
                     self.errors.append(str(e))
                     self.reported_undeclared_vars.add(var_name)
+
+
         elif left_node.type == "IDENT":
             # e.g. $foo
             var_name = left_node.value
@@ -911,7 +950,7 @@ class SemanticAnalyzer:
         # 2) Next child
         right_node = node.children[1]
 
-        # 3) Distinguish if right_node is "assign_op" (direct '=' or '+=')
+        # 3) Distinguish if right_node is "assign_op" (direct '=' or '+='),
         #    or "assign_tail_op" (old-style node with [ "=", expression ]).
         if right_node.type == "assign_op":
             # Means shape is [ var_call, assign_op("=" or "+="), valueNode ]
@@ -932,13 +971,11 @@ class SemanticAnalyzer:
 
             self.check_assignment_types(left_node, value_node, symtable, op)
 
-
         else:
             # Possibly we are dealing with "IDENT .splice(...)" or "IDENT .push(...)"
             self.visit(right_node, symtable)
 
     def check_assignment_types(self, left_node, value_node, symtable, op):
-
         left_type = None
         if left_node.type == "var_call":
             var_name = left_node.children[0].value
@@ -955,14 +992,23 @@ class SemanticAnalyzer:
         else:
             return
 
-        # 2) get right_type
         right_type = self.get_expression_type(value_node, symtable)
-
-        # 3) if left_type or right_type is None => skip
         if left_type is None or right_type is None:
             return
 
-        # 4) if array mismatch => error
+        # If the left-hand side is an array access (var_call with indices), compare base types.
+        if left_node.type == "var_call" and len(left_node.children) > 1 and left_node.children[1]:
+            # Extract the base type from the declared array type.
+            base_type = left_type.replace("[]", "")
+            if base_type == right_type:
+                return  # Assignment is allowed.
+            else:
+                self.errors.append(
+                    f"Type Error: Cannot assign '{right_type}' to element of variable '{var_name}' with base type '{base_type}'."
+                )
+                return
+
+        # Otherwise, if both sides are arrays or both are scalars, continue with the existing checks.
         left_is_list = '[' in left_type
         right_is_list = '[' in right_type
         if left_is_list != right_is_list:
@@ -971,7 +1017,6 @@ class SemanticAnalyzer:
             )
             return
 
-        # 5) numeric conversions
         if left_type == "bln" and right_type in ("int", "flt"):
             return
         if left_type == "int" and right_type in ("bln", "flt"):
@@ -979,11 +1024,31 @@ class SemanticAnalyzer:
         if left_type == "flt" and right_type in ("bln", "int"):
             return
 
-        # 6) exact match
         if left_type != right_type:
             self.errors.append(
                 f"Type Error: Cannot assign '{right_type}' to variable '{left_type}'."
             )
+
+    def get_list_literal_length(self, node):
+        """
+        Recursively computes the length of the list literal represented by the AST node.
+        """
+        if node.type != "list_value" or not node.children:
+            return 0
+        list_elem = node.children[0]  # This should be a "list_element" node.
+        return self.count_list_elements(list_elem)
+
+    def count_list_elements(self, node):
+        """
+        Recursively counts comma-separated elements in the list literal.
+        """
+        if node is None:
+            return 0
+        count = 1  # Count the current element.
+        # If there is an element tail (comma-separated continuation), count it recursively.
+        if len(node.children) > 1 and node.children[1] is not None:
+            count += self.count_list_elements(node.children[1])
+        return count
 
 
 

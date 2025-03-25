@@ -403,12 +403,17 @@ def p_factor_list_index2(p):
     else:
         p[0] = [p[2]]
 
-def p_factor_index(p):
-    """
-    factor_index : INT_LIT    
-          | IDENT      
-    """
-    p[0] = p[1]
+
+
+def p_factor__int_lit(p):
+    """factor_index : INT_LIT"""
+    # Instead of returning the bare int, build a literal node
+    p[0] = ASTNode("literal", value=p[1])
+
+def p_factor_index_ident(p):
+    """factor_index : IDENT"""
+    p[0] = ASTNode("IDENT", value=p[1])
+
 
 def p_factor_expression_tail(p):
     """
@@ -768,13 +773,15 @@ def p_revive_list_index2(p):
     else:
         p[0] = [p[2]]
 
-def p_revive_index(p):
-    """
-    revive_index : INT_LIT    
-          | IDENT      
-    """
-    p[0] = p[1]
 
+def p_revive_int_lit(p):
+    """revive_index : INT_LIT"""
+    # Instead of returning the bare int, build a literal node
+    p[0] = ASTNode("literal", value=p[1])
+
+def p_revive_index_ident(p):
+    """revive_index : IDENT"""
+    p[0] = ASTNode("IDENT", value=p[1])
 def p_revive_factor_tail(p):
     """
     revive_factor_tail : PLUS revive_factor revive_factor_tail
@@ -1084,14 +1091,15 @@ def p_local_list_index2(p):
     else:
         p[0] = [p[2]]
 
-def p_local_index(p):
-    """
-    local_index : INT_LIT    
-          | IDENT      
-    """
-    p[0] = p[1]
 
+def p_local_int_lit(p):
+    """local_index : INT_LIT"""
+    # Instead of returning the bare int, build a literal node
+    p[0] = ASTNode("literal", value=p[1])
 
+def p_local_index_ident(p):
+    """local_index : IDENT"""
+    p[0] = ASTNode("IDENT", value=p[1])
 def p_local_factor_tail(p):
     """
     local_factor_tail : PLUS local_factor local_factor_tail
@@ -1235,13 +1243,15 @@ def p_condition_list_index2(p):
     else:
         p[0] = [p[2]]
 
-def p_condition_index(p):
-    """
-    condition_index : INT_LIT    
-          | IDENT      
-    """
-    p[0] = p[1]
 
+def p_condition_int_lit(p):
+    """condition_index : INT_LIT"""
+    # Instead of returning the bare int, build a literal node
+    p[0] = ASTNode("literal", value=p[1])
+
+def p_condition_index_ident(p):
+    """condition_index : IDENT"""
+    p[0] = ASTNode("IDENT", value=p[1])
 def p_condition_tail(p):
     """
     condition_tail : PLUS condition_factor condition_tail
@@ -1387,13 +1397,14 @@ def p_switch_list_index2(p):
     else:
         p[0] = [p[2]]
 
-def p_switch_index(p):
-    """
-    switch_index : INT_LIT    
-          | IDENT      
-    """
-    p[0] = p[1]
+def p_switch_int_lit(p):
+    """switch_index : INT_LIT"""
+    # Instead of returning the bare int, build a literal node
+    p[0] = ASTNode("literal", value=p[1])
 
+def p_switch_index_ident(p):
+    """switch_index : IDENT"""
+    p[0] = ASTNode("IDENT", value=p[1])
 
 def p_switch_factor_tail(p):
     """
@@ -1548,12 +1559,17 @@ def p_for_list_index2(p):
     else:
         p[0] = [p[2]]
 
-def p_for_index(p):
-    """
-    for_index : INT_LIT    
-          | IDENT      
-    """
-    p[0] = p[1]
+
+def p_for_int_lit(p):
+    """for_index : INT_LIT"""
+    # Instead of returning the bare int, build a literal node
+    p[0] = ASTNode("literal", value=p[1])
+
+def p_for_index_ident(p):
+    """for_index : IDENT"""
+    p[0] = ASTNode("IDENT", value=p[1])
+
+
 
 def p_for_factor_tail(p):
     """
@@ -1676,12 +1692,16 @@ def p_until_list_index2(p):
     else:
         p[0] = [p[2]]
 
-def p_until_index(p):
-    """
-    until_index : INT_LIT    
-          | IDENT      
-    """
-    p[0] = p[1]
+
+
+def p_until_int_lit(p):
+    """until_index : INT_LIT"""
+    # Instead of returning the bare int, build a literal node
+    p[0] = ASTNode("literal", value=p[1])
+
+def p_until_index_ident(p):
+    """until_index : IDENT"""
+    p[0] = ASTNode("IDENT", value=p[1])
 
 def p_until_factor_tail(p):
     """
@@ -1934,12 +1954,15 @@ def p_output_list_index2(p):
     else:
         p[0] = [p[2]]
 
-def p_output_index(p):
-    """
-    output_index : INT_LIT    
-          | IDENT      
-    """
-    p[0] = p[1]
+
+def p_output_int_lit(p):
+    """output_index : INT_LIT"""
+    # Instead of returning the bare int, build a literal node
+    p[0] = ASTNode("literal", value=p[1])
+
+def p_output_index_ident(p):
+    """output_index : IDENT"""
+    p[0] = ASTNode("IDENT", value=p[1])
 
 def p_output_factor_tail(p):
     """
@@ -2156,12 +2179,14 @@ def p_list_index2(p):
 # (149) <index> → int_literal
 # (150) <index> → IDENTIFIER
 # -----------------------------------------------------------------------------
-def p_index(p):
-    """
-    index : INT_LIT    
-          | IDENT      
-    """
-    p[0] = p[1]
+
+def p_index_int_lit(p):
+    """index : INT_LIT"""
+    p[0] = ASTNode("literal", value=p[1])
+
+def p_index_ident(p):
+    """index : IDENT"""
+    p[0] = ASTNode("IDENT", value=p[1])
 
 # -----------------------------------------------------------------------------
 # (151) <postfix> → null
@@ -2263,12 +2288,15 @@ def p_value_list_index2(p):
     else:
         p[0] = [p[2]]
 
-def p_value_index(p):
-    """
-    value_index : INT_LIT    
-          | IDENT      
-    """
-    p[0] = p[1]
+
+def p_value_int_lit(p):
+    """value_index : INT_LIT"""
+    # Instead of returning the bare int, build a literal node
+    p[0] = ASTNode("literal", value=p[1])
+
+def p_value_index_ident(p):
+    """value_index : IDENT"""
+    p[0] = ASTNode("IDENT", value=p[1])
 
 def p_value_factor_tail(p):
     """
