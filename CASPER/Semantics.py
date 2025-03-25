@@ -199,27 +199,23 @@ class SemanticAnalyzer:
     def check_global_assignment(self, assigned_node, symtable, declared_type, var_name):
         rhs_type = self.get_expression_type(assigned_node, symtable)
 
-        # 1) If both declared and assigned are lists, compare dimensions
         if '[' in declared_type and rhs_type and '[' in rhs_type:
             declared_dim = declared_type.count("[]")
             rhs_dim = rhs_type.count("[]")
 
-            # Dimension mismatch => error
             if declared_dim != rhs_dim:
                 self.errors.append(
                     f"Type Error: Cannot assign '{rhs_type}' to variable '{var_name}' of type '{declared_type}'."
                 )
                 return
 
-            # Compare base types, e.g. 'int' vs. 'flt'
+  
             declared_base = declared_type.replace("[]", "")
             rhs_base = rhs_type.replace("[]", "")
 
-            # If base types match => no error
             if declared_base == rhs_base:
                 return
 
-            # Otherwise, apply your C‐style numeric/boolean conversions:
             if declared_base == "int" and rhs_base in ("flt", "bln"):
                 return
             if declared_base == "flt" and rhs_base in ("int", "bln"):
@@ -227,20 +223,21 @@ class SemanticAnalyzer:
             if declared_base == "bln" and rhs_base in ("int", "flt"):
                 return
 
-            # If none of the above => mismatch
             self.errors.append(
                 f"Type Error: Cannot assign '{rhs_type}' to variable '{var_name}' of type '{declared_type}'."
             )
             return
 
-        # 2) If only one side is a list => mismatch
-        if ('[' in declared_type) ^ (rhs_type and '[' in rhs_type):
+        list_declared = ('[' in declared_type)
+        list_assigned = (rhs_type is not None) and ('[' in rhs_type)
+
+        if list_declared != list_assigned:
             self.errors.append(
-                f"Type Error: Cannot assign '{rhs_type}' to variable '{var_name}' of type '{declared_type}'."
+                f"Type Error: Cannot assign '{rhs_type}' to variable '{var_name}' "
+                f"of type '{declared_type}'."
             )
             return
 
-        # 3) Otherwise, treat as scalar. Check base type or numeric conversions:
         if declared_type == "bln" and rhs_type in ("int", "flt"):
             return
         elif declared_type == "int" and rhs_type in ("bln", "flt"):
@@ -248,7 +245,6 @@ class SemanticAnalyzer:
         elif declared_type == "flt" and rhs_type in ("bln", "int"):
             return
 
-        # Final fallback if none of the above matched
         if rhs_type != declared_type:
             self.errors.append(
                 f"Type Error: Cannot assign '{rhs_type}' to variable '{var_name}' of type '{declared_type}'."
