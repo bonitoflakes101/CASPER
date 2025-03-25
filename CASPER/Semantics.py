@@ -40,7 +40,8 @@ class SemanticAnalyzer:
         self.errors = []
         self.reported_undeclared_vars = set()
         self.declared_functions = {} 
-        self.array_lengths = {}    
+        self.array_lengths = {}   
+        self.array_2d_lengths = {}  
 
     def analyze(self, ast):
         print("=== DEBUG: AST Structure ===")
@@ -113,25 +114,50 @@ class SemanticAnalyzer:
         base_type = data_type_node.value
         declared_type = base_type
 
+        # Distinguish 1D vs 2D
         if list_dec_node is not None:
             if list_dec_node.children and list_dec_node.children[0] is not None:
                 declared_type = base_type + "[][]"
             else:
                 declared_type = base_type + "[]"
 
+        # Add the variable to the global symbol table
         try:
             self.global_symbols.add(ident_node.value, declared_type)
         except SemanticError as e:
             self.errors.append(str(e))
 
+        # If there is an assignment (e.g. "= [ ... ]")
         if assignment_node is not None:
             if assignment_node.type == "list_value":
-                length = self.get_list_literal_length(assignment_node)
-                # Record the length for later bounds checking.
-                self.array_lengths[ident_node.value] = length
-                self.check_global_assignment(assignment_node, symtable, declared_type, ident_node.value)
+                # If it’s a 2D array
+                if declared_type.endswith("[][]"):
+                    # Store total row count
+                    row_count = self.get_list_literal_length(assignment_node)
+                    self.array_lengths[ident_node.value] = row_count
+
+                    # Also store row-by-row lengths
+                    row_lengths = self.get_2d_row_lengths(assignment_node)
+                    self.array_2d_lengths[ident_node.value] = row_lengths
+
+                    # Now do your normal type checks
+                    self.check_global_assignment(assignment_node, symtable, declared_type, ident_node.value)
+
+                # If it’s a 1D array
+                elif declared_type.endswith("[]"):
+                    length = self.get_list_literal_length(assignment_node)
+                    self.array_lengths[ident_node.value] = length
+
+                    # Then do your normal type checks
+                    self.check_global_assignment(assignment_node, symtable, declared_type, ident_node.value)
+
+                else:
+                    # If somehow we have a list_value but no [] in declared_type, just do normal checks
+                    self.check_global_assignment(assignment_node, symtable, declared_type, ident_node.value)
+
             else:
                 self.check_global_assignment(assignment_node, symtable, declared_type, ident_node.value)
+
 
 
 
@@ -160,18 +186,16 @@ class SemanticAnalyzer:
         list_dec = node.children[2]
 
         # 2) Distinguish 1D vs. 2D
-        if list_dec is not None:
-            if list_dec.children and list_dec.children[0] is not None:
-                declared_type = f"{base_type}[][]"
-            else:
-                declared_type = f"{base_type}[]"
+        if list_dec is not None and list_dec.children and list_dec.children[0] is not None:
+            declared_type = f"{base_type}[][]"
+        elif list_dec is not None:
+            declared_type = f"{base_type}[]"
         else:
             declared_type = base_type
 
-        # 3) Print debug info
         print(f"DEBUG: Declaring variable {var_name} with type {declared_type}")
 
-        # 4) Check local vs. global conflict and add to the symbol table
+        # 3) Add to symbol table
         if var_name in self.global_symbols.symbols:
             self.errors.append(
                 f"Semantic Error: Local variable '{var_name}' conflicts with global variable '{var_name}'."
@@ -179,27 +203,46 @@ class SemanticAnalyzer:
             return
         else:
             try:
-                if var_name and declared_type:
-                    symtable.add(var_name, declared_type)
+                symtable.add(var_name, declared_type)
             except SemanticError as e:
                 self.errors.append(str(e))
 
+        # 4) If there's an initializer, find it (list_value or local_var_assign).
+        assignment_node = None
         for child in node.children[3:]:
-            if child is not None:
-                if getattr(child, "type", None) == "list_value":
-                    length = self.get_list_literal_length(child)
-                    self.array_lengths[var_name] = length
+            if child is None:
+                continue
+            # e.g. direct "list_value"
+            if getattr(child, "type", None) == "list_value":
+                assignment_node = child
+                break
+            # e.g. "local_var_assign" containing a list_value
+            if getattr(child, "type", None) == "local_var_assign" and child.children:
+                possible_list = child.children[0]
+                if possible_list.type == "list_value":
+                    assignment_node = possible_list
                     break
-                if (getattr(child, "type", None) == "local_var_assign" and child.children):
-                    possible_list = child.children[0]
-                    if possible_list.type == "list_value":
-                        length = self.get_list_literal_length(possible_list)
-                        self.array_lengths[var_name] = length
-                        break
 
+        # 5) If it’s a 2D array, store both row count & row-by-row column counts
+        if declared_type.endswith("[][]") and assignment_node is not None:
+            # total rows
+            row_count = self.get_list_literal_length(assignment_node)
+            self.array_lengths[var_name] = row_count
+
+            # row-by-row column lengths
+            row_lengths = self.get_2d_row_lengths(assignment_node)
+            self.array_2d_lengths[var_name] = row_lengths
+
+        # 6) If it’s a 1D array, store a single length
+        elif declared_type.endswith("[]") and assignment_node is not None:
+            length = self.get_list_literal_length(assignment_node)
+            self.array_lengths[var_name] = length
+
+        # 7) Check type mismatches, dimension mismatches, etc.
         for child in node.children[3:]:
             if child is not None:
                 self.check_var_tail(child, symtable, declared_type, var_name)
+
 
 
 
@@ -898,30 +941,76 @@ class SemanticAnalyzer:
             print("NEW DEBUG: array_lengths =", self.array_lengths)
             print("NEW DEBUG: Checking var_name =", var_name)
 
-            # If there's a second child, it's the single index node (e.g. literal(value=4)).
+            # ---------------------------------------------------------
+            # Handle up to 2D indexing: e.g. $fruits[1], $fruits[1][9]
+            # left_node.children[1] is a list of index ASTNodes (for 1D or 2D).
+            # ---------------------------------------------------------
+            index_nodes = []
             if len(left_node.children) > 1:
-                index_node = left_node.children[1]
+                index_nodes = left_node.children[1]  # typically a list of ASTNodes
 
-                # If it's a list, pick out the first element
-                if isinstance(index_node, list) and len(index_node) > 0:
-                    index_node = index_node[0]
+            if isinstance(index_nodes, list) and len(index_nodes) > 0:
+                # If exactly one index => 1D
+                if len(index_nodes) == 1:
+                    index_ast = index_nodes[0]
+                    # If it's a literal int => check out-of-bounds
+                    if (hasattr(index_ast, "type")
+                        and index_ast.type == "literal"
+                        and isinstance(index_ast.value, int)):
 
-                if (hasattr(index_node, "type") 
-                    and index_node.type == "literal" 
-                    and isinstance(index_node.value, int)):
+                        index_val = index_ast.value
+                        if var_name in self.array_lengths:
+                            length = self.array_lengths[var_name]
+                            if index_val >= length:
+                                self.errors.append(
+                                    f"Out of bounds error: Index {index_val} is out of bounds "
+                                    f"for variable '{var_name}' of length {length}."
+                                )
 
-                    index_val = index_node.value
-                    if var_name in self.array_lengths:
-                        length = self.array_lengths[var_name]
-                        if index_val >= length:
+                    # If it's an IDENT or something else, skip
+                    elif (hasattr(index_ast, "type")
+                        and index_ast.type == "IDENT"):
+                        pass
+
+                # If exactly two indexes => 2D
+                elif len(index_nodes) == 2:
+                    row_ast = index_nodes[0]
+                    col_ast = index_nodes[1]
+
+                    # Extract row and col if they are literal ints
+                    row_val = None
+                    if (hasattr(row_ast, "type")
+                        and row_ast.type == "literal"
+                        and isinstance(row_ast.value, int)):
+                        row_val = row_ast.value
+
+                    col_val = None
+                    if (hasattr(col_ast, "type")
+                        and col_ast.type == "literal"
+                        and isinstance(col_ast.value, int)):
+                        col_val = col_ast.value
+
+                    # Check row out-of-bounds
+                    if row_val is not None and var_name in self.array_lengths:
+                        total_rows = self.array_lengths[var_name]
+                        if row_val >= total_rows:
                             self.errors.append(
-                                f"Out of bounds error: Index {index_val} is out of bounds "
-                                f"for variable '{var_name}' of length {length}."
+                                f"Out of bounds error: Row index {row_val} is out of bounds "
+                                f"for variable '{var_name}' which has {total_rows} rows."
                             )
+                        else:
+                            # Check col out-of-bounds
+                            if (var_name in self.array_2d_lengths
+                                and row_val < len(self.array_2d_lengths[var_name])):
+                                max_cols = self.array_2d_lengths[var_name][row_val]
+                                if col_val is not None and col_val >= max_cols:
+                                    self.errors.append(
+                                        f"Out of bounds error: Col index {col_val} is out of bounds "
+                                        f"for row {row_val} of '{var_name}', which has length {max_cols}."
+                                    )
 
-                # If it's an IDENT, skip or handle differently (e.g. $fruits[i])
-                elif (hasattr(index_node, "type") 
-                    and index_node.type == "IDENT"):
+                # If more than two indexes => skip or handle differently
+                else:
                     pass
 
             # Then do your usual lookup
@@ -931,7 +1020,6 @@ class SemanticAnalyzer:
                 if var_name not in self.reported_undeclared_vars:
                     self.errors.append(str(e))
                     self.reported_undeclared_vars.add(var_name)
-
 
         elif left_node.type == "IDENT":
             # e.g. $foo
@@ -974,6 +1062,7 @@ class SemanticAnalyzer:
         else:
             # Possibly we are dealing with "IDENT .splice(...)" or "IDENT .push(...)"
             self.visit(right_node, symtable)
+
 
     def check_assignment_types(self, left_node, value_node, symtable, op):
         left_type = None
@@ -1053,6 +1142,48 @@ class SemanticAnalyzer:
         if len(node.children) > 1 and node.children[1] is not None:
             count += self.count_list_elements(node.children[1])
         return count
+    
+    def get_2d_row_lengths(self, node):
+        """
+        Given a 'list_value' node that is known to be 2D,
+        return a list of lengths for each row.
+        Example: [[1,2,3],[4,5]] => [3,2]
+        """
+        # node.children[0] is the "list_element"
+        list_elem = node.children[0]
+        row_lengths = []
+        self._collect_row_lengths(list_elem, row_lengths)
+        return row_lengths
+
+    def _collect_row_lengths(self, list_element_node, row_lengths):
+        """
+        Recursively walk the 2D list_element structure to find each sub-list_value's length.
+        """
+        if not list_element_node or not list_element_node.children:
+            return
+
+        first_item = list_element_node.children[0]
+        # If it's a nested sub-list_value, measure its length
+        if first_item.type == "list_value":
+            row_lengths.append(self.get_list_literal_length(first_item))
+        else:
+            # If we reach here, that means it's not truly 2D, or it's inconsistent.
+            # You could handle that as an error or just skip.
+            pass
+
+        # Move to the next list_element if any
+        if len(list_element_node.children) > 1 and list_element_node.children[1]:
+            tail_node = list_element_node.children[1]
+            self._collect_row_lengths(tail_node, row_lengths)
+
+    def _extract_int_index(self, index_ast):
+        if (hasattr(index_ast, "type")
+            and index_ast.type == "literal"
+            and isinstance(index_ast.value, int)):
+            return index_ast.value
+        return None
+
+
 
 
 
