@@ -416,7 +416,8 @@ class SemanticAnalyzer:
         # If not an ASTNode, bail out
         for child in node.children:
                 self.visit(child, symtable)
-
+                
+        
         if node.type == "value":
             if node.children:
                 return self.get_expression_type(node.children[0], symtable)
@@ -482,6 +483,10 @@ class SemanticAnalyzer:
 
         elif node.type == "list_value":
             return self.get_list_literal_type(node, symtable)
+        elif node.type == "list_element":
+            temp_list_value = ASTNode("list_value", children=[node])
+            return self.get_list_literal_type(temp_list_value, symtable)
+
 
         elif node.type == "literal":
             print("DEBUG in literal:", node.value, type(node.value))
@@ -954,10 +959,11 @@ class SemanticAnalyzer:
                 if len(index_nodes) == 1:
                     index_ast = index_nodes[0]
                     # If it's a literal int => check out-of-bounds
-                    if (hasattr(index_ast, "type")
+                    if (
+                        hasattr(index_ast, "type")
                         and index_ast.type == "literal"
-                        and isinstance(index_ast.value, int)):
-
+                        and isinstance(index_ast.value, int)
+                    ):
                         index_val = index_ast.value
                         if var_name in self.array_lengths:
                             length = self.array_lengths[var_name]
@@ -966,10 +972,11 @@ class SemanticAnalyzer:
                                     f"Out of bounds error: Index {index_val} is out of bounds "
                                     f"for variable '{var_name}' of length {length}."
                                 )
-
                     # If it's an IDENT or something else, skip
-                    elif (hasattr(index_ast, "type")
-                        and index_ast.type == "IDENT"):
+                    elif (
+                        hasattr(index_ast, "type")
+                        and index_ast.type == "IDENT"
+                    ):
                         pass
 
                 # If exactly two indexes => 2D
@@ -979,15 +986,19 @@ class SemanticAnalyzer:
 
                     # Extract row and col if they are literal ints
                     row_val = None
-                    if (hasattr(row_ast, "type")
+                    if (
+                        hasattr(row_ast, "type")
                         and row_ast.type == "literal"
-                        and isinstance(row_ast.value, int)):
+                        and isinstance(row_ast.value, int)
+                    ):
                         row_val = row_ast.value
 
                     col_val = None
-                    if (hasattr(col_ast, "type")
+                    if (
+                        hasattr(col_ast, "type")
                         and col_ast.type == "literal"
-                        and isinstance(col_ast.value, int)):
+                        and isinstance(col_ast.value, int)
+                    ):
                         col_val = col_ast.value
 
                     # Check row out-of-bounds
@@ -1000,15 +1011,16 @@ class SemanticAnalyzer:
                             )
                         else:
                             # Check col out-of-bounds
-                            if (var_name in self.array_2d_lengths
-                                and row_val < len(self.array_2d_lengths[var_name])):
+                            if (
+                                var_name in self.array_2d_lengths
+                                and row_val < len(self.array_2d_lengths[var_name])
+                            ):
                                 max_cols = self.array_2d_lengths[var_name][row_val]
                                 if col_val is not None and col_val >= max_cols:
                                     self.errors.append(
                                         f"Out of bounds error: Col index {col_val} is out of bounds "
                                         f"for row {row_val} of '{var_name}', which has length {max_cols}."
                                     )
-
                 # If more than two indexes => skip or handle differently
                 else:
                     pass
@@ -1038,30 +1050,33 @@ class SemanticAnalyzer:
         # 2) Next child
         right_node = node.children[1]
 
-        # 3) Distinguish if right_node is "assign_op" (direct '=' or '+='),
-        #    or "assign_tail_op" (old-style node with [ "=", expression ]).
         if right_node.type == "assign_op":
-            # Means shape is [ var_call, assign_op("=" or "+="), valueNode ]
             op = right_node.value  # e.g. '=' or '+='
             value_node = node.children[2]  # The third child
             self.check_assignment_types(left_node, value_node, symtable, op)
 
         elif right_node.type == "assign_tail_op":
-            op_node = right_node.children[0]   # Might be a string like "="
+            op_node = right_node.children[0]  # Might be a string like "="
             value_node = right_node.children[1]
 
-            # If `op_node` is a string, just use it directly.
-            # Otherwise, if it's an ASTNode, grab `op_node.value`.
             if isinstance(op_node, str):
                 op = op_node
             else:
                 op = op_node.value
 
             self.check_assignment_types(left_node, value_node, symtable, op)
+        elif right_node.type == "assign_tail_push":
+            pushed_item = right_node.children[0]
 
+            if left_type is not None:
+                self.check_push_operation(var_name, pushed_item, left_type, symtable)
+            else:
+                self.errors.append(
+                    f"Semantic Error: Variable '{var_name}' type not found for '.push' operation."
+                )
         else:
-            # Possibly we are dealing with "IDENT .splice(...)" or "IDENT .push(...)"
             self.visit(right_node, symtable)
+
 
 
     def check_assignment_types(self, left_node, value_node, symtable, op):
@@ -1184,7 +1199,46 @@ class SemanticAnalyzer:
         return None
 
 
+    def check_push_operation(self, var_name, pushed_item, left_type, symtable):
+        if '[' not in left_type:
+            self.errors.append(
+                f"Semantic Error: Cannot use '.push' on non-array variable '{var_name}'."
+            )
+            return
 
+        # Get base type by removing one '[]'
+        base_type = left_type.replace("[]", "", 1)
+
+        pushed_type = self.get_expression_type(pushed_item, symtable)
+
+        if pushed_type is None:
+            self.errors.append(
+                f"Type Error: Cannot determine type of item pushed to '{var_name}'."
+            )
+            return
+
+        # Allow pushing item of matching dimension or one lower dimension
+        left_dim = left_type.count("[]")
+        pushed_dim = pushed_type.count("[]")
+
+        if pushed_dim not in (left_dim, left_dim - 1):
+            self.errors.append(
+                f"Type Error: Dimension mismatch in '.push' operation for '{var_name}'."
+            )
+            return
+
+        pushed_base_type = pushed_type.replace("[]", "")
+
+        if pushed_base_type == base_type:
+            return
+
+        # Allow implicit conversions
+        if (pushed_base_type, base_type) in allowed_implicit_conversions:
+            return
+
+        self.errors.append(
+            f"Type Error: Cannot push '{pushed_type}' to array '{var_name}' of type '{left_type}'."
+        )
 
 
 
