@@ -72,6 +72,7 @@ class SemanticAnalyzer:
         if not hasattr(node, "type"):
             return
         method_name = 'visit_' + node.type
+        
         visitor = getattr(self, method_name, self.generic_visit)
         return visitor(node, symtable)
 
@@ -871,6 +872,119 @@ class SemanticAnalyzer:
             return True
 
         return False
+    
+    def visit_assignment_statement(self, node, symtable):
+        """
+        Possible children:
+        1) For `var_call = value`:
+        node.children = [ var_callNode, assign_opNode("=", ...), valueNode ]
+        2) For the old style:
+        node.children = [ IDENT("$foo"), assign_tailNode(...) ]
+        """
+        left_node = node.children[0]
+        # This might be either a var_call or an IDENT, depending on the rule matched.
+
+        # 1) Figure out the left variable's type
+        if left_node.type == "var_call":
+            # e.g. $arr[2]
+            var_name = left_node.children[0].value
+            try:
+                left_type = symtable.lookup(var_name)
+            except SemanticError as e:
+                if var_name not in self.reported_undeclared_vars:
+                    self.errors.append(str(e))
+                    self.reported_undeclared_vars.add(var_name)
+        elif left_node.type == "IDENT":
+            # e.g. $foo
+            var_name = left_node.value
+            try:
+                left_type = symtable.lookup(var_name)
+            except SemanticError as e:
+                if var_name not in self.reported_undeclared_vars:
+                    self.errors.append(str(e))
+                    self.reported_undeclared_vars.add(var_name)
+        else:
+            # fallback
+            self.visit(left_node, symtable)
+            return
+
+        # 2) Next child
+        right_node = node.children[1]
+
+        # 3) Distinguish if right_node is "assign_op" (direct '=' or '+=')
+        #    or "assign_tail_op" (old-style node with [ "=", expression ]).
+        if right_node.type == "assign_op":
+            # Means shape is [ var_call, assign_op("=" or "+="), valueNode ]
+            op = right_node.value  # e.g. '=' or '+='
+            value_node = node.children[2]  # The third child
+            self.check_assignment_types(left_node, value_node, symtable, op)
+
+        elif right_node.type == "assign_tail_op":
+            op_node = right_node.children[0]   # Might be a string like "="
+            value_node = right_node.children[1]
+
+            # If `op_node` is a string, just use it directly.
+            # Otherwise, if it's an ASTNode, grab `op_node.value`.
+            if isinstance(op_node, str):
+                op = op_node
+            else:
+                op = op_node.value
+
+            self.check_assignment_types(left_node, value_node, symtable, op)
+
+
+        else:
+            # Possibly we are dealing with "IDENT .splice(...)" or "IDENT .push(...)"
+            self.visit(right_node, symtable)
+
+    def check_assignment_types(self, left_node, value_node, symtable, op):
+
+        left_type = None
+        if left_node.type == "var_call":
+            var_name = left_node.children[0].value
+            try:
+                left_type = symtable.lookup(var_name)
+            except SemanticError as e:
+                return
+        elif left_node.type == "IDENT":
+            var_name = left_node.value
+            try:
+                left_type = symtable.lookup(var_name)
+            except SemanticError:
+                return
+        else:
+            return
+
+        # 2) get right_type
+        right_type = self.get_expression_type(value_node, symtable)
+
+        # 3) if left_type or right_type is None => skip
+        if left_type is None or right_type is None:
+            return
+
+        # 4) if array mismatch => error
+        left_is_list = '[' in left_type
+        right_is_list = '[' in right_type
+        if left_is_list != right_is_list:
+            self.errors.append(
+                f"Type Error: Cannot assign '{right_type}' to variable '{left_type}'."
+            )
+            return
+
+        # 5) numeric conversions
+        if left_type == "bln" and right_type in ("int", "flt"):
+            return
+        if left_type == "int" and right_type in ("bln", "flt"):
+            return
+        if left_type == "flt" and right_type in ("bln", "int"):
+            return
+
+        # 6) exact match
+        if left_type != right_type:
+            self.errors.append(
+                f"Type Error: Cannot assign '{right_type}' to variable '{left_type}'."
+            )
+
 
 
 

@@ -2002,11 +2002,32 @@ def p_next_val(p):
 # -----------------------------------------------------------------------------
 # (128) <assignment_statement> → IDENTIFIER <assign_tail>
 # -----------------------------------------------------------------------------
+
+def p_assignment_statement_indexed(p):
+    """
+    assignment_statement : var_call EQ value
+    """
+    p[0] = ASTNode(
+        "assignment_statement",
+        children=[
+            p[1],                          
+            ASTNode("assign_op", value=p[2]), 
+            p[3]                              
+        ]
+    )
+
+
 def p_assignment_statement(p):
     """
     assignment_statement : IDENT assign_tail  
     """
-    p[0] = ASTNode("assignment_statement", children=[ASTNode("IDENT", value=p[1]), p[2]])
+    p[0] = ASTNode(
+        "assignment_statement",
+        children=[
+            ASTNode("IDENT", value=p[1]),
+            p[2]
+        ]
+    )
 
 
 # -----------------------------------------------------------------------------
