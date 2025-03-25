@@ -998,15 +998,19 @@ class SemanticAnalyzer:
 
         # If the left-hand side is an array access (var_call with indices), compare base types.
         if left_node.type == "var_call" and len(left_node.children) > 1 and left_node.children[1]:
-            # Extract the base type from the declared array type.
             base_type = left_type.replace("[]", "")
+
             if base_type == right_type:
-                return  # Assignment is allowed.
+                return
+            elif (right_type, base_type) in allowed_implicit_conversions:
+                # E.g. (bln -> int), (int -> flt), etc. => allowed
+                return
             else:
                 self.errors.append(
-                    f"Type Error: Cannot assign '{right_type}' to element of variable '{var_name}' with base type '{base_type}'."
+                    f"Type Error: Cannot assign '{right_type}' to element of variable "
+                    f"'{var_name}' with base type '{base_type}'."
                 )
-                return
+            return
 
         # Otherwise, if both sides are arrays or both are scalars, continue with the existing checks.
         left_is_list = '[' in left_type
