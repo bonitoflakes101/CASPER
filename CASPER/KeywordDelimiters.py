@@ -175,6 +175,6 @@ KEYWORD_DELIMITERS = {
 
     "PUSH": Delimiters.DEL18,  
     "SPLICE": Delimiters.DEL18,
-    "DOT": Delimiters.NULL
+    "DOT": Delimiters.DEL20
 
 }

@@ -95,6 +95,7 @@ function defineCasperLanguage(monaco) {
         ],
         [/'([^'\\]|\\.)*'/, "string"],
         [/"([^"\\]|\\.)*"/, "string"],
+        [/\b(?:push|splice)\b/, "identifier"],
         [/@[a-zA-Z_]\w*/, "identifier"],
         [/\$[a-zA-Z_]\w*/, "variable"],
         [/\b\d+(\.\d+)?\b/, "number"],

@@ -36,7 +36,7 @@ class Delimiters:
     DEL4 = SPACE | NUM | {'(', '$', '\'', '"', None,'', '\r'} # plus delim
     DEL5 = SPACE | ALPHANUM |{'$', '(', '@','',None,'\r', ''}  # minus, multiply, divide, modulo delims, all assignment ops
     DEL6 = NUM | {'$', '(', '\''} #prefix | **
-    DEL7 =  SPACE | ALPHANUM | NEWLINE | {'$', '@', '"', '(', '{', '\'', ')'} # open LPAREN (
+    DEL7 =  SPACE | ALPHANUM | NEWLINE | {'$', '@', '"', '(', '{', '\'', ')','['} # open LPAREN (
     DEL8 = SPACE | NEWLINE | ALPHANUM | NULL | {'+', '-', '*', '/', '{', '(', ')', ']', '}', ',','$', '@','|','&', ';'} # closing RPAREN )
     DEL9 = SPACE | NEWLINE | {'(', '{', '$', '@', '"'} # opening LBRACE {
     DEL10 = SPACE | NEWLINE | NULL | OPERATORS | COMPARATOR | LOGEXP | {'"', '(', '{', '[',']',')', ',', ':' ,';','='} # closing RBRACE }
@@ -50,7 +50,7 @@ class Delimiters:
     DEL18 = {'('}
     DEL19 = {'['}
     identifier_del = OPERATORS | SPACE | NEWLINE | CARRIAGE_RETURN | NULL | {'<', '-', '+', '*', '/', '%', '=', '<', '>', '!', '(', ')', '[', ']', ',' , '{', '}','&','|',';', '.'} 
-   
+    DEL20 = NULL | {'p','s'}
 
 
     # Check if a character is a valid delimiter
