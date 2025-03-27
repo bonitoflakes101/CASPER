@@ -21,21 +21,21 @@ require(["vs/editor/editor.main"], function () {
     }
   );
 
-
-  monacoEditorInstance.onDidChangeModelContent(debounce(() => {
-    const code = monacoEditorInstance.getValue();
-    console.log("Editor content changed:", code);
-    checkErrors(code);
-  }, 500));
+  monacoEditorInstance.onDidChangeModelContent(
+    debounce(() => {
+      const code = monacoEditorInstance.getValue();
+      console.log("Editor content changed:", code);
+      checkErrors(code);
+    }, 500)
+  );
 });
-
 
 async function checkErrors(code) {
   console.log("Requesting errors check...");
   try {
     const response = await fetch("/check_errors", {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ code }),
     });
 
@@ -47,9 +47,8 @@ async function checkErrors(code) {
   }
 }
 
-
 function updateMonacoDiagnostics(errors) {
-  const markers = errors.map(err => ({
+  const markers = errors.map((err) => ({
     severity: monaco.MarkerSeverity.Error,
     startLineNumber: err.line,
     startColumn: err.startColumn,
@@ -61,7 +60,6 @@ function updateMonacoDiagnostics(errors) {
   monaco.editor.setModelMarkers(monacoEditorInstance.getModel(), "casper", markers);
 }
 
-
 function debounce(func, wait) {
   let timeout;
   return function (...args) {
@@ -69,7 +67,6 @@ function debounce(func, wait) {
     timeout = setTimeout(() => func(...args), wait);
   };
 }
-
 
 function copyMonacoToTextarea() {
   const hiddenTextarea = document.getElementById("codeEditor");
@@ -84,11 +81,8 @@ function defineCasperLanguage(monaco) {
   monaco.languages.setMonarchTokensProvider("casper", {
     tokenizer: {
       root: [
-
         [/<<.*/, "comment"],
-  
         [/---/, { token: "comment", next: "@multiLineComment" }],
-  
         [
           /\b(?:birth|ghost|check|otherwise|otherwise_check|for|repeat|until|stop|skip|swap|shift|revive|Day|Night|measure|function|function_int|function_str|function_bln|function_flt|function_chr|function_list_int|function_list_str|function_list_bln|function_list_flt|function_list_chr|input|display|to_int|to_str|to_bln|to_flt|int|flt|bln|chr|str)\b/,
           "keyword",
@@ -102,7 +96,7 @@ function defineCasperLanguage(monaco) {
         [/[+\-*/=<>!%]+/, "operator"],
         [/[{}()\[\]]/, "delimiter"],
       ],
-  
+
       multiLineComment: [
         [/---/, { token: "comment", next: "@pop" }],
         [/.|\n/, "comment"],
@@ -137,3 +131,19 @@ function defineCasperMonacoTheme(monaco) {
   });
 }
 
+
+function openTab(evt, tabName) {
+
+  const tabcontents = document.getElementsByClassName("tabcontent");
+  for (let i = 0; i < tabcontents.length; i++) {
+    tabcontents[i].style.display = "none";
+  }
+
+  const tablinks = document.getElementsByClassName("tablink");
+  for (let i = 0; i < tablinks.length; i++) {
+    tablinks[i].classList.remove("active");
+  }
+
+  document.getElementById(tabName).style.display = "block";
+  evt.currentTarget.classList.add("active");
+}

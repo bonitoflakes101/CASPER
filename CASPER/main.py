@@ -17,10 +17,13 @@ def home():
     illegal_tokens = []
     parser_output = ""
     semantic_output = ""
+    errors = ""            # New variable for errors tab content
+    generated_code = ""    # Placeholder for generated code
 
     if request.method == "POST":
         code = request.form.get("code_input", "")
 
+        # 1. Lexical Analysis
         if LEXER_DEBUG:
             lexer = Lexer(source=code)
             while lexer.current_char is not None:
@@ -32,6 +35,7 @@ def home():
                 else:
                     lexer_results.append((token.literal, token_type))
 
+        # 2. Parsing and Semantic Analysis (if no lexical errors)
         if PARSER_DEBUG and not illegal_tokens:
             parser = build_parser()
             try:
@@ -39,34 +43,36 @@ def home():
                 parser_output = "No Syntax Error"
 
                 # Run semantic analysis on the AST
-                errors = run_semantic_analysis(ast)
-                if errors:
-                    semantic_output = "Semantic Errors:\n" + "\n".join(errors) 
+                semantic_errors = run_semantic_analysis(ast)
+                if semantic_errors:
+                    semantic_output = "Semantic Errors:\n" + "\n".join(semantic_errors)
                 else:
                     semantic_output = "Compilation successful: no lexical, syntax, or semantic errors detected."
 
-                # # If SEMANTICS_DEBUG is enabled, append additional debug info.
-                # if SEMANTICS_DEBUG:
-                #     semantic_output += "\n[SEMANTICS_DEBUG] AST Root Node: " + repr(ast)
-
+                # Placeholder for generated code (to be replaced with your generator)
+                generated_code = "PLACEHOLDER: SUCCESS"
             except SyntaxError as e:
                 parser_output = str(e)
             except Exception as e:
                 parser_output = f"Unexpected Error: {str(e)}"
 
-    output = ""
-    if illegal_tokens:
-        output = "\n".join(illegal_tokens)
-    elif parser_output != "No Syntax Error":
-        output = parser_output
-    else:
-        output = semantic_output
+        # 3. Decide final content for output and errors tabs
+        if illegal_tokens:
+            errors = "\n".join(illegal_tokens)
+        elif parser_output != "No Syntax Error":
+            errors = parser_output
+        else:
+            errors = semantic_output
+
+        output = semantic_output if semantic_output else "WIP WIP WIP"
 
     return render_template(
         "index.html",
         code=code,
         lexer_results=lexer_results,
         output=output,
+        errors=errors,
+        generated_code=generated_code
     )
 
 @app.route('/check_errors', methods=['POST'])
@@ -79,7 +85,7 @@ def check_errors():
         token = lexer.next_token()
         if token.type == TokenType.ILLEGAL:
             illegal_tokens.append({
-                "line": token.line_no ,
+                "line": token.line_no,
                 "startColumn": token.position,
                 "endColumn": token.position + len(token.literal),
                 "message": f"Illegal Token: {token.literal}"
@@ -93,21 +99,18 @@ def check_errors():
         parser.parse(lexer=Lexer(code))
         return jsonify({"errors": []})
     except SyntaxError as e:
-        # e might look like: "Syntax Error:\nUnexpected token: '@hello' at line 4.\nExpected..."
-        full_msg = str(e)
-        # 1) Find "line <num>"
         import re
+        full_msg = str(e)
         match = re.search(r'line\s+(\d+)', full_msg)
         if match:
             line_no = int(match.group(1))
         else:
-            line_no = 1  # fallback
-
+            line_no = 1
         error_info = {
             "message": full_msg,
             "line": line_no,
             "startColumn": 0,
-            "endColumn": 9999  # or the length of that line
+            "endColumn": 9999
         }
         return jsonify({"errors": [error_info]})
     

@@ -36,6 +36,36 @@
         color: #cccccc;
         overflow-y: auto;
       }
+      /* Tab header styles */
+      .tab-header {
+        display: flex;
+        border-bottom: 1px solid #ccc;
+        background: #1e1e1e;
+      }
+      .tablink {
+        background: none;
+        border: none;
+        color: #ccc;
+        padding: 10px 20px;
+        cursor: pointer;
+        font-size: 1rem;
+      }
+      .tablink.active {
+        border-bottom: 2px solid #4fc1ff;
+        color: #fff;
+      }
+      /* Tab content styles */
+      .tabcontent {
+        display: none;
+        padding: 10px;
+        background: #1e1e1e;
+        color: #cccccc;
+        height: 200px;
+        overflow-y: auto;
+      }
+      .tabcontent pre {
+        margin: 0;
+      }
     </style>
   </head>
 
@@ -47,7 +77,7 @@
     </header>
 
     <section id="main">
-      <!-- Put code-div and lexer-div together in one container -->
+      <!-- Container for the code editor and lexer -->
       <div class="main-container">
         <div class="code-div">
           <div class="label-container">
@@ -105,14 +135,34 @@
         </div>
       </div>
 
-      <!-- Then place the output-container below -->
+      <!-- New Tabbed Output Section -->
       <div class="output-container">
-        <div class="terminal-container"></div>
-        <div class="output-label-container">
-          <label id="output-label">Output Terminal</label>
+        <!-- Tab Header -->
+        <div class="tab-header">
+          <button class="tablink active" onclick="openTab(event, 'Output')">
+            Output Terminal
+          </button>
+          <button class="tablink" onclick="openTab(event, 'Errors')">
+            Errors
+          </button>
+          <button class="tablink" onclick="openTab(event, 'Generated')">
+            Generated Code
+          </button>
         </div>
-        <div class="output-terminal">
+
+        <!-- Tab Content Panels -->
+        <div id="Output" class="tabcontent" style="display: block">
           <pre id="output">{{ output }}</pre>
+        </div>
+
+        <div id="Errors" class="tabcontent">
+          <pre id="errors">{{ errors or "No errors detected." }}</pre>
+        </div>
+
+        <div id="Generated" class="tabcontent">
+          <pre id="generated">
+{{ generated_code or "PLACEHOLDER: FAILED" }}</pre
+          >
         </div>
       </div>
     </section>
