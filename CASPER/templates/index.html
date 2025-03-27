@@ -170,5 +170,14 @@
     <script>
       window.initialCode = {{ code|tojson }};
     </script>
+
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        var showError = "{{ 'true' if show_error_tab else 'false' }}";
+        if (showError === "true") {
+          document.querySelector('.tablink[onclick*="Errors"]').click();
+        }
+      });
+    </script>
   </body>
 </html>

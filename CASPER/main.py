@@ -11,14 +11,16 @@ PARSER_DEBUG = True
 SEMANTICS_DEBUG = True  # New flag for semantic analysis debugging
 
 @app.route("/", methods=["GET", "POST"])
+@app.route("/", methods=["GET", "POST"])
 def home():
     code = ""
     lexer_results = []
     illegal_tokens = []
     parser_output = ""
     semantic_output = ""
-    errors = ""            # New variable for errors tab content
+    errors = ""            # Content for the Errors tab
     generated_code = ""    # Placeholder for generated code
+    show_error_tab = False  # Flag to indicate whether to show Errors tab
 
     if request.method == "POST":
         code = request.form.get("code_input", "")
@@ -35,6 +37,8 @@ def home():
                 else:
                     lexer_results.append((token.literal, token_type))
 
+        semantic_errors = []  # to store semantic error messages
+
         # 2. Parsing and Semantic Analysis (if no lexical errors)
         if PARSER_DEBUG and not illegal_tokens:
             parser = build_parser()
@@ -42,27 +46,32 @@ def home():
                 ast = parser.parse(lexer=Lexer(code))
                 parser_output = "No Syntax Error"
 
-                # Run semantic analysis on the AST
                 semantic_errors = run_semantic_analysis(ast)
                 if semantic_errors:
                     semantic_output = "Semantic Errors:\n" + "\n".join(semantic_errors)
                 else:
                     semantic_output = "Compilation successful: no lexical, syntax, or semantic errors detected."
 
-                # Placeholder for generated code (to be replaced with your generator)
+                # Placeholder for generated code
                 generated_code = "PLACEHOLDER: SUCCESS"
             except SyntaxError as e:
                 parser_output = str(e)
             except Exception as e:
                 parser_output = f"Unexpected Error: {str(e)}"
 
-        # 3. Decide final content for output and errors tabs
+        # 3. Set error content and decide which tab should be active.
         if illegal_tokens:
             errors = "\n".join(illegal_tokens)
+            show_error_tab = True
         elif parser_output != "No Syntax Error":
             errors = parser_output
-        else:
+            show_error_tab = True
+        elif semantic_errors:
             errors = semantic_output
+            show_error_tab = True
+        else:
+            errors = ""
+            show_error_tab = False
 
         output = semantic_output if semantic_output else "WIP WIP WIP"
 
@@ -72,8 +81,10 @@ def home():
         lexer_results=lexer_results,
         output=output,
         errors=errors,
-        generated_code=generated_code
+        generated_code=generated_code,
+        show_error_tab=show_error_tab
     )
+
 
 @app.route('/check_errors', methods=['POST'])
 def check_errors():
