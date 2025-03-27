@@ -143,7 +143,7 @@
             Output Terminal
           </button>
           <button class="tablink" onclick="openTab(event, 'Errors')">
-            Errors
+            Errors{% if error_count > 0 %} ({{ error_count }}){% endif %}
           </button>
           <button class="tablink" onclick="openTab(event, 'Generated')">
             Generated Code
