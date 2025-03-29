@@ -20,7 +20,8 @@ def home():
     errors = ""
     generated_code = ""
     show_error_tab = False
-    error_count = 0  # New variable to track total errors
+    error_count = 0
+    output = ""  # Initialize output variable here
 
     if request.method == "POST":
         code = request.form.get("code_input", "")
@@ -69,17 +70,18 @@ def home():
         else:
             errors = "" 
 
+        # Set output here - moved this line out of the conditional context
         output = semantic_output or "WIP WIP WIP"
 
     return render_template(
         "index.html",
         code=code,
-        lexer_results=[(t, "") for t in illegal_tokens],  # or however you want
+        lexer_results=[(t, "") for t in illegal_tokens],
         output=output,
         errors=errors,
         generated_code=generated_code,
         show_error_tab=show_error_tab,
-        error_count=error_count  # Pass error_count to template
+        error_count=error_count
     )
 
 @app.route('/check_errors', methods=['POST'])
