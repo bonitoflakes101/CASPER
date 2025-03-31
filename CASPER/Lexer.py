@@ -24,7 +24,7 @@ class Lexer:
 
     def __skip_whitespace(self) -> None:
         """Skips whitespace but does not skip newlines."""
-        while self.current_char in [' ', '\t', '\r']:
+        while self.current_char in [' ', '\t', '\r', '\n']:
             self.__read_char()
 
     def __new_token(self, tt: TokenType, literal: any) -> Token:
@@ -217,7 +217,7 @@ class Lexer:
                    
 
         identifier = self.source[start_pos:self.position]
-        
+        self.__skip_whitespace()  
 
         # invalid token = ILLEGAL
         if not is_valid:
@@ -227,15 +227,15 @@ class Lexer:
         
 
         # Specific logic for the "BIRTH" keyword
-        if token_type == TokenType.BIRTH or token_type == TokenType.SKIP or token_type == TokenType.STOP:
-            next_char = self.__peek_char()
-            valid_delims = KEYWORD_DELIMITERS.get("BIRTH", set())
+        # if token_type == TokenType.BIRTH or token_type == TokenType.SKIP or token_type == TokenType.STOP:
+        #     next_char = self.__peek_char()
+        #     valid_delims = KEYWORD_DELIMITERS.get("BIRTH", set())
 
-            # Allow both newline and other valid delimiters for BIRTH
-            if next_char == '\n':
-                return self.__new_token(token_type, identifier)
-            else:
-                return self.__return_illegal_token(identifier, valid_delims=valid_delims)
+        #     # Allow both newline and other valid delimiters for BIRTH
+        #     if next_char == '\n':
+        #         return self.__new_token(token_type, identifier)
+        #     else:
+        #         return self.__return_illegal_token(identifier, valid_delims=valid_delims)
             
         # General keyword validation for other keywords
         if token_type != TokenType.IDENT:
@@ -245,9 +245,9 @@ class Lexer:
                 return self.__new_token(token_type, identifier)
             else:
               
-                # Continue reading until a space is found
-                while self.current_char and self.current_char != ' ':
-                    self.__read_char()
+                # # Continue reading until a space is found
+                # while self.current_char and self.current_char != ' ':
+                #     self.__read_char()
 
                 illegal_literal = self.source[start_pos:self.position]
                
@@ -404,16 +404,16 @@ class Lexer:
             return self.__new_token(TokenType.EOF, "")
         
        
-        if self.current_char == '\r':
-            self.__read_char() 
-            if self.current_char == '\n':
-                self.__read_char()  
-            self.line_no += 1
-            return self.__new_token(TokenType.NEWLINE, "\\n")
-        elif self.current_char == '\n':
-            self.__read_char()  
-            self.line_no += 1
-            return self.__new_token(TokenType.NEWLINE, "\\n")
+        # if self.current_char == '\r':
+        #     self.__read_char() 
+        #     if self.current_char == '\n':
+        #         self.__read_char()  
+        #     self.line_no += 1
+        #     return self.__new_token(TokenType.NEWLINE, "\\n")
+        # elif self.current_char == '\n':
+        #     self.__read_char()  
+        #     self.line_no += 1
+        #     return self.__new_token(TokenType.NEWLINE, "\\n")
 
 
 

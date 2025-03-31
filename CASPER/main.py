@@ -10,9 +10,10 @@ from CodeGen import run_code_generation
 
 app = Flask(__name__)
 
+# Debug flags: only lexer debugging is enabled
 LEXER_DEBUG = True
-PARSER_DEBUG = True
-SEMANTICS_DEBUG = True
+PARSER_DEBUG = False
+SEMANTICS_DEBUG = False
 
 @app.route("/", methods=["GET", "POST"])
 def home():
@@ -34,14 +35,19 @@ def home():
         lexer = Lexer(source=code)
         while lexer.current_char is not None:
             token = lexer.next_token()
-            token_type = str(token.type).split(".")[-1]
-            if token_type == "ILLEGAL":
-                illegal_tokens.append(str(token))
+            token_str = str(token)
+            # Accumulate all tokens (for debugging display)
+            lexer_results.append(token_str)
+            if token.type == TokenType.ILLEGAL:
+                illegal_tokens.append(token_str)
 
         if illegal_tokens:
             error_count += len(illegal_tokens)
 
-        if not illegal_tokens:
+        if LEXER_DEBUG:
+            # When only lexer debugging is enabled, only display lexer output.
+            output = "\n".join(lexer_results)
+        else:
             # 2. PARSING
             parser = build_parser()
             try:
@@ -54,7 +60,6 @@ def home():
                     semantic_output = "Semantic Errors:\n" + "\n".join(semantic_errors)
                     error_count += len(semantic_errors)
                 else:
-                    # If no semantic errors, set success message
                     semantic_output = "Compilation successful: no lexical, syntax, or semantic errors detected."
                     generated_code = "Code Generation Executed Successfully."
 
@@ -67,12 +72,8 @@ def home():
                     finally:
                         sys.stdout = backup_stdout
 
-                    # The codegen_buffer now holds whatever the code generator printed
                     codegen_output = codegen_buffer.getvalue()
-
-                    # We'll combine the success message and the codegen prints
                     output = f"{semantic_output}\n{codegen_output}"
-
             except SyntaxError as e:
                 parser_output = str(e)
                 error_count += 1
@@ -91,7 +92,6 @@ def home():
             errors = semantic_output
             show_error_tab = True
 
-        # If we never set 'output' above (like in an error case), default it now:
         if not output:
             output = semantic_output or "WIP WIP WIP"
 
@@ -99,12 +99,13 @@ def home():
         "index.html",
         code=code,
         lexer_results=[(t, "") for t in illegal_tokens],
-        output=output,               # This shows in the "Output Terminal"
+        output=output,
         errors=errors,
         generated_code=generated_code,
         show_error_tab=show_error_tab,
         error_count=error_count
     )
+
 
 @app.route('/check_errors', methods=['POST'])
 def check_errors():

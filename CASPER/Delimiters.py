@@ -39,7 +39,7 @@ class Delimiters:
     DEL7 =  SPACE | ALPHANUM | NEWLINE | {'$', '@', '"', '(', '{', '\'', ')','['} # open LPAREN (
     DEL8 = SPACE | NEWLINE | ALPHANUM | NULL | {'+', '-', '*', '/', '{', '(', ')', ']', '}', ',','$', '@','|','&', ';'} # closing RPAREN )
     DEL9 = SPACE | NEWLINE | {'(', '{', '$', '@', '"'} # opening LBRACE {
-    DEL10 = SPACE | NEWLINE | NULL | OPERATORS | COMPARATOR | LOGEXP | {'"', '(', '{', '[',']',')', ',', ':' ,';','='} # closing RBRACE }
+    DEL10 = SPACE | NEWLINE | NULL | OPERATORS | COMPARATOR | LOGEXP | {'"', '(', '{', '[',']',')', ',', ':' ,';','=','g',';'} # closing RBRACE }
     DEL11 = SPACE | NEWLINE | NULL | {',', '(', '{', '[', '+', ')',']'}
     DEL12 = SPACE | NEWLINE | NULL | {'\r', '$'}
     DEL13 = SPACE | NULL | {')', '\'', None,'','\r', ''} # postfix
@@ -49,8 +49,10 @@ class Delimiters:
     DEL17 = SPACE | NEWLINE | NULL | OPERATORS |{',', ')', ']','.','[','='} # R bracket
     DEL18 = {'('}
     DEL19 = {'['}
-    identifier_del = OPERATORS | SPACE | NEWLINE | CARRIAGE_RETURN | NULL | {'<', '-', '+', '*', '/', '%', '=', '<', '>', '!', '(', ')', '[', ']', ',' , '{', '}','&','|',';', '.'} 
+    identifier_del = OPERATORS | SPACE | NEWLINE | CARRIAGE_RETURN | NULL | {'<', '-', '+', '*', '/', '%', '=', '<', '>', '!', '(', ')', '[', ']', ',' , '{', '}','&','|',';', '.',';'} 
     DEL20 = NULL | {'p','s'}
+    DEL21 = NULL | {';'}
+    DEL22 = NULL | {'{'}
 
 
     # Check if a character is a valid delimiter
