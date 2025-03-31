@@ -14,7 +14,7 @@ DEFAULT_DELIMS = (
 # may "function_initiate" sa TD but wala sa reserved words, prolly just remove this sa TD
 KEYWORD_DELIMITERS = {
     # Reserved words for start/end
-    "BIRTH": Delimiters.DEL22, # FIX
+    "BIRTH": Delimiters.NEWLINE, # FIX
     "GHOST": Delimiters.NULL,
 
     # Global scope
@@ -44,8 +44,8 @@ KEYWORD_DELIMITERS = {
     "FOR": Delimiters.DEL2,
     "UNTIL": Delimiters.DEL2,
     "REPEAT": Delimiters.DEL1,
-    "STOP": Delimiters.DEL21,
-    "SKIP": Delimiters.DEL21,
+    "STOP": Delimiters.NEWLINE,
+    "SKIP": Delimiters.NEWLINE,
     "SWAP": Delimiters.DEL2,
     "SHIFT": Delimiters.SPACE,
 
