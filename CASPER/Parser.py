@@ -829,15 +829,13 @@ def p_statements_tail(p):
     """
     statements_tail : switch_statement statements
                     | loop_statement statements
-                    | function_call SEMICOLON statements
-                    | assignment_statement SEMICOLON statements
+                    | function_call statements
+                    | assignment_statement statements
                     | output_statement statements
                     | conditional_statement statements
                     | statements
     """
-    if len(p) == 4:
-        p[0] = [p[1]] + p[3]
-    elif len(p) == 3: 
+    if len(p) == 3:
         p[0] = [p[1]] + p[2]
     else:
         p[0] = p[1]
@@ -1761,13 +1759,16 @@ def p_postfix_op(p):
 # -----------------------------------------------------------------------------
 def p_function_call(p):
     """
-    function_call : FUNCTION_NAME LPAREN arguments RPAREN  
-                  | input_statement                      
+    function_call : FUNCTION_NAME LPAREN arguments RPAREN  SEMICOLON
+                  | input_statement SEMICOLON                    
     """
-    if len(p) == 5: 
-        p[0] = ASTNode("function_call", children=[ ASTNode("FUNCTION_NAME", value=p[1]), ASTNode("arguments", children=p[3]) ]) 
-    else: p[0] = p[1]
-
+    if len(p) == 6:  
+        p[0] = ASTNode("function_call", children=[
+            ASTNode("FUNCTION_NAME", value=p[1]),
+            ASTNode("arguments", children=p[3])
+        ])
+    else:  
+        p[0] = p[1]
 # -----------------------------------------------------------------------------
 # (119) <arguments> → null
 # (120) <arguments> → <arg_value><arg_tail>
@@ -1973,30 +1974,29 @@ def p_next_val(p):
 
 def p_assignment_statement_indexed(p):
     """
-    assignment_statement : var_call EQ value
+    assignment_statement : var_call EQ value SEMICOLON
     """
     p[0] = ASTNode(
         "assignment_statement",
         children=[
-            p[1],                          
-            ASTNode("assign_op", value=p[2]), 
-            p[3]                              
+            p[1],                           
+            ASTNode("assign_op", value=p[2]),  
+            p[3]                               
         ]
     )
 
 
 def p_assignment_statement(p):
     """
-    assignment_statement : IDENT assign_tail  
+    assignment_statement : IDENT assign_tail SEMICOLON
     """
     p[0] = ASTNode(
         "assignment_statement",
         children=[
             ASTNode("IDENT", value=p[1]),
-            p[2]
+            p[2]  
         ]
     )
-
 
 # -----------------------------------------------------------------------------
 # (129) <assign_tail> → .splice(<start>, <deleteCount>, <splice_items>)
