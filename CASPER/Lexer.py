@@ -217,7 +217,7 @@ class Lexer:
                    
 
         identifier = self.source[start_pos:self.position]
-      
+        self.__skip_whitespace()  
 
         # invalid token = ILLEGAL
         if not is_valid:
@@ -245,9 +245,9 @@ class Lexer:
                 return self.__new_token(token_type, identifier)
             else:
               
-                # Continue reading until a space is found
-                while self.current_char and self.current_char != ' ':
-                    self.__read_char()
+                # # Continue reading until a space is found
+                # while self.current_char and self.current_char != ' ':
+                #     self.__read_char()
 
                 illegal_literal = self.source[start_pos:self.position]
                

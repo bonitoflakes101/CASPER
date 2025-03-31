@@ -52,7 +52,7 @@ class Delimiters:
     identifier_del = OPERATORS | SPACE | NEWLINE | CARRIAGE_RETURN | NULL | {'<', '-', '+', '*', '/', '%', '=', '<', '>', '!', '(', ')', '[', ']', ',' , '{', '}','&','|',';', '.',';'} 
     DEL20 = NULL | {'p','s'}
     DEL21 = NULL | {';'}
-    DEL22 = NULL | {'{'} | SPACE
+    DEL22 = NULL | {'{'}
 
 
     # Check if a character is a valid delimiter
