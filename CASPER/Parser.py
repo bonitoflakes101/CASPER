@@ -1971,7 +1971,7 @@ def p_next_val(p):
 # -----------------------------------------------------------------------------
 # (128) <assignment_statement> → IDENTIFIER <assign_tail>
 # -----------------------------------------------------------------------------
-
+# WALA PA SA CFG
 def p_assignment_statement_indexed(p):
     """
     assignment_statement : var_call EQ value SEMICOLON
