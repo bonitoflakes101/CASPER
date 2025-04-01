@@ -40,7 +40,7 @@ class Delimiters:
     DEL8 = SPACE | NEWLINE | ALPHANUM | NULL | {'+', '-', '*', '/', '{', '(', ')', ']', '}', ',','$', '@','|','&', ';'} # closing RPAREN )
     DEL9 = SPACE | NEWLINE | {'(', '{', '$', '@', '"'} # opening LBRACE {
     DEL10 = SPACE | NEWLINE | NULL | OPERATORS | COMPARATOR | LOGEXP | {'"', '(', '{', '[',']',')', ',', ':' ,';','=','g',';'} # closing RBRACE }
-    DEL11 = SPACE | NEWLINE | NULL | {',', '(', '{', '[', '+', ')',']'}
+    DEL11 = SPACE | NEWLINE | NULL | {',', '(', '{', '[', '+', ')',']',';'}
     DEL12 = SPACE | NEWLINE | NULL | {'\r', '$'}
     DEL13 = SPACE | NULL | {')', '\'', None,'','\r', ''} # postfix
     DEL14 = SPACE | ALPHA

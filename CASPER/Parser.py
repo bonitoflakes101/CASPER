@@ -1092,7 +1092,7 @@ def p_local_type_cast(p):
 # -----------------------------------------------------------------------------
 def p_conditional_statement(p):
     """
-    conditional_statement : CHECK LPAREN condition RPAREN LBRACE  statements RBRACE conditional_tail OTHERWISE LBRACE statements RBRACE  
+    conditional_statement : CHECK LPAREN condition RPAREN LBRACE  statements RBRACE conditional_tail OTHERWISE LBRACE statements RBRACE 
     """
     p[0] = ASTNode("conditional_statement", children=[p[3], p[6], p[8], p[11]])
 
@@ -1688,7 +1688,7 @@ def p_until_factor1 (p):
 # -----------------------------------------------------------------------------
 def p_repeat_until(p):
     """
-    repeat_until : REPEAT LBRACE statements RBRACE UNTIL LPAREN until_expression RPAREN 
+    repeat_until : REPEAT LBRACE statements RBRACE UNTIL LPAREN until_expression RPAREN SEMICOLON
     """
     p[0] = ASTNode("repeat_until", children=[p[3], p[7]])
 

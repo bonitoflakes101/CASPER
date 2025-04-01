@@ -435,7 +435,7 @@ Rule 396   until_factor1 -> FLT_LIT
 Rule 397   until_factor1 -> DAY
 Rule 398   until_factor1 -> NIGHT
 Rule 399   until_factor1 -> STR_LIT
-Rule 400   repeat_until -> REPEAT LBRACE statements RBRACE UNTIL LPAREN until_expression RPAREN
+Rule 400   repeat_until -> REPEAT LBRACE statements RBRACE UNTIL LPAREN until_expression RPAREN SEMICOLON
 Rule 401   control_variable -> INT IDENT EQ control_var_tail
 Rule 402   control_var_tail -> INT_LIT
 Rule 403   control_var_tail -> var_call
@@ -743,7 +743,7 @@ RBRACKET             : 9 11 19 46 48 131 133 179 181 203 205 247 249 289 291 336
 REPEAT               : 400
 REVIVE               : 115
 RPAREN               : 2 34 40 95 125 157 158 159 160 197 229 230 231 232 233 234 241 273 283 315 316 317 318 324 330 362 368 400 409 426 458 459 460 461 466 467 477 509 510 511 512 542 574 575 576 577 579 586 607
-SEMICOLON            : 3 170 324 324 417 464 465
+SEMICOLON            : 3 170 324 324 400 417 464 465
 SHIFT                : 274
 SKIP                 : 
 SPLICE               : 466
@@ -5096,7 +5096,7 @@ state 211
     (162) statements -> . local_dec statements_tail
     (324) for_loop -> . FOR LPAREN control_variable SEMICOLON for_expression SEMICOLON update RPAREN LBRACE statements RBRACE
     (362) until_loop -> . UNTIL LPAREN until_expression RPAREN LBRACE statements RBRACE
-    (400) repeat_until -> . REPEAT LBRACE statements RBRACE UNTIL LPAREN until_expression RPAREN
+    (400) repeat_until -> . REPEAT LBRACE statements RBRACE UNTIL LPAREN until_expression RPAREN SEMICOLON
     (607) input_statement -> . INPUT LPAREN RPAREN
     (525) var_call -> . IDENT list_index
     (608) empty -> .
@@ -6075,7 +6075,7 @@ state 261
 
 state 262
 
-    (400) repeat_until -> REPEAT . LBRACE statements RBRACE UNTIL LPAREN until_expression RPAREN
+    (400) repeat_until -> REPEAT . LBRACE statements RBRACE UNTIL LPAREN until_expression RPAREN SEMICOLON
 
     LBRACE          shift and go to state 316
 
@@ -7036,7 +7036,7 @@ state 315
 
 state 316
 
-    (400) repeat_until -> REPEAT LBRACE . statements RBRACE UNTIL LPAREN until_expression RPAREN
+    (400) repeat_until -> REPEAT LBRACE . statements RBRACE UNTIL LPAREN until_expression RPAREN SEMICOLON
     (161) statements -> . empty
     (162) statements -> . local_dec statements_tail
     (608) empty -> .
@@ -9793,7 +9793,7 @@ state 456
 
 state 457
 
-    (400) repeat_until -> REPEAT LBRACE statements . RBRACE UNTIL LPAREN until_expression RPAREN
+    (400) repeat_until -> REPEAT LBRACE statements . RBRACE UNTIL LPAREN until_expression RPAREN SEMICOLON
 
     RBRACE          shift and go to state 682
 
@@ -14973,7 +14973,7 @@ state 681
 
 state 682
 
-    (400) repeat_until -> REPEAT LBRACE statements RBRACE . UNTIL LPAREN until_expression RPAREN
+    (400) repeat_until -> REPEAT LBRACE statements RBRACE . UNTIL LPAREN until_expression RPAREN SEMICOLON
 
     UNTIL           shift and go to state 884
 
@@ -19988,7 +19988,7 @@ state 883
 
 state 884
 
-    (400) repeat_until -> REPEAT LBRACE statements RBRACE UNTIL . LPAREN until_expression RPAREN
+    (400) repeat_until -> REPEAT LBRACE statements RBRACE UNTIL . LPAREN until_expression RPAREN SEMICOLON
 
     LPAREN          shift and go to state 1053
 
@@ -22797,7 +22797,7 @@ state 1052
 
 state 1053
 
-    (400) repeat_until -> REPEAT LBRACE statements RBRACE UNTIL LPAREN . until_expression RPAREN
+    (400) repeat_until -> REPEAT LBRACE statements RBRACE UNTIL LPAREN . until_expression RPAREN SEMICOLON
     (363) until_expression -> . until_factor until_factor_tail
     (364) until_factor -> . until_var_call until_postfix
     (365) until_factor -> . until_factor1
@@ -24395,7 +24395,7 @@ state 1147
 
 state 1148
 
-    (400) repeat_until -> REPEAT LBRACE statements RBRACE UNTIL LPAREN until_expression . RPAREN
+    (400) repeat_until -> REPEAT LBRACE statements RBRACE UNTIL LPAREN until_expression . RPAREN SEMICOLON
 
     RPAREN          shift and go to state 1214
 
@@ -25651,26 +25651,9 @@ state 1213
 
 state 1214
 
-    (400) repeat_until -> REPEAT LBRACE statements RBRACE UNTIL LPAREN until_expression RPAREN .
+    (400) repeat_until -> REPEAT LBRACE statements RBRACE UNTIL LPAREN until_expression RPAREN . SEMICOLON
 
-    INT             reduce using rule 400 (repeat_until -> REPEAT LBRACE statements RBRACE UNTIL LPAREN until_expression RPAREN .)
-    FLT             reduce using rule 400 (repeat_until -> REPEAT LBRACE statements RBRACE UNTIL LPAREN until_expression RPAREN .)
-    BLN             reduce using rule 400 (repeat_until -> REPEAT LBRACE statements RBRACE UNTIL LPAREN until_expression RPAREN .)
-    CHR             reduce using rule 400 (repeat_until -> REPEAT LBRACE statements RBRACE UNTIL LPAREN until_expression RPAREN .)
-    STR             reduce using rule 400 (repeat_until -> REPEAT LBRACE statements RBRACE UNTIL LPAREN until_expression RPAREN .)
-    SWAP            reduce using rule 400 (repeat_until -> REPEAT LBRACE statements RBRACE UNTIL LPAREN until_expression RPAREN .)
-    FUNCTION_NAME   reduce using rule 400 (repeat_until -> REPEAT LBRACE statements RBRACE UNTIL LPAREN until_expression RPAREN .)
-    IDENT           reduce using rule 400 (repeat_until -> REPEAT LBRACE statements RBRACE UNTIL LPAREN until_expression RPAREN .)
-    DISPLAY         reduce using rule 400 (repeat_until -> REPEAT LBRACE statements RBRACE UNTIL LPAREN until_expression RPAREN .)
-    CHECK           reduce using rule 400 (repeat_until -> REPEAT LBRACE statements RBRACE UNTIL LPAREN until_expression RPAREN .)
-    FOR             reduce using rule 400 (repeat_until -> REPEAT LBRACE statements RBRACE UNTIL LPAREN until_expression RPAREN .)
-    UNTIL           reduce using rule 400 (repeat_until -> REPEAT LBRACE statements RBRACE UNTIL LPAREN until_expression RPAREN .)
-    REPEAT          reduce using rule 400 (repeat_until -> REPEAT LBRACE statements RBRACE UNTIL LPAREN until_expression RPAREN .)
-    INPUT           reduce using rule 400 (repeat_until -> REPEAT LBRACE statements RBRACE UNTIL LPAREN until_expression RPAREN .)
-    RBRACE          reduce using rule 400 (repeat_until -> REPEAT LBRACE statements RBRACE UNTIL LPAREN until_expression RPAREN .)
-    REVIVE          reduce using rule 400 (repeat_until -> REPEAT LBRACE statements RBRACE UNTIL LPAREN until_expression RPAREN .)
-    SHIFT           reduce using rule 400 (repeat_until -> REPEAT LBRACE statements RBRACE UNTIL LPAREN until_expression RPAREN .)
-    OTHERWISE       reduce using rule 400 (repeat_until -> REPEAT LBRACE statements RBRACE UNTIL LPAREN until_expression RPAREN .)
+    SEMICOLON       shift and go to state 1255
 
 
 state 1215
@@ -25702,14 +25685,14 @@ state 1216
 
     (133) revive_list_index2 -> LBRACKET revive_index . RBRACKET
 
-    RBRACKET        shift and go to state 1255
+    RBRACKET        shift and go to state 1256
 
 
 state 1217
 
     (273) switch_statement -> SWAP LPAREN IDENT RPAREN LBRACE switch_condition OTHERWISE LBRACE statements . RBRACE RBRACE
 
-    RBRACE          shift and go to state 1256
+    RBRACE          shift and go to state 1257
 
 
 state 1218
@@ -25723,15 +25706,15 @@ state 1218
     SHIFT           shift and go to state 929
     OTHERWISE       reduce using rule 608 (empty -> .)
 
-    switchcond_tail                shift and go to state 1257
-    switch_condition               shift and go to state 1258
-    empty                          shift and go to state 1259
+    switchcond_tail                shift and go to state 1258
+    switch_condition               shift and go to state 1259
+    empty                          shift and go to state 1260
 
 state 1219
 
     (315) switch_type_cast -> CONVERT_TO_INT LPAREN typecast_value . RPAREN
 
-    RPAREN          shift and go to state 1260
+    RPAREN          shift and go to state 1261
 
 
 state 1220
@@ -25760,21 +25743,21 @@ state 1221
 
     (316) switch_type_cast -> CONVERT_TO_FLT LPAREN typecast_value . RPAREN
 
-    RPAREN          shift and go to state 1261
+    RPAREN          shift and go to state 1262
 
 
 state 1222
 
     (317) switch_type_cast -> CONVERT_TO_BLN LPAREN typecast_value . RPAREN
 
-    RPAREN          shift and go to state 1262
+    RPAREN          shift and go to state 1263
 
 
 state 1223
 
     (318) switch_type_cast -> CONVERT_TO_STR LPAREN typecast_value . RPAREN
 
-    RPAREN          shift and go to state 1263
+    RPAREN          shift and go to state 1264
 
 
 state 1224
@@ -25813,7 +25796,7 @@ state 1224
     OR              shift and go to state 1174
     COLON           reduce using rule 608 (empty -> .)
 
-    switch_factor_tail             shift and go to state 1264
+    switch_factor_tail             shift and go to state 1265
     empty                          shift and go to state 1175
 
 state 1225
@@ -25852,7 +25835,7 @@ state 1225
     OR              shift and go to state 1174
     COLON           reduce using rule 608 (empty -> .)
 
-    switch_factor_tail             shift and go to state 1265
+    switch_factor_tail             shift and go to state 1266
     empty                          shift and go to state 1175
 
 state 1226
@@ -25891,7 +25874,7 @@ state 1226
     OR              shift and go to state 1174
     COLON           reduce using rule 608 (empty -> .)
 
-    switch_factor_tail             shift and go to state 1266
+    switch_factor_tail             shift and go to state 1267
     empty                          shift and go to state 1175
 
 state 1227
@@ -25930,7 +25913,7 @@ state 1227
     OR              shift and go to state 1174
     COLON           reduce using rule 608 (empty -> .)
 
-    switch_factor_tail             shift and go to state 1267
+    switch_factor_tail             shift and go to state 1268
     empty                          shift and go to state 1175
 
 state 1228
@@ -25969,7 +25952,7 @@ state 1228
     OR              shift and go to state 1174
     COLON           reduce using rule 608 (empty -> .)
 
-    switch_factor_tail             shift and go to state 1268
+    switch_factor_tail             shift and go to state 1269
     empty                          shift and go to state 1175
 
 state 1229
@@ -26008,7 +25991,7 @@ state 1229
     OR              shift and go to state 1174
     COLON           reduce using rule 608 (empty -> .)
 
-    switch_factor_tail             shift and go to state 1269
+    switch_factor_tail             shift and go to state 1270
     empty                          shift and go to state 1175
 
 state 1230
@@ -26047,7 +26030,7 @@ state 1230
     OR              shift and go to state 1174
     COLON           reduce using rule 608 (empty -> .)
 
-    switch_factor_tail             shift and go to state 1270
+    switch_factor_tail             shift and go to state 1271
     empty                          shift and go to state 1175
 
 state 1231
@@ -26086,7 +26069,7 @@ state 1231
     OR              shift and go to state 1174
     COLON           reduce using rule 608 (empty -> .)
 
-    switch_factor_tail             shift and go to state 1271
+    switch_factor_tail             shift and go to state 1272
     empty                          shift and go to state 1175
 
 state 1232
@@ -26125,7 +26108,7 @@ state 1232
     OR              shift and go to state 1174
     COLON           reduce using rule 608 (empty -> .)
 
-    switch_factor_tail             shift and go to state 1272
+    switch_factor_tail             shift and go to state 1273
     empty                          shift and go to state 1175
 
 state 1233
@@ -26164,7 +26147,7 @@ state 1233
     OR              shift and go to state 1174
     COLON           reduce using rule 608 (empty -> .)
 
-    switch_factor_tail             shift and go to state 1273
+    switch_factor_tail             shift and go to state 1274
     empty                          shift and go to state 1175
 
 state 1234
@@ -26203,7 +26186,7 @@ state 1234
     OR              shift and go to state 1174
     COLON           reduce using rule 608 (empty -> .)
 
-    switch_factor_tail             shift and go to state 1274
+    switch_factor_tail             shift and go to state 1275
     empty                          shift and go to state 1175
 
 state 1235
@@ -26242,7 +26225,7 @@ state 1235
     OR              shift and go to state 1174
     COLON           reduce using rule 608 (empty -> .)
 
-    switch_factor_tail             shift and go to state 1275
+    switch_factor_tail             shift and go to state 1276
     empty                          shift and go to state 1175
 
 state 1236
@@ -26281,7 +26264,7 @@ state 1236
     OR              shift and go to state 1174
     COLON           reduce using rule 608 (empty -> .)
 
-    switch_factor_tail             shift and go to state 1276
+    switch_factor_tail             shift and go to state 1277
     empty                          shift and go to state 1175
 
 state 1237
@@ -26320,14 +26303,14 @@ state 1237
     OR              shift and go to state 1174
     COLON           reduce using rule 608 (empty -> .)
 
-    switch_factor_tail             shift and go to state 1277
+    switch_factor_tail             shift and go to state 1278
     empty                          shift and go to state 1175
 
 state 1238
 
     (289) switch_list_index -> LBRACKET switch_index . RBRACKET switch_list_index2
 
-    RBRACKET        shift and go to state 1278
+    RBRACKET        shift and go to state 1279
 
 
 state 1239
@@ -26348,7 +26331,7 @@ state 1241
 
     (466) assign_tail -> DOT SPLICE LPAREN start COMMA deleteCount COMMA splice_items . RPAREN
 
-    RPAREN          shift and go to state 1279
+    RPAREN          shift and go to state 1280
 
 
 state 1242
@@ -26418,7 +26401,7 @@ state 1246
 
     (233) conditional_statement -> CHECK LPAREN condition RPAREN LBRACE statements RBRACE conditional_tail OTHERWISE . LBRACE statements RBRACE
 
-    LBRACE          shift and go to state 1280
+    LBRACE          shift and go to state 1281
 
 
 state 1247
@@ -26446,7 +26429,7 @@ state 1247
     NIGHT           shift and go to state 441
     STR_LIT         shift and go to state 442
 
-    condition                      shift and go to state 1281
+    condition                      shift and go to state 1282
     condition_factor               shift and go to state 433
     condition_var_call             shift and go to state 434
     condition1                     shift and go to state 435
@@ -26516,7 +26499,7 @@ state 1249
   ! CHR             [ reduce using rule 608 (empty -> .) ]
   ! STR             [ reduce using rule 608 (empty -> .) ]
 
-    statements                     shift and go to state 1282
+    statements                     shift and go to state 1283
     empty                          shift and go to state 210
     local_dec                      shift and go to state 211
     local_var_statement            shift and go to state 212
@@ -26538,7 +26521,7 @@ state 1251
     INT_LIT         shift and go to state 1142
     IDENT           shift and go to state 1143
 
-    for_index                      shift and go to state 1283
+    for_index                      shift and go to state 1284
 
 state 1252
 
@@ -26613,6 +26596,30 @@ state 1254
 
 state 1255
 
+    (400) repeat_until -> REPEAT LBRACE statements RBRACE UNTIL LPAREN until_expression RPAREN SEMICOLON .
+
+    INT             reduce using rule 400 (repeat_until -> REPEAT LBRACE statements RBRACE UNTIL LPAREN until_expression RPAREN SEMICOLON .)
+    FLT             reduce using rule 400 (repeat_until -> REPEAT LBRACE statements RBRACE UNTIL LPAREN until_expression RPAREN SEMICOLON .)
+    BLN             reduce using rule 400 (repeat_until -> REPEAT LBRACE statements RBRACE UNTIL LPAREN until_expression RPAREN SEMICOLON .)
+    CHR             reduce using rule 400 (repeat_until -> REPEAT LBRACE statements RBRACE UNTIL LPAREN until_expression RPAREN SEMICOLON .)
+    STR             reduce using rule 400 (repeat_until -> REPEAT LBRACE statements RBRACE UNTIL LPAREN until_expression RPAREN SEMICOLON .)
+    SWAP            reduce using rule 400 (repeat_until -> REPEAT LBRACE statements RBRACE UNTIL LPAREN until_expression RPAREN SEMICOLON .)
+    FUNCTION_NAME   reduce using rule 400 (repeat_until -> REPEAT LBRACE statements RBRACE UNTIL LPAREN until_expression RPAREN SEMICOLON .)
+    IDENT           reduce using rule 400 (repeat_until -> REPEAT LBRACE statements RBRACE UNTIL LPAREN until_expression RPAREN SEMICOLON .)
+    DISPLAY         reduce using rule 400 (repeat_until -> REPEAT LBRACE statements RBRACE UNTIL LPAREN until_expression RPAREN SEMICOLON .)
+    CHECK           reduce using rule 400 (repeat_until -> REPEAT LBRACE statements RBRACE UNTIL LPAREN until_expression RPAREN SEMICOLON .)
+    FOR             reduce using rule 400 (repeat_until -> REPEAT LBRACE statements RBRACE UNTIL LPAREN until_expression RPAREN SEMICOLON .)
+    UNTIL           reduce using rule 400 (repeat_until -> REPEAT LBRACE statements RBRACE UNTIL LPAREN until_expression RPAREN SEMICOLON .)
+    REPEAT          reduce using rule 400 (repeat_until -> REPEAT LBRACE statements RBRACE UNTIL LPAREN until_expression RPAREN SEMICOLON .)
+    INPUT           reduce using rule 400 (repeat_until -> REPEAT LBRACE statements RBRACE UNTIL LPAREN until_expression RPAREN SEMICOLON .)
+    RBRACE          reduce using rule 400 (repeat_until -> REPEAT LBRACE statements RBRACE UNTIL LPAREN until_expression RPAREN SEMICOLON .)
+    REVIVE          reduce using rule 400 (repeat_until -> REPEAT LBRACE statements RBRACE UNTIL LPAREN until_expression RPAREN SEMICOLON .)
+    SHIFT           reduce using rule 400 (repeat_until -> REPEAT LBRACE statements RBRACE UNTIL LPAREN until_expression RPAREN SEMICOLON .)
+    OTHERWISE       reduce using rule 400 (repeat_until -> REPEAT LBRACE statements RBRACE UNTIL LPAREN until_expression RPAREN SEMICOLON .)
+
+
+state 1256
+
     (133) revive_list_index2 -> LBRACKET revive_index RBRACKET .
 
     PLUS_PLUS       reduce using rule 133 (revive_list_index2 -> LBRACKET revive_index RBRACKET .)
@@ -26635,168 +26642,168 @@ state 1255
     RPAREN          reduce using rule 133 (revive_list_index2 -> LBRACKET revive_index RBRACKET .)
 
 
-state 1256
+state 1257
 
     (273) switch_statement -> SWAP LPAREN IDENT RPAREN LBRACE switch_condition OTHERWISE LBRACE statements RBRACE . RBRACE
 
-    RBRACE          shift and go to state 1284
+    RBRACE          shift and go to state 1285
 
 
-state 1257
+state 1258
 
     (274) switch_condition -> SHIFT switch_value COLON statements switchcond_tail .
 
     OTHERWISE       reduce using rule 274 (switch_condition -> SHIFT switch_value COLON statements switchcond_tail .)
 
 
-state 1258
+state 1259
 
     (319) switchcond_tail -> switch_condition .
 
     OTHERWISE       reduce using rule 319 (switchcond_tail -> switch_condition .)
 
 
-state 1259
+state 1260
 
     (320) switchcond_tail -> empty .
 
     OTHERWISE       reduce using rule 320 (switchcond_tail -> empty .)
 
 
-state 1260
+state 1261
 
     (315) switch_type_cast -> CONVERT_TO_INT LPAREN typecast_value RPAREN .
 
     COLON           reduce using rule 315 (switch_type_cast -> CONVERT_TO_INT LPAREN typecast_value RPAREN .)
 
 
-state 1261
+state 1262
 
     (316) switch_type_cast -> CONVERT_TO_FLT LPAREN typecast_value RPAREN .
 
     COLON           reduce using rule 316 (switch_type_cast -> CONVERT_TO_FLT LPAREN typecast_value RPAREN .)
 
 
-state 1262
+state 1263
 
     (317) switch_type_cast -> CONVERT_TO_BLN LPAREN typecast_value RPAREN .
 
     COLON           reduce using rule 317 (switch_type_cast -> CONVERT_TO_BLN LPAREN typecast_value RPAREN .)
 
 
-state 1263
+state 1264
 
     (318) switch_type_cast -> CONVERT_TO_STR LPAREN typecast_value RPAREN .
 
     COLON           reduce using rule 318 (switch_type_cast -> CONVERT_TO_STR LPAREN typecast_value RPAREN .)
 
 
-state 1264
+state 1265
 
     (295) switch_factor_tail -> PLUS switch_factor switch_factor_tail .
 
     COLON           reduce using rule 295 (switch_factor_tail -> PLUS switch_factor switch_factor_tail .)
 
 
-state 1265
+state 1266
 
     (296) switch_factor_tail -> MINUS switch_factor switch_factor_tail .
 
     COLON           reduce using rule 296 (switch_factor_tail -> MINUS switch_factor switch_factor_tail .)
 
 
-state 1266
+state 1267
 
     (297) switch_factor_tail -> MULTIPLY switch_factor switch_factor_tail .
 
     COLON           reduce using rule 297 (switch_factor_tail -> MULTIPLY switch_factor switch_factor_tail .)
 
 
-state 1267
+state 1268
 
     (298) switch_factor_tail -> DIVISION switch_factor switch_factor_tail .
 
     COLON           reduce using rule 298 (switch_factor_tail -> DIVISION switch_factor switch_factor_tail .)
 
 
-state 1268
+state 1269
 
     (299) switch_factor_tail -> MODULO switch_factor switch_factor_tail .
 
     COLON           reduce using rule 299 (switch_factor_tail -> MODULO switch_factor switch_factor_tail .)
 
 
-state 1269
+state 1270
 
     (300) switch_factor_tail -> EXPONENT switch_factor switch_factor_tail .
 
     COLON           reduce using rule 300 (switch_factor_tail -> EXPONENT switch_factor switch_factor_tail .)
 
 
-state 1270
+state 1271
 
     (301) switch_factor_tail -> GT switch_factor switch_factor_tail .
 
     COLON           reduce using rule 301 (switch_factor_tail -> GT switch_factor switch_factor_tail .)
 
 
-state 1271
+state 1272
 
     (302) switch_factor_tail -> LT switch_factor switch_factor_tail .
 
     COLON           reduce using rule 302 (switch_factor_tail -> LT switch_factor switch_factor_tail .)
 
 
-state 1272
+state 1273
 
     (303) switch_factor_tail -> EQ_EQ switch_factor switch_factor_tail .
 
     COLON           reduce using rule 303 (switch_factor_tail -> EQ_EQ switch_factor switch_factor_tail .)
 
 
-state 1273
+state 1274
 
     (304) switch_factor_tail -> GT_EQ switch_factor switch_factor_tail .
 
     COLON           reduce using rule 304 (switch_factor_tail -> GT_EQ switch_factor switch_factor_tail .)
 
 
-state 1274
+state 1275
 
     (305) switch_factor_tail -> LT_EQ switch_factor switch_factor_tail .
 
     COLON           reduce using rule 305 (switch_factor_tail -> LT_EQ switch_factor switch_factor_tail .)
 
 
-state 1275
+state 1276
 
     (306) switch_factor_tail -> NOT_EQ switch_factor switch_factor_tail .
 
     COLON           reduce using rule 306 (switch_factor_tail -> NOT_EQ switch_factor switch_factor_tail .)
 
 
-state 1276
+state 1277
 
     (307) switch_factor_tail -> AND switch_factor switch_factor_tail .
 
     COLON           reduce using rule 307 (switch_factor_tail -> AND switch_factor switch_factor_tail .)
 
 
-state 1277
+state 1278
 
     (308) switch_factor_tail -> OR switch_factor switch_factor_tail .
 
     COLON           reduce using rule 308 (switch_factor_tail -> OR switch_factor switch_factor_tail .)
 
 
-state 1278
+state 1279
 
     (289) switch_list_index -> LBRACKET switch_index RBRACKET . switch_list_index2
     (291) switch_list_index2 -> . LBRACKET switch_index RBRACKET
     (292) switch_list_index2 -> . empty
     (608) empty -> .
 
-    LBRACKET        shift and go to state 1285
+    LBRACKET        shift and go to state 1286
     PLUS_PLUS       reduce using rule 608 (empty -> .)
     MINUS_MINUS     reduce using rule 608 (empty -> .)
     PLUS            reduce using rule 608 (empty -> .)
@@ -26816,17 +26823,17 @@ state 1278
     COLON           reduce using rule 608 (empty -> .)
     RPAREN          reduce using rule 608 (empty -> .)
 
-    switch_list_index2             shift and go to state 1286
-    empty                          shift and go to state 1287
+    switch_list_index2             shift and go to state 1287
+    empty                          shift and go to state 1288
 
-state 1279
+state 1280
 
     (466) assign_tail -> DOT SPLICE LPAREN start COMMA deleteCount COMMA splice_items RPAREN .
 
     SEMICOLON       reduce using rule 466 (assign_tail -> DOT SPLICE LPAREN start COMMA deleteCount COMMA splice_items RPAREN .)
 
 
-state 1280
+state 1281
 
     (233) conditional_statement -> CHECK LPAREN condition RPAREN LBRACE statements RBRACE conditional_tail OTHERWISE LBRACE . statements RBRACE
     (161) statements -> . empty
@@ -26868,34 +26875,34 @@ state 1280
   ! CHR             [ reduce using rule 608 (empty -> .) ]
   ! STR             [ reduce using rule 608 (empty -> .) ]
 
-    statements                     shift and go to state 1288
+    statements                     shift and go to state 1289
     empty                          shift and go to state 210
     local_dec                      shift and go to state 211
     local_var_statement            shift and go to state 212
     local_data_type                shift and go to state 213
 
-state 1281
+state 1282
 
     (234) conditional_tail -> OTHERWISE_CHECK LPAREN condition . RPAREN LBRACE statements RBRACE conditional_tail
 
-    RPAREN          shift and go to state 1289
-
-
-state 1282
-
-    (324) for_loop -> FOR LPAREN control_variable SEMICOLON for_expression SEMICOLON update RPAREN LBRACE statements . RBRACE
-
-    RBRACE          shift and go to state 1290
+    RPAREN          shift and go to state 1290
 
 
 state 1283
 
-    (338) for_list_index2 -> LBRACKET for_index . RBRACKET
+    (324) for_loop -> FOR LPAREN control_variable SEMICOLON for_expression SEMICOLON update RPAREN LBRACE statements . RBRACE
 
-    RBRACKET        shift and go to state 1291
+    RBRACE          shift and go to state 1291
 
 
 state 1284
+
+    (338) for_list_index2 -> LBRACKET for_index . RBRACKET
+
+    RBRACKET        shift and go to state 1292
+
+
+state 1285
 
     (273) switch_statement -> SWAP LPAREN IDENT RPAREN LBRACE switch_condition OTHERWISE LBRACE statements RBRACE RBRACE .
 
@@ -26919,7 +26926,7 @@ state 1284
     OTHERWISE       reduce using rule 273 (switch_statement -> SWAP LPAREN IDENT RPAREN LBRACE switch_condition OTHERWISE LBRACE statements RBRACE RBRACE .)
 
 
-state 1285
+state 1286
 
     (291) switch_list_index2 -> LBRACKET . switch_index RBRACKET
     (293) switch_index -> . INT_LIT
@@ -26928,9 +26935,9 @@ state 1285
     INT_LIT         shift and go to state 1239
     IDENT           shift and go to state 1240
 
-    switch_index                   shift and go to state 1292
+    switch_index                   shift and go to state 1293
 
-state 1286
+state 1287
 
     (289) switch_list_index -> LBRACKET switch_index RBRACKET switch_list_index2 .
 
@@ -26954,7 +26961,7 @@ state 1286
     RPAREN          reduce using rule 289 (switch_list_index -> LBRACKET switch_index RBRACKET switch_list_index2 .)
 
 
-state 1287
+state 1288
 
     (292) switch_list_index2 -> empty .
 
@@ -26978,21 +26985,21 @@ state 1287
     RPAREN          reduce using rule 292 (switch_list_index2 -> empty .)
 
 
-state 1288
+state 1289
 
     (233) conditional_statement -> CHECK LPAREN condition RPAREN LBRACE statements RBRACE conditional_tail OTHERWISE LBRACE statements . RBRACE
 
-    RBRACE          shift and go to state 1293
-
-
-state 1289
-
-    (234) conditional_tail -> OTHERWISE_CHECK LPAREN condition RPAREN . LBRACE statements RBRACE conditional_tail
-
-    LBRACE          shift and go to state 1294
+    RBRACE          shift and go to state 1294
 
 
 state 1290
+
+    (234) conditional_tail -> OTHERWISE_CHECK LPAREN condition RPAREN . LBRACE statements RBRACE conditional_tail
+
+    LBRACE          shift and go to state 1295
+
+
+state 1291
 
     (324) for_loop -> FOR LPAREN control_variable SEMICOLON for_expression SEMICOLON update RPAREN LBRACE statements RBRACE .
 
@@ -27016,7 +27023,7 @@ state 1290
     OTHERWISE       reduce using rule 324 (for_loop -> FOR LPAREN control_variable SEMICOLON for_expression SEMICOLON update RPAREN LBRACE statements RBRACE .)
 
 
-state 1291
+state 1292
 
     (338) for_list_index2 -> LBRACKET for_index RBRACKET .
 
@@ -27040,14 +27047,14 @@ state 1291
     RPAREN          reduce using rule 338 (for_list_index2 -> LBRACKET for_index RBRACKET .)
 
 
-state 1292
+state 1293
 
     (291) switch_list_index2 -> LBRACKET switch_index . RBRACKET
 
-    RBRACKET        shift and go to state 1295
+    RBRACKET        shift and go to state 1296
 
 
-state 1293
+state 1294
 
     (233) conditional_statement -> CHECK LPAREN condition RPAREN LBRACE statements RBRACE conditional_tail OTHERWISE LBRACE statements RBRACE .
 
@@ -27071,7 +27078,7 @@ state 1293
     OTHERWISE       reduce using rule 233 (conditional_statement -> CHECK LPAREN condition RPAREN LBRACE statements RBRACE conditional_tail OTHERWISE LBRACE statements RBRACE .)
 
 
-state 1294
+state 1295
 
     (234) conditional_tail -> OTHERWISE_CHECK LPAREN condition RPAREN LBRACE . statements RBRACE conditional_tail
     (161) statements -> . empty
@@ -27113,13 +27120,13 @@ state 1294
   ! CHR             [ reduce using rule 608 (empty -> .) ]
   ! STR             [ reduce using rule 608 (empty -> .) ]
 
-    statements                     shift and go to state 1296
+    statements                     shift and go to state 1297
     empty                          shift and go to state 210
     local_dec                      shift and go to state 211
     local_var_statement            shift and go to state 212
     local_data_type                shift and go to state 213
 
-state 1295
+state 1296
 
     (291) switch_list_index2 -> LBRACKET switch_index RBRACKET .
 
@@ -27143,14 +27150,14 @@ state 1295
     RPAREN          reduce using rule 291 (switch_list_index2 -> LBRACKET switch_index RBRACKET .)
 
 
-state 1296
+state 1297
 
     (234) conditional_tail -> OTHERWISE_CHECK LPAREN condition RPAREN LBRACE statements . RBRACE conditional_tail
 
-    RBRACE          shift and go to state 1297
+    RBRACE          shift and go to state 1298
 
 
-state 1297
+state 1298
 
     (234) conditional_tail -> OTHERWISE_CHECK LPAREN condition RPAREN LBRACE statements RBRACE . conditional_tail
     (234) conditional_tail -> . OTHERWISE_CHECK LPAREN condition RPAREN LBRACE statements RBRACE conditional_tail
@@ -27160,10 +27167,10 @@ state 1297
     OTHERWISE_CHECK shift and go to state 1191
     OTHERWISE       reduce using rule 608 (empty -> .)
 
-    conditional_tail               shift and go to state 1298
+    conditional_tail               shift and go to state 1299
     empty                          shift and go to state 1192
 
-state 1298
+state 1299
 
     (234) conditional_tail -> OTHERWISE_CHECK LPAREN condition RPAREN LBRACE statements RBRACE conditional_tail .
 
@@ -27257,16 +27264,16 @@ WARNING: shift/reduce conflict for FLT in state 1249 resolved as shift
 WARNING: shift/reduce conflict for BLN in state 1249 resolved as shift
 WARNING: shift/reduce conflict for CHR in state 1249 resolved as shift
 WARNING: shift/reduce conflict for STR in state 1249 resolved as shift
-WARNING: shift/reduce conflict for INT in state 1280 resolved as shift
-WARNING: shift/reduce conflict for FLT in state 1280 resolved as shift
-WARNING: shift/reduce conflict for BLN in state 1280 resolved as shift
-WARNING: shift/reduce conflict for CHR in state 1280 resolved as shift
-WARNING: shift/reduce conflict for STR in state 1280 resolved as shift
-WARNING: shift/reduce conflict for INT in state 1294 resolved as shift
-WARNING: shift/reduce conflict for FLT in state 1294 resolved as shift
-WARNING: shift/reduce conflict for BLN in state 1294 resolved as shift
-WARNING: shift/reduce conflict for CHR in state 1294 resolved as shift
-WARNING: shift/reduce conflict for STR in state 1294 resolved as shift
+WARNING: shift/reduce conflict for INT in state 1281 resolved as shift
+WARNING: shift/reduce conflict for FLT in state 1281 resolved as shift
+WARNING: shift/reduce conflict for BLN in state 1281 resolved as shift
+WARNING: shift/reduce conflict for CHR in state 1281 resolved as shift
+WARNING: shift/reduce conflict for STR in state 1281 resolved as shift
+WARNING: shift/reduce conflict for INT in state 1295 resolved as shift
+WARNING: shift/reduce conflict for FLT in state 1295 resolved as shift
+WARNING: shift/reduce conflict for BLN in state 1295 resolved as shift
+WARNING: shift/reduce conflict for CHR in state 1295 resolved as shift
+WARNING: shift/reduce conflict for STR in state 1295 resolved as shift
 WARNING: reduce/reduce conflict in state 210 resolved using rule (statements -> empty)
 WARNING: rejected rule (local_dec -> empty) in state 210
 WARNING: reduce/reduce conflict in state 711 resolved using rule (function_statements -> empty)
