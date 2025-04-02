@@ -663,7 +663,7 @@ def p_parameters_tail(p):
 # -----------------------------------------------------------------------------
 def p_revive(p):
     """
-    revive : REVIVE revive_value  
+    revive : REVIVE revive_value SEMICOLON
            | empty        
     """
     if len(p) == 2:
@@ -1759,7 +1759,7 @@ def p_postfix_op(p):
 # -----------------------------------------------------------------------------
 def p_function_call(p):
     """
-    function_call : FUNCTION_NAME LPAREN arguments RPAREN  
+    function_call : FUNCTION_NAME LPAREN arguments RPAREN SEMICOLON
                   | input_statement                   
     """
     if len(p) == 5:  

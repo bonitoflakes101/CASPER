@@ -1,0 +1,136 @@
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+1-4
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+birth{
+
+
+
+@main_casper(){
+
+int $add = 3+3;
+int $sub= 3-3;
+int $multiply = 3*3;
+int $div = 3/3;
+
+display $add;
+display $sub;
+display $multiply;
+display $div;
+}
+
+}
+ghost
+
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+5
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+
+birth{
+
+function_int @add(int $a, int $b){
+
+int $add_value = $a + $b;
+revive $add_value;
+}
+
+function_int @sub(int $a, int $b){
+
+int $sub_value = $a - $b;
+revive $sub_value;
+}
+
+function_int @multiply(int $a, int $b){
+
+int $multiply_value = $a * $b;
+revive $multiply_value;
+}
+
+function_int @div(int $a, int $b){
+
+int $div_value = $a / $b;
+revive $div_value;
+}
+
+
+@main_casper(){
+
+int $num1 = 6;
+int $num2 = 9;
+
+int $add = @add($num1,$num2);
+int $sub = @sub($num1,$num2);
+int $multiply = @multiply($num1,$num2);
+int $div = @div($num1,$num2); << naging float, even if return type ay int, dapat may data loss unless typecasted
+
+display $add;
+display $sub;
+display $multiply;
+display $div;
+}
+
+}
+ghost
+
+
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+6-10
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+birth{
+
+
+
+@main_casper(){
+
+<< 6
+
+display "\n";
+display "*";
+display "**";
+display "***";
+display "****";
+display "*****";
+
+<< 7
+
+display "\n";
+display "    *";
+display "   **";
+display "  ***";
+display " ****";
+display "*****";
+
+
+<< 8
+
+display "\n";
+display "    *";
+display "   ***";
+display "  *****";
+display " *******";
+display "*********";
+
+<< 9
+
+display "\n";
+display "*****";
+display "*****";
+display "*****";
+display "*****";
+
+<< 10
+
+display "\n";
+display "**********";
+display "**********";
+display "**********";
+display "**********";
+}
+
+}
+ghost
+
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+11-15
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
