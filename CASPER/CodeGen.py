@@ -194,7 +194,7 @@ class CodeGenerator:
         valid_children = [child for child in node.children if child is not None]
         self.log(f"Valid children after filtering None: {valid_children}")
         
-        if len(valid_children) < 3:
+        if len(valid_children) < 2:  # Need at least variable name and its value
             print("Error: Not enough valid children in var_statement.")
             return None
 
@@ -220,29 +220,15 @@ class CodeGenerator:
             print("Error: Could not find local_var_assign node in var_statement.")
             return None
         
-        # Now traverse from local_var_assign to the literal
-        self.log(f"Found assign_node: {assign_node}")
-        
-        # Manually traverse the AST to get the literal value
-        if assign_node.children:
-            value_node = assign_node.children[0]  # 'value' node
-            if value_node and value_node.children:
-                expr_node = value_node.children[0]  # 'expression' node
-                if expr_node and expr_node.children:
-                    literal_node = expr_node.children[0]  # 'literal' node
-                    if literal_node and hasattr(literal_node, 'value'):
-                        value = literal_node.value
-                        self.log(f"Found literal value: {value}")
-                        self.get_current_env()[var_name] = value
-                        self.log(f"Environment after assignment: {self.get_current_env()}")
-                        return value
-        
-        # Fallback to regular execution if direct traversal fails
+        # Execute the assignment node to get the evaluated value
         value = self.execute_node(assign_node)
-        self.log(f"Fallback: Assigning variable: '{var_name}' = {value}")
+        self.log(f"Evaluated expression value: {value}")
         
+        # Store the variable in current scope
         self.get_current_env()[var_name] = value
+        self.log(f"Assigned variable '{var_name}' = {value}")
         self.log(f"Environment after assignment: {self.get_current_env()}")
+        
         return value
         
     def execute_local_var_assign(self, node):
@@ -252,7 +238,7 @@ class CodeGenerator:
             self.log("local_var_assign has no children")
             return None
         
-        # Execute the value node (which will execute the expression, which will execute the literal)
+        # Execute the value node (which will execute the expression)
         value_node = node.children[0]
         self.log(f"local_var_assign value node: {value_node}")
         result = self.execute_node(value_node)
@@ -287,14 +273,135 @@ class CodeGenerator:
 
     def execute_expression(self, node):
         self.log(f"Executing expression: {node}")
-        # expression can have multiple forms
-        # from your AST, we see expression -> literal or expression -> var_postfix
-        if node.children:
-            result = self.execute_node(node.children[0])
-            self.log(f"Expression result: {result}")
-            return result
-        self.log("Expression has no children")
+        
+        if not node.children:
+            self.log("Expression has no children")
+            return None
+        
+        # First, check for literal or var_postfix
+        if len(node.children) == 1:
+            return self.execute_node(node.children[0])
+            
+        # For expressions with multiple parts, process them according to operator precedence
+        # First, handle the base term (first literal or variable)
+        result = self.execute_node(node.children[0])
+        self.log(f"Initial term: {result}")
+        
+        # Find all factor_tail_binop nodes and evaluate them in order
+        # Extract operators and operands and process them respecting precedence
+        operations = []
+        
+        # Process each factor_tail_binop nodes
+        i = 1
+        while i < len(node.children):
+            if hasattr(node.children[i], 'type') and node.children[i].type == "factor_tail_binop":
+                self.log(f"Processing factor_tail_binop at index {i}")
+                binop_node = node.children[i]
+                
+                # Process the complete chain of operations
+                result = self.evaluate_expression_chain(result, binop_node)
+                self.log(f"Expression result after chain evaluation: {result}")
+                break
+            i += 1
+            
+        self.log(f"Final expression result: {result}")
+        return result
+        
+    def evaluate_expression_chain(self, left_value, binop_node):
+        self.log(f"Evaluating expression chain starting with {left_value}")
+        
+        if not binop_node or not hasattr(binop_node, 'type') or binop_node.type != "factor_tail_binop":
+            return left_value
+            
+        # Get the operator node
+        if len(binop_node.children) < 2:
+            self.log("Invalid binop node structure")
+            return left_value
+            
+        op_node = binop_node.children[0]
+        if not hasattr(op_node, 'type') or op_node.type != "operator":
+            self.log("Expected operator node")
+            return left_value
+            
+        operator = op_node.value
+        self.log(f"Operator: {operator}")
+        
+        # Get the right operand
+        right_value = self.execute_node(binop_node.children[1])
+        self.log(f"Right operand: {right_value}")
+        
+        # Check for another operation in the chain
+        next_binop = None
+        if len(binop_node.children) > 2 and binop_node.children[2] is not None:
+            next_binop = binop_node.children[2]
+            
+        # Handle operator precedence:
+        # For 3+10*2, we should compute 10*2 first, then add 3
+        if next_binop is not None and hasattr(next_binop, 'type') and next_binop.type == "factor_tail_binop":
+            next_op_node = next_binop.children[0]
+            if hasattr(next_op_node, 'type') and next_op_node.type == "operator":
+                next_operator = next_op_node.value
+                
+                # If the next operator has higher precedence, evaluate it first
+                if self.has_higher_precedence(next_operator, operator):
+                    self.log(f"Evaluating higher precedence operation first: {next_operator}")
+                    # Evaluate the next operation first
+                    right_value = self.evaluate_expression_chain(right_value, next_binop)
+                    self.log(f"Result of higher precedence chain: {right_value}")
+                    # Then apply the current operation
+                    result = self.apply_operator(operator, left_value, right_value)
+                    self.log(f"Result of current operation: {result}")
+                    return result
+        
+        # If no precedence issues or no next operation, just apply the current operation
+        result = self.apply_operator(operator, left_value, right_value)
+        self.log(f"Operation result: {left_value} {operator} {right_value} = {result}")
+        
+        # Continue the chain if there's more
+        if next_binop is not None and hasattr(next_binop, 'type') and next_binop.type == "factor_tail_binop":
+            result = self.evaluate_expression_chain(result, next_binop)
+            
+        return result
+    
+    def has_higher_precedence(self, op1, op2):
+        # Define precedence levels
+        precedence = {
+            '*': 2, '/': 2, '%': 2,  # Higher precedence
+            '+': 1, '-': 1            # Lower precedence
+        }
+        return precedence.get(op1, 0) > precedence.get(op2, 0)
+
+    def execute_factor_tail_binop(self, node):
+        self.log(f"Executing factor_tail_binop: {node}")
+        # This isn't needed anymore as we're handling operations in evaluate_expression_chain
+        # But we keep it for compatibility
         return None
+
+    def execute_operator(self, node):
+        self.log(f"Executing operator: {node}")
+        return node.value
+
+    def apply_operator(self, operator, left, right):
+        self.log(f"Applying operator: {left} {operator} {right}")
+        if operator == "+":
+            return left + right
+        elif operator == "-":
+            return left - right
+        elif operator == "*":
+            return left * right
+        elif operator == "/":
+            if right == 0:
+                print("Error: Division by zero")
+                return 0
+            return left / right
+        elif operator == "%":
+            if right == 0:
+                print("Error: Modulo by zero")
+                return 0
+            return left % right
+        else:
+            print(f"Unsupported operator: {operator}")
+            return None
 
     def execute_literal(self, node):
         self.log(f"Executing literal: {node}, value={node.value}")
