@@ -1759,7 +1759,7 @@ def p_postfix_op(p):
 # -----------------------------------------------------------------------------
 def p_function_call(p):
     """
-    function_call : FUNCTION_NAME LPAREN arguments RPAREN SEMICOLON
+    function_call : FUNCTION_NAME LPAREN arguments RPAREN 
                   | input_statement                   
     """
     if len(p) == 5:  
