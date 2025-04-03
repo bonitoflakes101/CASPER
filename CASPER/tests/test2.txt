@@ -77,9 +77,8 @@ ghost
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 6-10
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
 birth{
-
-
 
 @main_casper(){
 
@@ -134,3 +133,122 @@ ghost
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 11-15
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+birth{
+
+function @left_triangle(){
+
+display "\n";
+display "*";
+display "**";
+display "***";
+display "****";
+display "*****";
+
+}
+
+function @right_triangle(){
+
+display "\n";
+display "    *";
+display "   **";
+display "  ***";
+display " ****";
+display "*****";
+
+}
+
+function @triangle(){
+
+
+display "\n";
+display "    *";
+display "   ***";
+display "  *****";
+display " *******";
+display "*********";
+}
+function @square(){
+
+
+display "\n";
+display "*****";
+display "*****";
+display "*****";
+display "*****";
+
+}
+function @rectangle(){
+
+display "\n";
+display "**********";
+display "**********";
+display "**********";
+display "**********";
+
+
+}
+@main_casper(){
+
+@left_triangle();
+@right_triangle();
+@triangle();
+@square();
+@rectangle();
+
+}
+
+}
+ghost
+
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+birth {
+
+    function_flt @area_triangle(flt $b, flt $h) {
+        flt $a = ($b + $h) / 2.0;
+        revive $a;
+    }
+
+    function_flt @area_rectangle(flt $l, flt $w) {
+        flt $area_result= $l + $w;
+        revive $area_result;
+    }
+
+    function_flt @area_circle(flt $r) {
+        flt $pi = 3.1416;
+        flt $area_result = $pi + $r + $r;
+        revive $area_result;
+    }
+
+     @main_casper() {
+        int $shape = 2;  << 1 = Triangle, 2 = Rectangle, 3 = Circle
+        flt $area = 0.0;
+
+        check ($shape == 1) {
+            flt $base = 5.0;
+            flt $height = 10.0;
+            $area = @area_triangle($base, $height);
+        }
+        otherwise_check ($shape == 2) {
+            flt $length = 4.0;
+            flt $width = 6.0;
+            $area = @area_rectangle($length, $width);
+        }
+        otherwise_check ($shape == 3) {
+            flt $radius = 3.0;
+            $area = @area_circle($radius);
+        }
+        otherwise{
+            display "hello";
+
+        }
+
+        display("Area = ");
+        display($area);
+        display("\n");
+    }
+
+}
+
+} 
+ghost
