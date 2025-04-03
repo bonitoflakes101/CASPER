@@ -1762,7 +1762,7 @@ def p_function_call(p):
     function_call : FUNCTION_NAME LPAREN arguments RPAREN SEMICOLON
                   | input_statement                   
     """
-    if len(p) == 6:  
+    if len(p) == 5:  
         p[0] = ASTNode("function_call", children=[
             ASTNode("FUNCTION_NAME", value=p[1]),
             ASTNode("arguments", children=p[3])
