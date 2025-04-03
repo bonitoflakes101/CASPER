@@ -2,15 +2,10 @@ from Parser import ASTNode
 
 class CodeGenerator:
     def __init__(self):
-        # Global variables dictionary
         self.global_vars = {}
-        # Environment stack, where the first element is the global scope
         self.env_stack = [self.global_vars]
-        # Function definitions dictionary
         self.functions = {}
-        # Return value stack for functions
         self.return_values = []
-        # Set debug mode
         self.debug = False
 
     def log(self, message):
@@ -154,21 +149,25 @@ class CodeGenerator:
         self.log("Executing function_declaration")
         
         func_name = None
+        func_return_type = "void" 
+        
         for child in node.children:
-            if hasattr(child, 'type') and child.type == "FUNCTION_NAME":
-                func_name = child.value
-                break
+            if hasattr(child, 'type'):
+                if child.type == "FUNCTION_NAME":
+                    func_name = child.value
+                elif child.type == "return_type":
+                    func_return_type = child.value
                 
         if not func_name:
             print("Error: Function declaration missing name")
             return None
             
-        self.log(f"Defining function: {func_name}")
+        self.log(f"Defining function: {func_name} with return type: {func_return_type}")
         
-
         self.functions[func_name] = {
             'node': node,
-            'params': []
+            'params': [],
+            'return_type': func_return_type
         }
 
         for child in node.children:
@@ -180,7 +179,6 @@ class CodeGenerator:
                         for param_child in param.children:
                             if hasattr(param_child, 'type'):
                                 if param_child.type == "IDENT":
-                              
                                     param_data["name"] = param_child.value.lstrip('$')
                                 elif param_child.type == "data_type":
                                     param_data["type"] = param_child.value
@@ -192,7 +190,6 @@ class CodeGenerator:
     def execute_function_call(self, node):
         self.log("Executing function_call")
         
-      
         func_name = None
         for child in node.children:
             if hasattr(child, 'type') and child.type == "FUNCTION_NAME":
@@ -205,12 +202,10 @@ class CodeGenerator:
             
         self.log(f"Calling function: {func_name}")
         
-       
         if func_name not in self.functions:
             print(f"Error: Undefined function '{func_name}'")
             return None
             
-    
         args = []
         for child in node.children:
             if hasattr(child, 'type') and child.type == "arguments":
@@ -221,7 +216,6 @@ class CodeGenerator:
    
         self.push_scope()
         
-  
         for i, param in enumerate(self.functions[func_name]['params']):
             if i < len(args):
                 param_name = param["name"]
@@ -229,17 +223,28 @@ class CodeGenerator:
                 self.log(f"Bound parameter '{param_name}' to value {args[i]}")
  
         func_node = self.functions[func_name]['node']
+        result = None
+        
         for child in func_node.children:
             if hasattr(child, 'type') and child.type == "statements":
                 for statement in child.children:
                     self.execute_node(statement)
+                    if self.return_values:
+                        break
             else:
                 self.execute_node(child)
 
         return_value = None
-        if self.return_values:
-            return_value = self.return_values.pop()
-            self.log(f"Function returned: {return_value}")
+        if self.functions[func_name]['return_type'] != "void":
+            if self.return_values:
+                return_value = self.return_values.pop()
+                self.log(f"Function returned: {return_value}")
+            else:
+                print(f"Warning: Function '{func_name}' expected to return a value but didn't")
+        else:
+            if self.return_values:
+                self.return_values.pop()  
+                self.log("Void function had a return value that was discarded")
 
         self.pop_scope()
         
@@ -258,7 +263,18 @@ class CodeGenerator:
         self.return_values.append(value)
         
         return value
+        
+    def execute_void_statement(self, node):
+        self.log("Executing void_statement")
+        
+        self.return_values.append(None)
+        
+        return None
 
+    def execute_return_type(self, node):
+        self.log(f"Executing return_type: {node}")
+        return node.value
+        
     # ==========================
     #    STATEMENTS
     # ==========================
@@ -319,7 +335,6 @@ class CodeGenerator:
         for child in valid_children:
             if hasattr(child, 'type'):
                 if child.type == "IDENT":
-    
                     var_name = child.value.lstrip('$')
                 elif child.type == "data_type":
                     data_type = child.value
@@ -328,7 +343,6 @@ class CodeGenerator:
             print("Error: Could not find variable name in var_statement.")
             return None
         
-  
         assign_node = None
         for child in valid_children:
             if hasattr(child, 'type') and (child.type == "local_var_assign" or child.type == "expression" or child.type == "function_call"):
@@ -339,11 +353,9 @@ class CodeGenerator:
             print("Error: Could not find assignment expression in var_statement.")
             return None
         
-      
         value = self.execute_node(assign_node)
         self.log(f"Evaluated expression value: {value}")
         
-   
         self.get_current_env()[var_name] = value
         self.log(f"Assigned variable '{var_name}' = {value}")
         self.log(f"Environment after assignment: {self.get_current_env()}")
@@ -357,7 +369,6 @@ class CodeGenerator:
             self.log("local_var_assign has no children")
             return None
         
-       
         value_node = node.children[0]
         self.log(f"local_var_assign value node: {value_node}")
         result = self.execute_node(value_node)
@@ -366,7 +377,6 @@ class CodeGenerator:
 
     def execute_output_statement(self, node):
         self.log("Executing output_statement")
-        # output_statement -> child: value
         if len(node.children) < 1:
             print("Warning: output_statement has no children.")
             return None
@@ -407,16 +417,14 @@ class CodeGenerator:
             self.log("Expression has no children")
             return None
         
-   
         if len(node.children) == 1:
             return self.execute_node(node.children[0])
 
         result = self.execute_node(node.children[0])
         self.log(f"Initial term: {result}")
-   
+        
         operations = []
         
-  
         i = 1
         while i < len(node.children):
             if hasattr(node.children[i], 'type') and node.children[i].type == "factor_tail_binop":
@@ -437,7 +445,6 @@ class CodeGenerator:
         if not binop_node or not hasattr(binop_node, 'type') or binop_node.type != "factor_tail_binop":
             return left_value
             
-        
         if len(binop_node.children) < 2:
             self.log("Invalid binop node structure")
             return left_value
@@ -450,11 +457,9 @@ class CodeGenerator:
         operator = op_node.value
         self.log(f"Operator: {operator}")
         
-    
         right_value = self.execute_node(binop_node.children[1])
         self.log(f"Right operand: {right_value}")
         
-       
         next_binop = None
         if len(binop_node.children) > 2 and binop_node.children[2] is not None:
             next_binop = binop_node.children[2]
@@ -464,7 +469,6 @@ class CodeGenerator:
             if hasattr(next_op_node, 'type') and next_op_node.type == "operator":
                 next_operator = next_op_node.value
                 
-             
                 if self.has_higher_precedence(next_operator, operator):
                     self.log(f"Evaluating higher precedence operation first: {next_operator}")
               
@@ -522,7 +526,6 @@ class CodeGenerator:
 
     def execute_literal(self, node):
         self.log(f"Executing literal: {node}, value={node.value}")
-        # literal (value=3)
         return node.value
 
     def execute_data_type(self, node):
@@ -535,32 +538,31 @@ class CodeGenerator:
 
     def execute_var_postfix(self, node):
         self.log(f"Executing var_postfix: {node}")
-        # var_postfix -> var_call
-        # Then sometimes there's an extra child "None" or more
+     
         if not node.children:
             self.log("var_postfix has no children")
             return None
             
-        # Filter out None children, if any
+   
         valid_children = [child for child in node.children if child is not None]
         if not valid_children:
             self.log("var_postfix has no valid children")
             return None
             
-        # Execute first valid child (should be var_call)
+   
         result = self.execute_node(valid_children[0])
         self.log(f"var_postfix result: {result}")
         return result
 
     def execute_var_call(self, node):
         self.log(f"Executing var_call: {node}")
-        # var_call -> IDENT (value=$hello)
+     
         if not node.children:
             self.log("var_call has no children")
             return None
             
         var_name = node.children[0].value
-        # Remove $ prefix if present for variable lookups
+   
         clean_var_name = var_name.lstrip('$')
         self.log(f"var_call looking up: '{clean_var_name}'")
         result = self.lookup_variable(clean_var_name)
@@ -573,17 +575,17 @@ class CodeGenerator:
     
     def execute_parameters(self, node):
         self.log(f"Executing parameters: {node}")
-        # This is handled during function declaration
+    
         return None
         
     def execute_param_decl(self, node):
         self.log(f"Executing param_decl: {node}")
-        # This is handled during function declaration
+   
         return None
         
     def execute_arguments(self, node):
         self.log(f"Executing arguments: {node}")
-        # This is handled during function call
+  
         results = []
         if node.children:
             for child in node.children:
@@ -591,7 +593,6 @@ class CodeGenerator:
                 results.append(result)
         return results
 
-    # Handle IDENT node directly if needed
     def execute_IDENT(self, node):
         self.log(f"Executing IDENT: {node}")
         return node.value
@@ -600,13 +601,15 @@ class CodeGenerator:
         self.log(f"Executing FUNCTION_NAME: {node}")
         return node.value
     
-    # Handle statements block
     def execute_statements(self, node):
         self.log(f"Executing statements block: {node}")
         results = []
         if node.children:
             for child in node.children:
                 result = self.execute_node(child)
+
+                if self.return_values:
+                    break
                 results.append(result)
         return results[-1] if results else None
 
