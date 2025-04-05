@@ -829,7 +829,7 @@ def p_statements_tail(p):
     """
     statements_tail : switch_statement statements
                     | loop_statement statements
-                    | function_call statements
+                    | function_call_statement statements
                     | assignment_statement statements
                     | output_statement statements
                     | conditional_statement statements
@@ -1757,6 +1757,20 @@ def p_postfix_op(p):
 # (117) <function_call> → FUNCTION_NAME(<arguments>)
 # (118) <function_call> → <input_statement>
 # -----------------------------------------------------------------------------
+
+def p_function_call_statement(p):
+    """
+    function_call_statement : FUNCTION_NAME LPAREN arguments RPAREN SEMICOLON
+                  | input_statement                   
+    """
+    if len(p) == 6:  
+        p[0] = ASTNode("function_call", children=[
+            ASTNode("FUNCTION_NAME", value=p[1]),
+            ASTNode("arguments", children=p[3])
+        ])
+    else:  
+        p[0] = p[1]
+
 def p_function_call(p):
     """
     function_call : FUNCTION_NAME LPAREN arguments RPAREN 
