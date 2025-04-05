@@ -200,6 +200,10 @@ display "**********";
 }
 ghost
 
+
+
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+COMPUTE AREA - FIX CONDITIONAL
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 birth {
@@ -251,3 +255,47 @@ birth {
 }
  
 ghost
+
+
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+COMPUTE PERIMETER
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+birth {
+
+
+@main_casper(){
+
+int $length = 5;
+int $width = 3;
+int $perimeter;
+
+$perimeter = 2 * ($length + $width);
+
+display($perimeter);
+
+}
+    
+
+} ghost
+
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+19 - NOT WORKING, if true yung check it displays both check and otherwise
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+birth {
+
+
+@main_casper(){
+
+int $num = 7;
+
+    check ($num % 2 == 0) {
+        display("The number is even");
+    } otherwise {
+        display("The number is odd");
+    }
+
+
+}
+
+} ghost

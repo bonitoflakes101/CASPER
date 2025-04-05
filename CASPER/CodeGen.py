@@ -331,7 +331,8 @@ class CodeGenerator:
         valid_children = [child for child in node.children if child is not None]
         self.log(f"Valid children after filtering None: {valid_children}")
         
-        if len(valid_children) < 2:  
+        # Fix: Allow variable declaration without initialization
+        if len(valid_children) < 1:  
             print("Error: Not enough valid children in var_statement.")
             return None
 
@@ -340,7 +341,6 @@ class CodeGenerator:
         for child in valid_children:
             if hasattr(child, 'type'):
                 if child.type == "IDENT":
-    
                     var_name = child.value.lstrip('$')
                 elif child.type == "data_type":
                     data_type = child.value
@@ -349,22 +349,33 @@ class CodeGenerator:
             print("Error: Could not find variable name in var_statement.")
             return None
         
-  
+        # Initialize with default value based on data type
+        default_value = None
+        if data_type == "int":
+            default_value = 0
+        elif data_type == "string":
+            default_value = ""
+        elif data_type == "float":
+            default_value = 0.0
+        elif data_type == "bool":
+            default_value = False
+        
+        # Find assignment if it exists
         assign_node = None
         for child in valid_children:
             if hasattr(child, 'type') and (child.type == "local_var_assign" or child.type == "expression" or child.type == "function_call"):
                 assign_node = child
                 break
         
-        if not assign_node:
-            print("Error: Could not find assignment expression in var_statement.")
-            return None
+        # If there's an assignment, use its value; otherwise use default
+        if assign_node:
+            value = self.execute_node(assign_node)
+            self.log(f"Evaluated expression value: {value}")
+        else:
+            value = default_value
+            self.log(f"No assignment found, using default value: {value}")
         
-      
-        value = self.execute_node(assign_node)
-        self.log(f"Evaluated expression value: {value}")
-        
-   
+        # Assign the variable
         self.get_current_env()[var_name] = value
         self.log(f"Assigned variable '{var_name}' = {value}")
         self.log(f"Environment after assignment: {self.get_current_env()}")
