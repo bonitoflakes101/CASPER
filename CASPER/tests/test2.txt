@@ -205,18 +205,18 @@ ghost
 birth {
 
     function_flt @area_triangle(flt $b, flt $h) {
-        flt $a = ($b + $h) / 2.0;
+        flt $a = ($b * $h) / 2.0;
         revive $a;
     }
 
     function_flt @area_rectangle(flt $l, flt $w) {
-        flt $area_result= $l + $w;
+        flt $area_result= $l * $w;
         revive $area_result;
     }
 
     function_flt @area_circle(flt $r) {
         flt $pi = 3.1416;
-        flt $area_result = $pi + $r + $r;
+        flt $area_result = $pi * $r * $r;
         revive $area_result;
     }
 
@@ -249,6 +249,5 @@ birth {
     }
 
 }
-
-} 
+ 
 ghost
