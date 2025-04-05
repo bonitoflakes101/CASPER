@@ -160,7 +160,7 @@ Rule 121   revive_factor -> revive_var_call revive_postfix
 Rule 122   revive_factor -> revive_factor1
 Rule 123   revive_factor -> TILDE INT_LIT
 Rule 124   revive_factor -> TILDE FLT_LIT
-Rule 125   revive_factor -> LPAREN revive_factor RPAREN
+Rule 125   revive_factor -> LPAREN revive_expression RPAREN
 Rule 126   revive_var_call -> IDENT revive_list_index
 Rule 127   revive_postfix_op -> PLUS_PLUS
 Rule 128   revive_postfix_op -> MINUS_MINUS
@@ -232,7 +232,7 @@ Rule 193   local_factor -> local_var_call local_postfix
 Rule 194   local_factor -> local_factor1
 Rule 195   local_factor -> TILDE INT_LIT
 Rule 196   local_factor -> TILDE FLT_LIT
-Rule 197   local_factor -> LPAREN local_factor RPAREN
+Rule 197   local_factor -> LPAREN local_expression RPAREN
 Rule 198   local_var_call -> IDENT local_list_index
 Rule 199   local_postfix_op -> PLUS_PLUS
 Rule 200   local_postfix_op -> MINUS_MINUS
@@ -318,7 +318,7 @@ Rule 279   switch_factor -> switch_var_call switch_postfix
 Rule 280   switch_factor -> switch_factor1
 Rule 281   switch_factor -> TILDE INT_LIT
 Rule 282   switch_factor -> TILDE FLT_LIT
-Rule 283   switch_factor -> LPAREN switch_factor RPAREN
+Rule 283   switch_factor -> LPAREN switch_expression RPAREN
 Rule 284   switch_var_call -> IDENT switch_list_index
 Rule 285   switch_postfix_op -> PLUS_PLUS
 Rule 286   switch_postfix_op -> MINUS_MINUS
@@ -365,7 +365,7 @@ Rule 326   for_factor -> for_var_call for_postfix
 Rule 327   for_factor -> for_factor1
 Rule 328   for_factor -> TILDE INT_LIT
 Rule 329   for_factor -> TILDE FLT_LIT
-Rule 330   for_factor -> LPAREN for_factor RPAREN
+Rule 330   for_factor -> LPAREN for_expression RPAREN
 Rule 331   for_var_call -> IDENT for_list_index
 Rule 332   for_postfix_op -> PLUS_PLUS
 Rule 333   for_postfix_op -> MINUS_MINUS
@@ -403,7 +403,7 @@ Rule 364   until_factor -> until_var_call until_postfix
 Rule 365   until_factor -> until_factor1
 Rule 366   until_factor -> TILDE INT_LIT
 Rule 367   until_factor -> TILDE FLT_LIT
-Rule 368   until_factor -> LPAREN until_factor RPAREN
+Rule 368   until_factor -> LPAREN until_expression RPAREN
 Rule 369   until_var_call -> IDENT until_list_index
 Rule 370   until_postfix_op -> PLUS_PLUS
 Rule 371   until_postfix_op -> MINUS_MINUS
@@ -463,7 +463,7 @@ Rule 424   output_factor -> output_var_call output_postfix
 Rule 425   output_factor -> output_factor1
 Rule 426   output_factor -> TILDE INT_LIT
 Rule 427   output_factor -> TILDE FLT_LIT
-Rule 428   output_factor -> LPAREN output_factor RPAREN
+Rule 428   output_factor -> LPAREN output_expression RPAREN
 Rule 429   output_var_call -> IDENT output_list_index
 Rule 430   output_postfix_op -> PLUS_PLUS
 Rule 431   output_postfix_op -> MINUS_MINUS
@@ -514,7 +514,7 @@ Rule 475   assign_factor -> assign_var_call assign_postfix
 Rule 476   assign_factor -> assign_factor1
 Rule 477   assign_factor -> TILDE INT_LIT
 Rule 478   assign_factor -> TILDE FLT_LIT
-Rule 479   assign_factor -> LPAREN assign_factor RPAREN
+Rule 479   assign_factor -> LPAREN assign_expression RPAREN
 Rule 480   assign_var_call -> IDENT assign_list_index
 Rule 481   assign_postfix_op -> PLUS_PLUS
 Rule 482   assign_postfix_op -> MINUS_MINUS
@@ -579,7 +579,7 @@ Rule 540   value_factor -> value_var_call value_postfix
 Rule 541   value_factor -> value_factor1
 Rule 542   value_factor -> TILDE INT_LIT
 Rule 543   value_factor -> TILDE FLT_LIT
-Rule 544   value_factor -> LPAREN value_factor RPAREN
+Rule 544   value_factor -> LPAREN value_expression RPAREN
 Rule 545   value_var_call -> IDENT value_list_index
 Rule 546   value_postfix_op -> PLUS_PLUS
 Rule 547   value_postfix_op -> MINUS_MINUS
@@ -623,7 +623,7 @@ Rule 584   typecast_factor -> var_call postfix
 Rule 585   typecast_factor -> typecast_factor1
 Rule 586   typecast_factor -> TILDE INT_LIT
 Rule 587   typecast_factor -> TILDE FLT_LIT
-Rule 588   typecast_factor -> LPAREN typecast_factor RPAREN
+Rule 588   typecast_factor -> LPAREN typecast_expression RPAREN
 Rule 589   typecast_factor_tail -> PLUS typecast_factor typecast_factor_tail
 Rule 590   typecast_factor_tail -> MINUS typecast_factor typecast_factor_tail
 Rule 591   typecast_factor_tail -> MULTIPLY typecast_factor typecast_factor_tail
@@ -764,8 +764,8 @@ _2d_list             : 9
 arg_tail             : 414 415
 arg_value            : 414 415
 arguments            : 409 411
-assign_expression    : 472
-assign_factor        : 474 479 491 492 493 494 495 496 497 498 499 500 501 502 503 504
+assign_expression    : 472 479
+assign_factor        : 474 491 492 493 494 495 496 497 498 499 500 501 502 503 504
 assign_factor1       : 476
 assign_factor_tail   : 474 491 492 493 494 495 496 497 498 499 500 501 502 503 504
 assign_index         : 485 487
@@ -811,8 +811,8 @@ factor_postfix       : 36
 factor_postfix_op    : 45
 factor_tail          : 29 72 73 74 75 76 77 78 79 80 81 82 83 84 85
 factor_var_call      : 36
-for_expression       : 324
-for_factor           : 325 330 342 343 344 345 346 347 348 349 350 351 352 353 354 355
+for_expression       : 324 330
+for_factor           : 325 342 343 344 345 346 347 348 349 350 351 352 353 354 355
 for_factor1          : 327
 for_factor_tail      : 325 342 343 344 345 346 347 348 349 350 351 352 353 354 355
 for_index            : 336 338
@@ -848,8 +848,8 @@ local_data_type      : 172
 local_dec            : 162
 local_dec_tail       : 170 183 185
 local_dec_tail2      : 184
-local_expression     : 190
-local_factor         : 192 197 209 210 211 212 213 214 215 216 217 218 219 220 221 222
+local_expression     : 190 197
+local_factor         : 192 209 210 211 212 213 214 215 216 217 218 219 220 221 222
 local_factor1        : 194
 local_factor_tail    : 192 209 210 211 212 213 214 215 216 217 218 219 220 221 222
 local_index          : 203 205
@@ -866,8 +866,8 @@ local_var_statement  : 170
 loop_statement       : 164
 main_function        : 1
 next_val             : 419 464
-output_expression    : 421
-output_factor        : 423 428 440 441 442 443 444 445 446 447 448 449 450 451 452 453
+output_expression    : 421 428
+output_factor        : 423 440 441 442 443 444 445 446 447 448 449 450 451 452 453
 output_factor1       : 425
 output_factor_tail   : 423 440 441 442 443 444 445 446 447 448 449 450 451 452 453
 output_index         : 434 436
@@ -887,8 +887,8 @@ program              : 0
 repeat_until         : 323
 ret_type             : 95
 revive               : 95
-revive_expression    : 118
-revive_factor        : 120 125 137 138 139 140 141 142 143 144 145 146 147 148 149 150
+revive_expression    : 118 125
+revive_factor        : 120 137 138 139 140 141 142 143 144 145 146 147 148 149 150
 revive_factor1       : 122
 revive_factor_tail   : 120 137 138 139 140 141 142 143 144 145 146 147 148 149 150
 revive_index         : 131 133
@@ -904,8 +904,8 @@ start                : 468
 statements           : 2 95 163 164 165 166 167 168 169 233 233 234 273 274 324 362 400
 statements_tail      : 162
 switch_condition     : 273 319
-switch_expression    : 276
-switch_factor        : 278 283 295 296 297 298 299 300 301 302 303 304 305 306 307 308
+switch_expression    : 276 283
+switch_factor        : 278 295 296 297 298 299 300 301 302 303 304 305 306 307 308
 switch_factor1       : 280
 switch_factor_tail   : 278 295 296 297 298 299 300 301 302 303 304 305 306 307 308
 switch_index         : 289 291
@@ -919,13 +919,13 @@ switch_value         : 274
 switch_var_call      : 279
 switchcond_tail      : 274
 type_cast            : 536
-typecast_expression  : 580
-typecast_factor      : 583 588 589 590 591 592 593 594 595 596 597 598 599 600 601 602
+typecast_expression  : 580 588
+typecast_factor      : 583 589 590 591 592 593 594 595 596 597 598 599 600 601 602
 typecast_factor1     : 585
 typecast_factor_tail : 583 589 590 591 592 593 594 595 596 597 598 599 600 601 602
 typecast_value       : 157 158 159 160 229 230 231 232 315 316 317 318 460 461 462 463 511 512 513 514 576 577 578 579
-until_expression     : 362 400
-until_factor         : 363 368 380 381 382 383 384 385 386 387 388 389 390 391 392 393
+until_expression     : 362 368 400
+until_factor         : 363 380 381 382 383 384 385 386 387 388 389 390 391 392 393
 until_factor1        : 365
 until_factor_tail    : 363 380 381 382 383 384 385 386 387 388 389 390 391 392 393
 until_index          : 374 376
@@ -938,8 +938,8 @@ until_var_call       : 364
 update               : 324
 update_tail          : 404
 value                : 406 464 466
-value_expression     : 537
-value_factor         : 539 544 556 557 558 559 560 561 562 563 564 565 566 567 568 569
+value_expression     : 537 544
+value_factor         : 539 556 557 558 559 560 561 562 563 564 565 566 567 568 569
 value_factor1        : 541
 value_factor_tail    : 539 556 557 558 559 560 561 562 563 564 565 566 567 568 569
 value_index          : 550 552
@@ -6018,7 +6018,7 @@ state 258
     (425) output_factor -> . output_factor1
     (426) output_factor -> . TILDE INT_LIT
     (427) output_factor -> . TILDE FLT_LIT
-    (428) output_factor -> . LPAREN output_factor RPAREN
+    (428) output_factor -> . LPAREN output_expression RPAREN
     (609) input_statement -> . INPUT LPAREN RPAREN
     (429) output_var_call -> . IDENT output_list_index
     (455) output_factor1 -> . INT_LIT
@@ -6127,7 +6127,7 @@ state 267
     (194) local_factor -> . local_factor1
     (195) local_factor -> . TILDE INT_LIT
     (196) local_factor -> . TILDE FLT_LIT
-    (197) local_factor -> . LPAREN local_factor RPAREN
+    (197) local_factor -> . LPAREN local_expression RPAREN
     (609) input_statement -> . INPUT LPAREN RPAREN
     (198) local_var_call -> . IDENT local_list_index
     (224) local_factor1 -> . INT_LIT
@@ -6362,7 +6362,7 @@ state 284
     (476) assign_factor -> . assign_factor1
     (477) assign_factor -> . TILDE INT_LIT
     (478) assign_factor -> . TILDE FLT_LIT
-    (479) assign_factor -> . LPAREN assign_factor RPAREN
+    (479) assign_factor -> . LPAREN assign_expression RPAREN
     (609) input_statement -> . INPUT LPAREN RPAREN
     (480) assign_var_call -> . IDENT assign_list_index
     (506) assign_factor1 -> . INT_LIT
@@ -6587,7 +6587,7 @@ state 293
     (541) value_factor -> . value_factor1
     (542) value_factor -> . TILDE INT_LIT
     (543) value_factor -> . TILDE FLT_LIT
-    (544) value_factor -> . LPAREN value_factor RPAREN
+    (544) value_factor -> . LPAREN value_expression RPAREN
     (609) input_statement -> . INPUT LPAREN RPAREN
     (545) value_var_call -> . IDENT value_list_index
     (571) value_factor1 -> . INT_LIT
@@ -6666,12 +6666,13 @@ state 298
 
 state 299
 
-    (428) output_factor -> LPAREN . output_factor RPAREN
+    (428) output_factor -> LPAREN . output_expression RPAREN
+    (423) output_expression -> . output_factor output_factor_tail
     (424) output_factor -> . output_var_call output_postfix
     (425) output_factor -> . output_factor1
     (426) output_factor -> . TILDE INT_LIT
     (427) output_factor -> . TILDE FLT_LIT
-    (428) output_factor -> . LPAREN output_factor RPAREN
+    (428) output_factor -> . LPAREN output_expression RPAREN
     (429) output_var_call -> . IDENT output_list_index
     (455) output_factor1 -> . INT_LIT
     (456) output_factor1 -> . FLT_LIT
@@ -6688,7 +6689,8 @@ state 299
     NIGHT           shift and go to state 313
     STR_LIT         shift and go to state 314
 
-    output_factor                  shift and go to state 403
+    output_expression              shift and go to state 403
+    output_factor                  shift and go to state 303
     output_var_call                shift and go to state 306
     output_factor1                 shift and go to state 307
 
@@ -6749,6 +6751,7 @@ state 303
     OR              shift and go to state 421
     COMMA           reduce using rule 610 (empty -> .)
     SEMICOLON       reduce using rule 610 (empty -> .)
+    RPAREN          reduce using rule 610 (empty -> .)
 
     output_factor_tail             shift and go to state 407
     empty                          shift and go to state 422
@@ -7028,7 +7031,7 @@ state 317
     (365) until_factor -> . until_factor1
     (366) until_factor -> . TILDE INT_LIT
     (367) until_factor -> . TILDE FLT_LIT
-    (368) until_factor -> . LPAREN until_factor RPAREN
+    (368) until_factor -> . LPAREN until_expression RPAREN
     (369) until_var_call -> . IDENT until_list_index
     (395) until_factor1 -> . INT_LIT
     (396) until_factor1 -> . FLT_LIT
@@ -7206,12 +7209,13 @@ state 328
 
 state 329
 
-    (197) local_factor -> LPAREN . local_factor RPAREN
+    (197) local_factor -> LPAREN . local_expression RPAREN
+    (192) local_expression -> . local_factor local_factor_tail
     (193) local_factor -> . local_var_call local_postfix
     (194) local_factor -> . local_factor1
     (195) local_factor -> . TILDE INT_LIT
     (196) local_factor -> . TILDE FLT_LIT
-    (197) local_factor -> . LPAREN local_factor RPAREN
+    (197) local_factor -> . LPAREN local_expression RPAREN
     (198) local_var_call -> . IDENT local_list_index
     (224) local_factor1 -> . INT_LIT
     (225) local_factor1 -> . FLT_LIT
@@ -7228,7 +7232,8 @@ state 329
     NIGHT           shift and go to state 341
     STR_LIT         shift and go to state 342
 
-    local_factor                   shift and go to state 467
+    local_expression               shift and go to state 467
+    local_factor                   shift and go to state 333
     local_var_call                 shift and go to state 334
     local_factor1                  shift and go to state 335
 
@@ -7289,6 +7294,7 @@ state 333
     OR              shift and go to state 485
     COMMA           reduce using rule 610 (empty -> .)
     SEMICOLON       reduce using rule 610 (empty -> .)
+    RPAREN          reduce using rule 610 (empty -> .)
 
     local_factor_tail              shift and go to state 471
     empty                          shift and go to state 486
@@ -7553,7 +7559,7 @@ state 347
     (122) revive_factor -> . revive_factor1
     (123) revive_factor -> . TILDE INT_LIT
     (124) revive_factor -> . TILDE FLT_LIT
-    (125) revive_factor -> . LPAREN revive_factor RPAREN
+    (125) revive_factor -> . LPAREN revive_expression RPAREN
     (609) input_statement -> . INPUT LPAREN RPAREN
     (126) revive_var_call -> . IDENT revive_list_index
     (152) revive_factor1 -> . INT_LIT
@@ -7726,12 +7732,13 @@ state 360
 
 state 361
 
-    (479) assign_factor -> LPAREN . assign_factor RPAREN
+    (479) assign_factor -> LPAREN . assign_expression RPAREN
+    (474) assign_expression -> . assign_factor assign_factor_tail
     (475) assign_factor -> . assign_var_call assign_postfix
     (476) assign_factor -> . assign_factor1
     (477) assign_factor -> . TILDE INT_LIT
     (478) assign_factor -> . TILDE FLT_LIT
-    (479) assign_factor -> . LPAREN assign_factor RPAREN
+    (479) assign_factor -> . LPAREN assign_expression RPAREN
     (480) assign_var_call -> . IDENT assign_list_index
     (506) assign_factor1 -> . INT_LIT
     (507) assign_factor1 -> . FLT_LIT
@@ -7748,7 +7755,8 @@ state 361
     NIGHT           shift and go to state 373
     STR_LIT         shift and go to state 374
 
-    assign_factor                  shift and go to state 524
+    assign_expression              shift and go to state 524
+    assign_factor                  shift and go to state 365
     assign_var_call                shift and go to state 366
     assign_factor1                 shift and go to state 367
 
@@ -7808,6 +7816,7 @@ state 365
     AND             shift and go to state 541
     OR              shift and go to state 542
     SEMICOLON       reduce using rule 610 (empty -> .)
+    RPAREN          reduce using rule 610 (empty -> .)
 
     assign_factor_tail             shift and go to state 528
     empty                          shift and go to state 543
@@ -8101,12 +8110,13 @@ state 384
 
 state 385
 
-    (544) value_factor -> LPAREN . value_factor RPAREN
+    (544) value_factor -> LPAREN . value_expression RPAREN
+    (539) value_expression -> . value_factor value_factor_tail
     (540) value_factor -> . value_var_call value_postfix
     (541) value_factor -> . value_factor1
     (542) value_factor -> . TILDE INT_LIT
     (543) value_factor -> . TILDE FLT_LIT
-    (544) value_factor -> . LPAREN value_factor RPAREN
+    (544) value_factor -> . LPAREN value_expression RPAREN
     (545) value_var_call -> . IDENT value_list_index
     (571) value_factor1 -> . INT_LIT
     (572) value_factor1 -> . FLT_LIT
@@ -8123,7 +8133,8 @@ state 385
     NIGHT           shift and go to state 397
     STR_LIT         shift and go to state 398
 
-    value_factor                   shift and go to state 560
+    value_expression               shift and go to state 560
+    value_factor                   shift and go to state 389
     value_var_call                 shift and go to state 390
     value_factor1                  shift and go to state 391
 
@@ -8183,8 +8194,8 @@ state 389
     AND             shift and go to state 577
     OR              shift and go to state 578
     SEMICOLON       reduce using rule 610 (empty -> .)
-    COMMA           reduce using rule 610 (empty -> .)
     RPAREN          reduce using rule 610 (empty -> .)
+    COMMA           reduce using rule 610 (empty -> .)
 
     value_factor_tail              shift and go to state 564
     empty                          shift and go to state 579
@@ -8424,7 +8435,7 @@ state 400
     (541) value_factor -> . value_factor1
     (542) value_factor -> . TILDE INT_LIT
     (543) value_factor -> . TILDE FLT_LIT
-    (544) value_factor -> . LPAREN value_factor RPAREN
+    (544) value_factor -> . LPAREN value_expression RPAREN
     (609) input_statement -> . INPUT LPAREN RPAREN
     (545) value_var_call -> . IDENT value_list_index
     (571) value_factor1 -> . INT_LIT
@@ -8476,7 +8487,7 @@ state 402
     (585) typecast_factor -> . typecast_factor1
     (586) typecast_factor -> . TILDE INT_LIT
     (587) typecast_factor -> . TILDE FLT_LIT
-    (588) typecast_factor -> . LPAREN typecast_factor RPAREN
+    (588) typecast_factor -> . LPAREN typecast_expression RPAREN
     (527) var_call -> . IDENT list_index
     (604) typecast_factor1 -> . INT_LIT
     (605) typecast_factor1 -> . FLT_LIT
@@ -8504,7 +8515,7 @@ state 402
 
 state 403
 
-    (428) output_factor -> LPAREN output_factor . RPAREN
+    (428) output_factor -> LPAREN output_expression . RPAREN
 
     RPAREN          shift and go to state 606
 
@@ -8521,7 +8532,7 @@ state 404
     (585) typecast_factor -> . typecast_factor1
     (586) typecast_factor -> . TILDE INT_LIT
     (587) typecast_factor -> . TILDE FLT_LIT
-    (588) typecast_factor -> . LPAREN typecast_factor RPAREN
+    (588) typecast_factor -> . LPAREN typecast_expression RPAREN
     (527) var_call -> . IDENT list_index
     (604) typecast_factor1 -> . INT_LIT
     (605) typecast_factor1 -> . FLT_LIT
@@ -8559,7 +8570,7 @@ state 405
     (585) typecast_factor -> . typecast_factor1
     (586) typecast_factor -> . TILDE INT_LIT
     (587) typecast_factor -> . TILDE FLT_LIT
-    (588) typecast_factor -> . LPAREN typecast_factor RPAREN
+    (588) typecast_factor -> . LPAREN typecast_expression RPAREN
     (527) var_call -> . IDENT list_index
     (604) typecast_factor1 -> . INT_LIT
     (605) typecast_factor1 -> . FLT_LIT
@@ -8597,7 +8608,7 @@ state 406
     (585) typecast_factor -> . typecast_factor1
     (586) typecast_factor -> . TILDE INT_LIT
     (587) typecast_factor -> . TILDE FLT_LIT
-    (588) typecast_factor -> . LPAREN typecast_factor RPAREN
+    (588) typecast_factor -> . LPAREN typecast_expression RPAREN
     (527) var_call -> . IDENT list_index
     (604) typecast_factor1 -> . INT_LIT
     (605) typecast_factor1 -> . FLT_LIT
@@ -8629,6 +8640,7 @@ state 407
 
     COMMA           reduce using rule 423 (output_expression -> output_factor output_factor_tail .)
     SEMICOLON       reduce using rule 423 (output_expression -> output_factor output_factor_tail .)
+    RPAREN          reduce using rule 423 (output_expression -> output_factor output_factor_tail .)
 
 
 state 408
@@ -8638,7 +8650,7 @@ state 408
     (425) output_factor -> . output_factor1
     (426) output_factor -> . TILDE INT_LIT
     (427) output_factor -> . TILDE FLT_LIT
-    (428) output_factor -> . LPAREN output_factor RPAREN
+    (428) output_factor -> . LPAREN output_expression RPAREN
     (429) output_var_call -> . IDENT output_list_index
     (455) output_factor1 -> . INT_LIT
     (456) output_factor1 -> . FLT_LIT
@@ -8666,7 +8678,7 @@ state 409
     (425) output_factor -> . output_factor1
     (426) output_factor -> . TILDE INT_LIT
     (427) output_factor -> . TILDE FLT_LIT
-    (428) output_factor -> . LPAREN output_factor RPAREN
+    (428) output_factor -> . LPAREN output_expression RPAREN
     (429) output_var_call -> . IDENT output_list_index
     (455) output_factor1 -> . INT_LIT
     (456) output_factor1 -> . FLT_LIT
@@ -8694,7 +8706,7 @@ state 410
     (425) output_factor -> . output_factor1
     (426) output_factor -> . TILDE INT_LIT
     (427) output_factor -> . TILDE FLT_LIT
-    (428) output_factor -> . LPAREN output_factor RPAREN
+    (428) output_factor -> . LPAREN output_expression RPAREN
     (429) output_var_call -> . IDENT output_list_index
     (455) output_factor1 -> . INT_LIT
     (456) output_factor1 -> . FLT_LIT
@@ -8722,7 +8734,7 @@ state 411
     (425) output_factor -> . output_factor1
     (426) output_factor -> . TILDE INT_LIT
     (427) output_factor -> . TILDE FLT_LIT
-    (428) output_factor -> . LPAREN output_factor RPAREN
+    (428) output_factor -> . LPAREN output_expression RPAREN
     (429) output_var_call -> . IDENT output_list_index
     (455) output_factor1 -> . INT_LIT
     (456) output_factor1 -> . FLT_LIT
@@ -8750,7 +8762,7 @@ state 412
     (425) output_factor -> . output_factor1
     (426) output_factor -> . TILDE INT_LIT
     (427) output_factor -> . TILDE FLT_LIT
-    (428) output_factor -> . LPAREN output_factor RPAREN
+    (428) output_factor -> . LPAREN output_expression RPAREN
     (429) output_var_call -> . IDENT output_list_index
     (455) output_factor1 -> . INT_LIT
     (456) output_factor1 -> . FLT_LIT
@@ -8778,7 +8790,7 @@ state 413
     (425) output_factor -> . output_factor1
     (426) output_factor -> . TILDE INT_LIT
     (427) output_factor -> . TILDE FLT_LIT
-    (428) output_factor -> . LPAREN output_factor RPAREN
+    (428) output_factor -> . LPAREN output_expression RPAREN
     (429) output_var_call -> . IDENT output_list_index
     (455) output_factor1 -> . INT_LIT
     (456) output_factor1 -> . FLT_LIT
@@ -8806,7 +8818,7 @@ state 414
     (425) output_factor -> . output_factor1
     (426) output_factor -> . TILDE INT_LIT
     (427) output_factor -> . TILDE FLT_LIT
-    (428) output_factor -> . LPAREN output_factor RPAREN
+    (428) output_factor -> . LPAREN output_expression RPAREN
     (429) output_var_call -> . IDENT output_list_index
     (455) output_factor1 -> . INT_LIT
     (456) output_factor1 -> . FLT_LIT
@@ -8834,7 +8846,7 @@ state 415
     (425) output_factor -> . output_factor1
     (426) output_factor -> . TILDE INT_LIT
     (427) output_factor -> . TILDE FLT_LIT
-    (428) output_factor -> . LPAREN output_factor RPAREN
+    (428) output_factor -> . LPAREN output_expression RPAREN
     (429) output_var_call -> . IDENT output_list_index
     (455) output_factor1 -> . INT_LIT
     (456) output_factor1 -> . FLT_LIT
@@ -8862,7 +8874,7 @@ state 416
     (425) output_factor -> . output_factor1
     (426) output_factor -> . TILDE INT_LIT
     (427) output_factor -> . TILDE FLT_LIT
-    (428) output_factor -> . LPAREN output_factor RPAREN
+    (428) output_factor -> . LPAREN output_expression RPAREN
     (429) output_var_call -> . IDENT output_list_index
     (455) output_factor1 -> . INT_LIT
     (456) output_factor1 -> . FLT_LIT
@@ -8890,7 +8902,7 @@ state 417
     (425) output_factor -> . output_factor1
     (426) output_factor -> . TILDE INT_LIT
     (427) output_factor -> . TILDE FLT_LIT
-    (428) output_factor -> . LPAREN output_factor RPAREN
+    (428) output_factor -> . LPAREN output_expression RPAREN
     (429) output_var_call -> . IDENT output_list_index
     (455) output_factor1 -> . INT_LIT
     (456) output_factor1 -> . FLT_LIT
@@ -8918,7 +8930,7 @@ state 418
     (425) output_factor -> . output_factor1
     (426) output_factor -> . TILDE INT_LIT
     (427) output_factor -> . TILDE FLT_LIT
-    (428) output_factor -> . LPAREN output_factor RPAREN
+    (428) output_factor -> . LPAREN output_expression RPAREN
     (429) output_var_call -> . IDENT output_list_index
     (455) output_factor1 -> . INT_LIT
     (456) output_factor1 -> . FLT_LIT
@@ -8946,7 +8958,7 @@ state 419
     (425) output_factor -> . output_factor1
     (426) output_factor -> . TILDE INT_LIT
     (427) output_factor -> . TILDE FLT_LIT
-    (428) output_factor -> . LPAREN output_factor RPAREN
+    (428) output_factor -> . LPAREN output_expression RPAREN
     (429) output_var_call -> . IDENT output_list_index
     (455) output_factor1 -> . INT_LIT
     (456) output_factor1 -> . FLT_LIT
@@ -8974,7 +8986,7 @@ state 420
     (425) output_factor -> . output_factor1
     (426) output_factor -> . TILDE INT_LIT
     (427) output_factor -> . TILDE FLT_LIT
-    (428) output_factor -> . LPAREN output_factor RPAREN
+    (428) output_factor -> . LPAREN output_expression RPAREN
     (429) output_var_call -> . IDENT output_list_index
     (455) output_factor1 -> . INT_LIT
     (456) output_factor1 -> . FLT_LIT
@@ -9002,7 +9014,7 @@ state 421
     (425) output_factor -> . output_factor1
     (426) output_factor -> . TILDE INT_LIT
     (427) output_factor -> . TILDE FLT_LIT
-    (428) output_factor -> . LPAREN output_factor RPAREN
+    (428) output_factor -> . LPAREN output_expression RPAREN
     (429) output_var_call -> . IDENT output_list_index
     (455) output_factor1 -> . INT_LIT
     (456) output_factor1 -> . FLT_LIT
@@ -9029,6 +9041,7 @@ state 422
 
     COMMA           reduce using rule 454 (output_factor_tail -> empty .)
     SEMICOLON       reduce using rule 454 (output_factor_tail -> empty .)
+    RPAREN          reduce using rule 454 (output_factor_tail -> empty .)
 
 
 state 423
@@ -9575,12 +9588,13 @@ state 447
 
 state 448
 
-    (368) until_factor -> LPAREN . until_factor RPAREN
+    (368) until_factor -> LPAREN . until_expression RPAREN
+    (363) until_expression -> . until_factor until_factor_tail
     (364) until_factor -> . until_var_call until_postfix
     (365) until_factor -> . until_factor1
     (366) until_factor -> . TILDE INT_LIT
     (367) until_factor -> . TILDE FLT_LIT
-    (368) until_factor -> . LPAREN until_factor RPAREN
+    (368) until_factor -> . LPAREN until_expression RPAREN
     (369) until_var_call -> . IDENT until_list_index
     (395) until_factor1 -> . INT_LIT
     (396) until_factor1 -> . FLT_LIT
@@ -9597,7 +9611,8 @@ state 448
     NIGHT           shift and go to state 458
     STR_LIT         shift and go to state 459
 
-    until_factor                   shift and go to state 658
+    until_expression               shift and go to state 658
+    until_factor                   shift and go to state 450
     until_var_call                 shift and go to state 451
     until_factor1                  shift and go to state 452
 
@@ -9917,7 +9932,7 @@ state 466
     (585) typecast_factor -> . typecast_factor1
     (586) typecast_factor -> . TILDE INT_LIT
     (587) typecast_factor -> . TILDE FLT_LIT
-    (588) typecast_factor -> . LPAREN typecast_factor RPAREN
+    (588) typecast_factor -> . LPAREN typecast_expression RPAREN
     (527) var_call -> . IDENT list_index
     (604) typecast_factor1 -> . INT_LIT
     (605) typecast_factor1 -> . FLT_LIT
@@ -9945,7 +9960,7 @@ state 466
 
 state 467
 
-    (197) local_factor -> LPAREN local_factor . RPAREN
+    (197) local_factor -> LPAREN local_expression . RPAREN
 
     RPAREN          shift and go to state 689
 
@@ -9962,7 +9977,7 @@ state 468
     (585) typecast_factor -> . typecast_factor1
     (586) typecast_factor -> . TILDE INT_LIT
     (587) typecast_factor -> . TILDE FLT_LIT
-    (588) typecast_factor -> . LPAREN typecast_factor RPAREN
+    (588) typecast_factor -> . LPAREN typecast_expression RPAREN
     (527) var_call -> . IDENT list_index
     (604) typecast_factor1 -> . INT_LIT
     (605) typecast_factor1 -> . FLT_LIT
@@ -10000,7 +10015,7 @@ state 469
     (585) typecast_factor -> . typecast_factor1
     (586) typecast_factor -> . TILDE INT_LIT
     (587) typecast_factor -> . TILDE FLT_LIT
-    (588) typecast_factor -> . LPAREN typecast_factor RPAREN
+    (588) typecast_factor -> . LPAREN typecast_expression RPAREN
     (527) var_call -> . IDENT list_index
     (604) typecast_factor1 -> . INT_LIT
     (605) typecast_factor1 -> . FLT_LIT
@@ -10038,7 +10053,7 @@ state 470
     (585) typecast_factor -> . typecast_factor1
     (586) typecast_factor -> . TILDE INT_LIT
     (587) typecast_factor -> . TILDE FLT_LIT
-    (588) typecast_factor -> . LPAREN typecast_factor RPAREN
+    (588) typecast_factor -> . LPAREN typecast_expression RPAREN
     (527) var_call -> . IDENT list_index
     (604) typecast_factor1 -> . INT_LIT
     (605) typecast_factor1 -> . FLT_LIT
@@ -10070,6 +10085,7 @@ state 471
 
     COMMA           reduce using rule 192 (local_expression -> local_factor local_factor_tail .)
     SEMICOLON       reduce using rule 192 (local_expression -> local_factor local_factor_tail .)
+    RPAREN          reduce using rule 192 (local_expression -> local_factor local_factor_tail .)
 
 
 state 472
@@ -10079,7 +10095,7 @@ state 472
     (194) local_factor -> . local_factor1
     (195) local_factor -> . TILDE INT_LIT
     (196) local_factor -> . TILDE FLT_LIT
-    (197) local_factor -> . LPAREN local_factor RPAREN
+    (197) local_factor -> . LPAREN local_expression RPAREN
     (198) local_var_call -> . IDENT local_list_index
     (224) local_factor1 -> . INT_LIT
     (225) local_factor1 -> . FLT_LIT
@@ -10107,7 +10123,7 @@ state 473
     (194) local_factor -> . local_factor1
     (195) local_factor -> . TILDE INT_LIT
     (196) local_factor -> . TILDE FLT_LIT
-    (197) local_factor -> . LPAREN local_factor RPAREN
+    (197) local_factor -> . LPAREN local_expression RPAREN
     (198) local_var_call -> . IDENT local_list_index
     (224) local_factor1 -> . INT_LIT
     (225) local_factor1 -> . FLT_LIT
@@ -10135,7 +10151,7 @@ state 474
     (194) local_factor -> . local_factor1
     (195) local_factor -> . TILDE INT_LIT
     (196) local_factor -> . TILDE FLT_LIT
-    (197) local_factor -> . LPAREN local_factor RPAREN
+    (197) local_factor -> . LPAREN local_expression RPAREN
     (198) local_var_call -> . IDENT local_list_index
     (224) local_factor1 -> . INT_LIT
     (225) local_factor1 -> . FLT_LIT
@@ -10163,7 +10179,7 @@ state 475
     (194) local_factor -> . local_factor1
     (195) local_factor -> . TILDE INT_LIT
     (196) local_factor -> . TILDE FLT_LIT
-    (197) local_factor -> . LPAREN local_factor RPAREN
+    (197) local_factor -> . LPAREN local_expression RPAREN
     (198) local_var_call -> . IDENT local_list_index
     (224) local_factor1 -> . INT_LIT
     (225) local_factor1 -> . FLT_LIT
@@ -10191,7 +10207,7 @@ state 476
     (194) local_factor -> . local_factor1
     (195) local_factor -> . TILDE INT_LIT
     (196) local_factor -> . TILDE FLT_LIT
-    (197) local_factor -> . LPAREN local_factor RPAREN
+    (197) local_factor -> . LPAREN local_expression RPAREN
     (198) local_var_call -> . IDENT local_list_index
     (224) local_factor1 -> . INT_LIT
     (225) local_factor1 -> . FLT_LIT
@@ -10219,7 +10235,7 @@ state 477
     (194) local_factor -> . local_factor1
     (195) local_factor -> . TILDE INT_LIT
     (196) local_factor -> . TILDE FLT_LIT
-    (197) local_factor -> . LPAREN local_factor RPAREN
+    (197) local_factor -> . LPAREN local_expression RPAREN
     (198) local_var_call -> . IDENT local_list_index
     (224) local_factor1 -> . INT_LIT
     (225) local_factor1 -> . FLT_LIT
@@ -10247,7 +10263,7 @@ state 478
     (194) local_factor -> . local_factor1
     (195) local_factor -> . TILDE INT_LIT
     (196) local_factor -> . TILDE FLT_LIT
-    (197) local_factor -> . LPAREN local_factor RPAREN
+    (197) local_factor -> . LPAREN local_expression RPAREN
     (198) local_var_call -> . IDENT local_list_index
     (224) local_factor1 -> . INT_LIT
     (225) local_factor1 -> . FLT_LIT
@@ -10275,7 +10291,7 @@ state 479
     (194) local_factor -> . local_factor1
     (195) local_factor -> . TILDE INT_LIT
     (196) local_factor -> . TILDE FLT_LIT
-    (197) local_factor -> . LPAREN local_factor RPAREN
+    (197) local_factor -> . LPAREN local_expression RPAREN
     (198) local_var_call -> . IDENT local_list_index
     (224) local_factor1 -> . INT_LIT
     (225) local_factor1 -> . FLT_LIT
@@ -10303,7 +10319,7 @@ state 480
     (194) local_factor -> . local_factor1
     (195) local_factor -> . TILDE INT_LIT
     (196) local_factor -> . TILDE FLT_LIT
-    (197) local_factor -> . LPAREN local_factor RPAREN
+    (197) local_factor -> . LPAREN local_expression RPAREN
     (198) local_var_call -> . IDENT local_list_index
     (224) local_factor1 -> . INT_LIT
     (225) local_factor1 -> . FLT_LIT
@@ -10331,7 +10347,7 @@ state 481
     (194) local_factor -> . local_factor1
     (195) local_factor -> . TILDE INT_LIT
     (196) local_factor -> . TILDE FLT_LIT
-    (197) local_factor -> . LPAREN local_factor RPAREN
+    (197) local_factor -> . LPAREN local_expression RPAREN
     (198) local_var_call -> . IDENT local_list_index
     (224) local_factor1 -> . INT_LIT
     (225) local_factor1 -> . FLT_LIT
@@ -10359,7 +10375,7 @@ state 482
     (194) local_factor -> . local_factor1
     (195) local_factor -> . TILDE INT_LIT
     (196) local_factor -> . TILDE FLT_LIT
-    (197) local_factor -> . LPAREN local_factor RPAREN
+    (197) local_factor -> . LPAREN local_expression RPAREN
     (198) local_var_call -> . IDENT local_list_index
     (224) local_factor1 -> . INT_LIT
     (225) local_factor1 -> . FLT_LIT
@@ -10387,7 +10403,7 @@ state 483
     (194) local_factor -> . local_factor1
     (195) local_factor -> . TILDE INT_LIT
     (196) local_factor -> . TILDE FLT_LIT
-    (197) local_factor -> . LPAREN local_factor RPAREN
+    (197) local_factor -> . LPAREN local_expression RPAREN
     (198) local_var_call -> . IDENT local_list_index
     (224) local_factor1 -> . INT_LIT
     (225) local_factor1 -> . FLT_LIT
@@ -10415,7 +10431,7 @@ state 484
     (194) local_factor -> . local_factor1
     (195) local_factor -> . TILDE INT_LIT
     (196) local_factor -> . TILDE FLT_LIT
-    (197) local_factor -> . LPAREN local_factor RPAREN
+    (197) local_factor -> . LPAREN local_expression RPAREN
     (198) local_var_call -> . IDENT local_list_index
     (224) local_factor1 -> . INT_LIT
     (225) local_factor1 -> . FLT_LIT
@@ -10443,7 +10459,7 @@ state 485
     (194) local_factor -> . local_factor1
     (195) local_factor -> . TILDE INT_LIT
     (196) local_factor -> . TILDE FLT_LIT
-    (197) local_factor -> . LPAREN local_factor RPAREN
+    (197) local_factor -> . LPAREN local_expression RPAREN
     (198) local_var_call -> . IDENT local_list_index
     (224) local_factor1 -> . INT_LIT
     (225) local_factor1 -> . FLT_LIT
@@ -10470,6 +10486,7 @@ state 486
 
     COMMA           reduce using rule 223 (local_factor_tail -> empty .)
     SEMICOLON       reduce using rule 223 (local_factor_tail -> empty .)
+    RPAREN          reduce using rule 223 (local_factor_tail -> empty .)
 
 
 state 487
@@ -10786,12 +10803,13 @@ state 503
 
 state 504
 
-    (125) revive_factor -> LPAREN . revive_factor RPAREN
+    (125) revive_factor -> LPAREN . revive_expression RPAREN
+    (120) revive_expression -> . revive_factor revive_factor_tail
     (121) revive_factor -> . revive_var_call revive_postfix
     (122) revive_factor -> . revive_factor1
     (123) revive_factor -> . TILDE INT_LIT
     (124) revive_factor -> . TILDE FLT_LIT
-    (125) revive_factor -> . LPAREN revive_factor RPAREN
+    (125) revive_factor -> . LPAREN revive_expression RPAREN
     (126) revive_var_call -> . IDENT revive_list_index
     (152) revive_factor1 -> . INT_LIT
     (153) revive_factor1 -> . FLT_LIT
@@ -10808,7 +10826,8 @@ state 504
     NIGHT           shift and go to state 516
     STR_LIT         shift and go to state 517
 
-    revive_factor                  shift and go to state 718
+    revive_expression              shift and go to state 718
+    revive_factor                  shift and go to state 508
     revive_var_call                shift and go to state 509
     revive_factor1                 shift and go to state 510
 
@@ -10868,6 +10887,7 @@ state 508
     AND             shift and go to state 735
     OR              shift and go to state 736
     SEMICOLON       reduce using rule 610 (empty -> .)
+    RPAREN          reduce using rule 610 (empty -> .)
 
     revive_factor_tail             shift and go to state 722
     empty                          shift and go to state 737
@@ -11162,7 +11182,7 @@ state 523
     (585) typecast_factor -> . typecast_factor1
     (586) typecast_factor -> . TILDE INT_LIT
     (587) typecast_factor -> . TILDE FLT_LIT
-    (588) typecast_factor -> . LPAREN typecast_factor RPAREN
+    (588) typecast_factor -> . LPAREN typecast_expression RPAREN
     (527) var_call -> . IDENT list_index
     (604) typecast_factor1 -> . INT_LIT
     (605) typecast_factor1 -> . FLT_LIT
@@ -11190,7 +11210,7 @@ state 523
 
 state 524
 
-    (479) assign_factor -> LPAREN assign_factor . RPAREN
+    (479) assign_factor -> LPAREN assign_expression . RPAREN
 
     RPAREN          shift and go to state 753
 
@@ -11207,7 +11227,7 @@ state 525
     (585) typecast_factor -> . typecast_factor1
     (586) typecast_factor -> . TILDE INT_LIT
     (587) typecast_factor -> . TILDE FLT_LIT
-    (588) typecast_factor -> . LPAREN typecast_factor RPAREN
+    (588) typecast_factor -> . LPAREN typecast_expression RPAREN
     (527) var_call -> . IDENT list_index
     (604) typecast_factor1 -> . INT_LIT
     (605) typecast_factor1 -> . FLT_LIT
@@ -11245,7 +11265,7 @@ state 526
     (585) typecast_factor -> . typecast_factor1
     (586) typecast_factor -> . TILDE INT_LIT
     (587) typecast_factor -> . TILDE FLT_LIT
-    (588) typecast_factor -> . LPAREN typecast_factor RPAREN
+    (588) typecast_factor -> . LPAREN typecast_expression RPAREN
     (527) var_call -> . IDENT list_index
     (604) typecast_factor1 -> . INT_LIT
     (605) typecast_factor1 -> . FLT_LIT
@@ -11283,7 +11303,7 @@ state 527
     (585) typecast_factor -> . typecast_factor1
     (586) typecast_factor -> . TILDE INT_LIT
     (587) typecast_factor -> . TILDE FLT_LIT
-    (588) typecast_factor -> . LPAREN typecast_factor RPAREN
+    (588) typecast_factor -> . LPAREN typecast_expression RPAREN
     (527) var_call -> . IDENT list_index
     (604) typecast_factor1 -> . INT_LIT
     (605) typecast_factor1 -> . FLT_LIT
@@ -11314,6 +11334,7 @@ state 528
     (474) assign_expression -> assign_factor assign_factor_tail .
 
     SEMICOLON       reduce using rule 474 (assign_expression -> assign_factor assign_factor_tail .)
+    RPAREN          reduce using rule 474 (assign_expression -> assign_factor assign_factor_tail .)
 
 
 state 529
@@ -11323,7 +11344,7 @@ state 529
     (476) assign_factor -> . assign_factor1
     (477) assign_factor -> . TILDE INT_LIT
     (478) assign_factor -> . TILDE FLT_LIT
-    (479) assign_factor -> . LPAREN assign_factor RPAREN
+    (479) assign_factor -> . LPAREN assign_expression RPAREN
     (480) assign_var_call -> . IDENT assign_list_index
     (506) assign_factor1 -> . INT_LIT
     (507) assign_factor1 -> . FLT_LIT
@@ -11351,7 +11372,7 @@ state 530
     (476) assign_factor -> . assign_factor1
     (477) assign_factor -> . TILDE INT_LIT
     (478) assign_factor -> . TILDE FLT_LIT
-    (479) assign_factor -> . LPAREN assign_factor RPAREN
+    (479) assign_factor -> . LPAREN assign_expression RPAREN
     (480) assign_var_call -> . IDENT assign_list_index
     (506) assign_factor1 -> . INT_LIT
     (507) assign_factor1 -> . FLT_LIT
@@ -11379,7 +11400,7 @@ state 531
     (476) assign_factor -> . assign_factor1
     (477) assign_factor -> . TILDE INT_LIT
     (478) assign_factor -> . TILDE FLT_LIT
-    (479) assign_factor -> . LPAREN assign_factor RPAREN
+    (479) assign_factor -> . LPAREN assign_expression RPAREN
     (480) assign_var_call -> . IDENT assign_list_index
     (506) assign_factor1 -> . INT_LIT
     (507) assign_factor1 -> . FLT_LIT
@@ -11407,7 +11428,7 @@ state 532
     (476) assign_factor -> . assign_factor1
     (477) assign_factor -> . TILDE INT_LIT
     (478) assign_factor -> . TILDE FLT_LIT
-    (479) assign_factor -> . LPAREN assign_factor RPAREN
+    (479) assign_factor -> . LPAREN assign_expression RPAREN
     (480) assign_var_call -> . IDENT assign_list_index
     (506) assign_factor1 -> . INT_LIT
     (507) assign_factor1 -> . FLT_LIT
@@ -11435,7 +11456,7 @@ state 533
     (476) assign_factor -> . assign_factor1
     (477) assign_factor -> . TILDE INT_LIT
     (478) assign_factor -> . TILDE FLT_LIT
-    (479) assign_factor -> . LPAREN assign_factor RPAREN
+    (479) assign_factor -> . LPAREN assign_expression RPAREN
     (480) assign_var_call -> . IDENT assign_list_index
     (506) assign_factor1 -> . INT_LIT
     (507) assign_factor1 -> . FLT_LIT
@@ -11463,7 +11484,7 @@ state 534
     (476) assign_factor -> . assign_factor1
     (477) assign_factor -> . TILDE INT_LIT
     (478) assign_factor -> . TILDE FLT_LIT
-    (479) assign_factor -> . LPAREN assign_factor RPAREN
+    (479) assign_factor -> . LPAREN assign_expression RPAREN
     (480) assign_var_call -> . IDENT assign_list_index
     (506) assign_factor1 -> . INT_LIT
     (507) assign_factor1 -> . FLT_LIT
@@ -11491,7 +11512,7 @@ state 535
     (476) assign_factor -> . assign_factor1
     (477) assign_factor -> . TILDE INT_LIT
     (478) assign_factor -> . TILDE FLT_LIT
-    (479) assign_factor -> . LPAREN assign_factor RPAREN
+    (479) assign_factor -> . LPAREN assign_expression RPAREN
     (480) assign_var_call -> . IDENT assign_list_index
     (506) assign_factor1 -> . INT_LIT
     (507) assign_factor1 -> . FLT_LIT
@@ -11519,7 +11540,7 @@ state 536
     (476) assign_factor -> . assign_factor1
     (477) assign_factor -> . TILDE INT_LIT
     (478) assign_factor -> . TILDE FLT_LIT
-    (479) assign_factor -> . LPAREN assign_factor RPAREN
+    (479) assign_factor -> . LPAREN assign_expression RPAREN
     (480) assign_var_call -> . IDENT assign_list_index
     (506) assign_factor1 -> . INT_LIT
     (507) assign_factor1 -> . FLT_LIT
@@ -11547,7 +11568,7 @@ state 537
     (476) assign_factor -> . assign_factor1
     (477) assign_factor -> . TILDE INT_LIT
     (478) assign_factor -> . TILDE FLT_LIT
-    (479) assign_factor -> . LPAREN assign_factor RPAREN
+    (479) assign_factor -> . LPAREN assign_expression RPAREN
     (480) assign_var_call -> . IDENT assign_list_index
     (506) assign_factor1 -> . INT_LIT
     (507) assign_factor1 -> . FLT_LIT
@@ -11575,7 +11596,7 @@ state 538
     (476) assign_factor -> . assign_factor1
     (477) assign_factor -> . TILDE INT_LIT
     (478) assign_factor -> . TILDE FLT_LIT
-    (479) assign_factor -> . LPAREN assign_factor RPAREN
+    (479) assign_factor -> . LPAREN assign_expression RPAREN
     (480) assign_var_call -> . IDENT assign_list_index
     (506) assign_factor1 -> . INT_LIT
     (507) assign_factor1 -> . FLT_LIT
@@ -11603,7 +11624,7 @@ state 539
     (476) assign_factor -> . assign_factor1
     (477) assign_factor -> . TILDE INT_LIT
     (478) assign_factor -> . TILDE FLT_LIT
-    (479) assign_factor -> . LPAREN assign_factor RPAREN
+    (479) assign_factor -> . LPAREN assign_expression RPAREN
     (480) assign_var_call -> . IDENT assign_list_index
     (506) assign_factor1 -> . INT_LIT
     (507) assign_factor1 -> . FLT_LIT
@@ -11631,7 +11652,7 @@ state 540
     (476) assign_factor -> . assign_factor1
     (477) assign_factor -> . TILDE INT_LIT
     (478) assign_factor -> . TILDE FLT_LIT
-    (479) assign_factor -> . LPAREN assign_factor RPAREN
+    (479) assign_factor -> . LPAREN assign_expression RPAREN
     (480) assign_var_call -> . IDENT assign_list_index
     (506) assign_factor1 -> . INT_LIT
     (507) assign_factor1 -> . FLT_LIT
@@ -11659,7 +11680,7 @@ state 541
     (476) assign_factor -> . assign_factor1
     (477) assign_factor -> . TILDE INT_LIT
     (478) assign_factor -> . TILDE FLT_LIT
-    (479) assign_factor -> . LPAREN assign_factor RPAREN
+    (479) assign_factor -> . LPAREN assign_expression RPAREN
     (480) assign_var_call -> . IDENT assign_list_index
     (506) assign_factor1 -> . INT_LIT
     (507) assign_factor1 -> . FLT_LIT
@@ -11687,7 +11708,7 @@ state 542
     (476) assign_factor -> . assign_factor1
     (477) assign_factor -> . TILDE INT_LIT
     (478) assign_factor -> . TILDE FLT_LIT
-    (479) assign_factor -> . LPAREN assign_factor RPAREN
+    (479) assign_factor -> . LPAREN assign_expression RPAREN
     (480) assign_var_call -> . IDENT assign_list_index
     (506) assign_factor1 -> . INT_LIT
     (507) assign_factor1 -> . FLT_LIT
@@ -11713,6 +11734,7 @@ state 543
     (505) assign_factor_tail -> empty .
 
     SEMICOLON       reduce using rule 505 (assign_factor_tail -> empty .)
+    RPAREN          reduce using rule 505 (assign_factor_tail -> empty .)
 
 
 state 544
@@ -12014,7 +12036,7 @@ state 559
     (585) typecast_factor -> . typecast_factor1
     (586) typecast_factor -> . TILDE INT_LIT
     (587) typecast_factor -> . TILDE FLT_LIT
-    (588) typecast_factor -> . LPAREN typecast_factor RPAREN
+    (588) typecast_factor -> . LPAREN typecast_expression RPAREN
     (527) var_call -> . IDENT list_index
     (604) typecast_factor1 -> . INT_LIT
     (605) typecast_factor1 -> . FLT_LIT
@@ -12042,7 +12064,7 @@ state 559
 
 state 560
 
-    (544) value_factor -> LPAREN value_factor . RPAREN
+    (544) value_factor -> LPAREN value_expression . RPAREN
 
     RPAREN          shift and go to state 777
 
@@ -12059,7 +12081,7 @@ state 561
     (585) typecast_factor -> . typecast_factor1
     (586) typecast_factor -> . TILDE INT_LIT
     (587) typecast_factor -> . TILDE FLT_LIT
-    (588) typecast_factor -> . LPAREN typecast_factor RPAREN
+    (588) typecast_factor -> . LPAREN typecast_expression RPAREN
     (527) var_call -> . IDENT list_index
     (604) typecast_factor1 -> . INT_LIT
     (605) typecast_factor1 -> . FLT_LIT
@@ -12097,7 +12119,7 @@ state 562
     (585) typecast_factor -> . typecast_factor1
     (586) typecast_factor -> . TILDE INT_LIT
     (587) typecast_factor -> . TILDE FLT_LIT
-    (588) typecast_factor -> . LPAREN typecast_factor RPAREN
+    (588) typecast_factor -> . LPAREN typecast_expression RPAREN
     (527) var_call -> . IDENT list_index
     (604) typecast_factor1 -> . INT_LIT
     (605) typecast_factor1 -> . FLT_LIT
@@ -12135,7 +12157,7 @@ state 563
     (585) typecast_factor -> . typecast_factor1
     (586) typecast_factor -> . TILDE INT_LIT
     (587) typecast_factor -> . TILDE FLT_LIT
-    (588) typecast_factor -> . LPAREN typecast_factor RPAREN
+    (588) typecast_factor -> . LPAREN typecast_expression RPAREN
     (527) var_call -> . IDENT list_index
     (604) typecast_factor1 -> . INT_LIT
     (605) typecast_factor1 -> . FLT_LIT
@@ -12166,8 +12188,8 @@ state 564
     (539) value_expression -> value_factor value_factor_tail .
 
     SEMICOLON       reduce using rule 539 (value_expression -> value_factor value_factor_tail .)
-    COMMA           reduce using rule 539 (value_expression -> value_factor value_factor_tail .)
     RPAREN          reduce using rule 539 (value_expression -> value_factor value_factor_tail .)
+    COMMA           reduce using rule 539 (value_expression -> value_factor value_factor_tail .)
 
 
 state 565
@@ -12177,7 +12199,7 @@ state 565
     (541) value_factor -> . value_factor1
     (542) value_factor -> . TILDE INT_LIT
     (543) value_factor -> . TILDE FLT_LIT
-    (544) value_factor -> . LPAREN value_factor RPAREN
+    (544) value_factor -> . LPAREN value_expression RPAREN
     (545) value_var_call -> . IDENT value_list_index
     (571) value_factor1 -> . INT_LIT
     (572) value_factor1 -> . FLT_LIT
@@ -12205,7 +12227,7 @@ state 566
     (541) value_factor -> . value_factor1
     (542) value_factor -> . TILDE INT_LIT
     (543) value_factor -> . TILDE FLT_LIT
-    (544) value_factor -> . LPAREN value_factor RPAREN
+    (544) value_factor -> . LPAREN value_expression RPAREN
     (545) value_var_call -> . IDENT value_list_index
     (571) value_factor1 -> . INT_LIT
     (572) value_factor1 -> . FLT_LIT
@@ -12233,7 +12255,7 @@ state 567
     (541) value_factor -> . value_factor1
     (542) value_factor -> . TILDE INT_LIT
     (543) value_factor -> . TILDE FLT_LIT
-    (544) value_factor -> . LPAREN value_factor RPAREN
+    (544) value_factor -> . LPAREN value_expression RPAREN
     (545) value_var_call -> . IDENT value_list_index
     (571) value_factor1 -> . INT_LIT
     (572) value_factor1 -> . FLT_LIT
@@ -12261,7 +12283,7 @@ state 568
     (541) value_factor -> . value_factor1
     (542) value_factor -> . TILDE INT_LIT
     (543) value_factor -> . TILDE FLT_LIT
-    (544) value_factor -> . LPAREN value_factor RPAREN
+    (544) value_factor -> . LPAREN value_expression RPAREN
     (545) value_var_call -> . IDENT value_list_index
     (571) value_factor1 -> . INT_LIT
     (572) value_factor1 -> . FLT_LIT
@@ -12289,7 +12311,7 @@ state 569
     (541) value_factor -> . value_factor1
     (542) value_factor -> . TILDE INT_LIT
     (543) value_factor -> . TILDE FLT_LIT
-    (544) value_factor -> . LPAREN value_factor RPAREN
+    (544) value_factor -> . LPAREN value_expression RPAREN
     (545) value_var_call -> . IDENT value_list_index
     (571) value_factor1 -> . INT_LIT
     (572) value_factor1 -> . FLT_LIT
@@ -12317,7 +12339,7 @@ state 570
     (541) value_factor -> . value_factor1
     (542) value_factor -> . TILDE INT_LIT
     (543) value_factor -> . TILDE FLT_LIT
-    (544) value_factor -> . LPAREN value_factor RPAREN
+    (544) value_factor -> . LPAREN value_expression RPAREN
     (545) value_var_call -> . IDENT value_list_index
     (571) value_factor1 -> . INT_LIT
     (572) value_factor1 -> . FLT_LIT
@@ -12345,7 +12367,7 @@ state 571
     (541) value_factor -> . value_factor1
     (542) value_factor -> . TILDE INT_LIT
     (543) value_factor -> . TILDE FLT_LIT
-    (544) value_factor -> . LPAREN value_factor RPAREN
+    (544) value_factor -> . LPAREN value_expression RPAREN
     (545) value_var_call -> . IDENT value_list_index
     (571) value_factor1 -> . INT_LIT
     (572) value_factor1 -> . FLT_LIT
@@ -12373,7 +12395,7 @@ state 572
     (541) value_factor -> . value_factor1
     (542) value_factor -> . TILDE INT_LIT
     (543) value_factor -> . TILDE FLT_LIT
-    (544) value_factor -> . LPAREN value_factor RPAREN
+    (544) value_factor -> . LPAREN value_expression RPAREN
     (545) value_var_call -> . IDENT value_list_index
     (571) value_factor1 -> . INT_LIT
     (572) value_factor1 -> . FLT_LIT
@@ -12401,7 +12423,7 @@ state 573
     (541) value_factor -> . value_factor1
     (542) value_factor -> . TILDE INT_LIT
     (543) value_factor -> . TILDE FLT_LIT
-    (544) value_factor -> . LPAREN value_factor RPAREN
+    (544) value_factor -> . LPAREN value_expression RPAREN
     (545) value_var_call -> . IDENT value_list_index
     (571) value_factor1 -> . INT_LIT
     (572) value_factor1 -> . FLT_LIT
@@ -12429,7 +12451,7 @@ state 574
     (541) value_factor -> . value_factor1
     (542) value_factor -> . TILDE INT_LIT
     (543) value_factor -> . TILDE FLT_LIT
-    (544) value_factor -> . LPAREN value_factor RPAREN
+    (544) value_factor -> . LPAREN value_expression RPAREN
     (545) value_var_call -> . IDENT value_list_index
     (571) value_factor1 -> . INT_LIT
     (572) value_factor1 -> . FLT_LIT
@@ -12457,7 +12479,7 @@ state 575
     (541) value_factor -> . value_factor1
     (542) value_factor -> . TILDE INT_LIT
     (543) value_factor -> . TILDE FLT_LIT
-    (544) value_factor -> . LPAREN value_factor RPAREN
+    (544) value_factor -> . LPAREN value_expression RPAREN
     (545) value_var_call -> . IDENT value_list_index
     (571) value_factor1 -> . INT_LIT
     (572) value_factor1 -> . FLT_LIT
@@ -12485,7 +12507,7 @@ state 576
     (541) value_factor -> . value_factor1
     (542) value_factor -> . TILDE INT_LIT
     (543) value_factor -> . TILDE FLT_LIT
-    (544) value_factor -> . LPAREN value_factor RPAREN
+    (544) value_factor -> . LPAREN value_expression RPAREN
     (545) value_var_call -> . IDENT value_list_index
     (571) value_factor1 -> . INT_LIT
     (572) value_factor1 -> . FLT_LIT
@@ -12513,7 +12535,7 @@ state 577
     (541) value_factor -> . value_factor1
     (542) value_factor -> . TILDE INT_LIT
     (543) value_factor -> . TILDE FLT_LIT
-    (544) value_factor -> . LPAREN value_factor RPAREN
+    (544) value_factor -> . LPAREN value_expression RPAREN
     (545) value_var_call -> . IDENT value_list_index
     (571) value_factor1 -> . INT_LIT
     (572) value_factor1 -> . FLT_LIT
@@ -12541,7 +12563,7 @@ state 578
     (541) value_factor -> . value_factor1
     (542) value_factor -> . TILDE INT_LIT
     (543) value_factor -> . TILDE FLT_LIT
-    (544) value_factor -> . LPAREN value_factor RPAREN
+    (544) value_factor -> . LPAREN value_expression RPAREN
     (545) value_var_call -> . IDENT value_list_index
     (571) value_factor1 -> . INT_LIT
     (572) value_factor1 -> . FLT_LIT
@@ -12567,8 +12589,8 @@ state 579
     (570) value_factor_tail -> empty .
 
     SEMICOLON       reduce using rule 570 (value_factor_tail -> empty .)
-    COMMA           reduce using rule 570 (value_factor_tail -> empty .)
     RPAREN          reduce using rule 570 (value_factor_tail -> empty .)
+    COMMA           reduce using rule 570 (value_factor_tail -> empty .)
 
 
 state 580
@@ -12832,12 +12854,13 @@ state 591
 
 state 592
 
-    (588) typecast_factor -> LPAREN . typecast_factor RPAREN
+    (588) typecast_factor -> LPAREN . typecast_expression RPAREN
+    (583) typecast_expression -> . typecast_factor typecast_factor_tail
     (584) typecast_factor -> . var_call postfix
     (585) typecast_factor -> . typecast_factor1
     (586) typecast_factor -> . TILDE INT_LIT
     (587) typecast_factor -> . TILDE FLT_LIT
-    (588) typecast_factor -> . LPAREN typecast_factor RPAREN
+    (588) typecast_factor -> . LPAREN typecast_expression RPAREN
     (527) var_call -> . IDENT list_index
     (604) typecast_factor1 -> . INT_LIT
     (605) typecast_factor1 -> . FLT_LIT
@@ -12854,7 +12877,8 @@ state 592
     NIGHT           shift and go to state 604
     STR_LIT         shift and go to state 605
 
-    typecast_factor                shift and go to state 799
+    typecast_expression            shift and go to state 799
+    typecast_factor                shift and go to state 597
     var_call                       shift and go to state 598
     typecast_factor1               shift and go to state 599
 
@@ -13093,25 +13117,25 @@ state 605
 
 state 606
 
-    (428) output_factor -> LPAREN output_factor RPAREN .
+    (428) output_factor -> LPAREN output_expression RPAREN .
 
-    PLUS            reduce using rule 428 (output_factor -> LPAREN output_factor RPAREN .)
-    MINUS           reduce using rule 428 (output_factor -> LPAREN output_factor RPAREN .)
-    MULTIPLY        reduce using rule 428 (output_factor -> LPAREN output_factor RPAREN .)
-    DIVISION        reduce using rule 428 (output_factor -> LPAREN output_factor RPAREN .)
-    MODULO          reduce using rule 428 (output_factor -> LPAREN output_factor RPAREN .)
-    EXPONENT        reduce using rule 428 (output_factor -> LPAREN output_factor RPAREN .)
-    GT              reduce using rule 428 (output_factor -> LPAREN output_factor RPAREN .)
-    LT              reduce using rule 428 (output_factor -> LPAREN output_factor RPAREN .)
-    EQ_EQ           reduce using rule 428 (output_factor -> LPAREN output_factor RPAREN .)
-    GT_EQ           reduce using rule 428 (output_factor -> LPAREN output_factor RPAREN .)
-    LT_EQ           reduce using rule 428 (output_factor -> LPAREN output_factor RPAREN .)
-    NOT_EQ          reduce using rule 428 (output_factor -> LPAREN output_factor RPAREN .)
-    AND             reduce using rule 428 (output_factor -> LPAREN output_factor RPAREN .)
-    OR              reduce using rule 428 (output_factor -> LPAREN output_factor RPAREN .)
-    COMMA           reduce using rule 428 (output_factor -> LPAREN output_factor RPAREN .)
-    SEMICOLON       reduce using rule 428 (output_factor -> LPAREN output_factor RPAREN .)
-    RPAREN          reduce using rule 428 (output_factor -> LPAREN output_factor RPAREN .)
+    PLUS            reduce using rule 428 (output_factor -> LPAREN output_expression RPAREN .)
+    MINUS           reduce using rule 428 (output_factor -> LPAREN output_expression RPAREN .)
+    MULTIPLY        reduce using rule 428 (output_factor -> LPAREN output_expression RPAREN .)
+    DIVISION        reduce using rule 428 (output_factor -> LPAREN output_expression RPAREN .)
+    MODULO          reduce using rule 428 (output_factor -> LPAREN output_expression RPAREN .)
+    EXPONENT        reduce using rule 428 (output_factor -> LPAREN output_expression RPAREN .)
+    GT              reduce using rule 428 (output_factor -> LPAREN output_expression RPAREN .)
+    LT              reduce using rule 428 (output_factor -> LPAREN output_expression RPAREN .)
+    EQ_EQ           reduce using rule 428 (output_factor -> LPAREN output_expression RPAREN .)
+    GT_EQ           reduce using rule 428 (output_factor -> LPAREN output_expression RPAREN .)
+    LT_EQ           reduce using rule 428 (output_factor -> LPAREN output_expression RPAREN .)
+    NOT_EQ          reduce using rule 428 (output_factor -> LPAREN output_expression RPAREN .)
+    AND             reduce using rule 428 (output_factor -> LPAREN output_expression RPAREN .)
+    OR              reduce using rule 428 (output_factor -> LPAREN output_expression RPAREN .)
+    COMMA           reduce using rule 428 (output_factor -> LPAREN output_expression RPAREN .)
+    SEMICOLON       reduce using rule 428 (output_factor -> LPAREN output_expression RPAREN .)
+    RPAREN          reduce using rule 428 (output_factor -> LPAREN output_expression RPAREN .)
 
 
 state 607
@@ -13171,6 +13195,7 @@ state 610
     OR              shift and go to state 421
     COMMA           reduce using rule 610 (empty -> .)
     SEMICOLON       reduce using rule 610 (empty -> .)
+    RPAREN          reduce using rule 610 (empty -> .)
 
     output_factor_tail             shift and go to state 824
     empty                          shift and go to state 422
@@ -13211,6 +13236,7 @@ state 611
     OR              shift and go to state 421
     COMMA           reduce using rule 610 (empty -> .)
     SEMICOLON       reduce using rule 610 (empty -> .)
+    RPAREN          reduce using rule 610 (empty -> .)
 
     output_factor_tail             shift and go to state 825
     empty                          shift and go to state 422
@@ -13251,6 +13277,7 @@ state 612
     OR              shift and go to state 421
     COMMA           reduce using rule 610 (empty -> .)
     SEMICOLON       reduce using rule 610 (empty -> .)
+    RPAREN          reduce using rule 610 (empty -> .)
 
     output_factor_tail             shift and go to state 826
     empty                          shift and go to state 422
@@ -13291,6 +13318,7 @@ state 613
     OR              shift and go to state 421
     COMMA           reduce using rule 610 (empty -> .)
     SEMICOLON       reduce using rule 610 (empty -> .)
+    RPAREN          reduce using rule 610 (empty -> .)
 
     output_factor_tail             shift and go to state 827
     empty                          shift and go to state 422
@@ -13331,6 +13359,7 @@ state 614
     OR              shift and go to state 421
     COMMA           reduce using rule 610 (empty -> .)
     SEMICOLON       reduce using rule 610 (empty -> .)
+    RPAREN          reduce using rule 610 (empty -> .)
 
     output_factor_tail             shift and go to state 828
     empty                          shift and go to state 422
@@ -13371,6 +13400,7 @@ state 615
     OR              shift and go to state 421
     COMMA           reduce using rule 610 (empty -> .)
     SEMICOLON       reduce using rule 610 (empty -> .)
+    RPAREN          reduce using rule 610 (empty -> .)
 
     output_factor_tail             shift and go to state 829
     empty                          shift and go to state 422
@@ -13411,6 +13441,7 @@ state 616
     OR              shift and go to state 421
     COMMA           reduce using rule 610 (empty -> .)
     SEMICOLON       reduce using rule 610 (empty -> .)
+    RPAREN          reduce using rule 610 (empty -> .)
 
     output_factor_tail             shift and go to state 830
     empty                          shift and go to state 422
@@ -13451,6 +13482,7 @@ state 617
     OR              shift and go to state 421
     COMMA           reduce using rule 610 (empty -> .)
     SEMICOLON       reduce using rule 610 (empty -> .)
+    RPAREN          reduce using rule 610 (empty -> .)
 
     output_factor_tail             shift and go to state 831
     empty                          shift and go to state 422
@@ -13491,6 +13523,7 @@ state 618
     OR              shift and go to state 421
     COMMA           reduce using rule 610 (empty -> .)
     SEMICOLON       reduce using rule 610 (empty -> .)
+    RPAREN          reduce using rule 610 (empty -> .)
 
     output_factor_tail             shift and go to state 832
     empty                          shift and go to state 422
@@ -13531,6 +13564,7 @@ state 619
     OR              shift and go to state 421
     COMMA           reduce using rule 610 (empty -> .)
     SEMICOLON       reduce using rule 610 (empty -> .)
+    RPAREN          reduce using rule 610 (empty -> .)
 
     output_factor_tail             shift and go to state 833
     empty                          shift and go to state 422
@@ -13571,6 +13605,7 @@ state 620
     OR              shift and go to state 421
     COMMA           reduce using rule 610 (empty -> .)
     SEMICOLON       reduce using rule 610 (empty -> .)
+    RPAREN          reduce using rule 610 (empty -> .)
 
     output_factor_tail             shift and go to state 834
     empty                          shift and go to state 422
@@ -13611,6 +13646,7 @@ state 621
     OR              shift and go to state 421
     COMMA           reduce using rule 610 (empty -> .)
     SEMICOLON       reduce using rule 610 (empty -> .)
+    RPAREN          reduce using rule 610 (empty -> .)
 
     output_factor_tail             shift and go to state 835
     empty                          shift and go to state 422
@@ -13651,6 +13687,7 @@ state 622
     OR              shift and go to state 421
     COMMA           reduce using rule 610 (empty -> .)
     SEMICOLON       reduce using rule 610 (empty -> .)
+    RPAREN          reduce using rule 610 (empty -> .)
 
     output_factor_tail             shift and go to state 836
     empty                          shift and go to state 422
@@ -13691,6 +13728,7 @@ state 623
     OR              shift and go to state 421
     COMMA           reduce using rule 610 (empty -> .)
     SEMICOLON       reduce using rule 610 (empty -> .)
+    RPAREN          reduce using rule 610 (empty -> .)
 
     output_factor_tail             shift and go to state 837
     empty                          shift and go to state 422
@@ -14355,7 +14393,7 @@ state 656
     (327) for_factor -> . for_factor1
     (328) for_factor -> . TILDE INT_LIT
     (329) for_factor -> . TILDE FLT_LIT
-    (330) for_factor -> . LPAREN for_factor RPAREN
+    (330) for_factor -> . LPAREN for_expression RPAREN
     (331) for_var_call -> . IDENT for_list_index
     (357) for_factor1 -> . INT_LIT
     (358) for_factor1 -> . FLT_LIT
@@ -14386,7 +14424,7 @@ state 657
 
 state 658
 
-    (368) until_factor -> LPAREN until_factor . RPAREN
+    (368) until_factor -> LPAREN until_expression . RPAREN
 
     RPAREN          shift and go to state 872
 
@@ -14412,7 +14450,7 @@ state 661
     (365) until_factor -> . until_factor1
     (366) until_factor -> . TILDE INT_LIT
     (367) until_factor -> . TILDE FLT_LIT
-    (368) until_factor -> . LPAREN until_factor RPAREN
+    (368) until_factor -> . LPAREN until_expression RPAREN
     (369) until_var_call -> . IDENT until_list_index
     (395) until_factor1 -> . INT_LIT
     (396) until_factor1 -> . FLT_LIT
@@ -14440,7 +14478,7 @@ state 662
     (365) until_factor -> . until_factor1
     (366) until_factor -> . TILDE INT_LIT
     (367) until_factor -> . TILDE FLT_LIT
-    (368) until_factor -> . LPAREN until_factor RPAREN
+    (368) until_factor -> . LPAREN until_expression RPAREN
     (369) until_var_call -> . IDENT until_list_index
     (395) until_factor1 -> . INT_LIT
     (396) until_factor1 -> . FLT_LIT
@@ -14468,7 +14506,7 @@ state 663
     (365) until_factor -> . until_factor1
     (366) until_factor -> . TILDE INT_LIT
     (367) until_factor -> . TILDE FLT_LIT
-    (368) until_factor -> . LPAREN until_factor RPAREN
+    (368) until_factor -> . LPAREN until_expression RPAREN
     (369) until_var_call -> . IDENT until_list_index
     (395) until_factor1 -> . INT_LIT
     (396) until_factor1 -> . FLT_LIT
@@ -14496,7 +14534,7 @@ state 664
     (365) until_factor -> . until_factor1
     (366) until_factor -> . TILDE INT_LIT
     (367) until_factor -> . TILDE FLT_LIT
-    (368) until_factor -> . LPAREN until_factor RPAREN
+    (368) until_factor -> . LPAREN until_expression RPAREN
     (369) until_var_call -> . IDENT until_list_index
     (395) until_factor1 -> . INT_LIT
     (396) until_factor1 -> . FLT_LIT
@@ -14524,7 +14562,7 @@ state 665
     (365) until_factor -> . until_factor1
     (366) until_factor -> . TILDE INT_LIT
     (367) until_factor -> . TILDE FLT_LIT
-    (368) until_factor -> . LPAREN until_factor RPAREN
+    (368) until_factor -> . LPAREN until_expression RPAREN
     (369) until_var_call -> . IDENT until_list_index
     (395) until_factor1 -> . INT_LIT
     (396) until_factor1 -> . FLT_LIT
@@ -14552,7 +14590,7 @@ state 666
     (365) until_factor -> . until_factor1
     (366) until_factor -> . TILDE INT_LIT
     (367) until_factor -> . TILDE FLT_LIT
-    (368) until_factor -> . LPAREN until_factor RPAREN
+    (368) until_factor -> . LPAREN until_expression RPAREN
     (369) until_var_call -> . IDENT until_list_index
     (395) until_factor1 -> . INT_LIT
     (396) until_factor1 -> . FLT_LIT
@@ -14580,7 +14618,7 @@ state 667
     (365) until_factor -> . until_factor1
     (366) until_factor -> . TILDE INT_LIT
     (367) until_factor -> . TILDE FLT_LIT
-    (368) until_factor -> . LPAREN until_factor RPAREN
+    (368) until_factor -> . LPAREN until_expression RPAREN
     (369) until_var_call -> . IDENT until_list_index
     (395) until_factor1 -> . INT_LIT
     (396) until_factor1 -> . FLT_LIT
@@ -14608,7 +14646,7 @@ state 668
     (365) until_factor -> . until_factor1
     (366) until_factor -> . TILDE INT_LIT
     (367) until_factor -> . TILDE FLT_LIT
-    (368) until_factor -> . LPAREN until_factor RPAREN
+    (368) until_factor -> . LPAREN until_expression RPAREN
     (369) until_var_call -> . IDENT until_list_index
     (395) until_factor1 -> . INT_LIT
     (396) until_factor1 -> . FLT_LIT
@@ -14636,7 +14674,7 @@ state 669
     (365) until_factor -> . until_factor1
     (366) until_factor -> . TILDE INT_LIT
     (367) until_factor -> . TILDE FLT_LIT
-    (368) until_factor -> . LPAREN until_factor RPAREN
+    (368) until_factor -> . LPAREN until_expression RPAREN
     (369) until_var_call -> . IDENT until_list_index
     (395) until_factor1 -> . INT_LIT
     (396) until_factor1 -> . FLT_LIT
@@ -14664,7 +14702,7 @@ state 670
     (365) until_factor -> . until_factor1
     (366) until_factor -> . TILDE INT_LIT
     (367) until_factor -> . TILDE FLT_LIT
-    (368) until_factor -> . LPAREN until_factor RPAREN
+    (368) until_factor -> . LPAREN until_expression RPAREN
     (369) until_var_call -> . IDENT until_list_index
     (395) until_factor1 -> . INT_LIT
     (396) until_factor1 -> . FLT_LIT
@@ -14692,7 +14730,7 @@ state 671
     (365) until_factor -> . until_factor1
     (366) until_factor -> . TILDE INT_LIT
     (367) until_factor -> . TILDE FLT_LIT
-    (368) until_factor -> . LPAREN until_factor RPAREN
+    (368) until_factor -> . LPAREN until_expression RPAREN
     (369) until_var_call -> . IDENT until_list_index
     (395) until_factor1 -> . INT_LIT
     (396) until_factor1 -> . FLT_LIT
@@ -14720,7 +14758,7 @@ state 672
     (365) until_factor -> . until_factor1
     (366) until_factor -> . TILDE INT_LIT
     (367) until_factor -> . TILDE FLT_LIT
-    (368) until_factor -> . LPAREN until_factor RPAREN
+    (368) until_factor -> . LPAREN until_expression RPAREN
     (369) until_var_call -> . IDENT until_list_index
     (395) until_factor1 -> . INT_LIT
     (396) until_factor1 -> . FLT_LIT
@@ -14748,7 +14786,7 @@ state 673
     (365) until_factor -> . until_factor1
     (366) until_factor -> . TILDE INT_LIT
     (367) until_factor -> . TILDE FLT_LIT
-    (368) until_factor -> . LPAREN until_factor RPAREN
+    (368) until_factor -> . LPAREN until_expression RPAREN
     (369) until_var_call -> . IDENT until_list_index
     (395) until_factor1 -> . INT_LIT
     (396) until_factor1 -> . FLT_LIT
@@ -14776,7 +14814,7 @@ state 674
     (365) until_factor -> . until_factor1
     (366) until_factor -> . TILDE INT_LIT
     (367) until_factor -> . TILDE FLT_LIT
-    (368) until_factor -> . LPAREN until_factor RPAREN
+    (368) until_factor -> . LPAREN until_expression RPAREN
     (369) until_var_call -> . IDENT until_list_index
     (395) until_factor1 -> . INT_LIT
     (396) until_factor1 -> . FLT_LIT
@@ -15039,25 +15077,25 @@ state 688
 
 state 689
 
-    (197) local_factor -> LPAREN local_factor RPAREN .
+    (197) local_factor -> LPAREN local_expression RPAREN .
 
-    PLUS            reduce using rule 197 (local_factor -> LPAREN local_factor RPAREN .)
-    MINUS           reduce using rule 197 (local_factor -> LPAREN local_factor RPAREN .)
-    MULTIPLY        reduce using rule 197 (local_factor -> LPAREN local_factor RPAREN .)
-    DIVISION        reduce using rule 197 (local_factor -> LPAREN local_factor RPAREN .)
-    MODULO          reduce using rule 197 (local_factor -> LPAREN local_factor RPAREN .)
-    EXPONENT        reduce using rule 197 (local_factor -> LPAREN local_factor RPAREN .)
-    GT              reduce using rule 197 (local_factor -> LPAREN local_factor RPAREN .)
-    LT              reduce using rule 197 (local_factor -> LPAREN local_factor RPAREN .)
-    EQ_EQ           reduce using rule 197 (local_factor -> LPAREN local_factor RPAREN .)
-    GT_EQ           reduce using rule 197 (local_factor -> LPAREN local_factor RPAREN .)
-    LT_EQ           reduce using rule 197 (local_factor -> LPAREN local_factor RPAREN .)
-    NOT_EQ          reduce using rule 197 (local_factor -> LPAREN local_factor RPAREN .)
-    AND             reduce using rule 197 (local_factor -> LPAREN local_factor RPAREN .)
-    OR              reduce using rule 197 (local_factor -> LPAREN local_factor RPAREN .)
-    COMMA           reduce using rule 197 (local_factor -> LPAREN local_factor RPAREN .)
-    SEMICOLON       reduce using rule 197 (local_factor -> LPAREN local_factor RPAREN .)
-    RPAREN          reduce using rule 197 (local_factor -> LPAREN local_factor RPAREN .)
+    PLUS            reduce using rule 197 (local_factor -> LPAREN local_expression RPAREN .)
+    MINUS           reduce using rule 197 (local_factor -> LPAREN local_expression RPAREN .)
+    MULTIPLY        reduce using rule 197 (local_factor -> LPAREN local_expression RPAREN .)
+    DIVISION        reduce using rule 197 (local_factor -> LPAREN local_expression RPAREN .)
+    MODULO          reduce using rule 197 (local_factor -> LPAREN local_expression RPAREN .)
+    EXPONENT        reduce using rule 197 (local_factor -> LPAREN local_expression RPAREN .)
+    GT              reduce using rule 197 (local_factor -> LPAREN local_expression RPAREN .)
+    LT              reduce using rule 197 (local_factor -> LPAREN local_expression RPAREN .)
+    EQ_EQ           reduce using rule 197 (local_factor -> LPAREN local_expression RPAREN .)
+    GT_EQ           reduce using rule 197 (local_factor -> LPAREN local_expression RPAREN .)
+    LT_EQ           reduce using rule 197 (local_factor -> LPAREN local_expression RPAREN .)
+    NOT_EQ          reduce using rule 197 (local_factor -> LPAREN local_expression RPAREN .)
+    AND             reduce using rule 197 (local_factor -> LPAREN local_expression RPAREN .)
+    OR              reduce using rule 197 (local_factor -> LPAREN local_expression RPAREN .)
+    COMMA           reduce using rule 197 (local_factor -> LPAREN local_expression RPAREN .)
+    SEMICOLON       reduce using rule 197 (local_factor -> LPAREN local_expression RPAREN .)
+    RPAREN          reduce using rule 197 (local_factor -> LPAREN local_expression RPAREN .)
 
 
 state 690
@@ -15117,6 +15155,7 @@ state 693
     OR              shift and go to state 485
     COMMA           reduce using rule 610 (empty -> .)
     SEMICOLON       reduce using rule 610 (empty -> .)
+    RPAREN          reduce using rule 610 (empty -> .)
 
     local_factor_tail              shift and go to state 897
     empty                          shift and go to state 486
@@ -15157,6 +15196,7 @@ state 694
     OR              shift and go to state 485
     COMMA           reduce using rule 610 (empty -> .)
     SEMICOLON       reduce using rule 610 (empty -> .)
+    RPAREN          reduce using rule 610 (empty -> .)
 
     local_factor_tail              shift and go to state 898
     empty                          shift and go to state 486
@@ -15197,6 +15237,7 @@ state 695
     OR              shift and go to state 485
     COMMA           reduce using rule 610 (empty -> .)
     SEMICOLON       reduce using rule 610 (empty -> .)
+    RPAREN          reduce using rule 610 (empty -> .)
 
     local_factor_tail              shift and go to state 899
     empty                          shift and go to state 486
@@ -15237,6 +15278,7 @@ state 696
     OR              shift and go to state 485
     COMMA           reduce using rule 610 (empty -> .)
     SEMICOLON       reduce using rule 610 (empty -> .)
+    RPAREN          reduce using rule 610 (empty -> .)
 
     local_factor_tail              shift and go to state 900
     empty                          shift and go to state 486
@@ -15277,6 +15319,7 @@ state 697
     OR              shift and go to state 485
     COMMA           reduce using rule 610 (empty -> .)
     SEMICOLON       reduce using rule 610 (empty -> .)
+    RPAREN          reduce using rule 610 (empty -> .)
 
     local_factor_tail              shift and go to state 901
     empty                          shift and go to state 486
@@ -15317,6 +15360,7 @@ state 698
     OR              shift and go to state 485
     COMMA           reduce using rule 610 (empty -> .)
     SEMICOLON       reduce using rule 610 (empty -> .)
+    RPAREN          reduce using rule 610 (empty -> .)
 
     local_factor_tail              shift and go to state 902
     empty                          shift and go to state 486
@@ -15357,6 +15401,7 @@ state 699
     OR              shift and go to state 485
     COMMA           reduce using rule 610 (empty -> .)
     SEMICOLON       reduce using rule 610 (empty -> .)
+    RPAREN          reduce using rule 610 (empty -> .)
 
     local_factor_tail              shift and go to state 903
     empty                          shift and go to state 486
@@ -15397,6 +15442,7 @@ state 700
     OR              shift and go to state 485
     COMMA           reduce using rule 610 (empty -> .)
     SEMICOLON       reduce using rule 610 (empty -> .)
+    RPAREN          reduce using rule 610 (empty -> .)
 
     local_factor_tail              shift and go to state 904
     empty                          shift and go to state 486
@@ -15437,6 +15483,7 @@ state 701
     OR              shift and go to state 485
     COMMA           reduce using rule 610 (empty -> .)
     SEMICOLON       reduce using rule 610 (empty -> .)
+    RPAREN          reduce using rule 610 (empty -> .)
 
     local_factor_tail              shift and go to state 905
     empty                          shift and go to state 486
@@ -15477,6 +15524,7 @@ state 702
     OR              shift and go to state 485
     COMMA           reduce using rule 610 (empty -> .)
     SEMICOLON       reduce using rule 610 (empty -> .)
+    RPAREN          reduce using rule 610 (empty -> .)
 
     local_factor_tail              shift and go to state 906
     empty                          shift and go to state 486
@@ -15517,6 +15565,7 @@ state 703
     OR              shift and go to state 485
     COMMA           reduce using rule 610 (empty -> .)
     SEMICOLON       reduce using rule 610 (empty -> .)
+    RPAREN          reduce using rule 610 (empty -> .)
 
     local_factor_tail              shift and go to state 907
     empty                          shift and go to state 486
@@ -15557,6 +15606,7 @@ state 704
     OR              shift and go to state 485
     COMMA           reduce using rule 610 (empty -> .)
     SEMICOLON       reduce using rule 610 (empty -> .)
+    RPAREN          reduce using rule 610 (empty -> .)
 
     local_factor_tail              shift and go to state 908
     empty                          shift and go to state 486
@@ -15597,6 +15647,7 @@ state 705
     OR              shift and go to state 485
     COMMA           reduce using rule 610 (empty -> .)
     SEMICOLON       reduce using rule 610 (empty -> .)
+    RPAREN          reduce using rule 610 (empty -> .)
 
     local_factor_tail              shift and go to state 909
     empty                          shift and go to state 486
@@ -15637,6 +15688,7 @@ state 706
     OR              shift and go to state 485
     COMMA           reduce using rule 610 (empty -> .)
     SEMICOLON       reduce using rule 610 (empty -> .)
+    RPAREN          reduce using rule 610 (empty -> .)
 
     local_factor_tail              shift and go to state 910
     empty                          shift and go to state 486
@@ -15731,7 +15783,7 @@ state 717
     (585) typecast_factor -> . typecast_factor1
     (586) typecast_factor -> . TILDE INT_LIT
     (587) typecast_factor -> . TILDE FLT_LIT
-    (588) typecast_factor -> . LPAREN typecast_factor RPAREN
+    (588) typecast_factor -> . LPAREN typecast_expression RPAREN
     (527) var_call -> . IDENT list_index
     (604) typecast_factor1 -> . INT_LIT
     (605) typecast_factor1 -> . FLT_LIT
@@ -15759,7 +15811,7 @@ state 717
 
 state 718
 
-    (125) revive_factor -> LPAREN revive_factor . RPAREN
+    (125) revive_factor -> LPAREN revive_expression . RPAREN
 
     RPAREN          shift and go to state 914
 
@@ -15776,7 +15828,7 @@ state 719
     (585) typecast_factor -> . typecast_factor1
     (586) typecast_factor -> . TILDE INT_LIT
     (587) typecast_factor -> . TILDE FLT_LIT
-    (588) typecast_factor -> . LPAREN typecast_factor RPAREN
+    (588) typecast_factor -> . LPAREN typecast_expression RPAREN
     (527) var_call -> . IDENT list_index
     (604) typecast_factor1 -> . INT_LIT
     (605) typecast_factor1 -> . FLT_LIT
@@ -15814,7 +15866,7 @@ state 720
     (585) typecast_factor -> . typecast_factor1
     (586) typecast_factor -> . TILDE INT_LIT
     (587) typecast_factor -> . TILDE FLT_LIT
-    (588) typecast_factor -> . LPAREN typecast_factor RPAREN
+    (588) typecast_factor -> . LPAREN typecast_expression RPAREN
     (527) var_call -> . IDENT list_index
     (604) typecast_factor1 -> . INT_LIT
     (605) typecast_factor1 -> . FLT_LIT
@@ -15852,7 +15904,7 @@ state 721
     (585) typecast_factor -> . typecast_factor1
     (586) typecast_factor -> . TILDE INT_LIT
     (587) typecast_factor -> . TILDE FLT_LIT
-    (588) typecast_factor -> . LPAREN typecast_factor RPAREN
+    (588) typecast_factor -> . LPAREN typecast_expression RPAREN
     (527) var_call -> . IDENT list_index
     (604) typecast_factor1 -> . INT_LIT
     (605) typecast_factor1 -> . FLT_LIT
@@ -15883,6 +15935,7 @@ state 722
     (120) revive_expression -> revive_factor revive_factor_tail .
 
     SEMICOLON       reduce using rule 120 (revive_expression -> revive_factor revive_factor_tail .)
+    RPAREN          reduce using rule 120 (revive_expression -> revive_factor revive_factor_tail .)
 
 
 state 723
@@ -15892,7 +15945,7 @@ state 723
     (122) revive_factor -> . revive_factor1
     (123) revive_factor -> . TILDE INT_LIT
     (124) revive_factor -> . TILDE FLT_LIT
-    (125) revive_factor -> . LPAREN revive_factor RPAREN
+    (125) revive_factor -> . LPAREN revive_expression RPAREN
     (126) revive_var_call -> . IDENT revive_list_index
     (152) revive_factor1 -> . INT_LIT
     (153) revive_factor1 -> . FLT_LIT
@@ -15920,7 +15973,7 @@ state 724
     (122) revive_factor -> . revive_factor1
     (123) revive_factor -> . TILDE INT_LIT
     (124) revive_factor -> . TILDE FLT_LIT
-    (125) revive_factor -> . LPAREN revive_factor RPAREN
+    (125) revive_factor -> . LPAREN revive_expression RPAREN
     (126) revive_var_call -> . IDENT revive_list_index
     (152) revive_factor1 -> . INT_LIT
     (153) revive_factor1 -> . FLT_LIT
@@ -15948,7 +16001,7 @@ state 725
     (122) revive_factor -> . revive_factor1
     (123) revive_factor -> . TILDE INT_LIT
     (124) revive_factor -> . TILDE FLT_LIT
-    (125) revive_factor -> . LPAREN revive_factor RPAREN
+    (125) revive_factor -> . LPAREN revive_expression RPAREN
     (126) revive_var_call -> . IDENT revive_list_index
     (152) revive_factor1 -> . INT_LIT
     (153) revive_factor1 -> . FLT_LIT
@@ -15976,7 +16029,7 @@ state 726
     (122) revive_factor -> . revive_factor1
     (123) revive_factor -> . TILDE INT_LIT
     (124) revive_factor -> . TILDE FLT_LIT
-    (125) revive_factor -> . LPAREN revive_factor RPAREN
+    (125) revive_factor -> . LPAREN revive_expression RPAREN
     (126) revive_var_call -> . IDENT revive_list_index
     (152) revive_factor1 -> . INT_LIT
     (153) revive_factor1 -> . FLT_LIT
@@ -16004,7 +16057,7 @@ state 727
     (122) revive_factor -> . revive_factor1
     (123) revive_factor -> . TILDE INT_LIT
     (124) revive_factor -> . TILDE FLT_LIT
-    (125) revive_factor -> . LPAREN revive_factor RPAREN
+    (125) revive_factor -> . LPAREN revive_expression RPAREN
     (126) revive_var_call -> . IDENT revive_list_index
     (152) revive_factor1 -> . INT_LIT
     (153) revive_factor1 -> . FLT_LIT
@@ -16032,7 +16085,7 @@ state 728
     (122) revive_factor -> . revive_factor1
     (123) revive_factor -> . TILDE INT_LIT
     (124) revive_factor -> . TILDE FLT_LIT
-    (125) revive_factor -> . LPAREN revive_factor RPAREN
+    (125) revive_factor -> . LPAREN revive_expression RPAREN
     (126) revive_var_call -> . IDENT revive_list_index
     (152) revive_factor1 -> . INT_LIT
     (153) revive_factor1 -> . FLT_LIT
@@ -16060,7 +16113,7 @@ state 729
     (122) revive_factor -> . revive_factor1
     (123) revive_factor -> . TILDE INT_LIT
     (124) revive_factor -> . TILDE FLT_LIT
-    (125) revive_factor -> . LPAREN revive_factor RPAREN
+    (125) revive_factor -> . LPAREN revive_expression RPAREN
     (126) revive_var_call -> . IDENT revive_list_index
     (152) revive_factor1 -> . INT_LIT
     (153) revive_factor1 -> . FLT_LIT
@@ -16088,7 +16141,7 @@ state 730
     (122) revive_factor -> . revive_factor1
     (123) revive_factor -> . TILDE INT_LIT
     (124) revive_factor -> . TILDE FLT_LIT
-    (125) revive_factor -> . LPAREN revive_factor RPAREN
+    (125) revive_factor -> . LPAREN revive_expression RPAREN
     (126) revive_var_call -> . IDENT revive_list_index
     (152) revive_factor1 -> . INT_LIT
     (153) revive_factor1 -> . FLT_LIT
@@ -16116,7 +16169,7 @@ state 731
     (122) revive_factor -> . revive_factor1
     (123) revive_factor -> . TILDE INT_LIT
     (124) revive_factor -> . TILDE FLT_LIT
-    (125) revive_factor -> . LPAREN revive_factor RPAREN
+    (125) revive_factor -> . LPAREN revive_expression RPAREN
     (126) revive_var_call -> . IDENT revive_list_index
     (152) revive_factor1 -> . INT_LIT
     (153) revive_factor1 -> . FLT_LIT
@@ -16144,7 +16197,7 @@ state 732
     (122) revive_factor -> . revive_factor1
     (123) revive_factor -> . TILDE INT_LIT
     (124) revive_factor -> . TILDE FLT_LIT
-    (125) revive_factor -> . LPAREN revive_factor RPAREN
+    (125) revive_factor -> . LPAREN revive_expression RPAREN
     (126) revive_var_call -> . IDENT revive_list_index
     (152) revive_factor1 -> . INT_LIT
     (153) revive_factor1 -> . FLT_LIT
@@ -16172,7 +16225,7 @@ state 733
     (122) revive_factor -> . revive_factor1
     (123) revive_factor -> . TILDE INT_LIT
     (124) revive_factor -> . TILDE FLT_LIT
-    (125) revive_factor -> . LPAREN revive_factor RPAREN
+    (125) revive_factor -> . LPAREN revive_expression RPAREN
     (126) revive_var_call -> . IDENT revive_list_index
     (152) revive_factor1 -> . INT_LIT
     (153) revive_factor1 -> . FLT_LIT
@@ -16200,7 +16253,7 @@ state 734
     (122) revive_factor -> . revive_factor1
     (123) revive_factor -> . TILDE INT_LIT
     (124) revive_factor -> . TILDE FLT_LIT
-    (125) revive_factor -> . LPAREN revive_factor RPAREN
+    (125) revive_factor -> . LPAREN revive_expression RPAREN
     (126) revive_var_call -> . IDENT revive_list_index
     (152) revive_factor1 -> . INT_LIT
     (153) revive_factor1 -> . FLT_LIT
@@ -16228,7 +16281,7 @@ state 735
     (122) revive_factor -> . revive_factor1
     (123) revive_factor -> . TILDE INT_LIT
     (124) revive_factor -> . TILDE FLT_LIT
-    (125) revive_factor -> . LPAREN revive_factor RPAREN
+    (125) revive_factor -> . LPAREN revive_expression RPAREN
     (126) revive_var_call -> . IDENT revive_list_index
     (152) revive_factor1 -> . INT_LIT
     (153) revive_factor1 -> . FLT_LIT
@@ -16256,7 +16309,7 @@ state 736
     (122) revive_factor -> . revive_factor1
     (123) revive_factor -> . TILDE INT_LIT
     (124) revive_factor -> . TILDE FLT_LIT
-    (125) revive_factor -> . LPAREN revive_factor RPAREN
+    (125) revive_factor -> . LPAREN revive_expression RPAREN
     (126) revive_var_call -> . IDENT revive_list_index
     (152) revive_factor1 -> . INT_LIT
     (153) revive_factor1 -> . FLT_LIT
@@ -16282,6 +16335,7 @@ state 737
     (151) revive_factor_tail -> empty .
 
     SEMICOLON       reduce using rule 151 (revive_factor_tail -> empty .)
+    RPAREN          reduce using rule 151 (revive_factor_tail -> empty .)
 
 
 state 738
@@ -16536,24 +16590,24 @@ state 752
 
 state 753
 
-    (479) assign_factor -> LPAREN assign_factor RPAREN .
+    (479) assign_factor -> LPAREN assign_expression RPAREN .
 
-    PLUS            reduce using rule 479 (assign_factor -> LPAREN assign_factor RPAREN .)
-    MINUS           reduce using rule 479 (assign_factor -> LPAREN assign_factor RPAREN .)
-    MULTIPLY        reduce using rule 479 (assign_factor -> LPAREN assign_factor RPAREN .)
-    DIVISION        reduce using rule 479 (assign_factor -> LPAREN assign_factor RPAREN .)
-    MODULO          reduce using rule 479 (assign_factor -> LPAREN assign_factor RPAREN .)
-    EXPONENT        reduce using rule 479 (assign_factor -> LPAREN assign_factor RPAREN .)
-    GT              reduce using rule 479 (assign_factor -> LPAREN assign_factor RPAREN .)
-    LT              reduce using rule 479 (assign_factor -> LPAREN assign_factor RPAREN .)
-    EQ_EQ           reduce using rule 479 (assign_factor -> LPAREN assign_factor RPAREN .)
-    GT_EQ           reduce using rule 479 (assign_factor -> LPAREN assign_factor RPAREN .)
-    LT_EQ           reduce using rule 479 (assign_factor -> LPAREN assign_factor RPAREN .)
-    NOT_EQ          reduce using rule 479 (assign_factor -> LPAREN assign_factor RPAREN .)
-    AND             reduce using rule 479 (assign_factor -> LPAREN assign_factor RPAREN .)
-    OR              reduce using rule 479 (assign_factor -> LPAREN assign_factor RPAREN .)
-    SEMICOLON       reduce using rule 479 (assign_factor -> LPAREN assign_factor RPAREN .)
-    RPAREN          reduce using rule 479 (assign_factor -> LPAREN assign_factor RPAREN .)
+    PLUS            reduce using rule 479 (assign_factor -> LPAREN assign_expression RPAREN .)
+    MINUS           reduce using rule 479 (assign_factor -> LPAREN assign_expression RPAREN .)
+    MULTIPLY        reduce using rule 479 (assign_factor -> LPAREN assign_expression RPAREN .)
+    DIVISION        reduce using rule 479 (assign_factor -> LPAREN assign_expression RPAREN .)
+    MODULO          reduce using rule 479 (assign_factor -> LPAREN assign_expression RPAREN .)
+    EXPONENT        reduce using rule 479 (assign_factor -> LPAREN assign_expression RPAREN .)
+    GT              reduce using rule 479 (assign_factor -> LPAREN assign_expression RPAREN .)
+    LT              reduce using rule 479 (assign_factor -> LPAREN assign_expression RPAREN .)
+    EQ_EQ           reduce using rule 479 (assign_factor -> LPAREN assign_expression RPAREN .)
+    GT_EQ           reduce using rule 479 (assign_factor -> LPAREN assign_expression RPAREN .)
+    LT_EQ           reduce using rule 479 (assign_factor -> LPAREN assign_expression RPAREN .)
+    NOT_EQ          reduce using rule 479 (assign_factor -> LPAREN assign_expression RPAREN .)
+    AND             reduce using rule 479 (assign_factor -> LPAREN assign_expression RPAREN .)
+    OR              reduce using rule 479 (assign_factor -> LPAREN assign_expression RPAREN .)
+    SEMICOLON       reduce using rule 479 (assign_factor -> LPAREN assign_expression RPAREN .)
+    RPAREN          reduce using rule 479 (assign_factor -> LPAREN assign_expression RPAREN .)
 
 
 state 754
@@ -16612,6 +16666,7 @@ state 757
     AND             shift and go to state 541
     OR              shift and go to state 542
     SEMICOLON       reduce using rule 610 (empty -> .)
+    RPAREN          reduce using rule 610 (empty -> .)
 
     assign_factor_tail             shift and go to state 943
     empty                          shift and go to state 543
@@ -16651,6 +16706,7 @@ state 758
     AND             shift and go to state 541
     OR              shift and go to state 542
     SEMICOLON       reduce using rule 610 (empty -> .)
+    RPAREN          reduce using rule 610 (empty -> .)
 
     assign_factor_tail             shift and go to state 944
     empty                          shift and go to state 543
@@ -16690,6 +16746,7 @@ state 759
     AND             shift and go to state 541
     OR              shift and go to state 542
     SEMICOLON       reduce using rule 610 (empty -> .)
+    RPAREN          reduce using rule 610 (empty -> .)
 
     assign_factor_tail             shift and go to state 945
     empty                          shift and go to state 543
@@ -16729,6 +16786,7 @@ state 760
     AND             shift and go to state 541
     OR              shift and go to state 542
     SEMICOLON       reduce using rule 610 (empty -> .)
+    RPAREN          reduce using rule 610 (empty -> .)
 
     assign_factor_tail             shift and go to state 946
     empty                          shift and go to state 543
@@ -16768,6 +16826,7 @@ state 761
     AND             shift and go to state 541
     OR              shift and go to state 542
     SEMICOLON       reduce using rule 610 (empty -> .)
+    RPAREN          reduce using rule 610 (empty -> .)
 
     assign_factor_tail             shift and go to state 947
     empty                          shift and go to state 543
@@ -16807,6 +16866,7 @@ state 762
     AND             shift and go to state 541
     OR              shift and go to state 542
     SEMICOLON       reduce using rule 610 (empty -> .)
+    RPAREN          reduce using rule 610 (empty -> .)
 
     assign_factor_tail             shift and go to state 948
     empty                          shift and go to state 543
@@ -16846,6 +16906,7 @@ state 763
     AND             shift and go to state 541
     OR              shift and go to state 542
     SEMICOLON       reduce using rule 610 (empty -> .)
+    RPAREN          reduce using rule 610 (empty -> .)
 
     assign_factor_tail             shift and go to state 949
     empty                          shift and go to state 543
@@ -16885,6 +16946,7 @@ state 764
     AND             shift and go to state 541
     OR              shift and go to state 542
     SEMICOLON       reduce using rule 610 (empty -> .)
+    RPAREN          reduce using rule 610 (empty -> .)
 
     assign_factor_tail             shift and go to state 950
     empty                          shift and go to state 543
@@ -16924,6 +16986,7 @@ state 765
     AND             shift and go to state 541
     OR              shift and go to state 542
     SEMICOLON       reduce using rule 610 (empty -> .)
+    RPAREN          reduce using rule 610 (empty -> .)
 
     assign_factor_tail             shift and go to state 951
     empty                          shift and go to state 543
@@ -16963,6 +17026,7 @@ state 766
     AND             shift and go to state 541
     OR              shift and go to state 542
     SEMICOLON       reduce using rule 610 (empty -> .)
+    RPAREN          reduce using rule 610 (empty -> .)
 
     assign_factor_tail             shift and go to state 952
     empty                          shift and go to state 543
@@ -17002,6 +17066,7 @@ state 767
     AND             shift and go to state 541
     OR              shift and go to state 542
     SEMICOLON       reduce using rule 610 (empty -> .)
+    RPAREN          reduce using rule 610 (empty -> .)
 
     assign_factor_tail             shift and go to state 953
     empty                          shift and go to state 543
@@ -17041,6 +17106,7 @@ state 768
     AND             shift and go to state 541
     OR              shift and go to state 542
     SEMICOLON       reduce using rule 610 (empty -> .)
+    RPAREN          reduce using rule 610 (empty -> .)
 
     assign_factor_tail             shift and go to state 954
     empty                          shift and go to state 543
@@ -17080,6 +17146,7 @@ state 769
     AND             shift and go to state 541
     OR              shift and go to state 542
     SEMICOLON       reduce using rule 610 (empty -> .)
+    RPAREN          reduce using rule 610 (empty -> .)
 
     assign_factor_tail             shift and go to state 955
     empty                          shift and go to state 543
@@ -17119,6 +17186,7 @@ state 770
     AND             shift and go to state 541
     OR              shift and go to state 542
     SEMICOLON       reduce using rule 610 (empty -> .)
+    RPAREN          reduce using rule 610 (empty -> .)
 
     assign_factor_tail             shift and go to state 956
     empty                          shift and go to state 543
@@ -17190,25 +17258,25 @@ state 776
 
 state 777
 
-    (544) value_factor -> LPAREN value_factor RPAREN .
+    (544) value_factor -> LPAREN value_expression RPAREN .
 
-    PLUS            reduce using rule 544 (value_factor -> LPAREN value_factor RPAREN .)
-    MINUS           reduce using rule 544 (value_factor -> LPAREN value_factor RPAREN .)
-    MULTIPLY        reduce using rule 544 (value_factor -> LPAREN value_factor RPAREN .)
-    DIVISION        reduce using rule 544 (value_factor -> LPAREN value_factor RPAREN .)
-    MODULO          reduce using rule 544 (value_factor -> LPAREN value_factor RPAREN .)
-    EXPONENT        reduce using rule 544 (value_factor -> LPAREN value_factor RPAREN .)
-    GT              reduce using rule 544 (value_factor -> LPAREN value_factor RPAREN .)
-    LT              reduce using rule 544 (value_factor -> LPAREN value_factor RPAREN .)
-    EQ_EQ           reduce using rule 544 (value_factor -> LPAREN value_factor RPAREN .)
-    GT_EQ           reduce using rule 544 (value_factor -> LPAREN value_factor RPAREN .)
-    LT_EQ           reduce using rule 544 (value_factor -> LPAREN value_factor RPAREN .)
-    NOT_EQ          reduce using rule 544 (value_factor -> LPAREN value_factor RPAREN .)
-    AND             reduce using rule 544 (value_factor -> LPAREN value_factor RPAREN .)
-    OR              reduce using rule 544 (value_factor -> LPAREN value_factor RPAREN .)
-    SEMICOLON       reduce using rule 544 (value_factor -> LPAREN value_factor RPAREN .)
-    RPAREN          reduce using rule 544 (value_factor -> LPAREN value_factor RPAREN .)
-    COMMA           reduce using rule 544 (value_factor -> LPAREN value_factor RPAREN .)
+    PLUS            reduce using rule 544 (value_factor -> LPAREN value_expression RPAREN .)
+    MINUS           reduce using rule 544 (value_factor -> LPAREN value_expression RPAREN .)
+    MULTIPLY        reduce using rule 544 (value_factor -> LPAREN value_expression RPAREN .)
+    DIVISION        reduce using rule 544 (value_factor -> LPAREN value_expression RPAREN .)
+    MODULO          reduce using rule 544 (value_factor -> LPAREN value_expression RPAREN .)
+    EXPONENT        reduce using rule 544 (value_factor -> LPAREN value_expression RPAREN .)
+    GT              reduce using rule 544 (value_factor -> LPAREN value_expression RPAREN .)
+    LT              reduce using rule 544 (value_factor -> LPAREN value_expression RPAREN .)
+    EQ_EQ           reduce using rule 544 (value_factor -> LPAREN value_expression RPAREN .)
+    GT_EQ           reduce using rule 544 (value_factor -> LPAREN value_expression RPAREN .)
+    LT_EQ           reduce using rule 544 (value_factor -> LPAREN value_expression RPAREN .)
+    NOT_EQ          reduce using rule 544 (value_factor -> LPAREN value_expression RPAREN .)
+    AND             reduce using rule 544 (value_factor -> LPAREN value_expression RPAREN .)
+    OR              reduce using rule 544 (value_factor -> LPAREN value_expression RPAREN .)
+    SEMICOLON       reduce using rule 544 (value_factor -> LPAREN value_expression RPAREN .)
+    RPAREN          reduce using rule 544 (value_factor -> LPAREN value_expression RPAREN .)
+    COMMA           reduce using rule 544 (value_factor -> LPAREN value_expression RPAREN .)
 
 
 state 778
@@ -17267,8 +17335,8 @@ state 781
     AND             shift and go to state 577
     OR              shift and go to state 578
     SEMICOLON       reduce using rule 610 (empty -> .)
-    COMMA           reduce using rule 610 (empty -> .)
     RPAREN          reduce using rule 610 (empty -> .)
+    COMMA           reduce using rule 610 (empty -> .)
 
     value_factor_tail              shift and go to state 963
     empty                          shift and go to state 579
@@ -17308,8 +17376,8 @@ state 782
     AND             shift and go to state 577
     OR              shift and go to state 578
     SEMICOLON       reduce using rule 610 (empty -> .)
-    COMMA           reduce using rule 610 (empty -> .)
     RPAREN          reduce using rule 610 (empty -> .)
+    COMMA           reduce using rule 610 (empty -> .)
 
     value_factor_tail              shift and go to state 964
     empty                          shift and go to state 579
@@ -17349,8 +17417,8 @@ state 783
     AND             shift and go to state 577
     OR              shift and go to state 578
     SEMICOLON       reduce using rule 610 (empty -> .)
-    COMMA           reduce using rule 610 (empty -> .)
     RPAREN          reduce using rule 610 (empty -> .)
+    COMMA           reduce using rule 610 (empty -> .)
 
     value_factor_tail              shift and go to state 965
     empty                          shift and go to state 579
@@ -17390,8 +17458,8 @@ state 784
     AND             shift and go to state 577
     OR              shift and go to state 578
     SEMICOLON       reduce using rule 610 (empty -> .)
-    COMMA           reduce using rule 610 (empty -> .)
     RPAREN          reduce using rule 610 (empty -> .)
+    COMMA           reduce using rule 610 (empty -> .)
 
     value_factor_tail              shift and go to state 966
     empty                          shift and go to state 579
@@ -17431,8 +17499,8 @@ state 785
     AND             shift and go to state 577
     OR              shift and go to state 578
     SEMICOLON       reduce using rule 610 (empty -> .)
-    COMMA           reduce using rule 610 (empty -> .)
     RPAREN          reduce using rule 610 (empty -> .)
+    COMMA           reduce using rule 610 (empty -> .)
 
     value_factor_tail              shift and go to state 967
     empty                          shift and go to state 579
@@ -17472,8 +17540,8 @@ state 786
     AND             shift and go to state 577
     OR              shift and go to state 578
     SEMICOLON       reduce using rule 610 (empty -> .)
-    COMMA           reduce using rule 610 (empty -> .)
     RPAREN          reduce using rule 610 (empty -> .)
+    COMMA           reduce using rule 610 (empty -> .)
 
     value_factor_tail              shift and go to state 968
     empty                          shift and go to state 579
@@ -17513,8 +17581,8 @@ state 787
     AND             shift and go to state 577
     OR              shift and go to state 578
     SEMICOLON       reduce using rule 610 (empty -> .)
-    COMMA           reduce using rule 610 (empty -> .)
     RPAREN          reduce using rule 610 (empty -> .)
+    COMMA           reduce using rule 610 (empty -> .)
 
     value_factor_tail              shift and go to state 969
     empty                          shift and go to state 579
@@ -17554,8 +17622,8 @@ state 788
     AND             shift and go to state 577
     OR              shift and go to state 578
     SEMICOLON       reduce using rule 610 (empty -> .)
-    COMMA           reduce using rule 610 (empty -> .)
     RPAREN          reduce using rule 610 (empty -> .)
+    COMMA           reduce using rule 610 (empty -> .)
 
     value_factor_tail              shift and go to state 970
     empty                          shift and go to state 579
@@ -17595,8 +17663,8 @@ state 789
     AND             shift and go to state 577
     OR              shift and go to state 578
     SEMICOLON       reduce using rule 610 (empty -> .)
-    COMMA           reduce using rule 610 (empty -> .)
     RPAREN          reduce using rule 610 (empty -> .)
+    COMMA           reduce using rule 610 (empty -> .)
 
     value_factor_tail              shift and go to state 971
     empty                          shift and go to state 579
@@ -17636,8 +17704,8 @@ state 790
     AND             shift and go to state 577
     OR              shift and go to state 578
     SEMICOLON       reduce using rule 610 (empty -> .)
-    COMMA           reduce using rule 610 (empty -> .)
     RPAREN          reduce using rule 610 (empty -> .)
+    COMMA           reduce using rule 610 (empty -> .)
 
     value_factor_tail              shift and go to state 972
     empty                          shift and go to state 579
@@ -17677,8 +17745,8 @@ state 791
     AND             shift and go to state 577
     OR              shift and go to state 578
     SEMICOLON       reduce using rule 610 (empty -> .)
-    COMMA           reduce using rule 610 (empty -> .)
     RPAREN          reduce using rule 610 (empty -> .)
+    COMMA           reduce using rule 610 (empty -> .)
 
     value_factor_tail              shift and go to state 973
     empty                          shift and go to state 579
@@ -17718,8 +17786,8 @@ state 792
     AND             shift and go to state 577
     OR              shift and go to state 578
     SEMICOLON       reduce using rule 610 (empty -> .)
-    COMMA           reduce using rule 610 (empty -> .)
     RPAREN          reduce using rule 610 (empty -> .)
+    COMMA           reduce using rule 610 (empty -> .)
 
     value_factor_tail              shift and go to state 974
     empty                          shift and go to state 579
@@ -17759,8 +17827,8 @@ state 793
     AND             shift and go to state 577
     OR              shift and go to state 578
     SEMICOLON       reduce using rule 610 (empty -> .)
-    COMMA           reduce using rule 610 (empty -> .)
     RPAREN          reduce using rule 610 (empty -> .)
+    COMMA           reduce using rule 610 (empty -> .)
 
     value_factor_tail              shift and go to state 975
     empty                          shift and go to state 579
@@ -17800,8 +17868,8 @@ state 794
     AND             shift and go to state 577
     OR              shift and go to state 578
     SEMICOLON       reduce using rule 610 (empty -> .)
-    COMMA           reduce using rule 610 (empty -> .)
     RPAREN          reduce using rule 610 (empty -> .)
+    COMMA           reduce using rule 610 (empty -> .)
 
     value_factor_tail              shift and go to state 976
     empty                          shift and go to state 579
@@ -17836,7 +17904,7 @@ state 798
 
 state 799
 
-    (588) typecast_factor -> LPAREN typecast_factor . RPAREN
+    (588) typecast_factor -> LPAREN typecast_expression . RPAREN
 
     RPAREN          shift and go to state 978
 
@@ -17870,7 +17938,7 @@ state 803
     (585) typecast_factor -> . typecast_factor1
     (586) typecast_factor -> . TILDE INT_LIT
     (587) typecast_factor -> . TILDE FLT_LIT
-    (588) typecast_factor -> . LPAREN typecast_factor RPAREN
+    (588) typecast_factor -> . LPAREN typecast_expression RPAREN
     (527) var_call -> . IDENT list_index
     (604) typecast_factor1 -> . INT_LIT
     (605) typecast_factor1 -> . FLT_LIT
@@ -17898,7 +17966,7 @@ state 804
     (585) typecast_factor -> . typecast_factor1
     (586) typecast_factor -> . TILDE INT_LIT
     (587) typecast_factor -> . TILDE FLT_LIT
-    (588) typecast_factor -> . LPAREN typecast_factor RPAREN
+    (588) typecast_factor -> . LPAREN typecast_expression RPAREN
     (527) var_call -> . IDENT list_index
     (604) typecast_factor1 -> . INT_LIT
     (605) typecast_factor1 -> . FLT_LIT
@@ -17926,7 +17994,7 @@ state 805
     (585) typecast_factor -> . typecast_factor1
     (586) typecast_factor -> . TILDE INT_LIT
     (587) typecast_factor -> . TILDE FLT_LIT
-    (588) typecast_factor -> . LPAREN typecast_factor RPAREN
+    (588) typecast_factor -> . LPAREN typecast_expression RPAREN
     (527) var_call -> . IDENT list_index
     (604) typecast_factor1 -> . INT_LIT
     (605) typecast_factor1 -> . FLT_LIT
@@ -17954,7 +18022,7 @@ state 806
     (585) typecast_factor -> . typecast_factor1
     (586) typecast_factor -> . TILDE INT_LIT
     (587) typecast_factor -> . TILDE FLT_LIT
-    (588) typecast_factor -> . LPAREN typecast_factor RPAREN
+    (588) typecast_factor -> . LPAREN typecast_expression RPAREN
     (527) var_call -> . IDENT list_index
     (604) typecast_factor1 -> . INT_LIT
     (605) typecast_factor1 -> . FLT_LIT
@@ -17982,7 +18050,7 @@ state 807
     (585) typecast_factor -> . typecast_factor1
     (586) typecast_factor -> . TILDE INT_LIT
     (587) typecast_factor -> . TILDE FLT_LIT
-    (588) typecast_factor -> . LPAREN typecast_factor RPAREN
+    (588) typecast_factor -> . LPAREN typecast_expression RPAREN
     (527) var_call -> . IDENT list_index
     (604) typecast_factor1 -> . INT_LIT
     (605) typecast_factor1 -> . FLT_LIT
@@ -18010,7 +18078,7 @@ state 808
     (585) typecast_factor -> . typecast_factor1
     (586) typecast_factor -> . TILDE INT_LIT
     (587) typecast_factor -> . TILDE FLT_LIT
-    (588) typecast_factor -> . LPAREN typecast_factor RPAREN
+    (588) typecast_factor -> . LPAREN typecast_expression RPAREN
     (527) var_call -> . IDENT list_index
     (604) typecast_factor1 -> . INT_LIT
     (605) typecast_factor1 -> . FLT_LIT
@@ -18038,7 +18106,7 @@ state 809
     (585) typecast_factor -> . typecast_factor1
     (586) typecast_factor -> . TILDE INT_LIT
     (587) typecast_factor -> . TILDE FLT_LIT
-    (588) typecast_factor -> . LPAREN typecast_factor RPAREN
+    (588) typecast_factor -> . LPAREN typecast_expression RPAREN
     (527) var_call -> . IDENT list_index
     (604) typecast_factor1 -> . INT_LIT
     (605) typecast_factor1 -> . FLT_LIT
@@ -18066,7 +18134,7 @@ state 810
     (585) typecast_factor -> . typecast_factor1
     (586) typecast_factor -> . TILDE INT_LIT
     (587) typecast_factor -> . TILDE FLT_LIT
-    (588) typecast_factor -> . LPAREN typecast_factor RPAREN
+    (588) typecast_factor -> . LPAREN typecast_expression RPAREN
     (527) var_call -> . IDENT list_index
     (604) typecast_factor1 -> . INT_LIT
     (605) typecast_factor1 -> . FLT_LIT
@@ -18094,7 +18162,7 @@ state 811
     (585) typecast_factor -> . typecast_factor1
     (586) typecast_factor -> . TILDE INT_LIT
     (587) typecast_factor -> . TILDE FLT_LIT
-    (588) typecast_factor -> . LPAREN typecast_factor RPAREN
+    (588) typecast_factor -> . LPAREN typecast_expression RPAREN
     (527) var_call -> . IDENT list_index
     (604) typecast_factor1 -> . INT_LIT
     (605) typecast_factor1 -> . FLT_LIT
@@ -18122,7 +18190,7 @@ state 812
     (585) typecast_factor -> . typecast_factor1
     (586) typecast_factor -> . TILDE INT_LIT
     (587) typecast_factor -> . TILDE FLT_LIT
-    (588) typecast_factor -> . LPAREN typecast_factor RPAREN
+    (588) typecast_factor -> . LPAREN typecast_expression RPAREN
     (527) var_call -> . IDENT list_index
     (604) typecast_factor1 -> . INT_LIT
     (605) typecast_factor1 -> . FLT_LIT
@@ -18150,7 +18218,7 @@ state 813
     (585) typecast_factor -> . typecast_factor1
     (586) typecast_factor -> . TILDE INT_LIT
     (587) typecast_factor -> . TILDE FLT_LIT
-    (588) typecast_factor -> . LPAREN typecast_factor RPAREN
+    (588) typecast_factor -> . LPAREN typecast_expression RPAREN
     (527) var_call -> . IDENT list_index
     (604) typecast_factor1 -> . INT_LIT
     (605) typecast_factor1 -> . FLT_LIT
@@ -18178,7 +18246,7 @@ state 814
     (585) typecast_factor -> . typecast_factor1
     (586) typecast_factor -> . TILDE INT_LIT
     (587) typecast_factor -> . TILDE FLT_LIT
-    (588) typecast_factor -> . LPAREN typecast_factor RPAREN
+    (588) typecast_factor -> . LPAREN typecast_expression RPAREN
     (527) var_call -> . IDENT list_index
     (604) typecast_factor1 -> . INT_LIT
     (605) typecast_factor1 -> . FLT_LIT
@@ -18206,7 +18274,7 @@ state 815
     (585) typecast_factor -> . typecast_factor1
     (586) typecast_factor -> . TILDE INT_LIT
     (587) typecast_factor -> . TILDE FLT_LIT
-    (588) typecast_factor -> . LPAREN typecast_factor RPAREN
+    (588) typecast_factor -> . LPAREN typecast_expression RPAREN
     (527) var_call -> . IDENT list_index
     (604) typecast_factor1 -> . INT_LIT
     (605) typecast_factor1 -> . FLT_LIT
@@ -18234,7 +18302,7 @@ state 816
     (585) typecast_factor -> . typecast_factor1
     (586) typecast_factor -> . TILDE INT_LIT
     (587) typecast_factor -> . TILDE FLT_LIT
-    (588) typecast_factor -> . LPAREN typecast_factor RPAREN
+    (588) typecast_factor -> . LPAREN typecast_expression RPAREN
     (527) var_call -> . IDENT list_index
     (604) typecast_factor1 -> . INT_LIT
     (605) typecast_factor1 -> . FLT_LIT
@@ -18355,6 +18423,7 @@ state 824
 
     COMMA           reduce using rule 440 (output_factor_tail -> PLUS output_factor output_factor_tail .)
     SEMICOLON       reduce using rule 440 (output_factor_tail -> PLUS output_factor output_factor_tail .)
+    RPAREN          reduce using rule 440 (output_factor_tail -> PLUS output_factor output_factor_tail .)
 
 
 state 825
@@ -18363,6 +18432,7 @@ state 825
 
     COMMA           reduce using rule 441 (output_factor_tail -> MINUS output_factor output_factor_tail .)
     SEMICOLON       reduce using rule 441 (output_factor_tail -> MINUS output_factor output_factor_tail .)
+    RPAREN          reduce using rule 441 (output_factor_tail -> MINUS output_factor output_factor_tail .)
 
 
 state 826
@@ -18371,6 +18441,7 @@ state 826
 
     COMMA           reduce using rule 442 (output_factor_tail -> MULTIPLY output_factor output_factor_tail .)
     SEMICOLON       reduce using rule 442 (output_factor_tail -> MULTIPLY output_factor output_factor_tail .)
+    RPAREN          reduce using rule 442 (output_factor_tail -> MULTIPLY output_factor output_factor_tail .)
 
 
 state 827
@@ -18379,6 +18450,7 @@ state 827
 
     COMMA           reduce using rule 443 (output_factor_tail -> DIVISION output_factor output_factor_tail .)
     SEMICOLON       reduce using rule 443 (output_factor_tail -> DIVISION output_factor output_factor_tail .)
+    RPAREN          reduce using rule 443 (output_factor_tail -> DIVISION output_factor output_factor_tail .)
 
 
 state 828
@@ -18387,6 +18459,7 @@ state 828
 
     COMMA           reduce using rule 444 (output_factor_tail -> MODULO output_factor output_factor_tail .)
     SEMICOLON       reduce using rule 444 (output_factor_tail -> MODULO output_factor output_factor_tail .)
+    RPAREN          reduce using rule 444 (output_factor_tail -> MODULO output_factor output_factor_tail .)
 
 
 state 829
@@ -18395,6 +18468,7 @@ state 829
 
     COMMA           reduce using rule 445 (output_factor_tail -> EXPONENT output_factor output_factor_tail .)
     SEMICOLON       reduce using rule 445 (output_factor_tail -> EXPONENT output_factor output_factor_tail .)
+    RPAREN          reduce using rule 445 (output_factor_tail -> EXPONENT output_factor output_factor_tail .)
 
 
 state 830
@@ -18403,6 +18477,7 @@ state 830
 
     COMMA           reduce using rule 446 (output_factor_tail -> GT output_factor output_factor_tail .)
     SEMICOLON       reduce using rule 446 (output_factor_tail -> GT output_factor output_factor_tail .)
+    RPAREN          reduce using rule 446 (output_factor_tail -> GT output_factor output_factor_tail .)
 
 
 state 831
@@ -18411,6 +18486,7 @@ state 831
 
     COMMA           reduce using rule 447 (output_factor_tail -> LT output_factor output_factor_tail .)
     SEMICOLON       reduce using rule 447 (output_factor_tail -> LT output_factor output_factor_tail .)
+    RPAREN          reduce using rule 447 (output_factor_tail -> LT output_factor output_factor_tail .)
 
 
 state 832
@@ -18419,6 +18495,7 @@ state 832
 
     COMMA           reduce using rule 448 (output_factor_tail -> EQ_EQ output_factor output_factor_tail .)
     SEMICOLON       reduce using rule 448 (output_factor_tail -> EQ_EQ output_factor output_factor_tail .)
+    RPAREN          reduce using rule 448 (output_factor_tail -> EQ_EQ output_factor output_factor_tail .)
 
 
 state 833
@@ -18427,6 +18504,7 @@ state 833
 
     COMMA           reduce using rule 449 (output_factor_tail -> GT_EQ output_factor output_factor_tail .)
     SEMICOLON       reduce using rule 449 (output_factor_tail -> GT_EQ output_factor output_factor_tail .)
+    RPAREN          reduce using rule 449 (output_factor_tail -> GT_EQ output_factor output_factor_tail .)
 
 
 state 834
@@ -18435,6 +18513,7 @@ state 834
 
     COMMA           reduce using rule 450 (output_factor_tail -> LT_EQ output_factor output_factor_tail .)
     SEMICOLON       reduce using rule 450 (output_factor_tail -> LT_EQ output_factor output_factor_tail .)
+    RPAREN          reduce using rule 450 (output_factor_tail -> LT_EQ output_factor output_factor_tail .)
 
 
 state 835
@@ -18443,6 +18522,7 @@ state 835
 
     COMMA           reduce using rule 451 (output_factor_tail -> NOT_EQ output_factor output_factor_tail .)
     SEMICOLON       reduce using rule 451 (output_factor_tail -> NOT_EQ output_factor output_factor_tail .)
+    RPAREN          reduce using rule 451 (output_factor_tail -> NOT_EQ output_factor output_factor_tail .)
 
 
 state 836
@@ -18451,6 +18531,7 @@ state 836
 
     COMMA           reduce using rule 452 (output_factor_tail -> AND output_factor output_factor_tail .)
     SEMICOLON       reduce using rule 452 (output_factor_tail -> AND output_factor output_factor_tail .)
+    RPAREN          reduce using rule 452 (output_factor_tail -> AND output_factor output_factor_tail .)
 
 
 state 837
@@ -18459,6 +18540,7 @@ state 837
 
     COMMA           reduce using rule 453 (output_factor_tail -> OR output_factor output_factor_tail .)
     SEMICOLON       reduce using rule 453 (output_factor_tail -> OR output_factor output_factor_tail .)
+    RPAREN          reduce using rule 453 (output_factor_tail -> OR output_factor output_factor_tail .)
 
 
 state 838
@@ -19140,12 +19222,13 @@ state 858
 
 state 859
 
-    (330) for_factor -> LPAREN . for_factor RPAREN
+    (330) for_factor -> LPAREN . for_expression RPAREN
+    (325) for_expression -> . for_factor for_factor_tail
     (326) for_factor -> . for_var_call for_postfix
     (327) for_factor -> . for_factor1
     (328) for_factor -> . TILDE INT_LIT
     (329) for_factor -> . TILDE FLT_LIT
-    (330) for_factor -> . LPAREN for_factor RPAREN
+    (330) for_factor -> . LPAREN for_expression RPAREN
     (331) for_var_call -> . IDENT for_list_index
     (357) for_factor1 -> . INT_LIT
     (358) for_factor1 -> . FLT_LIT
@@ -19162,7 +19245,8 @@ state 859
     NIGHT           shift and go to state 869
     STR_LIT         shift and go to state 870
 
-    for_factor                     shift and go to state 1013
+    for_expression                 shift and go to state 1013
+    for_factor                     shift and go to state 861
     for_var_call                   shift and go to state 862
     for_factor1                    shift and go to state 863
 
@@ -19208,6 +19292,7 @@ state 861
     AND             shift and go to state 1028
     OR              shift and go to state 1029
     SEMICOLON       reduce using rule 610 (empty -> .)
+    RPAREN          reduce using rule 610 (empty -> .)
 
     for_factor_tail                shift and go to state 1015
     empty                          shift and go to state 1030
@@ -19430,23 +19515,23 @@ state 871
 
 state 872
 
-    (368) until_factor -> LPAREN until_factor RPAREN .
+    (368) until_factor -> LPAREN until_expression RPAREN .
 
-    PLUS            reduce using rule 368 (until_factor -> LPAREN until_factor RPAREN .)
-    MINUS           reduce using rule 368 (until_factor -> LPAREN until_factor RPAREN .)
-    MULTIPLY        reduce using rule 368 (until_factor -> LPAREN until_factor RPAREN .)
-    DIVISION        reduce using rule 368 (until_factor -> LPAREN until_factor RPAREN .)
-    MODULO          reduce using rule 368 (until_factor -> LPAREN until_factor RPAREN .)
-    EXPONENT        reduce using rule 368 (until_factor -> LPAREN until_factor RPAREN .)
-    GT              reduce using rule 368 (until_factor -> LPAREN until_factor RPAREN .)
-    LT              reduce using rule 368 (until_factor -> LPAREN until_factor RPAREN .)
-    EQ_EQ           reduce using rule 368 (until_factor -> LPAREN until_factor RPAREN .)
-    GT_EQ           reduce using rule 368 (until_factor -> LPAREN until_factor RPAREN .)
-    LT_EQ           reduce using rule 368 (until_factor -> LPAREN until_factor RPAREN .)
-    NOT_EQ          reduce using rule 368 (until_factor -> LPAREN until_factor RPAREN .)
-    AND             reduce using rule 368 (until_factor -> LPAREN until_factor RPAREN .)
-    OR              reduce using rule 368 (until_factor -> LPAREN until_factor RPAREN .)
-    RPAREN          reduce using rule 368 (until_factor -> LPAREN until_factor RPAREN .)
+    PLUS            reduce using rule 368 (until_factor -> LPAREN until_expression RPAREN .)
+    MINUS           reduce using rule 368 (until_factor -> LPAREN until_expression RPAREN .)
+    MULTIPLY        reduce using rule 368 (until_factor -> LPAREN until_expression RPAREN .)
+    DIVISION        reduce using rule 368 (until_factor -> LPAREN until_expression RPAREN .)
+    MODULO          reduce using rule 368 (until_factor -> LPAREN until_expression RPAREN .)
+    EXPONENT        reduce using rule 368 (until_factor -> LPAREN until_expression RPAREN .)
+    GT              reduce using rule 368 (until_factor -> LPAREN until_expression RPAREN .)
+    LT              reduce using rule 368 (until_factor -> LPAREN until_expression RPAREN .)
+    EQ_EQ           reduce using rule 368 (until_factor -> LPAREN until_expression RPAREN .)
+    GT_EQ           reduce using rule 368 (until_factor -> LPAREN until_expression RPAREN .)
+    LT_EQ           reduce using rule 368 (until_factor -> LPAREN until_expression RPAREN .)
+    NOT_EQ          reduce using rule 368 (until_factor -> LPAREN until_expression RPAREN .)
+    AND             reduce using rule 368 (until_factor -> LPAREN until_expression RPAREN .)
+    OR              reduce using rule 368 (until_factor -> LPAREN until_expression RPAREN .)
+    RPAREN          reduce using rule 368 (until_factor -> LPAREN until_expression RPAREN .)
 
 
 state 873
@@ -20116,6 +20201,7 @@ state 897
 
     COMMA           reduce using rule 209 (local_factor_tail -> PLUS local_factor local_factor_tail .)
     SEMICOLON       reduce using rule 209 (local_factor_tail -> PLUS local_factor local_factor_tail .)
+    RPAREN          reduce using rule 209 (local_factor_tail -> PLUS local_factor local_factor_tail .)
 
 
 state 898
@@ -20124,6 +20210,7 @@ state 898
 
     COMMA           reduce using rule 210 (local_factor_tail -> MINUS local_factor local_factor_tail .)
     SEMICOLON       reduce using rule 210 (local_factor_tail -> MINUS local_factor local_factor_tail .)
+    RPAREN          reduce using rule 210 (local_factor_tail -> MINUS local_factor local_factor_tail .)
 
 
 state 899
@@ -20132,6 +20219,7 @@ state 899
 
     COMMA           reduce using rule 211 (local_factor_tail -> MULTIPLY local_factor local_factor_tail .)
     SEMICOLON       reduce using rule 211 (local_factor_tail -> MULTIPLY local_factor local_factor_tail .)
+    RPAREN          reduce using rule 211 (local_factor_tail -> MULTIPLY local_factor local_factor_tail .)
 
 
 state 900
@@ -20140,6 +20228,7 @@ state 900
 
     COMMA           reduce using rule 212 (local_factor_tail -> DIVISION local_factor local_factor_tail .)
     SEMICOLON       reduce using rule 212 (local_factor_tail -> DIVISION local_factor local_factor_tail .)
+    RPAREN          reduce using rule 212 (local_factor_tail -> DIVISION local_factor local_factor_tail .)
 
 
 state 901
@@ -20148,6 +20237,7 @@ state 901
 
     COMMA           reduce using rule 213 (local_factor_tail -> MODULO local_factor local_factor_tail .)
     SEMICOLON       reduce using rule 213 (local_factor_tail -> MODULO local_factor local_factor_tail .)
+    RPAREN          reduce using rule 213 (local_factor_tail -> MODULO local_factor local_factor_tail .)
 
 
 state 902
@@ -20156,6 +20246,7 @@ state 902
 
     COMMA           reduce using rule 214 (local_factor_tail -> EXPONENT local_factor local_factor_tail .)
     SEMICOLON       reduce using rule 214 (local_factor_tail -> EXPONENT local_factor local_factor_tail .)
+    RPAREN          reduce using rule 214 (local_factor_tail -> EXPONENT local_factor local_factor_tail .)
 
 
 state 903
@@ -20164,6 +20255,7 @@ state 903
 
     COMMA           reduce using rule 215 (local_factor_tail -> GT local_factor local_factor_tail .)
     SEMICOLON       reduce using rule 215 (local_factor_tail -> GT local_factor local_factor_tail .)
+    RPAREN          reduce using rule 215 (local_factor_tail -> GT local_factor local_factor_tail .)
 
 
 state 904
@@ -20172,6 +20264,7 @@ state 904
 
     COMMA           reduce using rule 216 (local_factor_tail -> LT local_factor local_factor_tail .)
     SEMICOLON       reduce using rule 216 (local_factor_tail -> LT local_factor local_factor_tail .)
+    RPAREN          reduce using rule 216 (local_factor_tail -> LT local_factor local_factor_tail .)
 
 
 state 905
@@ -20180,6 +20273,7 @@ state 905
 
     COMMA           reduce using rule 217 (local_factor_tail -> EQ_EQ local_factor local_factor_tail .)
     SEMICOLON       reduce using rule 217 (local_factor_tail -> EQ_EQ local_factor local_factor_tail .)
+    RPAREN          reduce using rule 217 (local_factor_tail -> EQ_EQ local_factor local_factor_tail .)
 
 
 state 906
@@ -20188,6 +20282,7 @@ state 906
 
     COMMA           reduce using rule 218 (local_factor_tail -> GT_EQ local_factor local_factor_tail .)
     SEMICOLON       reduce using rule 218 (local_factor_tail -> GT_EQ local_factor local_factor_tail .)
+    RPAREN          reduce using rule 218 (local_factor_tail -> GT_EQ local_factor local_factor_tail .)
 
 
 state 907
@@ -20196,6 +20291,7 @@ state 907
 
     COMMA           reduce using rule 219 (local_factor_tail -> LT_EQ local_factor local_factor_tail .)
     SEMICOLON       reduce using rule 219 (local_factor_tail -> LT_EQ local_factor local_factor_tail .)
+    RPAREN          reduce using rule 219 (local_factor_tail -> LT_EQ local_factor local_factor_tail .)
 
 
 state 908
@@ -20204,6 +20300,7 @@ state 908
 
     COMMA           reduce using rule 220 (local_factor_tail -> NOT_EQ local_factor local_factor_tail .)
     SEMICOLON       reduce using rule 220 (local_factor_tail -> NOT_EQ local_factor local_factor_tail .)
+    RPAREN          reduce using rule 220 (local_factor_tail -> NOT_EQ local_factor local_factor_tail .)
 
 
 state 909
@@ -20212,6 +20309,7 @@ state 909
 
     COMMA           reduce using rule 221 (local_factor_tail -> AND local_factor local_factor_tail .)
     SEMICOLON       reduce using rule 221 (local_factor_tail -> AND local_factor local_factor_tail .)
+    RPAREN          reduce using rule 221 (local_factor_tail -> AND local_factor local_factor_tail .)
 
 
 state 910
@@ -20220,6 +20318,7 @@ state 910
 
     COMMA           reduce using rule 222 (local_factor_tail -> OR local_factor local_factor_tail .)
     SEMICOLON       reduce using rule 222 (local_factor_tail -> OR local_factor local_factor_tail .)
+    RPAREN          reduce using rule 222 (local_factor_tail -> OR local_factor local_factor_tail .)
 
 
 state 911
@@ -20271,24 +20370,24 @@ state 913
 
 state 914
 
-    (125) revive_factor -> LPAREN revive_factor RPAREN .
+    (125) revive_factor -> LPAREN revive_expression RPAREN .
 
-    PLUS            reduce using rule 125 (revive_factor -> LPAREN revive_factor RPAREN .)
-    MINUS           reduce using rule 125 (revive_factor -> LPAREN revive_factor RPAREN .)
-    MULTIPLY        reduce using rule 125 (revive_factor -> LPAREN revive_factor RPAREN .)
-    DIVISION        reduce using rule 125 (revive_factor -> LPAREN revive_factor RPAREN .)
-    MODULO          reduce using rule 125 (revive_factor -> LPAREN revive_factor RPAREN .)
-    EXPONENT        reduce using rule 125 (revive_factor -> LPAREN revive_factor RPAREN .)
-    GT              reduce using rule 125 (revive_factor -> LPAREN revive_factor RPAREN .)
-    LT              reduce using rule 125 (revive_factor -> LPAREN revive_factor RPAREN .)
-    EQ_EQ           reduce using rule 125 (revive_factor -> LPAREN revive_factor RPAREN .)
-    GT_EQ           reduce using rule 125 (revive_factor -> LPAREN revive_factor RPAREN .)
-    LT_EQ           reduce using rule 125 (revive_factor -> LPAREN revive_factor RPAREN .)
-    NOT_EQ          reduce using rule 125 (revive_factor -> LPAREN revive_factor RPAREN .)
-    AND             reduce using rule 125 (revive_factor -> LPAREN revive_factor RPAREN .)
-    OR              reduce using rule 125 (revive_factor -> LPAREN revive_factor RPAREN .)
-    SEMICOLON       reduce using rule 125 (revive_factor -> LPAREN revive_factor RPAREN .)
-    RPAREN          reduce using rule 125 (revive_factor -> LPAREN revive_factor RPAREN .)
+    PLUS            reduce using rule 125 (revive_factor -> LPAREN revive_expression RPAREN .)
+    MINUS           reduce using rule 125 (revive_factor -> LPAREN revive_expression RPAREN .)
+    MULTIPLY        reduce using rule 125 (revive_factor -> LPAREN revive_expression RPAREN .)
+    DIVISION        reduce using rule 125 (revive_factor -> LPAREN revive_expression RPAREN .)
+    MODULO          reduce using rule 125 (revive_factor -> LPAREN revive_expression RPAREN .)
+    EXPONENT        reduce using rule 125 (revive_factor -> LPAREN revive_expression RPAREN .)
+    GT              reduce using rule 125 (revive_factor -> LPAREN revive_expression RPAREN .)
+    LT              reduce using rule 125 (revive_factor -> LPAREN revive_expression RPAREN .)
+    EQ_EQ           reduce using rule 125 (revive_factor -> LPAREN revive_expression RPAREN .)
+    GT_EQ           reduce using rule 125 (revive_factor -> LPAREN revive_expression RPAREN .)
+    LT_EQ           reduce using rule 125 (revive_factor -> LPAREN revive_expression RPAREN .)
+    NOT_EQ          reduce using rule 125 (revive_factor -> LPAREN revive_expression RPAREN .)
+    AND             reduce using rule 125 (revive_factor -> LPAREN revive_expression RPAREN .)
+    OR              reduce using rule 125 (revive_factor -> LPAREN revive_expression RPAREN .)
+    SEMICOLON       reduce using rule 125 (revive_factor -> LPAREN revive_expression RPAREN .)
+    RPAREN          reduce using rule 125 (revive_factor -> LPAREN revive_expression RPAREN .)
 
 
 state 915
@@ -20347,6 +20446,7 @@ state 918
     AND             shift and go to state 735
     OR              shift and go to state 736
     SEMICOLON       reduce using rule 610 (empty -> .)
+    RPAREN          reduce using rule 610 (empty -> .)
 
     revive_factor_tail             shift and go to state 1068
     empty                          shift and go to state 737
@@ -20386,6 +20486,7 @@ state 919
     AND             shift and go to state 735
     OR              shift and go to state 736
     SEMICOLON       reduce using rule 610 (empty -> .)
+    RPAREN          reduce using rule 610 (empty -> .)
 
     revive_factor_tail             shift and go to state 1069
     empty                          shift and go to state 737
@@ -20425,6 +20526,7 @@ state 920
     AND             shift and go to state 735
     OR              shift and go to state 736
     SEMICOLON       reduce using rule 610 (empty -> .)
+    RPAREN          reduce using rule 610 (empty -> .)
 
     revive_factor_tail             shift and go to state 1070
     empty                          shift and go to state 737
@@ -20464,6 +20566,7 @@ state 921
     AND             shift and go to state 735
     OR              shift and go to state 736
     SEMICOLON       reduce using rule 610 (empty -> .)
+    RPAREN          reduce using rule 610 (empty -> .)
 
     revive_factor_tail             shift and go to state 1071
     empty                          shift and go to state 737
@@ -20503,6 +20606,7 @@ state 922
     AND             shift and go to state 735
     OR              shift and go to state 736
     SEMICOLON       reduce using rule 610 (empty -> .)
+    RPAREN          reduce using rule 610 (empty -> .)
 
     revive_factor_tail             shift and go to state 1072
     empty                          shift and go to state 737
@@ -20542,6 +20646,7 @@ state 923
     AND             shift and go to state 735
     OR              shift and go to state 736
     SEMICOLON       reduce using rule 610 (empty -> .)
+    RPAREN          reduce using rule 610 (empty -> .)
 
     revive_factor_tail             shift and go to state 1073
     empty                          shift and go to state 737
@@ -20581,6 +20686,7 @@ state 924
     AND             shift and go to state 735
     OR              shift and go to state 736
     SEMICOLON       reduce using rule 610 (empty -> .)
+    RPAREN          reduce using rule 610 (empty -> .)
 
     revive_factor_tail             shift and go to state 1074
     empty                          shift and go to state 737
@@ -20620,6 +20726,7 @@ state 925
     AND             shift and go to state 735
     OR              shift and go to state 736
     SEMICOLON       reduce using rule 610 (empty -> .)
+    RPAREN          reduce using rule 610 (empty -> .)
 
     revive_factor_tail             shift and go to state 1075
     empty                          shift and go to state 737
@@ -20659,6 +20766,7 @@ state 926
     AND             shift and go to state 735
     OR              shift and go to state 736
     SEMICOLON       reduce using rule 610 (empty -> .)
+    RPAREN          reduce using rule 610 (empty -> .)
 
     revive_factor_tail             shift and go to state 1076
     empty                          shift and go to state 737
@@ -20698,6 +20806,7 @@ state 927
     AND             shift and go to state 735
     OR              shift and go to state 736
     SEMICOLON       reduce using rule 610 (empty -> .)
+    RPAREN          reduce using rule 610 (empty -> .)
 
     revive_factor_tail             shift and go to state 1077
     empty                          shift and go to state 737
@@ -20737,6 +20846,7 @@ state 928
     AND             shift and go to state 735
     OR              shift and go to state 736
     SEMICOLON       reduce using rule 610 (empty -> .)
+    RPAREN          reduce using rule 610 (empty -> .)
 
     revive_factor_tail             shift and go to state 1078
     empty                          shift and go to state 737
@@ -20776,6 +20886,7 @@ state 929
     AND             shift and go to state 735
     OR              shift and go to state 736
     SEMICOLON       reduce using rule 610 (empty -> .)
+    RPAREN          reduce using rule 610 (empty -> .)
 
     revive_factor_tail             shift and go to state 1079
     empty                          shift and go to state 737
@@ -20815,6 +20926,7 @@ state 930
     AND             shift and go to state 735
     OR              shift and go to state 736
     SEMICOLON       reduce using rule 610 (empty -> .)
+    RPAREN          reduce using rule 610 (empty -> .)
 
     revive_factor_tail             shift and go to state 1080
     empty                          shift and go to state 737
@@ -20854,6 +20966,7 @@ state 931
     AND             shift and go to state 735
     OR              shift and go to state 736
     SEMICOLON       reduce using rule 610 (empty -> .)
+    RPAREN          reduce using rule 610 (empty -> .)
 
     revive_factor_tail             shift and go to state 1081
     empty                          shift and go to state 737
@@ -20903,7 +21016,7 @@ state 936
     (280) switch_factor -> . switch_factor1
     (281) switch_factor -> . TILDE INT_LIT
     (282) switch_factor -> . TILDE FLT_LIT
-    (283) switch_factor -> . LPAREN switch_factor RPAREN
+    (283) switch_factor -> . LPAREN switch_expression RPAREN
     (609) input_statement -> . INPUT LPAREN RPAREN
     (284) switch_var_call -> . IDENT switch_list_index
     (310) switch_factor1 -> . INT_LIT
@@ -20989,6 +21102,7 @@ state 943
     (491) assign_factor_tail -> PLUS assign_factor assign_factor_tail .
 
     SEMICOLON       reduce using rule 491 (assign_factor_tail -> PLUS assign_factor assign_factor_tail .)
+    RPAREN          reduce using rule 491 (assign_factor_tail -> PLUS assign_factor assign_factor_tail .)
 
 
 state 944
@@ -20996,6 +21110,7 @@ state 944
     (492) assign_factor_tail -> MINUS assign_factor assign_factor_tail .
 
     SEMICOLON       reduce using rule 492 (assign_factor_tail -> MINUS assign_factor assign_factor_tail .)
+    RPAREN          reduce using rule 492 (assign_factor_tail -> MINUS assign_factor assign_factor_tail .)
 
 
 state 945
@@ -21003,6 +21118,7 @@ state 945
     (493) assign_factor_tail -> MULTIPLY assign_factor assign_factor_tail .
 
     SEMICOLON       reduce using rule 493 (assign_factor_tail -> MULTIPLY assign_factor assign_factor_tail .)
+    RPAREN          reduce using rule 493 (assign_factor_tail -> MULTIPLY assign_factor assign_factor_tail .)
 
 
 state 946
@@ -21010,6 +21126,7 @@ state 946
     (494) assign_factor_tail -> DIVISION assign_factor assign_factor_tail .
 
     SEMICOLON       reduce using rule 494 (assign_factor_tail -> DIVISION assign_factor assign_factor_tail .)
+    RPAREN          reduce using rule 494 (assign_factor_tail -> DIVISION assign_factor assign_factor_tail .)
 
 
 state 947
@@ -21017,6 +21134,7 @@ state 947
     (495) assign_factor_tail -> MODULO assign_factor assign_factor_tail .
 
     SEMICOLON       reduce using rule 495 (assign_factor_tail -> MODULO assign_factor assign_factor_tail .)
+    RPAREN          reduce using rule 495 (assign_factor_tail -> MODULO assign_factor assign_factor_tail .)
 
 
 state 948
@@ -21024,6 +21142,7 @@ state 948
     (496) assign_factor_tail -> EXPONENT assign_factor assign_factor_tail .
 
     SEMICOLON       reduce using rule 496 (assign_factor_tail -> EXPONENT assign_factor assign_factor_tail .)
+    RPAREN          reduce using rule 496 (assign_factor_tail -> EXPONENT assign_factor assign_factor_tail .)
 
 
 state 949
@@ -21031,6 +21150,7 @@ state 949
     (497) assign_factor_tail -> GT assign_factor assign_factor_tail .
 
     SEMICOLON       reduce using rule 497 (assign_factor_tail -> GT assign_factor assign_factor_tail .)
+    RPAREN          reduce using rule 497 (assign_factor_tail -> GT assign_factor assign_factor_tail .)
 
 
 state 950
@@ -21038,6 +21158,7 @@ state 950
     (498) assign_factor_tail -> LT assign_factor assign_factor_tail .
 
     SEMICOLON       reduce using rule 498 (assign_factor_tail -> LT assign_factor assign_factor_tail .)
+    RPAREN          reduce using rule 498 (assign_factor_tail -> LT assign_factor assign_factor_tail .)
 
 
 state 951
@@ -21045,6 +21166,7 @@ state 951
     (499) assign_factor_tail -> EQ_EQ assign_factor assign_factor_tail .
 
     SEMICOLON       reduce using rule 499 (assign_factor_tail -> EQ_EQ assign_factor assign_factor_tail .)
+    RPAREN          reduce using rule 499 (assign_factor_tail -> EQ_EQ assign_factor assign_factor_tail .)
 
 
 state 952
@@ -21052,6 +21174,7 @@ state 952
     (500) assign_factor_tail -> GT_EQ assign_factor assign_factor_tail .
 
     SEMICOLON       reduce using rule 500 (assign_factor_tail -> GT_EQ assign_factor assign_factor_tail .)
+    RPAREN          reduce using rule 500 (assign_factor_tail -> GT_EQ assign_factor assign_factor_tail .)
 
 
 state 953
@@ -21059,6 +21182,7 @@ state 953
     (501) assign_factor_tail -> LT_EQ assign_factor assign_factor_tail .
 
     SEMICOLON       reduce using rule 501 (assign_factor_tail -> LT_EQ assign_factor assign_factor_tail .)
+    RPAREN          reduce using rule 501 (assign_factor_tail -> LT_EQ assign_factor assign_factor_tail .)
 
 
 state 954
@@ -21066,6 +21190,7 @@ state 954
     (502) assign_factor_tail -> NOT_EQ assign_factor assign_factor_tail .
 
     SEMICOLON       reduce using rule 502 (assign_factor_tail -> NOT_EQ assign_factor assign_factor_tail .)
+    RPAREN          reduce using rule 502 (assign_factor_tail -> NOT_EQ assign_factor assign_factor_tail .)
 
 
 state 955
@@ -21073,6 +21198,7 @@ state 955
     (503) assign_factor_tail -> AND assign_factor assign_factor_tail .
 
     SEMICOLON       reduce using rule 503 (assign_factor_tail -> AND assign_factor assign_factor_tail .)
+    RPAREN          reduce using rule 503 (assign_factor_tail -> AND assign_factor assign_factor_tail .)
 
 
 state 956
@@ -21080,6 +21206,7 @@ state 956
     (504) assign_factor_tail -> OR assign_factor assign_factor_tail .
 
     SEMICOLON       reduce using rule 504 (assign_factor_tail -> OR assign_factor assign_factor_tail .)
+    RPAREN          reduce using rule 504 (assign_factor_tail -> OR assign_factor assign_factor_tail .)
 
 
 state 957
@@ -21160,8 +21287,8 @@ state 963
     (556) value_factor_tail -> PLUS value_factor value_factor_tail .
 
     SEMICOLON       reduce using rule 556 (value_factor_tail -> PLUS value_factor value_factor_tail .)
-    COMMA           reduce using rule 556 (value_factor_tail -> PLUS value_factor value_factor_tail .)
     RPAREN          reduce using rule 556 (value_factor_tail -> PLUS value_factor value_factor_tail .)
+    COMMA           reduce using rule 556 (value_factor_tail -> PLUS value_factor value_factor_tail .)
 
 
 state 964
@@ -21169,8 +21296,8 @@ state 964
     (557) value_factor_tail -> MINUS value_factor value_factor_tail .
 
     SEMICOLON       reduce using rule 557 (value_factor_tail -> MINUS value_factor value_factor_tail .)
-    COMMA           reduce using rule 557 (value_factor_tail -> MINUS value_factor value_factor_tail .)
     RPAREN          reduce using rule 557 (value_factor_tail -> MINUS value_factor value_factor_tail .)
+    COMMA           reduce using rule 557 (value_factor_tail -> MINUS value_factor value_factor_tail .)
 
 
 state 965
@@ -21178,8 +21305,8 @@ state 965
     (558) value_factor_tail -> MULTIPLY value_factor value_factor_tail .
 
     SEMICOLON       reduce using rule 558 (value_factor_tail -> MULTIPLY value_factor value_factor_tail .)
-    COMMA           reduce using rule 558 (value_factor_tail -> MULTIPLY value_factor value_factor_tail .)
     RPAREN          reduce using rule 558 (value_factor_tail -> MULTIPLY value_factor value_factor_tail .)
+    COMMA           reduce using rule 558 (value_factor_tail -> MULTIPLY value_factor value_factor_tail .)
 
 
 state 966
@@ -21187,8 +21314,8 @@ state 966
     (559) value_factor_tail -> DIVISION value_factor value_factor_tail .
 
     SEMICOLON       reduce using rule 559 (value_factor_tail -> DIVISION value_factor value_factor_tail .)
-    COMMA           reduce using rule 559 (value_factor_tail -> DIVISION value_factor value_factor_tail .)
     RPAREN          reduce using rule 559 (value_factor_tail -> DIVISION value_factor value_factor_tail .)
+    COMMA           reduce using rule 559 (value_factor_tail -> DIVISION value_factor value_factor_tail .)
 
 
 state 967
@@ -21196,8 +21323,8 @@ state 967
     (560) value_factor_tail -> MODULO value_factor value_factor_tail .
 
     SEMICOLON       reduce using rule 560 (value_factor_tail -> MODULO value_factor value_factor_tail .)
-    COMMA           reduce using rule 560 (value_factor_tail -> MODULO value_factor value_factor_tail .)
     RPAREN          reduce using rule 560 (value_factor_tail -> MODULO value_factor value_factor_tail .)
+    COMMA           reduce using rule 560 (value_factor_tail -> MODULO value_factor value_factor_tail .)
 
 
 state 968
@@ -21205,8 +21332,8 @@ state 968
     (561) value_factor_tail -> EXPONENT value_factor value_factor_tail .
 
     SEMICOLON       reduce using rule 561 (value_factor_tail -> EXPONENT value_factor value_factor_tail .)
-    COMMA           reduce using rule 561 (value_factor_tail -> EXPONENT value_factor value_factor_tail .)
     RPAREN          reduce using rule 561 (value_factor_tail -> EXPONENT value_factor value_factor_tail .)
+    COMMA           reduce using rule 561 (value_factor_tail -> EXPONENT value_factor value_factor_tail .)
 
 
 state 969
@@ -21214,8 +21341,8 @@ state 969
     (562) value_factor_tail -> GT value_factor value_factor_tail .
 
     SEMICOLON       reduce using rule 562 (value_factor_tail -> GT value_factor value_factor_tail .)
-    COMMA           reduce using rule 562 (value_factor_tail -> GT value_factor value_factor_tail .)
     RPAREN          reduce using rule 562 (value_factor_tail -> GT value_factor value_factor_tail .)
+    COMMA           reduce using rule 562 (value_factor_tail -> GT value_factor value_factor_tail .)
 
 
 state 970
@@ -21223,8 +21350,8 @@ state 970
     (563) value_factor_tail -> LT value_factor value_factor_tail .
 
     SEMICOLON       reduce using rule 563 (value_factor_tail -> LT value_factor value_factor_tail .)
-    COMMA           reduce using rule 563 (value_factor_tail -> LT value_factor value_factor_tail .)
     RPAREN          reduce using rule 563 (value_factor_tail -> LT value_factor value_factor_tail .)
+    COMMA           reduce using rule 563 (value_factor_tail -> LT value_factor value_factor_tail .)
 
 
 state 971
@@ -21232,8 +21359,8 @@ state 971
     (564) value_factor_tail -> EQ_EQ value_factor value_factor_tail .
 
     SEMICOLON       reduce using rule 564 (value_factor_tail -> EQ_EQ value_factor value_factor_tail .)
-    COMMA           reduce using rule 564 (value_factor_tail -> EQ_EQ value_factor value_factor_tail .)
     RPAREN          reduce using rule 564 (value_factor_tail -> EQ_EQ value_factor value_factor_tail .)
+    COMMA           reduce using rule 564 (value_factor_tail -> EQ_EQ value_factor value_factor_tail .)
 
 
 state 972
@@ -21241,8 +21368,8 @@ state 972
     (565) value_factor_tail -> GT_EQ value_factor value_factor_tail .
 
     SEMICOLON       reduce using rule 565 (value_factor_tail -> GT_EQ value_factor value_factor_tail .)
-    COMMA           reduce using rule 565 (value_factor_tail -> GT_EQ value_factor value_factor_tail .)
     RPAREN          reduce using rule 565 (value_factor_tail -> GT_EQ value_factor value_factor_tail .)
+    COMMA           reduce using rule 565 (value_factor_tail -> GT_EQ value_factor value_factor_tail .)
 
 
 state 973
@@ -21250,8 +21377,8 @@ state 973
     (566) value_factor_tail -> LT_EQ value_factor value_factor_tail .
 
     SEMICOLON       reduce using rule 566 (value_factor_tail -> LT_EQ value_factor value_factor_tail .)
-    COMMA           reduce using rule 566 (value_factor_tail -> LT_EQ value_factor value_factor_tail .)
     RPAREN          reduce using rule 566 (value_factor_tail -> LT_EQ value_factor value_factor_tail .)
+    COMMA           reduce using rule 566 (value_factor_tail -> LT_EQ value_factor value_factor_tail .)
 
 
 state 974
@@ -21259,8 +21386,8 @@ state 974
     (567) value_factor_tail -> NOT_EQ value_factor value_factor_tail .
 
     SEMICOLON       reduce using rule 567 (value_factor_tail -> NOT_EQ value_factor value_factor_tail .)
-    COMMA           reduce using rule 567 (value_factor_tail -> NOT_EQ value_factor value_factor_tail .)
     RPAREN          reduce using rule 567 (value_factor_tail -> NOT_EQ value_factor value_factor_tail .)
+    COMMA           reduce using rule 567 (value_factor_tail -> NOT_EQ value_factor value_factor_tail .)
 
 
 state 975
@@ -21268,8 +21395,8 @@ state 975
     (568) value_factor_tail -> AND value_factor value_factor_tail .
 
     SEMICOLON       reduce using rule 568 (value_factor_tail -> AND value_factor value_factor_tail .)
-    COMMA           reduce using rule 568 (value_factor_tail -> AND value_factor value_factor_tail .)
     RPAREN          reduce using rule 568 (value_factor_tail -> AND value_factor value_factor_tail .)
+    COMMA           reduce using rule 568 (value_factor_tail -> AND value_factor value_factor_tail .)
 
 
 state 976
@@ -21277,8 +21404,8 @@ state 976
     (569) value_factor_tail -> OR value_factor value_factor_tail .
 
     SEMICOLON       reduce using rule 569 (value_factor_tail -> OR value_factor value_factor_tail .)
-    COMMA           reduce using rule 569 (value_factor_tail -> OR value_factor value_factor_tail .)
     RPAREN          reduce using rule 569 (value_factor_tail -> OR value_factor value_factor_tail .)
+    COMMA           reduce using rule 569 (value_factor_tail -> OR value_factor value_factor_tail .)
 
 
 state 977
@@ -21314,23 +21441,23 @@ state 977
 
 state 978
 
-    (588) typecast_factor -> LPAREN typecast_factor RPAREN .
+    (588) typecast_factor -> LPAREN typecast_expression RPAREN .
 
-    PLUS            reduce using rule 588 (typecast_factor -> LPAREN typecast_factor RPAREN .)
-    MINUS           reduce using rule 588 (typecast_factor -> LPAREN typecast_factor RPAREN .)
-    MULTIPLY        reduce using rule 588 (typecast_factor -> LPAREN typecast_factor RPAREN .)
-    DIVISION        reduce using rule 588 (typecast_factor -> LPAREN typecast_factor RPAREN .)
-    MODULO          reduce using rule 588 (typecast_factor -> LPAREN typecast_factor RPAREN .)
-    EXPONENT        reduce using rule 588 (typecast_factor -> LPAREN typecast_factor RPAREN .)
-    GT              reduce using rule 588 (typecast_factor -> LPAREN typecast_factor RPAREN .)
-    LT              reduce using rule 588 (typecast_factor -> LPAREN typecast_factor RPAREN .)
-    EQ_EQ           reduce using rule 588 (typecast_factor -> LPAREN typecast_factor RPAREN .)
-    GT_EQ           reduce using rule 588 (typecast_factor -> LPAREN typecast_factor RPAREN .)
-    LT_EQ           reduce using rule 588 (typecast_factor -> LPAREN typecast_factor RPAREN .)
-    NOT_EQ          reduce using rule 588 (typecast_factor -> LPAREN typecast_factor RPAREN .)
-    AND             reduce using rule 588 (typecast_factor -> LPAREN typecast_factor RPAREN .)
-    OR              reduce using rule 588 (typecast_factor -> LPAREN typecast_factor RPAREN .)
-    RPAREN          reduce using rule 588 (typecast_factor -> LPAREN typecast_factor RPAREN .)
+    PLUS            reduce using rule 588 (typecast_factor -> LPAREN typecast_expression RPAREN .)
+    MINUS           reduce using rule 588 (typecast_factor -> LPAREN typecast_expression RPAREN .)
+    MULTIPLY        reduce using rule 588 (typecast_factor -> LPAREN typecast_expression RPAREN .)
+    DIVISION        reduce using rule 588 (typecast_factor -> LPAREN typecast_expression RPAREN .)
+    MODULO          reduce using rule 588 (typecast_factor -> LPAREN typecast_expression RPAREN .)
+    EXPONENT        reduce using rule 588 (typecast_factor -> LPAREN typecast_expression RPAREN .)
+    GT              reduce using rule 588 (typecast_factor -> LPAREN typecast_expression RPAREN .)
+    LT              reduce using rule 588 (typecast_factor -> LPAREN typecast_expression RPAREN .)
+    EQ_EQ           reduce using rule 588 (typecast_factor -> LPAREN typecast_expression RPAREN .)
+    GT_EQ           reduce using rule 588 (typecast_factor -> LPAREN typecast_expression RPAREN .)
+    LT_EQ           reduce using rule 588 (typecast_factor -> LPAREN typecast_expression RPAREN .)
+    NOT_EQ          reduce using rule 588 (typecast_factor -> LPAREN typecast_expression RPAREN .)
+    AND             reduce using rule 588 (typecast_factor -> LPAREN typecast_expression RPAREN .)
+    OR              reduce using rule 588 (typecast_factor -> LPAREN typecast_expression RPAREN .)
+    RPAREN          reduce using rule 588 (typecast_factor -> LPAREN typecast_expression RPAREN .)
 
 
 state 979
@@ -22083,7 +22210,7 @@ state 1012
 
 state 1013
 
-    (330) for_factor -> LPAREN for_factor . RPAREN
+    (330) for_factor -> LPAREN for_expression . RPAREN
 
     RPAREN          shift and go to state 1131
 
@@ -22104,6 +22231,7 @@ state 1015
     (325) for_expression -> for_factor for_factor_tail .
 
     SEMICOLON       reduce using rule 325 (for_expression -> for_factor for_factor_tail .)
+    RPAREN          reduce using rule 325 (for_expression -> for_factor for_factor_tail .)
 
 
 state 1016
@@ -22113,7 +22241,7 @@ state 1016
     (327) for_factor -> . for_factor1
     (328) for_factor -> . TILDE INT_LIT
     (329) for_factor -> . TILDE FLT_LIT
-    (330) for_factor -> . LPAREN for_factor RPAREN
+    (330) for_factor -> . LPAREN for_expression RPAREN
     (331) for_var_call -> . IDENT for_list_index
     (357) for_factor1 -> . INT_LIT
     (358) for_factor1 -> . FLT_LIT
@@ -22141,7 +22269,7 @@ state 1017
     (327) for_factor -> . for_factor1
     (328) for_factor -> . TILDE INT_LIT
     (329) for_factor -> . TILDE FLT_LIT
-    (330) for_factor -> . LPAREN for_factor RPAREN
+    (330) for_factor -> . LPAREN for_expression RPAREN
     (331) for_var_call -> . IDENT for_list_index
     (357) for_factor1 -> . INT_LIT
     (358) for_factor1 -> . FLT_LIT
@@ -22169,7 +22297,7 @@ state 1018
     (327) for_factor -> . for_factor1
     (328) for_factor -> . TILDE INT_LIT
     (329) for_factor -> . TILDE FLT_LIT
-    (330) for_factor -> . LPAREN for_factor RPAREN
+    (330) for_factor -> . LPAREN for_expression RPAREN
     (331) for_var_call -> . IDENT for_list_index
     (357) for_factor1 -> . INT_LIT
     (358) for_factor1 -> . FLT_LIT
@@ -22197,7 +22325,7 @@ state 1019
     (327) for_factor -> . for_factor1
     (328) for_factor -> . TILDE INT_LIT
     (329) for_factor -> . TILDE FLT_LIT
-    (330) for_factor -> . LPAREN for_factor RPAREN
+    (330) for_factor -> . LPAREN for_expression RPAREN
     (331) for_var_call -> . IDENT for_list_index
     (357) for_factor1 -> . INT_LIT
     (358) for_factor1 -> . FLT_LIT
@@ -22225,7 +22353,7 @@ state 1020
     (327) for_factor -> . for_factor1
     (328) for_factor -> . TILDE INT_LIT
     (329) for_factor -> . TILDE FLT_LIT
-    (330) for_factor -> . LPAREN for_factor RPAREN
+    (330) for_factor -> . LPAREN for_expression RPAREN
     (331) for_var_call -> . IDENT for_list_index
     (357) for_factor1 -> . INT_LIT
     (358) for_factor1 -> . FLT_LIT
@@ -22253,7 +22381,7 @@ state 1021
     (327) for_factor -> . for_factor1
     (328) for_factor -> . TILDE INT_LIT
     (329) for_factor -> . TILDE FLT_LIT
-    (330) for_factor -> . LPAREN for_factor RPAREN
+    (330) for_factor -> . LPAREN for_expression RPAREN
     (331) for_var_call -> . IDENT for_list_index
     (357) for_factor1 -> . INT_LIT
     (358) for_factor1 -> . FLT_LIT
@@ -22281,7 +22409,7 @@ state 1022
     (327) for_factor -> . for_factor1
     (328) for_factor -> . TILDE INT_LIT
     (329) for_factor -> . TILDE FLT_LIT
-    (330) for_factor -> . LPAREN for_factor RPAREN
+    (330) for_factor -> . LPAREN for_expression RPAREN
     (331) for_var_call -> . IDENT for_list_index
     (357) for_factor1 -> . INT_LIT
     (358) for_factor1 -> . FLT_LIT
@@ -22309,7 +22437,7 @@ state 1023
     (327) for_factor -> . for_factor1
     (328) for_factor -> . TILDE INT_LIT
     (329) for_factor -> . TILDE FLT_LIT
-    (330) for_factor -> . LPAREN for_factor RPAREN
+    (330) for_factor -> . LPAREN for_expression RPAREN
     (331) for_var_call -> . IDENT for_list_index
     (357) for_factor1 -> . INT_LIT
     (358) for_factor1 -> . FLT_LIT
@@ -22337,7 +22465,7 @@ state 1024
     (327) for_factor -> . for_factor1
     (328) for_factor -> . TILDE INT_LIT
     (329) for_factor -> . TILDE FLT_LIT
-    (330) for_factor -> . LPAREN for_factor RPAREN
+    (330) for_factor -> . LPAREN for_expression RPAREN
     (331) for_var_call -> . IDENT for_list_index
     (357) for_factor1 -> . INT_LIT
     (358) for_factor1 -> . FLT_LIT
@@ -22365,7 +22493,7 @@ state 1025
     (327) for_factor -> . for_factor1
     (328) for_factor -> . TILDE INT_LIT
     (329) for_factor -> . TILDE FLT_LIT
-    (330) for_factor -> . LPAREN for_factor RPAREN
+    (330) for_factor -> . LPAREN for_expression RPAREN
     (331) for_var_call -> . IDENT for_list_index
     (357) for_factor1 -> . INT_LIT
     (358) for_factor1 -> . FLT_LIT
@@ -22393,7 +22521,7 @@ state 1026
     (327) for_factor -> . for_factor1
     (328) for_factor -> . TILDE INT_LIT
     (329) for_factor -> . TILDE FLT_LIT
-    (330) for_factor -> . LPAREN for_factor RPAREN
+    (330) for_factor -> . LPAREN for_expression RPAREN
     (331) for_var_call -> . IDENT for_list_index
     (357) for_factor1 -> . INT_LIT
     (358) for_factor1 -> . FLT_LIT
@@ -22421,7 +22549,7 @@ state 1027
     (327) for_factor -> . for_factor1
     (328) for_factor -> . TILDE INT_LIT
     (329) for_factor -> . TILDE FLT_LIT
-    (330) for_factor -> . LPAREN for_factor RPAREN
+    (330) for_factor -> . LPAREN for_expression RPAREN
     (331) for_var_call -> . IDENT for_list_index
     (357) for_factor1 -> . INT_LIT
     (358) for_factor1 -> . FLT_LIT
@@ -22449,7 +22577,7 @@ state 1028
     (327) for_factor -> . for_factor1
     (328) for_factor -> . TILDE INT_LIT
     (329) for_factor -> . TILDE FLT_LIT
-    (330) for_factor -> . LPAREN for_factor RPAREN
+    (330) for_factor -> . LPAREN for_expression RPAREN
     (331) for_var_call -> . IDENT for_list_index
     (357) for_factor1 -> . INT_LIT
     (358) for_factor1 -> . FLT_LIT
@@ -22477,7 +22605,7 @@ state 1029
     (327) for_factor -> . for_factor1
     (328) for_factor -> . TILDE INT_LIT
     (329) for_factor -> . TILDE FLT_LIT
-    (330) for_factor -> . LPAREN for_factor RPAREN
+    (330) for_factor -> . LPAREN for_expression RPAREN
     (331) for_var_call -> . IDENT for_list_index
     (357) for_factor1 -> . INT_LIT
     (358) for_factor1 -> . FLT_LIT
@@ -22503,6 +22631,7 @@ state 1030
     (356) for_factor_tail -> empty .
 
     SEMICOLON       reduce using rule 356 (for_factor_tail -> empty .)
+    RPAREN          reduce using rule 356 (for_factor_tail -> empty .)
 
 
 state 1031
@@ -22881,7 +23010,7 @@ state 1060
     (365) until_factor -> . until_factor1
     (366) until_factor -> . TILDE INT_LIT
     (367) until_factor -> . TILDE FLT_LIT
-    (368) until_factor -> . LPAREN until_factor RPAREN
+    (368) until_factor -> . LPAREN until_expression RPAREN
     (369) until_var_call -> . IDENT until_list_index
     (395) until_factor1 -> . INT_LIT
     (396) until_factor1 -> . FLT_LIT
@@ -22997,6 +23126,7 @@ state 1068
     (137) revive_factor_tail -> PLUS revive_factor revive_factor_tail .
 
     SEMICOLON       reduce using rule 137 (revive_factor_tail -> PLUS revive_factor revive_factor_tail .)
+    RPAREN          reduce using rule 137 (revive_factor_tail -> PLUS revive_factor revive_factor_tail .)
 
 
 state 1069
@@ -23004,6 +23134,7 @@ state 1069
     (138) revive_factor_tail -> MINUS revive_factor revive_factor_tail .
 
     SEMICOLON       reduce using rule 138 (revive_factor_tail -> MINUS revive_factor revive_factor_tail .)
+    RPAREN          reduce using rule 138 (revive_factor_tail -> MINUS revive_factor revive_factor_tail .)
 
 
 state 1070
@@ -23011,6 +23142,7 @@ state 1070
     (139) revive_factor_tail -> MULTIPLY revive_factor revive_factor_tail .
 
     SEMICOLON       reduce using rule 139 (revive_factor_tail -> MULTIPLY revive_factor revive_factor_tail .)
+    RPAREN          reduce using rule 139 (revive_factor_tail -> MULTIPLY revive_factor revive_factor_tail .)
 
 
 state 1071
@@ -23018,6 +23150,7 @@ state 1071
     (140) revive_factor_tail -> DIVISION revive_factor revive_factor_tail .
 
     SEMICOLON       reduce using rule 140 (revive_factor_tail -> DIVISION revive_factor revive_factor_tail .)
+    RPAREN          reduce using rule 140 (revive_factor_tail -> DIVISION revive_factor revive_factor_tail .)
 
 
 state 1072
@@ -23025,6 +23158,7 @@ state 1072
     (141) revive_factor_tail -> MODULO revive_factor revive_factor_tail .
 
     SEMICOLON       reduce using rule 141 (revive_factor_tail -> MODULO revive_factor revive_factor_tail .)
+    RPAREN          reduce using rule 141 (revive_factor_tail -> MODULO revive_factor revive_factor_tail .)
 
 
 state 1073
@@ -23032,6 +23166,7 @@ state 1073
     (142) revive_factor_tail -> EXPONENT revive_factor revive_factor_tail .
 
     SEMICOLON       reduce using rule 142 (revive_factor_tail -> EXPONENT revive_factor revive_factor_tail .)
+    RPAREN          reduce using rule 142 (revive_factor_tail -> EXPONENT revive_factor revive_factor_tail .)
 
 
 state 1074
@@ -23039,6 +23174,7 @@ state 1074
     (143) revive_factor_tail -> GT revive_factor revive_factor_tail .
 
     SEMICOLON       reduce using rule 143 (revive_factor_tail -> GT revive_factor revive_factor_tail .)
+    RPAREN          reduce using rule 143 (revive_factor_tail -> GT revive_factor revive_factor_tail .)
 
 
 state 1075
@@ -23046,6 +23182,7 @@ state 1075
     (144) revive_factor_tail -> LT revive_factor revive_factor_tail .
 
     SEMICOLON       reduce using rule 144 (revive_factor_tail -> LT revive_factor revive_factor_tail .)
+    RPAREN          reduce using rule 144 (revive_factor_tail -> LT revive_factor revive_factor_tail .)
 
 
 state 1076
@@ -23053,6 +23190,7 @@ state 1076
     (145) revive_factor_tail -> EQ_EQ revive_factor revive_factor_tail .
 
     SEMICOLON       reduce using rule 145 (revive_factor_tail -> EQ_EQ revive_factor revive_factor_tail .)
+    RPAREN          reduce using rule 145 (revive_factor_tail -> EQ_EQ revive_factor revive_factor_tail .)
 
 
 state 1077
@@ -23060,6 +23198,7 @@ state 1077
     (146) revive_factor_tail -> GT_EQ revive_factor revive_factor_tail .
 
     SEMICOLON       reduce using rule 146 (revive_factor_tail -> GT_EQ revive_factor revive_factor_tail .)
+    RPAREN          reduce using rule 146 (revive_factor_tail -> GT_EQ revive_factor revive_factor_tail .)
 
 
 state 1078
@@ -23067,6 +23206,7 @@ state 1078
     (147) revive_factor_tail -> LT_EQ revive_factor revive_factor_tail .
 
     SEMICOLON       reduce using rule 147 (revive_factor_tail -> LT_EQ revive_factor revive_factor_tail .)
+    RPAREN          reduce using rule 147 (revive_factor_tail -> LT_EQ revive_factor revive_factor_tail .)
 
 
 state 1079
@@ -23074,6 +23214,7 @@ state 1079
     (148) revive_factor_tail -> NOT_EQ revive_factor revive_factor_tail .
 
     SEMICOLON       reduce using rule 148 (revive_factor_tail -> NOT_EQ revive_factor revive_factor_tail .)
+    RPAREN          reduce using rule 148 (revive_factor_tail -> NOT_EQ revive_factor revive_factor_tail .)
 
 
 state 1080
@@ -23081,6 +23222,7 @@ state 1080
     (149) revive_factor_tail -> AND revive_factor revive_factor_tail .
 
     SEMICOLON       reduce using rule 149 (revive_factor_tail -> AND revive_factor revive_factor_tail .)
+    RPAREN          reduce using rule 149 (revive_factor_tail -> AND revive_factor revive_factor_tail .)
 
 
 state 1081
@@ -23088,6 +23230,7 @@ state 1081
     (150) revive_factor_tail -> OR revive_factor revive_factor_tail .
 
     SEMICOLON       reduce using rule 150 (revive_factor_tail -> OR revive_factor revive_factor_tail .)
+    RPAREN          reduce using rule 150 (revive_factor_tail -> OR revive_factor revive_factor_tail .)
 
 
 state 1082
@@ -23164,12 +23307,13 @@ state 1088
 
 state 1089
 
-    (283) switch_factor -> LPAREN . switch_factor RPAREN
+    (283) switch_factor -> LPAREN . switch_expression RPAREN
+    (278) switch_expression -> . switch_factor switch_factor_tail
     (279) switch_factor -> . switch_var_call switch_postfix
     (280) switch_factor -> . switch_factor1
     (281) switch_factor -> . TILDE INT_LIT
     (282) switch_factor -> . TILDE FLT_LIT
-    (283) switch_factor -> . LPAREN switch_factor RPAREN
+    (283) switch_factor -> . LPAREN switch_expression RPAREN
     (284) switch_var_call -> . IDENT switch_list_index
     (310) switch_factor1 -> . INT_LIT
     (311) switch_factor1 -> . FLT_LIT
@@ -23186,7 +23330,8 @@ state 1089
     NIGHT           shift and go to state 1101
     STR_LIT         shift and go to state 1102
 
-    switch_factor                  shift and go to state 1163
+    switch_expression              shift and go to state 1163
+    switch_factor                  shift and go to state 1093
     switch_var_call                shift and go to state 1094
     switch_factor1                 shift and go to state 1095
 
@@ -23246,6 +23391,7 @@ state 1093
     AND             shift and go to state 1180
     OR              shift and go to state 1181
     COLON           reduce using rule 610 (empty -> .)
+    RPAREN          reduce using rule 610 (empty -> .)
 
     switch_factor_tail             shift and go to state 1167
     empty                          shift and go to state 1182
@@ -23771,24 +23917,24 @@ state 1130
 
 state 1131
 
-    (330) for_factor -> LPAREN for_factor RPAREN .
+    (330) for_factor -> LPAREN for_expression RPAREN .
 
-    PLUS            reduce using rule 330 (for_factor -> LPAREN for_factor RPAREN .)
-    MINUS           reduce using rule 330 (for_factor -> LPAREN for_factor RPAREN .)
-    MULTIPLY        reduce using rule 330 (for_factor -> LPAREN for_factor RPAREN .)
-    DIVISION        reduce using rule 330 (for_factor -> LPAREN for_factor RPAREN .)
-    MODULO          reduce using rule 330 (for_factor -> LPAREN for_factor RPAREN .)
-    EXPONENT        reduce using rule 330 (for_factor -> LPAREN for_factor RPAREN .)
-    GT              reduce using rule 330 (for_factor -> LPAREN for_factor RPAREN .)
-    LT              reduce using rule 330 (for_factor -> LPAREN for_factor RPAREN .)
-    EQ_EQ           reduce using rule 330 (for_factor -> LPAREN for_factor RPAREN .)
-    GT_EQ           reduce using rule 330 (for_factor -> LPAREN for_factor RPAREN .)
-    LT_EQ           reduce using rule 330 (for_factor -> LPAREN for_factor RPAREN .)
-    NOT_EQ          reduce using rule 330 (for_factor -> LPAREN for_factor RPAREN .)
-    AND             reduce using rule 330 (for_factor -> LPAREN for_factor RPAREN .)
-    OR              reduce using rule 330 (for_factor -> LPAREN for_factor RPAREN .)
-    SEMICOLON       reduce using rule 330 (for_factor -> LPAREN for_factor RPAREN .)
-    RPAREN          reduce using rule 330 (for_factor -> LPAREN for_factor RPAREN .)
+    PLUS            reduce using rule 330 (for_factor -> LPAREN for_expression RPAREN .)
+    MINUS           reduce using rule 330 (for_factor -> LPAREN for_expression RPAREN .)
+    MULTIPLY        reduce using rule 330 (for_factor -> LPAREN for_expression RPAREN .)
+    DIVISION        reduce using rule 330 (for_factor -> LPAREN for_expression RPAREN .)
+    MODULO          reduce using rule 330 (for_factor -> LPAREN for_expression RPAREN .)
+    EXPONENT        reduce using rule 330 (for_factor -> LPAREN for_expression RPAREN .)
+    GT              reduce using rule 330 (for_factor -> LPAREN for_expression RPAREN .)
+    LT              reduce using rule 330 (for_factor -> LPAREN for_expression RPAREN .)
+    EQ_EQ           reduce using rule 330 (for_factor -> LPAREN for_expression RPAREN .)
+    GT_EQ           reduce using rule 330 (for_factor -> LPAREN for_expression RPAREN .)
+    LT_EQ           reduce using rule 330 (for_factor -> LPAREN for_expression RPAREN .)
+    NOT_EQ          reduce using rule 330 (for_factor -> LPAREN for_expression RPAREN .)
+    AND             reduce using rule 330 (for_factor -> LPAREN for_expression RPAREN .)
+    OR              reduce using rule 330 (for_factor -> LPAREN for_expression RPAREN .)
+    SEMICOLON       reduce using rule 330 (for_factor -> LPAREN for_expression RPAREN .)
+    RPAREN          reduce using rule 330 (for_factor -> LPAREN for_expression RPAREN .)
 
 
 state 1132
@@ -23858,6 +24004,7 @@ state 1134
     AND             shift and go to state 1028
     OR              shift and go to state 1029
     SEMICOLON       reduce using rule 610 (empty -> .)
+    RPAREN          reduce using rule 610 (empty -> .)
 
     for_factor_tail                shift and go to state 1205
     empty                          shift and go to state 1030
@@ -23897,6 +24044,7 @@ state 1135
     AND             shift and go to state 1028
     OR              shift and go to state 1029
     SEMICOLON       reduce using rule 610 (empty -> .)
+    RPAREN          reduce using rule 610 (empty -> .)
 
     for_factor_tail                shift and go to state 1206
     empty                          shift and go to state 1030
@@ -23936,6 +24084,7 @@ state 1136
     AND             shift and go to state 1028
     OR              shift and go to state 1029
     SEMICOLON       reduce using rule 610 (empty -> .)
+    RPAREN          reduce using rule 610 (empty -> .)
 
     for_factor_tail                shift and go to state 1207
     empty                          shift and go to state 1030
@@ -23975,6 +24124,7 @@ state 1137
     AND             shift and go to state 1028
     OR              shift and go to state 1029
     SEMICOLON       reduce using rule 610 (empty -> .)
+    RPAREN          reduce using rule 610 (empty -> .)
 
     for_factor_tail                shift and go to state 1208
     empty                          shift and go to state 1030
@@ -24014,6 +24164,7 @@ state 1138
     AND             shift and go to state 1028
     OR              shift and go to state 1029
     SEMICOLON       reduce using rule 610 (empty -> .)
+    RPAREN          reduce using rule 610 (empty -> .)
 
     for_factor_tail                shift and go to state 1209
     empty                          shift and go to state 1030
@@ -24053,6 +24204,7 @@ state 1139
     AND             shift and go to state 1028
     OR              shift and go to state 1029
     SEMICOLON       reduce using rule 610 (empty -> .)
+    RPAREN          reduce using rule 610 (empty -> .)
 
     for_factor_tail                shift and go to state 1210
     empty                          shift and go to state 1030
@@ -24092,6 +24244,7 @@ state 1140
     AND             shift and go to state 1028
     OR              shift and go to state 1029
     SEMICOLON       reduce using rule 610 (empty -> .)
+    RPAREN          reduce using rule 610 (empty -> .)
 
     for_factor_tail                shift and go to state 1211
     empty                          shift and go to state 1030
@@ -24131,6 +24284,7 @@ state 1141
     AND             shift and go to state 1028
     OR              shift and go to state 1029
     SEMICOLON       reduce using rule 610 (empty -> .)
+    RPAREN          reduce using rule 610 (empty -> .)
 
     for_factor_tail                shift and go to state 1212
     empty                          shift and go to state 1030
@@ -24170,6 +24324,7 @@ state 1142
     AND             shift and go to state 1028
     OR              shift and go to state 1029
     SEMICOLON       reduce using rule 610 (empty -> .)
+    RPAREN          reduce using rule 610 (empty -> .)
 
     for_factor_tail                shift and go to state 1213
     empty                          shift and go to state 1030
@@ -24209,6 +24364,7 @@ state 1143
     AND             shift and go to state 1028
     OR              shift and go to state 1029
     SEMICOLON       reduce using rule 610 (empty -> .)
+    RPAREN          reduce using rule 610 (empty -> .)
 
     for_factor_tail                shift and go to state 1214
     empty                          shift and go to state 1030
@@ -24248,6 +24404,7 @@ state 1144
     AND             shift and go to state 1028
     OR              shift and go to state 1029
     SEMICOLON       reduce using rule 610 (empty -> .)
+    RPAREN          reduce using rule 610 (empty -> .)
 
     for_factor_tail                shift and go to state 1215
     empty                          shift and go to state 1030
@@ -24287,6 +24444,7 @@ state 1145
     AND             shift and go to state 1028
     OR              shift and go to state 1029
     SEMICOLON       reduce using rule 610 (empty -> .)
+    RPAREN          reduce using rule 610 (empty -> .)
 
     for_factor_tail                shift and go to state 1216
     empty                          shift and go to state 1030
@@ -24326,6 +24484,7 @@ state 1146
     AND             shift and go to state 1028
     OR              shift and go to state 1029
     SEMICOLON       reduce using rule 610 (empty -> .)
+    RPAREN          reduce using rule 610 (empty -> .)
 
     for_factor_tail                shift and go to state 1217
     empty                          shift and go to state 1030
@@ -24365,6 +24524,7 @@ state 1147
     AND             shift and go to state 1028
     OR              shift and go to state 1029
     SEMICOLON       reduce using rule 610 (empty -> .)
+    RPAREN          reduce using rule 610 (empty -> .)
 
     for_factor_tail                shift and go to state 1218
     empty                          shift and go to state 1030
@@ -24653,7 +24813,7 @@ state 1162
     (585) typecast_factor -> . typecast_factor1
     (586) typecast_factor -> . TILDE INT_LIT
     (587) typecast_factor -> . TILDE FLT_LIT
-    (588) typecast_factor -> . LPAREN typecast_factor RPAREN
+    (588) typecast_factor -> . LPAREN typecast_expression RPAREN
     (527) var_call -> . IDENT list_index
     (604) typecast_factor1 -> . INT_LIT
     (605) typecast_factor1 -> . FLT_LIT
@@ -24681,7 +24841,7 @@ state 1162
 
 state 1163
 
-    (283) switch_factor -> LPAREN switch_factor . RPAREN
+    (283) switch_factor -> LPAREN switch_expression . RPAREN
 
     RPAREN          shift and go to state 1227
 
@@ -24698,7 +24858,7 @@ state 1164
     (585) typecast_factor -> . typecast_factor1
     (586) typecast_factor -> . TILDE INT_LIT
     (587) typecast_factor -> . TILDE FLT_LIT
-    (588) typecast_factor -> . LPAREN typecast_factor RPAREN
+    (588) typecast_factor -> . LPAREN typecast_expression RPAREN
     (527) var_call -> . IDENT list_index
     (604) typecast_factor1 -> . INT_LIT
     (605) typecast_factor1 -> . FLT_LIT
@@ -24736,7 +24896,7 @@ state 1165
     (585) typecast_factor -> . typecast_factor1
     (586) typecast_factor -> . TILDE INT_LIT
     (587) typecast_factor -> . TILDE FLT_LIT
-    (588) typecast_factor -> . LPAREN typecast_factor RPAREN
+    (588) typecast_factor -> . LPAREN typecast_expression RPAREN
     (527) var_call -> . IDENT list_index
     (604) typecast_factor1 -> . INT_LIT
     (605) typecast_factor1 -> . FLT_LIT
@@ -24774,7 +24934,7 @@ state 1166
     (585) typecast_factor -> . typecast_factor1
     (586) typecast_factor -> . TILDE INT_LIT
     (587) typecast_factor -> . TILDE FLT_LIT
-    (588) typecast_factor -> . LPAREN typecast_factor RPAREN
+    (588) typecast_factor -> . LPAREN typecast_expression RPAREN
     (527) var_call -> . IDENT list_index
     (604) typecast_factor1 -> . INT_LIT
     (605) typecast_factor1 -> . FLT_LIT
@@ -24805,6 +24965,7 @@ state 1167
     (278) switch_expression -> switch_factor switch_factor_tail .
 
     COLON           reduce using rule 278 (switch_expression -> switch_factor switch_factor_tail .)
+    RPAREN          reduce using rule 278 (switch_expression -> switch_factor switch_factor_tail .)
 
 
 state 1168
@@ -24814,7 +24975,7 @@ state 1168
     (280) switch_factor -> . switch_factor1
     (281) switch_factor -> . TILDE INT_LIT
     (282) switch_factor -> . TILDE FLT_LIT
-    (283) switch_factor -> . LPAREN switch_factor RPAREN
+    (283) switch_factor -> . LPAREN switch_expression RPAREN
     (284) switch_var_call -> . IDENT switch_list_index
     (310) switch_factor1 -> . INT_LIT
     (311) switch_factor1 -> . FLT_LIT
@@ -24842,7 +25003,7 @@ state 1169
     (280) switch_factor -> . switch_factor1
     (281) switch_factor -> . TILDE INT_LIT
     (282) switch_factor -> . TILDE FLT_LIT
-    (283) switch_factor -> . LPAREN switch_factor RPAREN
+    (283) switch_factor -> . LPAREN switch_expression RPAREN
     (284) switch_var_call -> . IDENT switch_list_index
     (310) switch_factor1 -> . INT_LIT
     (311) switch_factor1 -> . FLT_LIT
@@ -24870,7 +25031,7 @@ state 1170
     (280) switch_factor -> . switch_factor1
     (281) switch_factor -> . TILDE INT_LIT
     (282) switch_factor -> . TILDE FLT_LIT
-    (283) switch_factor -> . LPAREN switch_factor RPAREN
+    (283) switch_factor -> . LPAREN switch_expression RPAREN
     (284) switch_var_call -> . IDENT switch_list_index
     (310) switch_factor1 -> . INT_LIT
     (311) switch_factor1 -> . FLT_LIT
@@ -24898,7 +25059,7 @@ state 1171
     (280) switch_factor -> . switch_factor1
     (281) switch_factor -> . TILDE INT_LIT
     (282) switch_factor -> . TILDE FLT_LIT
-    (283) switch_factor -> . LPAREN switch_factor RPAREN
+    (283) switch_factor -> . LPAREN switch_expression RPAREN
     (284) switch_var_call -> . IDENT switch_list_index
     (310) switch_factor1 -> . INT_LIT
     (311) switch_factor1 -> . FLT_LIT
@@ -24926,7 +25087,7 @@ state 1172
     (280) switch_factor -> . switch_factor1
     (281) switch_factor -> . TILDE INT_LIT
     (282) switch_factor -> . TILDE FLT_LIT
-    (283) switch_factor -> . LPAREN switch_factor RPAREN
+    (283) switch_factor -> . LPAREN switch_expression RPAREN
     (284) switch_var_call -> . IDENT switch_list_index
     (310) switch_factor1 -> . INT_LIT
     (311) switch_factor1 -> . FLT_LIT
@@ -24954,7 +25115,7 @@ state 1173
     (280) switch_factor -> . switch_factor1
     (281) switch_factor -> . TILDE INT_LIT
     (282) switch_factor -> . TILDE FLT_LIT
-    (283) switch_factor -> . LPAREN switch_factor RPAREN
+    (283) switch_factor -> . LPAREN switch_expression RPAREN
     (284) switch_var_call -> . IDENT switch_list_index
     (310) switch_factor1 -> . INT_LIT
     (311) switch_factor1 -> . FLT_LIT
@@ -24982,7 +25143,7 @@ state 1174
     (280) switch_factor -> . switch_factor1
     (281) switch_factor -> . TILDE INT_LIT
     (282) switch_factor -> . TILDE FLT_LIT
-    (283) switch_factor -> . LPAREN switch_factor RPAREN
+    (283) switch_factor -> . LPAREN switch_expression RPAREN
     (284) switch_var_call -> . IDENT switch_list_index
     (310) switch_factor1 -> . INT_LIT
     (311) switch_factor1 -> . FLT_LIT
@@ -25010,7 +25171,7 @@ state 1175
     (280) switch_factor -> . switch_factor1
     (281) switch_factor -> . TILDE INT_LIT
     (282) switch_factor -> . TILDE FLT_LIT
-    (283) switch_factor -> . LPAREN switch_factor RPAREN
+    (283) switch_factor -> . LPAREN switch_expression RPAREN
     (284) switch_var_call -> . IDENT switch_list_index
     (310) switch_factor1 -> . INT_LIT
     (311) switch_factor1 -> . FLT_LIT
@@ -25038,7 +25199,7 @@ state 1176
     (280) switch_factor -> . switch_factor1
     (281) switch_factor -> . TILDE INT_LIT
     (282) switch_factor -> . TILDE FLT_LIT
-    (283) switch_factor -> . LPAREN switch_factor RPAREN
+    (283) switch_factor -> . LPAREN switch_expression RPAREN
     (284) switch_var_call -> . IDENT switch_list_index
     (310) switch_factor1 -> . INT_LIT
     (311) switch_factor1 -> . FLT_LIT
@@ -25066,7 +25227,7 @@ state 1177
     (280) switch_factor -> . switch_factor1
     (281) switch_factor -> . TILDE INT_LIT
     (282) switch_factor -> . TILDE FLT_LIT
-    (283) switch_factor -> . LPAREN switch_factor RPAREN
+    (283) switch_factor -> . LPAREN switch_expression RPAREN
     (284) switch_var_call -> . IDENT switch_list_index
     (310) switch_factor1 -> . INT_LIT
     (311) switch_factor1 -> . FLT_LIT
@@ -25094,7 +25255,7 @@ state 1178
     (280) switch_factor -> . switch_factor1
     (281) switch_factor -> . TILDE INT_LIT
     (282) switch_factor -> . TILDE FLT_LIT
-    (283) switch_factor -> . LPAREN switch_factor RPAREN
+    (283) switch_factor -> . LPAREN switch_expression RPAREN
     (284) switch_var_call -> . IDENT switch_list_index
     (310) switch_factor1 -> . INT_LIT
     (311) switch_factor1 -> . FLT_LIT
@@ -25122,7 +25283,7 @@ state 1179
     (280) switch_factor -> . switch_factor1
     (281) switch_factor -> . TILDE INT_LIT
     (282) switch_factor -> . TILDE FLT_LIT
-    (283) switch_factor -> . LPAREN switch_factor RPAREN
+    (283) switch_factor -> . LPAREN switch_expression RPAREN
     (284) switch_var_call -> . IDENT switch_list_index
     (310) switch_factor1 -> . INT_LIT
     (311) switch_factor1 -> . FLT_LIT
@@ -25150,7 +25311,7 @@ state 1180
     (280) switch_factor -> . switch_factor1
     (281) switch_factor -> . TILDE INT_LIT
     (282) switch_factor -> . TILDE FLT_LIT
-    (283) switch_factor -> . LPAREN switch_factor RPAREN
+    (283) switch_factor -> . LPAREN switch_expression RPAREN
     (284) switch_var_call -> . IDENT switch_list_index
     (310) switch_factor1 -> . INT_LIT
     (311) switch_factor1 -> . FLT_LIT
@@ -25178,7 +25339,7 @@ state 1181
     (280) switch_factor -> . switch_factor1
     (281) switch_factor -> . TILDE INT_LIT
     (282) switch_factor -> . TILDE FLT_LIT
-    (283) switch_factor -> . LPAREN switch_factor RPAREN
+    (283) switch_factor -> . LPAREN switch_expression RPAREN
     (284) switch_var_call -> . IDENT switch_list_index
     (310) switch_factor1 -> . INT_LIT
     (311) switch_factor1 -> . FLT_LIT
@@ -25204,6 +25365,7 @@ state 1182
     (309) switch_factor_tail -> empty .
 
     COLON           reduce using rule 309 (switch_factor_tail -> empty .)
+    RPAREN          reduce using rule 309 (switch_factor_tail -> empty .)
 
 
 state 1183
@@ -25559,7 +25721,7 @@ state 1204
     (541) value_factor -> . value_factor1
     (542) value_factor -> . TILDE INT_LIT
     (543) value_factor -> . TILDE FLT_LIT
-    (544) value_factor -> . LPAREN value_factor RPAREN
+    (544) value_factor -> . LPAREN value_expression RPAREN
     (609) input_statement -> . INPUT LPAREN RPAREN
     (545) value_var_call -> . IDENT value_list_index
     (571) value_factor1 -> . INT_LIT
@@ -25597,6 +25759,7 @@ state 1205
     (342) for_factor_tail -> PLUS for_factor for_factor_tail .
 
     SEMICOLON       reduce using rule 342 (for_factor_tail -> PLUS for_factor for_factor_tail .)
+    RPAREN          reduce using rule 342 (for_factor_tail -> PLUS for_factor for_factor_tail .)
 
 
 state 1206
@@ -25604,6 +25767,7 @@ state 1206
     (343) for_factor_tail -> MINUS for_factor for_factor_tail .
 
     SEMICOLON       reduce using rule 343 (for_factor_tail -> MINUS for_factor for_factor_tail .)
+    RPAREN          reduce using rule 343 (for_factor_tail -> MINUS for_factor for_factor_tail .)
 
 
 state 1207
@@ -25611,6 +25775,7 @@ state 1207
     (344) for_factor_tail -> MULTIPLY for_factor for_factor_tail .
 
     SEMICOLON       reduce using rule 344 (for_factor_tail -> MULTIPLY for_factor for_factor_tail .)
+    RPAREN          reduce using rule 344 (for_factor_tail -> MULTIPLY for_factor for_factor_tail .)
 
 
 state 1208
@@ -25618,6 +25783,7 @@ state 1208
     (345) for_factor_tail -> DIVISION for_factor for_factor_tail .
 
     SEMICOLON       reduce using rule 345 (for_factor_tail -> DIVISION for_factor for_factor_tail .)
+    RPAREN          reduce using rule 345 (for_factor_tail -> DIVISION for_factor for_factor_tail .)
 
 
 state 1209
@@ -25625,6 +25791,7 @@ state 1209
     (346) for_factor_tail -> MODULO for_factor for_factor_tail .
 
     SEMICOLON       reduce using rule 346 (for_factor_tail -> MODULO for_factor for_factor_tail .)
+    RPAREN          reduce using rule 346 (for_factor_tail -> MODULO for_factor for_factor_tail .)
 
 
 state 1210
@@ -25632,6 +25799,7 @@ state 1210
     (347) for_factor_tail -> EXPONENT for_factor for_factor_tail .
 
     SEMICOLON       reduce using rule 347 (for_factor_tail -> EXPONENT for_factor for_factor_tail .)
+    RPAREN          reduce using rule 347 (for_factor_tail -> EXPONENT for_factor for_factor_tail .)
 
 
 state 1211
@@ -25639,6 +25807,7 @@ state 1211
     (348) for_factor_tail -> GT for_factor for_factor_tail .
 
     SEMICOLON       reduce using rule 348 (for_factor_tail -> GT for_factor for_factor_tail .)
+    RPAREN          reduce using rule 348 (for_factor_tail -> GT for_factor for_factor_tail .)
 
 
 state 1212
@@ -25646,6 +25815,7 @@ state 1212
     (349) for_factor_tail -> LT for_factor for_factor_tail .
 
     SEMICOLON       reduce using rule 349 (for_factor_tail -> LT for_factor for_factor_tail .)
+    RPAREN          reduce using rule 349 (for_factor_tail -> LT for_factor for_factor_tail .)
 
 
 state 1213
@@ -25653,6 +25823,7 @@ state 1213
     (350) for_factor_tail -> EQ_EQ for_factor for_factor_tail .
 
     SEMICOLON       reduce using rule 350 (for_factor_tail -> EQ_EQ for_factor for_factor_tail .)
+    RPAREN          reduce using rule 350 (for_factor_tail -> EQ_EQ for_factor for_factor_tail .)
 
 
 state 1214
@@ -25660,6 +25831,7 @@ state 1214
     (351) for_factor_tail -> GT_EQ for_factor for_factor_tail .
 
     SEMICOLON       reduce using rule 351 (for_factor_tail -> GT_EQ for_factor for_factor_tail .)
+    RPAREN          reduce using rule 351 (for_factor_tail -> GT_EQ for_factor for_factor_tail .)
 
 
 state 1215
@@ -25667,6 +25839,7 @@ state 1215
     (352) for_factor_tail -> LT_EQ for_factor for_factor_tail .
 
     SEMICOLON       reduce using rule 352 (for_factor_tail -> LT_EQ for_factor for_factor_tail .)
+    RPAREN          reduce using rule 352 (for_factor_tail -> LT_EQ for_factor for_factor_tail .)
 
 
 state 1216
@@ -25674,6 +25847,7 @@ state 1216
     (353) for_factor_tail -> NOT_EQ for_factor for_factor_tail .
 
     SEMICOLON       reduce using rule 353 (for_factor_tail -> NOT_EQ for_factor for_factor_tail .)
+    RPAREN          reduce using rule 353 (for_factor_tail -> NOT_EQ for_factor for_factor_tail .)
 
 
 state 1217
@@ -25681,6 +25855,7 @@ state 1217
     (354) for_factor_tail -> AND for_factor for_factor_tail .
 
     SEMICOLON       reduce using rule 354 (for_factor_tail -> AND for_factor for_factor_tail .)
+    RPAREN          reduce using rule 354 (for_factor_tail -> AND for_factor for_factor_tail .)
 
 
 state 1218
@@ -25688,6 +25863,7 @@ state 1218
     (355) for_factor_tail -> OR for_factor for_factor_tail .
 
     SEMICOLON       reduce using rule 355 (for_factor_tail -> OR for_factor for_factor_tail .)
+    RPAREN          reduce using rule 355 (for_factor_tail -> OR for_factor for_factor_tail .)
 
 
 state 1219
@@ -25797,24 +25973,24 @@ state 1226
 
 state 1227
 
-    (283) switch_factor -> LPAREN switch_factor RPAREN .
+    (283) switch_factor -> LPAREN switch_expression RPAREN .
 
-    PLUS            reduce using rule 283 (switch_factor -> LPAREN switch_factor RPAREN .)
-    MINUS           reduce using rule 283 (switch_factor -> LPAREN switch_factor RPAREN .)
-    MULTIPLY        reduce using rule 283 (switch_factor -> LPAREN switch_factor RPAREN .)
-    DIVISION        reduce using rule 283 (switch_factor -> LPAREN switch_factor RPAREN .)
-    MODULO          reduce using rule 283 (switch_factor -> LPAREN switch_factor RPAREN .)
-    EXPONENT        reduce using rule 283 (switch_factor -> LPAREN switch_factor RPAREN .)
-    GT              reduce using rule 283 (switch_factor -> LPAREN switch_factor RPAREN .)
-    LT              reduce using rule 283 (switch_factor -> LPAREN switch_factor RPAREN .)
-    EQ_EQ           reduce using rule 283 (switch_factor -> LPAREN switch_factor RPAREN .)
-    GT_EQ           reduce using rule 283 (switch_factor -> LPAREN switch_factor RPAREN .)
-    LT_EQ           reduce using rule 283 (switch_factor -> LPAREN switch_factor RPAREN .)
-    NOT_EQ          reduce using rule 283 (switch_factor -> LPAREN switch_factor RPAREN .)
-    AND             reduce using rule 283 (switch_factor -> LPAREN switch_factor RPAREN .)
-    OR              reduce using rule 283 (switch_factor -> LPAREN switch_factor RPAREN .)
-    COLON           reduce using rule 283 (switch_factor -> LPAREN switch_factor RPAREN .)
-    RPAREN          reduce using rule 283 (switch_factor -> LPAREN switch_factor RPAREN .)
+    PLUS            reduce using rule 283 (switch_factor -> LPAREN switch_expression RPAREN .)
+    MINUS           reduce using rule 283 (switch_factor -> LPAREN switch_expression RPAREN .)
+    MULTIPLY        reduce using rule 283 (switch_factor -> LPAREN switch_expression RPAREN .)
+    DIVISION        reduce using rule 283 (switch_factor -> LPAREN switch_expression RPAREN .)
+    MODULO          reduce using rule 283 (switch_factor -> LPAREN switch_expression RPAREN .)
+    EXPONENT        reduce using rule 283 (switch_factor -> LPAREN switch_expression RPAREN .)
+    GT              reduce using rule 283 (switch_factor -> LPAREN switch_expression RPAREN .)
+    LT              reduce using rule 283 (switch_factor -> LPAREN switch_expression RPAREN .)
+    EQ_EQ           reduce using rule 283 (switch_factor -> LPAREN switch_expression RPAREN .)
+    GT_EQ           reduce using rule 283 (switch_factor -> LPAREN switch_expression RPAREN .)
+    LT_EQ           reduce using rule 283 (switch_factor -> LPAREN switch_expression RPAREN .)
+    NOT_EQ          reduce using rule 283 (switch_factor -> LPAREN switch_expression RPAREN .)
+    AND             reduce using rule 283 (switch_factor -> LPAREN switch_expression RPAREN .)
+    OR              reduce using rule 283 (switch_factor -> LPAREN switch_expression RPAREN .)
+    COLON           reduce using rule 283 (switch_factor -> LPAREN switch_expression RPAREN .)
+    RPAREN          reduce using rule 283 (switch_factor -> LPAREN switch_expression RPAREN .)
 
 
 state 1228
@@ -25873,6 +26049,7 @@ state 1231
     AND             shift and go to state 1180
     OR              shift and go to state 1181
     COLON           reduce using rule 610 (empty -> .)
+    RPAREN          reduce using rule 610 (empty -> .)
 
     switch_factor_tail             shift and go to state 1272
     empty                          shift and go to state 1182
@@ -25912,6 +26089,7 @@ state 1232
     AND             shift and go to state 1180
     OR              shift and go to state 1181
     COLON           reduce using rule 610 (empty -> .)
+    RPAREN          reduce using rule 610 (empty -> .)
 
     switch_factor_tail             shift and go to state 1273
     empty                          shift and go to state 1182
@@ -25951,6 +26129,7 @@ state 1233
     AND             shift and go to state 1180
     OR              shift and go to state 1181
     COLON           reduce using rule 610 (empty -> .)
+    RPAREN          reduce using rule 610 (empty -> .)
 
     switch_factor_tail             shift and go to state 1274
     empty                          shift and go to state 1182
@@ -25990,6 +26169,7 @@ state 1234
     AND             shift and go to state 1180
     OR              shift and go to state 1181
     COLON           reduce using rule 610 (empty -> .)
+    RPAREN          reduce using rule 610 (empty -> .)
 
     switch_factor_tail             shift and go to state 1275
     empty                          shift and go to state 1182
@@ -26029,6 +26209,7 @@ state 1235
     AND             shift and go to state 1180
     OR              shift and go to state 1181
     COLON           reduce using rule 610 (empty -> .)
+    RPAREN          reduce using rule 610 (empty -> .)
 
     switch_factor_tail             shift and go to state 1276
     empty                          shift and go to state 1182
@@ -26068,6 +26249,7 @@ state 1236
     AND             shift and go to state 1180
     OR              shift and go to state 1181
     COLON           reduce using rule 610 (empty -> .)
+    RPAREN          reduce using rule 610 (empty -> .)
 
     switch_factor_tail             shift and go to state 1277
     empty                          shift and go to state 1182
@@ -26107,6 +26289,7 @@ state 1237
     AND             shift and go to state 1180
     OR              shift and go to state 1181
     COLON           reduce using rule 610 (empty -> .)
+    RPAREN          reduce using rule 610 (empty -> .)
 
     switch_factor_tail             shift and go to state 1278
     empty                          shift and go to state 1182
@@ -26146,6 +26329,7 @@ state 1238
     AND             shift and go to state 1180
     OR              shift and go to state 1181
     COLON           reduce using rule 610 (empty -> .)
+    RPAREN          reduce using rule 610 (empty -> .)
 
     switch_factor_tail             shift and go to state 1279
     empty                          shift and go to state 1182
@@ -26185,6 +26369,7 @@ state 1239
     AND             shift and go to state 1180
     OR              shift and go to state 1181
     COLON           reduce using rule 610 (empty -> .)
+    RPAREN          reduce using rule 610 (empty -> .)
 
     switch_factor_tail             shift and go to state 1280
     empty                          shift and go to state 1182
@@ -26224,6 +26409,7 @@ state 1240
     AND             shift and go to state 1180
     OR              shift and go to state 1181
     COLON           reduce using rule 610 (empty -> .)
+    RPAREN          reduce using rule 610 (empty -> .)
 
     switch_factor_tail             shift and go to state 1281
     empty                          shift and go to state 1182
@@ -26263,6 +26449,7 @@ state 1241
     AND             shift and go to state 1180
     OR              shift and go to state 1181
     COLON           reduce using rule 610 (empty -> .)
+    RPAREN          reduce using rule 610 (empty -> .)
 
     switch_factor_tail             shift and go to state 1282
     empty                          shift and go to state 1182
@@ -26302,6 +26489,7 @@ state 1242
     AND             shift and go to state 1180
     OR              shift and go to state 1181
     COLON           reduce using rule 610 (empty -> .)
+    RPAREN          reduce using rule 610 (empty -> .)
 
     switch_factor_tail             shift and go to state 1283
     empty                          shift and go to state 1182
@@ -26341,6 +26529,7 @@ state 1243
     AND             shift and go to state 1180
     OR              shift and go to state 1181
     COLON           reduce using rule 610 (empty -> .)
+    RPAREN          reduce using rule 610 (empty -> .)
 
     switch_factor_tail             shift and go to state 1284
     empty                          shift and go to state 1182
@@ -26380,6 +26569,7 @@ state 1244
     AND             shift and go to state 1180
     OR              shift and go to state 1181
     COLON           reduce using rule 610 (empty -> .)
+    RPAREN          reduce using rule 610 (empty -> .)
 
     switch_factor_tail             shift and go to state 1285
     empty                          shift and go to state 1182
@@ -26781,6 +26971,7 @@ state 1272
     (295) switch_factor_tail -> PLUS switch_factor switch_factor_tail .
 
     COLON           reduce using rule 295 (switch_factor_tail -> PLUS switch_factor switch_factor_tail .)
+    RPAREN          reduce using rule 295 (switch_factor_tail -> PLUS switch_factor switch_factor_tail .)
 
 
 state 1273
@@ -26788,6 +26979,7 @@ state 1273
     (296) switch_factor_tail -> MINUS switch_factor switch_factor_tail .
 
     COLON           reduce using rule 296 (switch_factor_tail -> MINUS switch_factor switch_factor_tail .)
+    RPAREN          reduce using rule 296 (switch_factor_tail -> MINUS switch_factor switch_factor_tail .)
 
 
 state 1274
@@ -26795,6 +26987,7 @@ state 1274
     (297) switch_factor_tail -> MULTIPLY switch_factor switch_factor_tail .
 
     COLON           reduce using rule 297 (switch_factor_tail -> MULTIPLY switch_factor switch_factor_tail .)
+    RPAREN          reduce using rule 297 (switch_factor_tail -> MULTIPLY switch_factor switch_factor_tail .)
 
 
 state 1275
@@ -26802,6 +26995,7 @@ state 1275
     (298) switch_factor_tail -> DIVISION switch_factor switch_factor_tail .
 
     COLON           reduce using rule 298 (switch_factor_tail -> DIVISION switch_factor switch_factor_tail .)
+    RPAREN          reduce using rule 298 (switch_factor_tail -> DIVISION switch_factor switch_factor_tail .)
 
 
 state 1276
@@ -26809,6 +27003,7 @@ state 1276
     (299) switch_factor_tail -> MODULO switch_factor switch_factor_tail .
 
     COLON           reduce using rule 299 (switch_factor_tail -> MODULO switch_factor switch_factor_tail .)
+    RPAREN          reduce using rule 299 (switch_factor_tail -> MODULO switch_factor switch_factor_tail .)
 
 
 state 1277
@@ -26816,6 +27011,7 @@ state 1277
     (300) switch_factor_tail -> EXPONENT switch_factor switch_factor_tail .
 
     COLON           reduce using rule 300 (switch_factor_tail -> EXPONENT switch_factor switch_factor_tail .)
+    RPAREN          reduce using rule 300 (switch_factor_tail -> EXPONENT switch_factor switch_factor_tail .)
 
 
 state 1278
@@ -26823,6 +27019,7 @@ state 1278
     (301) switch_factor_tail -> GT switch_factor switch_factor_tail .
 
     COLON           reduce using rule 301 (switch_factor_tail -> GT switch_factor switch_factor_tail .)
+    RPAREN          reduce using rule 301 (switch_factor_tail -> GT switch_factor switch_factor_tail .)
 
 
 state 1279
@@ -26830,6 +27027,7 @@ state 1279
     (302) switch_factor_tail -> LT switch_factor switch_factor_tail .
 
     COLON           reduce using rule 302 (switch_factor_tail -> LT switch_factor switch_factor_tail .)
+    RPAREN          reduce using rule 302 (switch_factor_tail -> LT switch_factor switch_factor_tail .)
 
 
 state 1280
@@ -26837,6 +27035,7 @@ state 1280
     (303) switch_factor_tail -> EQ_EQ switch_factor switch_factor_tail .
 
     COLON           reduce using rule 303 (switch_factor_tail -> EQ_EQ switch_factor switch_factor_tail .)
+    RPAREN          reduce using rule 303 (switch_factor_tail -> EQ_EQ switch_factor switch_factor_tail .)
 
 
 state 1281
@@ -26844,6 +27043,7 @@ state 1281
     (304) switch_factor_tail -> GT_EQ switch_factor switch_factor_tail .
 
     COLON           reduce using rule 304 (switch_factor_tail -> GT_EQ switch_factor switch_factor_tail .)
+    RPAREN          reduce using rule 304 (switch_factor_tail -> GT_EQ switch_factor switch_factor_tail .)
 
 
 state 1282
@@ -26851,6 +27051,7 @@ state 1282
     (305) switch_factor_tail -> LT_EQ switch_factor switch_factor_tail .
 
     COLON           reduce using rule 305 (switch_factor_tail -> LT_EQ switch_factor switch_factor_tail .)
+    RPAREN          reduce using rule 305 (switch_factor_tail -> LT_EQ switch_factor switch_factor_tail .)
 
 
 state 1283
@@ -26858,6 +27059,7 @@ state 1283
     (306) switch_factor_tail -> NOT_EQ switch_factor switch_factor_tail .
 
     COLON           reduce using rule 306 (switch_factor_tail -> NOT_EQ switch_factor switch_factor_tail .)
+    RPAREN          reduce using rule 306 (switch_factor_tail -> NOT_EQ switch_factor switch_factor_tail .)
 
 
 state 1284
@@ -26865,6 +27067,7 @@ state 1284
     (307) switch_factor_tail -> AND switch_factor switch_factor_tail .
 
     COLON           reduce using rule 307 (switch_factor_tail -> AND switch_factor switch_factor_tail .)
+    RPAREN          reduce using rule 307 (switch_factor_tail -> AND switch_factor switch_factor_tail .)
 
 
 state 1285
@@ -26872,6 +27075,7 @@ state 1285
     (308) switch_factor_tail -> OR switch_factor switch_factor_tail .
 
     COLON           reduce using rule 308 (switch_factor_tail -> OR switch_factor switch_factor_tail .)
+    RPAREN          reduce using rule 308 (switch_factor_tail -> OR switch_factor switch_factor_tail .)
 
 
 state 1286

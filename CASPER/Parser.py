@@ -696,7 +696,7 @@ def p_revive_factor(p):
            | revive_factor1                    
            | TILDE INT_LIT               
            | TILDE FLT_LIT                
-           | LPAREN revive_factor RPAREN    
+           | LPAREN revive_expression RPAREN    
     """
     # We must handle each case by length of p
     if len(p) == 3 and p[2] in ("++", "--", None):  # var_call postfix
@@ -975,9 +975,9 @@ def p_local_factor(p):
            | local_factor1                    
            | TILDE INT_LIT               
            | TILDE FLT_LIT                
-           | LPAREN local_factor RPAREN    
+           | LPAREN local_expression RPAREN    
     """
-    # We must handle each case by length of p
+     # We must handle each case by length of p
     if len(p) == 3 and p[2] in ("++", "--", None):  # var_call postfix
         p[0] = ASTNode("var_postfix", [p[1], p[2]])
     elif len(p) == 2:
@@ -1282,7 +1282,7 @@ def p_switch_factor(p):
            | switch_factor1                    
            | TILDE INT_LIT               
            | TILDE FLT_LIT                
-           | LPAREN switch_factor RPAREN    
+           | LPAREN switch_expression RPAREN    
     """
     # We must handle each case by length of p
     if len(p) == 3 and p[2] in ("++", "--", None):  # var_call postfix
@@ -1444,7 +1444,7 @@ def p_for_factor(p):
            | for_factor1                    
            | TILDE INT_LIT               
            | TILDE FLT_LIT                
-           | LPAREN for_factor RPAREN    
+           | LPAREN for_expression RPAREN    
     """
     # We must handle each case by length of p
     if len(p) == 3 and p[2] in ("++", "--", None):  # var_call postfix
@@ -1577,7 +1577,7 @@ def p_until_factor(p):
            | until_factor1                    
            | TILDE INT_LIT               
            | TILDE FLT_LIT                
-           | LPAREN until_factor RPAREN    
+           | LPAREN until_expression RPAREN    
     """
     # We must handle each case by length of p
     if len(p) == 3 and p[2] in ("++", "--", None):  # var_call postfix
@@ -1856,7 +1856,7 @@ def p_output_factor(p):
            | output_factor1                    
            | TILDE INT_LIT               
            | TILDE FLT_LIT                
-           | LPAREN output_factor RPAREN    
+           | LPAREN output_expression RPAREN    
     """
     # We must handle each case by length of p
     if len(p) == 3 and p[2] in ("++", "--", None):  # var_call postfix
@@ -2053,7 +2053,7 @@ def p_assign_factor(p):
            | assign_factor1                    
            | TILDE INT_LIT               
            | TILDE FLT_LIT                
-           | LPAREN assign_factor RPAREN  
+           | LPAREN assign_expression RPAREN  
     """
     # We must handle each case by length of p
     if len(p) == 3 and p[2] in ("++", "--", None):  # var_call postfix
@@ -2323,7 +2323,7 @@ def p_value_factor(p):
            | value_factor1                    
            | TILDE INT_LIT               
            | TILDE FLT_LIT                
-           | LPAREN value_factor RPAREN    
+           | LPAREN value_expression RPAREN    
     """
     # We must handle each case by length of p
     if len(p) == 3 and p[2] in ("++", "--", None):  # var_call postfix
@@ -2478,7 +2478,7 @@ def p_typecast_factor(p):
            | typecast_factor1                    
            | TILDE INT_LIT               
            | TILDE FLT_LIT                
-           | LPAREN typecast_factor RPAREN    
+           | LPAREN typecast_expression RPAREN    
     """
     # We must handle each case by length of p
     if len(p) == 3 and p[2] in ("++", "--", None):  # var_call postfix
