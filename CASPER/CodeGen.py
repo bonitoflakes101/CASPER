@@ -646,83 +646,113 @@ class CodeGenerator:
     #    CONDITIONAL EXECUTION
     # ==========================
     
+    
     def execute_conditional_statement(self, node):
-        """Execute a check statement (if statement)"""
         self.log("CONDITIONAL DEBUG: Starting execute_conditional_statement")
-        self.log(f"Node children count: {len(node.children) if node.children else 0}")
         
-        if node.children:
-            for i, child in enumerate(node.children):
-                if child is None:
-                    self.log(f"Child {i}: None")
-                    continue
-                if hasattr(child, 'type'):
-                    self.log(f"Child {i}: Type={child.type}")
-                else:
-                    self.log(f"Child {i}: No type attribute")
+        if not node.children:
+            self.log("CONDITIONAL DEBUG: Invalid conditional statement structure")
+            return None
         
-
-        condition_node = None
-        statements_node = None
+        condition_result = self.execute_node(node.children[0])
+        self.log(f"CONDITIONAL DEBUG: Condition result: {condition_result}")
         
-        for child in node.children:
+        if condition_result:
+            self.log("CONDITIONAL DEBUG: Main condition is TRUE, executing check block")
+            return self.execute_node(node.children[1])
+        for i in range(2, len(node.children)):
+            child = node.children[i]
             if child is None:
                 continue
-            if hasattr(child, 'type'):
-                if child.type == "condition":
-                    condition_node = child
-                    self.log(f"CONDITIONAL DEBUG: Found condition node: {child.type}")
-                elif child.type == "statements" or not statements_node:
-                    if child.type != "condition" and child.type != "otherwise_check" and child.type != "otherwise":
-                        statements_node = child
-                        self.log(f"CONDITIONAL DEBUG: Found statements node: {child.type}")
-        
-        if not condition_node and node.children and hasattr(node.children[0], 'type'):
-            if node.children[0].type != "statements":
-                condition_node = node.children[0]
-                self.log(f"CONDITIONAL DEBUG: Using first child as condition: {condition_node.type}")
-        
-        condition_result = False
-        if condition_node:
-            self.log("CONDITIONAL DEBUG: Evaluating condition")
-            condition_result = self.execute_node(condition_node)
-            self.log(f"CONDITIONAL DEBUG: Condition result: {condition_result}")
-            
-            if condition_result:
-                self.log("CONDITIONAL DEBUG: Condition is TRUE, executing statements")
-                results = []
-                for child in node.children:
-                    if child is not condition_node and child is not None:
-                        if not hasattr(child, 'type') or (child.type != "otherwise_check" and child.type != "otherwise"):
-                            self.log(f"CONDITIONAL DEBUG: Executing statement child of type: {child.type if hasattr(child, 'type') else 'unknown'}")
-                            result = self.execute_node(child)
-                            results.append(result)
-                self.log("CONDITIONAL DEBUG: Finished executing statements")
-                return results[-1] if results else None
-        else:
-            self.log("CONDITIONAL DEBUG: No condition node found!")
-        
-        self.log("CONDITIONAL DEBUG: Condition is FALSE, looking for otherwise blocks")
-        for child in node.children:
-            if child is None:
-                continue
+                
             if hasattr(child, 'type'):
                 if child.type == "otherwise_check":
-                    self.log("CONDITIONAL DEBUG: Found otherwise_check block")
-                    result = self.execute_node(child)
-                    if result is not None:
-                        self.log(f"CONDITIONAL DEBUG: otherwise_check returned: {result}")
-                        return result
-                elif child.type == "otherwise":
-                    self.log("CONDITIONAL DEBUG: Found otherwise block")
-                    result = self.execute_node(child)
-                    if result is not None:
-                        self.log(f"CONDITIONAL DEBUG: otherwise returned: {result}")
-                        return result
+                    
+                    cond_result = self.execute_condition(child.children[0])
+                    if cond_result:
+                        results = []
+                        for j in range(1, len(child.children)):
+                            result = self.execute_node(child.children[j])
+                            results.append(result)
+                        return results[-1] if results else None
+                elif child.type == "otherwise_block":
+            
+                    return self.execute_otherwise_block(child)
         
-        self.log("CONDITIONAL DEBUG: No matching condition, returning None")
+        return None
+    
+    def execute_conditional_tail(self, node):
+        """Execute else-if chains"""
+        self.log("Executing conditional_tail")
+        
+        if not node.children:
+            return None
+        
+        for child in node.children:
+            if child is not None and hasattr(child, 'type') and child.type == "otherwise_check":
+          
+                condition = None
+                block = None
+     
+                for subchild in child.children:
+                    if hasattr(subchild, 'type'):
+                        if subchild.type == "condition":
+                            condition = subchild
+                        elif subchild.type == "statements":
+                            block = subchild
+                
+                if condition and block:
+                    condition_result = self.execute_node(condition)
+                    if condition_result:
+                        return self.execute_node(block)
+        
         return None
 
+    
+    def execute_otherwise_check(self, node):
+        """Execute an otherwise_check statement (else if)"""
+        self.log("Executing otherwise_check")
+
+        if not node.children:
+            return None
+            
+        condition_result = self.execute_condition(node.children[0])
+        
+        if condition_result:
+            results = []
+            for i in range(1, len(node.children)):
+                result = self.execute_node(node.children[i])
+                results.append(result)
+            return results[-1] if results else None
+        
+        return None
+    
+    def execute_check_block(self, node):
+        """Execute a check block"""
+        self.log("Executing check_block")
+        
+        results = []
+        for child in node.children:
+            if child is not None:
+                result = self.execute_node(child)
+                results.append(result)
+        
+        return results[-1] if results else None
+
+    def execute_otherwise_block(self, node):
+        """Execute an otherwise block"""
+        self.log("Executing otherwise_block")
+        
+        results = []
+        for child in node.children:
+            if child is not None:
+                result = self.execute_node(child)
+                results.append(result)
+        
+        return results[-1] if results else None
+    
+    
+    
     def execute_condition(self, node):
         """Execute a condition expression"""
         self.log("CONDITIONAL DEBUG: Starting execute_condition")
@@ -730,54 +760,95 @@ class CodeGenerator:
         if not node.children:
             self.log("CONDITIONAL DEBUG: Condition has no children, returning False")
             return False
-        
-        for i, child in enumerate(node.children):
-            if child is None:
-                self.log(f"CONDITIONAL DEBUG: Condition child {i}: None")
-                continue
-            if hasattr(child, 'type'):
-                self.log(f"CONDITIONAL DEBUG: Condition child {i}: Type={child.type}, Value={child.value if hasattr(child, 'value') else 'no value'}")
-            else:
-                self.log(f"CONDITIONAL DEBUG: Condition child {i}: No type attribute")
-        
-        if len(node.children) == 1:
-            result = self.execute_node(node.children[0])
-            self.log(f"CONDITIONAL DEBUG: Simple condition result: {result}")
-            if isinstance(result, bool):
-                return result
-            return bool(result) 
-
-        if len(node.children) >= 3 and hasattr(node.children[1], 'type') and node.children[1].type == "operator":
-            left = self.execute_node(node.children[0])
-            op = node.children[1].value
-            right = self.execute_node(node.children[2])
-            self.log(f"CONDITIONAL DEBUG: Comparing {left} {op} {right}")
-            result = self.apply_comparison(op, left, right)
-            self.log(f"CONDITIONAL DEBUG: Comparison result: {result}")
-            return result
-        
+   
+        left_val = self.execute_node(node.children[0])
+        self.log(f"CONDITIONAL DEBUG: Left value: {left_val}")
  
-        result = self.execute_node(node.children[0])
-        self.log(f"CONDITIONAL DEBUG: Initial expression result: {result}")
+        if len(node.children) > 1 and hasattr(node.children[1], 'type') and node.children[1].type == "factor_tail_binop":
+            binop = node.children[1]
+            op_node = binop.children[0]
+            operator = op_node.value
+            right_val = self.execute_node(binop.children[1])
+            
+       
+            if operator == "%":
+                result = left_val % right_val
+                self.log(f"CONDITIONAL DEBUG: Modulo operation: {left_val} % {right_val} = {result}")
+                
+             
+                if len(binop.children) > 2 and binop.children[2] is not None:
+                    next_binop = binop.children[2]
+                    if hasattr(next_binop, 'type') and next_binop.type == "factor_tail_binop":
+                        next_op = next_binop.children[0].value
+                        next_val = self.execute_node(next_binop.children[1])
+                        self.log(f"CONDITIONAL DEBUG: Next operation: {result} {next_op} {next_val}")
+                        
+                    
+                        if next_op == "==":
+                            return result == next_val
+                        elif next_op == "!=":
+                            return result != next_val
+                        elif next_op == ">":
+                            return result > next_val
+                        elif next_op == "<":
+                            return result < next_val
+                        elif next_op == ">=":
+                            return result >= next_val
+                        elif next_op == "<=":
+                            return result <= next_val
+                
+           
+                return bool(result)
+                
 
-        if len(node.children) > 1:
-            for i in range(1, len(node.children)):
-                child = node.children[i]
-                if hasattr(child, 'type') and child.type == "factor_tail_binop" and child.children:
-                    op_node = child.children[0]
-                    if hasattr(op_node, 'type') and op_node.type == "operator":
-                        op = op_node.value
-                        right = self.execute_node(child.children[1]) if len(child.children) > 1 else None
-                        self.log(f"CONDITIONAL DEBUG: Comparing with op {op}: {result} {op} {right}")
-                        result = self.apply_comparison(op, result, right)
-                        self.log(f"CONDITIONAL DEBUG: Comparison result: {result}")
-        
+            elif operator == "==":
+                return left_val == right_val
+            elif operator == "!=":
+                return left_val != right_val
+            elif operator == ">":
+                return left_val > right_val
+            elif operator == "<":
+                return left_val < right_val
+            elif operator == ">=":
+                return left_val >= right_val
+            elif operator == "<=":
+                return left_val <= right_val
 
-        if not isinstance(result, bool):
-            self.log(f"CONDITIONAL DEBUG: Converting {result} to boolean: {bool(result)}")
-            return bool(result)
+        return bool(left_val)
+
+    def evaluate_condition_chain(self, left_value, binop_node):
+        """Helper function to evaluate condition chains with operators"""
+        self.log(f"Evaluating condition chain starting with {left_value}")
         
-        return result
+        if not binop_node or not hasattr(binop_node, 'type') or binop_node.type != "factor_tail_binop":
+            return left_value
+            
+        op_node = binop_node.children[0]
+        if not hasattr(op_node, 'type') or op_node.type != "operator":
+            self.log("Expected operator node")
+            return left_value
+            
+        operator = op_node.value
+        self.log(f"Condition operator: {operator}")
+        
+        right_value = self.execute_node(binop_node.children[1])
+        self.log(f"Condition right operand: {right_value}")
+        
+        next_binop = None
+        if len(binop_node.children) > 2 and binop_node.children[2] is not None:
+            next_binop = binop_node.children[2]
+            
+        if operator in ["==", "!=", ">", "<", ">=", "<="]:
+            temp_result = self.apply_comparison(operator, left_value, right_value)
+        else:
+            temp_result = self.apply_operator(operator, left_value, right_value)
+        
+        self.log(f"Intermediate result: {left_value} {operator} {right_value} = {temp_result}")
+
+        if next_binop is not None and hasattr(next_binop, 'type') and next_binop.type == "factor_tail_binop":
+            return self.evaluate_condition_chain(temp_result, next_binop)
+        
+        return temp_result
 
     def apply_comparison(self, operator, left, right):
         """Apply comparison operators"""
@@ -794,50 +865,14 @@ class CodeGenerator:
             return left >= right
         elif operator == "<=":
             return left <= right
+        
+        
         else:
-
             return self.apply_operator(operator, left, right)
-
-    def execute_otherwise_check(self, node):
-        """Execute an otherwise_check statement (else if)"""
-        self.log("Executing otherwise_check")
-        
-    
-        condition_node = None
-        
-        for child in node.children:
-            if child is None:
-                continue
-            if hasattr(child, 'type') and child.type == "condition":
-                condition_node = child
-                break
-        
-    
-        if not condition_node and node.children and node.children[0] is not None:
-            condition_node = node.children[0]
-        
-  
-        if condition_node:
-            condition_result = self.execute_node(condition_node)
-            self.log(f"Otherwise check condition result: {condition_result}")
-            
-          
-            if condition_result:
-                results = []
-                for child in node.children:
-                    if child is not condition_node and child is not None:
-                        result = self.execute_node(child)
-                        results.append(result)
-                
-                return results[-1] if results else None
-        
-        return None
-
     def execute_otherwise(self, node):
         """Execute an otherwise statement (else block)"""
         self.log("Executing otherwise")
         
-    
         results = []
         for child in node.children:
             if child is not None:

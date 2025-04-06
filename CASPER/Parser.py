@@ -1092,9 +1092,14 @@ def p_local_type_cast(p):
 # -----------------------------------------------------------------------------
 def p_conditional_statement(p):
     """
-    conditional_statement : CHECK LPAREN condition RPAREN LBRACE  statements RBRACE conditional_tail OTHERWISE LBRACE statements RBRACE 
+    conditional_statement : CHECK LPAREN condition RPAREN LBRACE statements RBRACE conditional_tail OTHERWISE LBRACE statements RBRACE
     """
-    p[0] = ASTNode("conditional_statement", children=[p[3], p[6], p[8], p[11]])
+    p[0] = ASTNode("conditional_statement", children=[
+        p[3],  # condition
+        ASTNode("check_block", children=[p[6]]),  # check block statements
+        p[8],  # conditional_tail (any otherwise_check blocks)
+        ASTNode("otherwise_block", children=[p[11]])  # otherwise block statements
+    ])
 
 
 # -----------------------------------------------------------------------------

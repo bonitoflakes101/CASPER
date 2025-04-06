@@ -280,7 +280,7 @@ display($perimeter);
 } ghost
 
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-19 - NOT WORKING, if true yung check it displays both check and otherwise
+19 
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 birth {
 
@@ -295,6 +295,26 @@ int $num = 7;
         display("The number is odd");
     }
 
+
+}
+
+} ghost
+
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+20 
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+birth {
+
+
+@main_casper(){
+
+int $year = 2024;
+
+check (($year % 4 == 0) && ($year % 100 != 0) || ($year % 400 == 0)) {
+    display("Leap year");
+} otherwise {
+    display("Not a leap year");
+}
 
 }
 
