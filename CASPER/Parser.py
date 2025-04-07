@@ -1766,7 +1766,7 @@ def p_postfix_op(p):
 def p_function_call_statement(p):
     """
     function_call_statement : FUNCTION_NAME LPAREN arguments RPAREN SEMICOLON
-                  | input_statement                   
+                  | input_statement SEMICOLON                 
     """
     if len(p) == 6:  
         p[0] = ASTNode("function_call", children=[
@@ -2540,12 +2540,11 @@ def p_typecast_factor1 (p):
     """
     p[0] = p[1]  
 # -----------------------------------------------------------------------------
-# (163) <input_statement> → input()
-# -----------------------------------------------------------------------------
+# (163) <input_statement> → input() or input(prompt)
 def p_input_statement(p):
-    """
-    input_statement : INPUT LPAREN RPAREN  
-    """
+    '''
+    input_statement : INPUT LPAREN RPAREN
+    '''
     p[0] = ASTNode("input_statement", value=p[1])
 
 def p_empty(p):

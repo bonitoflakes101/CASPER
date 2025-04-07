@@ -133,7 +133,6 @@ function defineCasperMonacoTheme(monaco) {
 
 
 function openTab(evt, tabName) {
-
   const tabcontents = document.getElementsByClassName("tabcontent");
   for (let i = 0; i < tabcontents.length; i++) {
     tabcontents[i].style.display = "none";
@@ -147,3 +146,102 @@ function openTab(evt, tabName) {
   document.getElementById(tabName).style.display = "block";
   evt.currentTarget.classList.add("active");
 }
+
+// Terminal input handling
+document.addEventListener("DOMContentLoaded", function () {
+  const terminalInput = document.getElementById("terminal-input");
+  const outputElement = document.getElementById("output");
+
+  if (terminalInput) {
+    // Set up polling for program status
+    let programStatusInterval = setInterval(checkProgramStatus, 1000);
+
+    terminalInput.addEventListener("keydown", function (event) {
+      if (event.key === "Enter") {
+        const userInput = terminalInput.value;
+
+        // Clear the input field
+        terminalInput.value = "";
+
+        // Send input to the backend
+        submitUserInput(userInput);
+      }
+    });
+
+    // Check program status initially
+    checkProgramStatus();
+  }
+
+  // Function to check if the program is waiting for input
+  function checkProgramStatus() {
+    fetch('/program_status')
+      .then(response => response.json())
+      .then(data => {
+        // Find last non-empty line in the output
+        const lines = data.output.trim().split('\n');
+        const lastLine = lines[lines.length - 1] || '';
+
+        // Only consider it a prompt if it matches exactly
+        const promptInOutput = lastLine === data.prompt;
+
+        // Update the output display with clean content
+        outputElement.textContent = data.output;
+        outputElement.scrollTop = outputElement.scrollHeight;
+
+        // Handle input field based on program status
+        if (data.status === 'waiting_for_input') {
+          // Only append prompt if it's not exactly the last line
+          if (data.prompt && !promptInOutput) {
+            // Remove any partial prompt from the end of output
+            let cleanOutput = data.output.trim();
+            if (cleanOutput.endsWith(data.prompt)) {
+              cleanOutput = cleanOutput.slice(0, -data.prompt.length).trim();
+            }
+            outputElement.textContent = cleanOutput + '\n' + data.prompt;
+            outputElement.scrollTop = outputElement.scrollHeight;
+          }
+
+          // Enable input field
+          terminalInput.disabled = false;
+          terminalInput.focus();
+          console.log("Input enabled - waiting for input");
+        } else {
+          // Disable input field when not waiting for input
+          terminalInput.disabled = true;
+          console.log("Input disabled - not waiting for input");
+        }
+      })
+      .catch(error => {
+        console.error('Error checking program status:', error);
+      });
+  }
+
+  // Function to submit user input to the backend
+  function submitUserInput(input) {
+    fetch('/provide_input', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ input: input })
+    })
+      .then(response => response.json())
+      .then(data => {
+        // Update the output terminal
+        outputElement.textContent = data.output;
+        // Scroll to the bottom
+        outputElement.scrollTop = outputElement.scrollHeight;
+
+        // If still waiting for input, focus the input field
+        if (data.waiting_for_more) {
+          terminalInput.focus();
+        }
+      })
+      .catch(error => {
+        console.error('Error submitting input:', error);
+        // Display error message in the terminal
+        outputElement.textContent += '\nError communicating with the server. Please try again.';
+        outputElement.scrollTop = outputElement.scrollHeight;
+      });
+  }
+});

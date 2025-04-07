@@ -2,16 +2,17 @@ from Parser import ASTNode
 
 class CodeGenerator:
     def __init__(self):
-        # Global variables dictionary
         self.global_vars = {}
-        # Environment stack, where the first element is the global scope
         self.env_stack = [self.global_vars]
-        # Function definitions dictionary
         self.functions = {}
-        # Return value stack for functions
         self.return_values = []
-        # Set debug mode
-        self.debug = False # Set to True by default to enable debugging
+        self.debug = False 
+        self.waiting_for_input = False
+        self.input_value = None
+        self.input_prompt = ""
+        self.ast = None
+        self.paused_node = None
+        self.parent_nodes = []
 
     def log(self, message):
         if self.debug:
@@ -63,14 +64,35 @@ class CodeGenerator:
         return flat
 
     def generate(self, ast):
+        """
+        Main entry point for code generation.
+        If ast is None, it means we're resuming execution after input.
+        """
+        if ast is not None:
+       
+            self.ast = ast
+            
+        if ast is None and not self.waiting_for_input:       
+            self.log("Resuming execution after input")
+            return
+            
         self.execute_node(ast)
 
     def execute_node(self, node):
-        
+        if node is None and self.paused_node and not self.waiting_for_input:
+            self.log("Resuming execution with paused node after input")
+            temp_node = self.paused_node
+            self.paused_node = None
+            return self.execute_node(temp_node)
+
+        if self.waiting_for_input:
+            self.log("Waiting for input, pausing execution")
+            return None
+            
         if node is None:
             self.log("execute_node received None")
             return None
-                
+
         if isinstance(node, list):
             self.log(f"execute_node processing list of length {len(node)}")
             results = []
@@ -79,14 +101,20 @@ class CodeGenerator:
                 if res is not None:
                     results.append(res)
             return results if results else None
-                
+
         if not hasattr(node, 'type'):
             self.log(f"Node has no type attribute: {node}")
             return None
 
         self.log(f"execute_node processing node of type: {node.type}")
         
-        # Enhanced debug for conditional structures
+        if node.type == "input_statement" and self.input_value is not None and not self.waiting_for_input:
+            input_val = self.input_value
+            self.log(f"Returning input value from input statement: {input_val}")
+            self.input_value = None
+            return input_val
+        
+ 
         if node.type in ["conditional_statement", "condition", "otherwise_check", "otherwise"]:
             self.log(f"DEBUG: Found conditional structure node of type: {node.type}")
             self.log(f"DEBUG: Node details - ID: {id(node)}, Children count: {len(node.children) if node.children else 0}")
@@ -95,7 +123,6 @@ class CodeGenerator:
         if node.children:
             node.children = self.flatten_nodes(node.children)
 
-        # Add explicit handling for all conditional types with extra logging
         if node.type == "conditional_statement":
             self.log("CONDITIONAL: Routing to execute_conditional_statement")
             return self.execute_conditional_statement(node)
@@ -109,7 +136,6 @@ class CodeGenerator:
             self.log("CONDITIONAL: Routing to execute_otherwise")
             return self.execute_otherwise(node)
         
-        # Existing method dispatch
         method_name = f"execute_{node.type}"
         executor = getattr(self, method_name, self.generic_execute)
         result = executor(node)
@@ -363,14 +389,26 @@ class CodeGenerator:
         # Find assignment if it exists
         assign_node = None
         for child in valid_children:
-            if hasattr(child, 'type') and (child.type == "local_var_assign" or child.type == "expression" or child.type == "function_call"):
+            if hasattr(child, 'type') and (child.type == "local_var_assign" or child.type == "expression" or child.type == "function_call" or child.type == "input_statement"):
                 assign_node = child
                 break
         
         # If there's an assignment, use its value; otherwise use default
         if assign_node:
             value = self.execute_node(assign_node)
+            # Special handling for input_statement results
+            if assign_node.type == "input_statement" and value is None and self.input_value is not None:
+                value = self.input_value
+                self.input_value = None  # Clear to prevent reuse
+            
             self.log(f"Evaluated expression value: {value}")
+            
+            # Type conversion based on variable declaration
+            if data_type == "int" and value is not None:
+                try:
+                    value = int(value)
+                except (ValueError, TypeError):
+                    print(f"Warning: Could not convert {value} to int")
         else:
             value = default_value
             self.log(f"No assignment found, using default value: {value}")
@@ -416,7 +454,11 @@ class CodeGenerator:
         
         result = self.execute_node(node.children[0])
         self.log(f"Display result: {result}")
-        print(result)  
+        
+        # Convert result to string and print
+        if result is not None:
+            print(f"{result}")
+        
         return result
 
     # ==========================
@@ -950,6 +992,77 @@ class CodeGenerator:
         else:
             self.log("No value node found in assign_tail_op")
             return None
+
+    def execute_input_statement(self, node):
+        self.log("Executing input_statement")
+        
+        # If input value is already available, return it immediately without showing prompt again
+        if self.input_value is not None and not self.waiting_for_input:
+            input_val = self.input_value
+            self.log(f"Using provided input value: {input_val}")
+            
+            # Clear input value to prevent reuse
+            self.input_value = None
+            self.paused_node = None
+            
+            # Return the value with appropriate type conversion
+            if isinstance(input_val, str) and input_val.isdigit():
+                return int(input_val)
+            return input_val
+        
+        # Always set waiting flag and store the current node
+        self.paused_node = node
+        self.waiting_for_input = True
+        
+        # Process prompt if available
+        prompt = ""
+        if len(node.children) > 0:
+            # Use first child as prompt if available
+            prompt_node = node.children[0]
+            if prompt_node:
+                prompt = self.execute_node(prompt_node)
+                if prompt:
+                    # Print the prompt without newline to match typical input behavior
+                    print(prompt, end="")
+        
+        # Set prompt in object state
+        self.input_prompt = prompt
+        self.log("Waiting for input...")
+        
+        # This will pause execution until input is provided
+        return None
+    
+    def provide_input(self, input_value):
+        """Process user input and continue execution"""
+        self.log(f"Received input: {input_value}")
+        
+        # Try to convert to integer if it looks like one
+        try:
+            converted_value = int(input_value)
+            self.log(f"Converted input to integer: {converted_value}")
+            self.input_value = converted_value
+        except ValueError:
+            self.log(f"Keeping input as string: {input_value}")
+            self.input_value = input_value
+        
+        # Mark that we're no longer waiting for input
+        self.waiting_for_input = False
+        
+        # If we have a paused node, do not reprocess it here (we'll do it in execute_node)
+        # Just return the input value
+        self.log(f"Input processed: {self.input_value}")
+        return self.input_value
+    
+    def is_waiting_for_input(self):
+        """Check if the program is waiting for input"""
+        self.log(f"is_waiting_for_input called, returning: {self.waiting_for_input}")
+        return self.waiting_for_input
+    
+    def get_input_prompt(self):
+        """Get the current input prompt if waiting for input"""
+        return self.input_prompt if self.waiting_for_input else ""
+
 def run_code_generation(ast):
     generator = CodeGenerator()
     generator.generate(ast)
+    return generator  # Return the generator instance for input handling
