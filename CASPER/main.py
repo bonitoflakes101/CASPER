@@ -233,8 +233,9 @@ def provide_input():
         
         lines = temp_output.split('\n')
         output_after_input = []
-        found_prompt = False
+        prompt = current_generator.get_input_prompt().strip()
         
+        # Process all output without filtering for specific prompts
         for line in lines:
             if (line.startswith('DEBUG:') or 
                 'EXECUTE_INPUT_STATEMENT CALLED' in line or 
@@ -242,15 +243,12 @@ def provide_input():
                 'is_waiting_for_input called' in line):
                 continue
             
-    
-            if "Enter a Number" in line:
-                found_prompt = True
+            # Skip lines that match or start with the prompt
+            if line == prompt or (prompt and line.startswith(prompt)):
                 continue
                 
-        
-            if found_prompt:
-                output_after_input.append(line)
-        
+            # Keep all other output lines
+            output_after_input.append(line)
    
         print('\n'.join(output_after_input))
         

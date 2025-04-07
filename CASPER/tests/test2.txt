@@ -223,7 +223,7 @@ function @drawIsoscelesTriangle(int $rows) {
             display " ";
         }
         << Then print stars >>
-        for(int $j = 1; $j <= 2 * $i - 1; $j++) {
+        for(int $x = 1; $x <= 2 * $i - 1; $x++) {
             display "*";
         }
         display "\n";
@@ -267,7 +267,7 @@ function @drawRectangle(int $height) {
     
     display "\n";
     
-    if($choice == 1) {
+    check($choice == 1) {
         display "Drawing Right Triangle with ";
         display $rows;
         display " rows:\n";

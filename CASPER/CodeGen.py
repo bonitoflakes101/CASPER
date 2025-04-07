@@ -464,7 +464,7 @@ class CodeGenerator:
                 self.log(f"Directly displaying variable {var_name} = {value}")
                 
                 if value is not None:
-                    print(value, end="\t")  # Use tab for better spacing
+                    print(value)  # Changed to use default newline
                 return value
         
         # Standard processing for other types of output children
@@ -479,7 +479,7 @@ class CodeGenerator:
             
             # Make sure we display the result properly, even if it's a number
             if result is not None:
-                print(result, end="")  # Use end="" to avoid adding newline
+                print(result)  # Changed to use default newline
         
         return None  # The output statement doesn't return a value
         
@@ -489,12 +489,32 @@ class CodeGenerator:
             print("Warning: display_statement has no children.")
             return None
         
-        result = self.execute_node(node.children[0])
+        child = node.children[0]
+        
+        # Special handling for variable display
+        if hasattr(child, 'type'):
+            # Check for var_call nodes (variables)
+            if child.type == "var_call" and child.children and hasattr(child.children[0], 'value'):
+                var_name = child.children[0].value.lstrip('$')
+                value = self.lookup_variable(var_name)
+                self.log(f"Display variable: {var_name} = {value}")
+                
+                if value is not None:
+                    print(f"{value}")  # Added newline by using print without end=""
+                return value
+        
+        # Process other types of display children
+        result = self.execute_node(child)
         self.log(f"Display result: {result}")
         
-        # Convert result to string and print
+        # Handle string literals
+        if isinstance(result, str) and result.startswith('"') and result.endswith('"'):
+            # Remove quotes for display
+            result = result[1:-1].replace('\\n', '\n').replace('\\t', '\t')
+        
+        # Display the result
         if result is not None:
-            print(f"{result}")
+            print(f"{result}")  # Added newline by using print without end=""
         
         return result
 
