@@ -200,8 +200,104 @@ display "**********";
 }
 ghost
 
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+16
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+birth {
 
+<< Function to draw a right triangle with n rows >>
+function @drawRightTriangle(int $rows) {
+    for(int $i = 1; $i <= $rows; $i++) {
+        for(int $j = 1; $j <= $i; $j++) {
+            display "*";
+        }
+        display "\n";
+    }
+}
 
+<< Function to draw an isosceles triangle with n rows >>
+function @drawIsoscelesTriangle(int $rows) {
+    for(int $i = 1; $i <= $rows; $i++) {
+        << Print spaces first >>
+        for(int $j = 1; $j <= $rows - $i; $j++) {
+            display " ";
+        }
+        << Then print stars >>
+        for(int $j = 1; $j <= 2 * $i - 1; $j++) {
+            display "*";
+        }
+        display "\n";
+    }
+}
+
+<< Function to draw a square with side length n >>
+function @drawSquare(int $size) {
+    for(int $i = 1; $i <= $size; $i++) {
+        for(int $j = 1; $j <= $size; $j++) {
+            display "*";
+        }
+        display "\n";
+    }
+}
+
+<< Function to draw a rectangle with height n and width n*2 >>
+function @drawRectangle(int $height) {
+    int $width = $height * 2;
+    for(int $i = 1; $i <= $height; $i++) {
+        for(int $j = 1; $j <= $width; $j++) {
+            display "*";
+        }
+        display "\n";
+    }
+}
+
+<< Main function that takes user input and calls the appropriate shape function >>
+@main_casper() {
+    display "Shape Drawing Program\n";
+    display "1 - Right Triangle\n";
+    display "2 - Isosceles Triangle\n";
+    display "3 - Square\n";
+    display "4 - Rectangle\n";
+    
+    display "Enter shape number (1-4): ";
+    int $choice = input();
+    
+    display "Enter number of rows/size: ";
+    int $rows = input();
+    
+    display "\n";
+    
+    if($choice == 1) {
+        display "Drawing Right Triangle with ";
+        display $rows;
+        display " rows:\n";
+        @drawRightTriangle($rows);
+    } 
+    otherwise_check($choice == 2) {
+        display "Drawing Isosceles Triangle with ";
+        display $rows;
+        display " rows:\n";
+        @drawIsoscelesTriangle($rows);
+    }
+    otherwise_check($choice == 3) {
+        display "Drawing Square with side length ";
+        display $rows;
+        display ":\n";
+        @drawSquare($rows);
+    }
+    otherwise_check($choice == 4) {
+        display "Drawing Rectangle with height ";
+        display $rows;
+        display ":\n";
+        @drawRectangle($rows);
+    }
+    otherwise {
+        display "Invalid choice! Please enter a number from 1 to 4.\n";
+    }
+}
+
+}
+ghost
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 COMPUTE AREA - FIX CONDITIONAL
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
