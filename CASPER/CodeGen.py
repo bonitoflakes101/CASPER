@@ -436,15 +436,36 @@ class CodeGenerator:
 
     def execute_output_statement(self, node):
         self.log("Executing output_statement")
-        # output_statement -> child: value
-        if len(node.children) < 1:
+        
+        if not node.children:
             print("Warning: output_statement has no children.")
             return None
         
-        result = self.execute_node(node.children[0])
-        self.log(f"Output result: {result}")
-        print(result)  
-        return result
+        # Special handling for IDENT nodes (variable display)
+        # This is to directly handle variables within output statements
+        if len(node.children) == 1 and hasattr(node.children[0], 'type'):
+            child = node.children[0]
+            
+            # If it's a var_call node, get the variable and directly display its value
+            if child.type == "var_call" and child.children and hasattr(child.children[0], 'value'):
+                var_name = child.children[0].value.lstrip('$')
+                value = self.lookup_variable(var_name)
+                self.log(f"Directly displaying variable {var_name} = {value}")
+                
+                if value is not None:
+                    print(value, end="")
+                return value
+        
+        # Standard processing for other types of output children
+        for child in node.children:
+            result = self.execute_node(child)
+            self.log(f"Output result: {result}")
+            
+            # Make sure we display the result properly, even if it's a number
+            if result is not None:
+                print(result, end="")  # Use end="" to avoid adding newline
+        
+        return None  # The output statement doesn't return a value
         
     def execute_display_statement(self, node):
         self.log("Executing display_statement")
@@ -590,6 +611,19 @@ class CodeGenerator:
                 print("Error: Modulo by zero")
                 return 0
             return left % right
+        # Add comparison operators as fallback
+        elif operator == "==":
+            return left == right
+        elif operator == "!=":
+            return left != right
+        elif operator == ">":
+            return left > right
+        elif operator == "<":
+            return left < right
+        elif operator == ">=":
+            return left >= right
+        elif operator == "<=":
+            return left <= right
         else:
             print(f"Unsupported operator: {operator}")
             return None
@@ -637,6 +671,7 @@ class CodeGenerator:
         # Remove $ prefix if present for variable lookups
         clean_var_name = var_name.lstrip('$')
         self.log(f"var_call looking up: '{clean_var_name}'")
+        
         result = self.lookup_variable(clean_var_name)
         self.log(f"var_call result: {result}")
         return result
@@ -1061,6 +1096,185 @@ class CodeGenerator:
     def get_input_prompt(self):
         """Get the current input prompt if waiting for input"""
         return self.input_prompt if self.waiting_for_input else ""
+
+    # ==========================
+    #    LOOP EXECUTION
+    # ==========================
+    
+    def execute_for_loop(self, node):
+        """Execute a for loop statement"""
+        self.log("Executing for_loop")
+        
+        if len(node.children) < 4:
+            self.log("for_loop has insufficient children")
+            return None
+            
+        # The children should be [control_variable, condition, update, statements...]
+        control_var_node = node.children[0]
+        condition_node = node.children[1]
+        update_node = node.children[2]
+        
+        # Get all statement nodes (everything from index 3 onwards)
+        statement_nodes = node.children[3:]
+        self.log(f"For loop has {len(statement_nodes)} statement nodes")
+        
+        # Create a new scope for the loop variables
+        self.push_scope()
+        
+        # Execute the control variable initialization
+        self.execute_control_variable(control_var_node)
+        
+        # Loop execution
+        while True:
+            # Check the loop condition - ensuring we handle it as a condition, not a regular expression
+            if condition_node.type == "condition":
+                # If it's already a condition node, use execute_condition
+                condition_result = self.execute_condition(condition_node)
+            elif condition_node.type == "for_expression":
+                # Convert for_expression to condition evaluation pattern
+                left_val = self.execute_node(condition_node.children[0])
+                if len(condition_node.children) > 1 and hasattr(condition_node.children[1], 'type') and condition_node.children[1].type == "factor_tail_binop":
+                    binop = condition_node.children[1]
+                    op_node = binop.children[0]
+                    operator = op_node.value
+                    right_val = self.execute_node(binop.children[1])
+                    
+                    # Use apply_comparison for comparison operators
+                    if operator in ["==", "!=", ">", "<", ">=", "<="]:
+                        condition_result = self.apply_comparison(operator, left_val, right_val)
+                    else:
+                        condition_result = self.apply_operator(operator, left_val, right_val)
+                else:
+                    condition_result = bool(left_val)
+            else:
+                # Otherwise just try to execute and convert to boolean
+                condition_result = bool(self.execute_node(condition_node))
+                
+            self.log(f"For loop condition result: {condition_result}")
+            
+            if not condition_result:
+                break
+                
+            # Execute each statement in the loop body
+            for stmt_node in statement_nodes:
+                self.log(f"Executing statement of type: {stmt_node.type}")
+                self.execute_node(stmt_node)
+                
+                # Check if waiting for input, and if so, pause execution
+                if self.waiting_for_input:
+                    self.log("For loop paused waiting for input")
+                    # Save state so we can resume later
+                    self.paused_node = node
+                    # Exit the loop without popping scope
+                    return None
+            
+            # Execute the update statement
+            self.execute_node(update_node)
+        
+        # Clean up the loop scope
+        self.pop_scope()
+        return None
+        
+    def execute_control_variable(self, node):
+        """Execute a control variable initialization"""
+        self.log("Executing control_variable")
+        
+        if len(node.children) < 3:
+            self.log("control_variable has insufficient children")
+            return None
+            
+        # Get the variable name and data type
+        data_type_node = node.children[0]
+        ident_node = node.children[1]
+        init_value_node = node.children[2]
+        
+        var_name = ident_node.value.lstrip('$')
+        data_type = data_type_node.value
+        
+        # Execute the initial value
+        initial_value = self.execute_node(init_value_node)
+        
+        # Assign the variable to the current scope
+        self.get_current_env()[var_name] = initial_value
+        self.log(f"Initialized loop control variable '{var_name}' = {initial_value}")
+        
+        return initial_value
+        
+    def execute_update(self, node):
+        """Execute an update statement"""
+        self.log("Executing update")
+        
+        if len(node.children) < 2:
+            self.log("update has insufficient children")
+            return None
+            
+        var_call_node = node.children[0]
+        update_tail_node = node.children[1]
+        
+        # Get the variable name from var_call
+        var_name = None
+        if hasattr(var_call_node, 'children') and var_call_node.children:
+            ident_node = var_call_node.children[0]
+            if hasattr(ident_node, 'value'):
+                var_name = ident_node.value.lstrip('$')
+        
+        if not var_name:
+            self.log("Could not find variable name in update")
+            return None
+            
+        # Get the current value of the variable
+        current_value = self.lookup_variable(var_name)
+        
+        if hasattr(update_tail_node, 'type'):
+            if update_tail_node.type == "update_tail_postfix":
+                # Handle ++ or -- operations
+                postfix_op = update_tail_node.value
+                
+                if postfix_op == "++":
+                    new_value = current_value + 1
+                elif postfix_op == "--":
+                    new_value = current_value - 1
+                else:
+                    self.log(f"Unknown postfix operator: {postfix_op}")
+                    return None
+                    
+                self.log(f"Updating variable '{var_name}' from {current_value} to {new_value} with {postfix_op}")
+                self.assign_variable(var_name, new_value)
+                return new_value
+                
+            elif update_tail_node.type == "update_tail_compound":
+                # Handle compound operators like +=, -=, etc.
+                compound_op = update_tail_node.children[0]
+                value_node = update_tail_node.children[1]
+                
+                update_value = self.execute_node(value_node)
+                
+                if compound_op == "+=":
+                    new_value = current_value + update_value
+                elif compound_op == "-=":
+                    new_value = current_value - update_value
+                elif compound_op == "*=":
+                    new_value = current_value * update_value
+                elif compound_op == "/=":
+                    if update_value == 0:
+                        self.log("Error: Division by zero in update")
+                        return None
+                    new_value = current_value / update_value
+                elif compound_op == "%=":
+                    if update_value == 0:
+                        self.log("Error: Modulo by zero in update")
+                        return None
+                    new_value = current_value % update_value
+                else:
+                    self.log(f"Unknown compound operator: {compound_op}")
+                    return None
+                    
+                self.log(f"Updating variable '{var_name}' from {current_value} to {new_value} with {compound_op}")
+                self.assign_variable(var_name, new_value)
+                return new_value
+        
+        self.log("Unknown update tail type")
+        return None
 
 def run_code_generation(ast):
     generator = CodeGenerator()
