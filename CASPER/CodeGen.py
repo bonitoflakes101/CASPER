@@ -32,25 +32,36 @@ class CodeGenerator:
 
     def lookup_variable(self, var_name):
         self.log(f"Looking up variable: '{var_name}'")
-        self.log(f"Current environment stack: {self.env_stack}")
-      
+        
+        # Search through the environment stack, starting with the most local scope
         for env in reversed(self.env_stack):
-            self.log(f"Checking env: {env}")
             if var_name in env:
                 self.log(f"Found '{var_name}' with value: {env[var_name]}")
                 return env[var_name]
+        
         self.log(f"Variable '{var_name}' not found in any environment")
         return None
 
     def assign_variable(self, var_name, value):
         self.log(f"Assigning '{var_name}' = {value}")
-       
+        
+        # First try to find and update the variable in an existing scope
         for env in reversed(self.env_stack):
             if var_name in env:
-                env[var_name] = value
+                # Make sure we're assigning a clean value to prevent memory corruption
+                if isinstance(value, int):
+                    env[var_name] = int(value)  # Ensure it's a clean int
+                else:
+                    env[var_name] = value
+                self.log(f"Updated existing variable '{var_name}' = {value} in scope")
                 return
- 
-        self.get_current_env()[var_name] = value
+        
+        # If not found, add to current scope
+        if isinstance(value, int):
+            self.get_current_env()[var_name] = int(value)  # Ensure it's a clean int
+        else:
+            self.get_current_env()[var_name] = value
+        self.log(f"Created new variable '{var_name}' = {value} in current scope")
 
     def flatten_nodes(self, nodes):
         if not isinstance(nodes, list):
@@ -453,13 +464,18 @@ class CodeGenerator:
                 self.log(f"Directly displaying variable {var_name} = {value}")
                 
                 if value is not None:
-                    print(value, end="")
+                    print(value, end="\t")  # Use tab for better spacing
                 return value
         
         # Standard processing for other types of output children
         for child in node.children:
             result = self.execute_node(child)
             self.log(f"Output result: {result}")
+            
+            # Handle string literals containing formatting instructions
+            if isinstance(result, str) and result.startswith('"') and result.endswith('"'):
+                # Remove the quotes and handle escape sequences
+                result = result[1:-1].replace('\\n', '\n').replace('\\t', '\t')
             
             # Make sure we display the result properly, even if it's a number
             if result is not None:
@@ -630,8 +646,14 @@ class CodeGenerator:
 
     def execute_literal(self, node):
         self.log(f"Executing literal: {node}, value={node.value}")
-        # literal (value=3)
-        return node.value
+        value = node.value
+        
+        # Special handling for strings with escape sequences
+        if isinstance(value, str) and value.startswith('"') and value.endswith('"'):
+            # Keep quotes for now, so we can identify string literals later
+            self.log(f"String literal detected: {value}")
+        
+        return value
 
     def execute_data_type(self, node):
         self.log(f"Executing data_type: {node}")
@@ -1124,8 +1146,15 @@ class CodeGenerator:
         # Execute the control variable initialization
         self.execute_control_variable(control_var_node)
         
+        loop_count = 0
         # Loop execution
         while True:
+            # Safety limit to prevent infinite loops during debugging
+            loop_count += 1
+            if loop_count > 1000:  # Reasonable limit for most loops
+                self.log("Loop safety limit reached (1000 iterations)")
+                break
+                
             # Check the loop condition - ensuring we handle it as a condition, not a regular expression
             if condition_node.type == "condition":
                 # If it's already a condition node, use execute_condition
@@ -1224,6 +1253,11 @@ class CodeGenerator:
             
         # Get the current value of the variable
         current_value = self.lookup_variable(var_name)
+        if current_value is None:
+            self.log(f"Variable '{var_name}' not found or None value")
+            return None
+        
+        self.log(f"Current value of '{var_name}' is {current_value}")
         
         if hasattr(update_tail_node, 'type'):
             if update_tail_node.type == "update_tail_postfix":
@@ -1232,18 +1266,28 @@ class CodeGenerator:
                 
                 if postfix_op == "++":
                     new_value = current_value + 1
+                    self.log(f"Incrementing '{var_name}' from {current_value} to {new_value}")
                 elif postfix_op == "--":
                     new_value = current_value - 1
+                    self.log(f"Decrementing '{var_name}' from {current_value} to {new_value}")
                 else:
                     self.log(f"Unknown postfix operator: {postfix_op}")
                     return None
                     
+                # Ensure the value is an integer to avoid type issues
+                if isinstance(current_value, int):
+                    new_value = int(new_value)
+                
                 self.log(f"Updating variable '{var_name}' from {current_value} to {new_value} with {postfix_op}")
                 self.assign_variable(var_name, new_value)
                 return new_value
                 
             elif update_tail_node.type == "update_tail_compound":
                 # Handle compound operators like +=, -=, etc.
+                if len(update_tail_node.children) < 2:
+                    self.log("Invalid update_tail_compound structure")
+                    return None
+                    
                 compound_op = update_tail_node.children[0]
                 value_node = update_tail_node.children[1]
                 
@@ -1268,6 +1312,10 @@ class CodeGenerator:
                 else:
                     self.log(f"Unknown compound operator: {compound_op}")
                     return None
+                
+                # Ensure consistent type
+                if isinstance(current_value, int):
+                    new_value = int(new_value)
                     
                 self.log(f"Updating variable '{var_name}' from {current_value} to {new_value} with {compound_op}")
                 self.assign_variable(var_name, new_value)
