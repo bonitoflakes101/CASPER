@@ -151,10 +151,17 @@ function openTab(evt, tabName) {
 document.addEventListener("DOMContentLoaded", function () {
   const terminalInput = document.getElementById("terminal-input");
   const outputElement = document.getElementById("output");
+  const stopButton = document.getElementById("stopCodeButton");
+  const runButton = document.querySelector(".run-button");
+
+  // Ensure stop button is disabled on page load
+  if (stopButton) {
+    stopButton.disabled = true;
+  }
 
   if (terminalInput) {
-    // Set up polling for program status
-    let programStatusInterval = setInterval(checkProgramStatus, 1000);
+    // Set up polling for program status - check more frequently for better responsiveness
+    let programStatusInterval = setInterval(checkProgramStatus, 500);
 
     terminalInput.addEventListener("keydown", function (event) {
       if (event.key === "Enter") {
@@ -167,6 +174,16 @@ document.addEventListener("DOMContentLoaded", function () {
         submitUserInput(userInput);
       }
     });
+
+    // Stop button functionality
+    if (stopButton) {
+      stopButton.addEventListener("click", function () {
+        stopRunningProgram();
+        // Immediately disable input field and stop button when clicked
+        terminalInput.disabled = true;
+        stopButton.disabled = true;
+      });
+    }
 
     // Check program status initially
     checkProgramStatus();
@@ -188,31 +205,83 @@ document.addEventListener("DOMContentLoaded", function () {
         outputElement.textContent = data.output;
         outputElement.scrollTop = outputElement.scrollHeight;
 
-        // Handle input field based on program status
-        if (data.status === 'waiting_for_input') {
-          // Only append prompt if it's not exactly the last line
-          if (data.prompt && !promptInOutput) {
-            // Remove any partial prompt from the end of output
-            let cleanOutput = data.output.trim();
-            if (cleanOutput.endsWith(data.prompt)) {
-              cleanOutput = cleanOutput.slice(0, -data.prompt.length).trim();
-            }
-            outputElement.textContent = cleanOutput + '\n' + data.prompt;
-            outputElement.scrollTop = outputElement.scrollHeight;
+        // First, ensure stop button is disabled by default
+        if (stopButton) {
+          stopButton.disabled = true;
+        }
+
+        // Then only enable it when explicitly in running or waiting_for_input state
+        if (data.status === 'waiting_for_input' || data.status === 'running') {
+          // Enable stop button when the program is running
+          if (stopButton) {
+            stopButton.disabled = false;
           }
 
-          // Enable input field
-          terminalInput.disabled = false;
-          terminalInput.focus();
-          console.log("Input enabled - waiting for input");
+          if (data.status === 'waiting_for_input') {
+            // Only append prompt if it's not exactly the last line
+            if (data.prompt && !promptInOutput) {
+              // Remove any partial prompt from the end of output
+              let cleanOutput = data.output.trim();
+              if (cleanOutput.endsWith(data.prompt)) {
+                cleanOutput = cleanOutput.slice(0, -data.prompt.length).trim();
+              }
+              outputElement.textContent = cleanOutput + '\n' + data.prompt;
+              outputElement.scrollTop = outputElement.scrollHeight;
+            }
+
+            // Enable input field
+            terminalInput.disabled = false;
+            terminalInput.focus();
+            console.log("Input enabled - waiting for input");
+          } else {
+            // Disable input field when not waiting for input
+            terminalInput.disabled = true;
+            console.log("Input disabled - not waiting for input");
+          }
         } else {
-          // Disable input field when not waiting for input
+          // Program is not running, disable everything
+          console.log("Program is idle - disabling input and stop button");
           terminalInput.disabled = true;
-          console.log("Input disabled - not waiting for input");
+          if (stopButton) {
+            stopButton.disabled = true;
+          }
         }
       })
       .catch(error => {
         console.error('Error checking program status:', error);
+        // On error, make sure buttons are in a safe state
+        if (stopButton) {
+          stopButton.disabled = true;
+        }
+        terminalInput.disabled = true;
+      });
+  }
+
+  // Function to stop the running program
+  function stopRunningProgram() {
+    fetch('/stop_program', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    })
+      .then(response => response.json())
+      .then(data => {
+        // Update the output terminal with the stopped message
+        outputElement.textContent = data.output;
+        outputElement.scrollTop = outputElement.scrollHeight;
+
+        // Disable the stop button
+        if (stopButton) {
+          stopButton.disabled = true;
+        }
+
+        console.log("Program stopped");
+      })
+      .catch(error => {
+        console.error('Error stopping program:', error);
+        outputElement.textContent += '\nError stopping the program. Please try again.';
+        outputElement.scrollTop = outputElement.scrollHeight;
       });
   }
 

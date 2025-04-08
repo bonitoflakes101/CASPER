@@ -95,6 +95,59 @@
         cursor: not-allowed;
         background: #2a2a2a;
       }
+      .run-button {
+        margin-left: 5px;
+        padding: 5px 15px;
+        border: none;
+        border-radius: 2px;
+        background-color: #027bff;
+        color: white;
+        font-size: 14px;
+        cursor: pointer;
+        transition: background-color 0.2s, transform 0.1s;
+      }
+      
+      .run-button:hover {
+        background-color: #0263cc;
+      }
+      
+      .run-button:active {
+        transform: scale(0.98);
+      }
+      
+      .button-container {
+        display: flex;
+        margin-left: 5px;
+      }
+      
+      .stop-button {
+        margin-left: 5px;
+        padding: 5px 15px;
+        border: none;
+        border-radius: 2px;
+        background-color: #dc3545;
+        color: white;
+        font-size: 14px;
+        font-weight: 500;
+        cursor: pointer;
+        transition: background-color 0.2s, transform 0.1s;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.12);
+      }
+      
+      .stop-button:hover:not(:disabled) {
+        background-color: #c82333;
+      }
+      
+      .stop-button:active:not(:disabled) {
+        transform: scale(0.98);
+      }
+      
+      .stop-button:disabled {
+        background-color: #6c757d;
+        cursor: not-allowed;
+        opacity: 0.65;
+        box-shadow: none;
+      }
     </style>
   </head>
 
@@ -123,9 +176,14 @@
               </svg>
               main.casper
             </label>
-            <button type="submit" class="run-button" form="codeForm">
-              Run Code
-            </button>
+            <div class="button-container">
+              <button type="submit" class="run-button" form="codeForm">
+                Run Code
+              </button>
+              <button type="button" class="stop-button" id="stopCodeButton" disabled>
+                Stop Code
+              </button>
+            </div>
           </div>
 
           <form

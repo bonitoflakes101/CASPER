@@ -23,6 +23,11 @@ program_output = ""
 def home():
     global current_generator, program_output
     
+    # Make sure on GET requests (initial page load) we reset the generator
+    if request.method == "GET":
+        current_generator = None
+        program_output = ""
+    
     code = ""
     lexer_results = []
     illegal_tokens = []
@@ -163,13 +168,39 @@ def program_status():
     """Check if the program is waiting for input."""
     global current_generator, program_output
     
+    # Default empty output if nothing to show
+    if not program_output:
+        return jsonify({
+            "status": "idle",
+            "output": ""
+        })
+    
     filtered_output = '\n'.join([line for line in program_output.split('\n') 
                              if not line.startswith('DEBUG:') and 
                                 not 'EXECUTE_INPUT_STATEMENT CALLED' in line and
                                 not 'Waiting for input...' in line and
                                 not 'is_waiting_for_input called' in line])
     
-    if current_generator and current_generator.is_waiting_for_input():
+    # If no generator, it's definitely idle
+    if not current_generator:
+        return jsonify({
+            "status": "idle",
+            "output": filtered_output
+        })
+    
+    # If program is stopped or completed, return idle
+    if current_generator.stopped or current_generator.completed:
+        # If program completed normally, reset the generator
+        if current_generator.completed:
+            current_generator = None
+        
+        return jsonify({
+            "status": "idle",
+            "output": filtered_output
+        })
+    
+    # Now we know we have a current_generator that isn't stopped or completed
+    if current_generator.is_waiting_for_input():
         prompt = current_generator.get_input_prompt()
         
         return jsonify({
@@ -178,10 +209,8 @@ def program_status():
             "output": filtered_output  
         })
     else:
-        status = "running" if current_generator else "idle"
-        
         return jsonify({
-            "status": status,
+            "status": "running",
             "output": filtered_output  
         })
 
@@ -190,8 +219,8 @@ def provide_input():
     """Handle user input for a running program."""
     global current_generator, program_output
     
-    if not current_generator or not current_generator.is_waiting_for_input():
-        return jsonify({"error": "Program is not waiting for input"}), 400
+    if not current_generator or not current_generator.is_waiting_for_input() or current_generator.stopped:
+        return jsonify({"error": "Program is not waiting for input or has been stopped"}), 400
     
     user_input = request.json.get('input', '')
     
@@ -275,6 +304,26 @@ def provide_input():
         "status": "input_processed",
         "waiting_for_more": current_generator.is_waiting_for_input(),
         "output": final_output
+    })
+
+@app.route('/stop_program', methods=['POST'])
+def stop_program():
+    """Stop the currently running program."""
+    global current_generator, program_output
+    
+    if not current_generator:
+        return jsonify({"status": "error", "message": "No program running"}), 400
+    
+    # Set the stopped flag to true and ensure it's not waiting for input
+    current_generator.stopped = True
+    current_generator.waiting_for_input = False
+    
+    # Add message to output
+    program_output += "\nProgram execution stopped."
+    
+    return jsonify({
+        "status": "success",
+        "output": program_output
     })
 
 if __name__ == "__main__":

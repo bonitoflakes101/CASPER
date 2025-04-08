@@ -13,6 +13,8 @@ class CodeGenerator:
         self.ast = None
         self.paused_node = None
         self.parent_nodes = []
+        self.stopped = False  # Flag to indicate if execution should be stopped
+        self.completed = False  # Flag to indicate if program has completed execution
 
     def log(self, message):
         if self.debug:
@@ -79,6 +81,10 @@ class CodeGenerator:
         Main entry point for code generation.
         If ast is None, it means we're resuming execution after input.
         """
+        if self.stopped:
+            self.log("Program execution stopped, cannot generate code")
+            return None
+            
         if ast is not None:
        
             self.ast = ast
@@ -87,9 +93,18 @@ class CodeGenerator:
             self.log("Resuming execution after input")
             return
             
-        self.execute_node(ast)
+        result = self.execute_node(ast)
+        # Mark program as completed when done executing
+        if not self.waiting_for_input:
+            self.completed = True
+        return result
 
     def execute_node(self, node):
+        # Check if execution is stopped
+        if self.stopped:
+            self.log("Execution is stopped, skipping node execution")
+            return None
+            
         if node is None and self.paused_node and not self.waiting_for_input:
             self.log("Resuming execution with paused node after input")
             temp_node = self.paused_node
@@ -1356,6 +1371,9 @@ class CodeGenerator:
     def is_waiting_for_input(self):
         """Check if the program is waiting for input"""
         self.log(f"is_waiting_for_input called, returning: {self.waiting_for_input}")
+        # Return False if program is stopped, regardless of waiting_for_input status
+        if self.stopped:
+            return False
         return self.waiting_for_input
     
     def get_input_prompt(self):
@@ -1566,6 +1584,11 @@ class CodeGenerator:
         
         self.log("Unknown update tail type")
         return None
+
+    def stop_execution(self):
+        """Stop the execution of the program"""
+        self.stopped = True
+        print("Program execution stopped")
 
 def run_code_generation(ast):
     """Create a CodeGenerator and run code generation on the given AST."""
