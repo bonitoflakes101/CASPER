@@ -1,0 +1,6 @@
+birth {
+    @main_casper(){
+        int $num = Day;
+        display $num;
+    }
+} ghost 

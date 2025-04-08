@@ -433,7 +433,13 @@ def p_factor_expression1 (p):
              | NIGHT
              | STR_LIT
     """
-    p[0] = p[1]  
+    # Convert Day and Night tokens to boolean values
+    if p[1] == "Day":
+        p[0] = True
+    elif p[1] == "Night":
+        p[0] = False
+    else:
+        p[0] = p[1]
 
 
 # =============================================================================
@@ -515,7 +521,14 @@ def p_literal1(p):
              | NIGHT
              | STR_LIT
     """
-    p[0] = p[1] 
+    # Convert Day and Night tokens to boolean values
+    if p[1] == "Day":
+        p[0] = True
+    elif p[1] == "Night":
+        p[0] = False
+    else:
+        p[0] = p[1]
+
 def p_literal2(p):
     """
     literal2 : CHR_LIT
@@ -799,7 +812,13 @@ def p_revive_factor1 (p):
              | NIGHT
              | STR_LIT
     """
-    p[0] = p[1]  
+    # Convert Day and Night tokens to boolean values
+    if p[1] == "Day":
+        p[0] = True
+    elif p[1] == "Night":
+        p[0] = False
+    else:
+        p[0] = p[1]
 
 def p_revive_type_cast(p):
     """revive_type_cast : CONVERT_TO_INT LPAREN typecast_value RPAREN
@@ -1079,7 +1098,13 @@ def p_local_factor1 (p):
              | NIGHT
              | STR_LIT
     """
-    p[0] = p[1]  
+    # Convert Day and Night tokens to boolean values
+    if p[1] == "Day":
+        p[0] = True
+    elif p[1] == "Night":
+        p[0] = False
+    else:
+        p[0] = p[1]
 
 def p_local_type_cast(p):
     """local_type_cast : CONVERT_TO_INT LPAREN typecast_value RPAREN
@@ -1236,7 +1261,13 @@ def p_condition1(p):
              | NIGHT
              | STR_LIT
     """
-    p[0] = p[1]  
+    # Convert Day and Night tokens to boolean values
+    if p[1] == "Day":
+        p[0] = True
+    elif p[1] == "Night":
+        p[0] = False
+    else:
+        p[0] = p[1]
 
 
 
@@ -1390,7 +1421,13 @@ def p_switch_factor1 (p):
              | NIGHT
              | STR_LIT  
     """
-    p[0] = p[1]  
+    # Convert Day and Night tokens to boolean values
+    if p[1] == "Day":
+        p[0] = True
+    elif p[1] == "Night":
+        p[0] = False
+    else:
+        p[0] = p[1]
 
 def p_switch_type_cast(p):
     """switch_type_cast : CONVERT_TO_INT LPAREN typecast_value RPAREN
@@ -1555,7 +1592,13 @@ def p_for_factor1 (p):
              | NIGHT
              | STR_LIT  
     """
-    p[0] = p[1]  
+    # Convert Day and Night tokens to boolean values
+    if p[1] == "Day":
+        p[0] = True
+    elif p[1] == "Night":
+        p[0] = False
+    else:
+        p[0] = p[1]
 # -----------------------------------------------------------------------------
 # (107) <until_loop> → until ( <expression> ) { <statements> }
 # -----------------------------------------------------------------------------
@@ -1687,7 +1730,13 @@ def p_until_factor1 (p):
              | NIGHT
              | STR_LIT  
     """
-    p[0] = p[1]  
+    # Convert Day and Night tokens to boolean values
+    if p[1] == "Day":
+        p[0] = True
+    elif p[1] == "Night":
+        p[0] = False
+    else:
+        p[0] = p[1]
 # -----------------------------------------------------------------------------
 # (108) <repeat_until> → repeat { <statements> } until(<expression>)
 # -----------------------------------------------------------------------------
@@ -1965,7 +2014,13 @@ def p_output_factor1 (p):
              | NIGHT
              | STR_LIT
     """
-    p[0] = p[1]  
+    # Convert Day and Night tokens to boolean values
+    if p[1] == "Day":
+        p[0] = True
+    elif p[1] == "Night":
+        p[0] = False
+    else:
+        p[0] = p[1]
 
 def p_output_type_cast(p):
     """output_type_cast : CONVERT_TO_INT LPAREN typecast_value RPAREN
@@ -2162,7 +2217,13 @@ def p_assign_factor1 (p):
              | NIGHT
              | STR_LIT
     """
-    p[0] = p[1]  
+    # Convert Day and Night tokens to boolean values
+    if p[1] == "Day":
+        p[0] = True
+    elif p[1] == "Night":
+        p[0] = False
+    else:
+        p[0] = p[1]
 
 def p_assign_type_cast(p):
     """assign_type_cast : CONVERT_TO_INT LPAREN typecast_value RPAREN
@@ -2433,7 +2494,20 @@ def p_value_factor1 (p):
              | NIGHT
              | STR_LIT  
     """
-    p[0] = p[1]  
+    # Convert Day and Night tokens to boolean values
+    if p[1] == "Day":
+        p[0] = True
+    elif p[1] == "Night":
+        p[0] = False
+    else:
+        p[0] = p[1]
+
+def p_value_type_cast(p):
+    """value_type_cast : CONVERT_TO_INT LPAREN typecast_value RPAREN
+                 | CONVERT_TO_FLT LPAREN typecast_value RPAREN
+                 | CONVERT_TO_BLN LPAREN typecast_value RPAREN
+                 | CONVERT_TO_STR LPAREN typecast_value RPAREN"""
+    p[0] = ASTNode("type_cast", [p[3]], p[1])
 # -----------------------------------------------------------------------------
 # (156) <type_cast> → to_int(<typecast_value>)
 # (157) <type_cast> → to_flt(<typecast_value>)
@@ -2538,7 +2612,13 @@ def p_typecast_factor1 (p):
              | NIGHT
              | STR_LIT
     """
-    p[0] = p[1]  
+    # Convert Day and Night tokens to boolean values
+    if p[1] == "Day":
+        p[0] = True
+    elif p[1] == "Night":
+        p[0] = False
+    else:
+        p[0] = p[1]
 # -----------------------------------------------------------------------------
 # (163) <input_statement> → input() or input(prompt)
 def p_input_statement(p):

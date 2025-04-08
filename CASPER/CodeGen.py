@@ -16,7 +16,7 @@ class CodeGenerator:
 
     def log(self, message):
         if self.debug:
-            print(f"DEBUG: {message}")
+            pass  # Remove debug print statement
 
     def get_current_env(self):
         return self.env_stack[-1]
@@ -104,6 +104,14 @@ class CodeGenerator:
             self.log("execute_node received None")
             return None
 
+        # Handle Day/Night literals at the node level
+        if hasattr(node, 'value') and node.value == "Day":
+            self.log(f"Found Day literal in node of type {node.type}")
+            return True
+        if hasattr(node, 'value') and node.value == "Night":
+            self.log(f"Found Night literal in node of type {node.type}")
+            return False
+
         if isinstance(node, list):
             self.log(f"execute_node processing list of length {len(node)}")
             results = []
@@ -133,7 +141,7 @@ class CodeGenerator:
         
         if node.children:
             node.children = self.flatten_nodes(node.children)
-
+        
         if node.type == "conditional_statement":
             self.log("CONDITIONAL: Routing to execute_conditional_statement")
             return self.execute_conditional_statement(node)
@@ -263,7 +271,7 @@ class CodeGenerator:
             
         self.log(f"Calling function: {func_name}")
         
-       
+   
         if func_name not in self.functions:
             print(f"Error: Undefined function '{func_name}'")
             return None
@@ -382,6 +390,12 @@ class CodeGenerator:
                 elif child.type == "data_type":
                     data_type = child.value
         
+        # Look for the data_type in the first child if not found
+        if data_type is None and len(valid_children) > 0 and hasattr(valid_children[0], 'value'):
+            # Sometimes the data_type is directly in the first child
+            if valid_children[0].value in ["int", "flt", "bln", "str", "chr"]:
+                data_type = valid_children[0].value
+        
         if not var_name:
             print("Error: Could not find variable name in var_statement.")
             return None
@@ -390,11 +404,11 @@ class CodeGenerator:
         default_value = None
         if data_type == "int":
             default_value = 0
-        elif data_type == "string":
+        elif data_type == "string" or data_type == "str":
             default_value = ""
-        elif data_type == "float":
+        elif data_type == "float" or data_type == "flt":
             default_value = 0.0
-        elif data_type == "bool":
+        elif data_type == "bool" or data_type == "bln":
             default_value = False
         
         # Find assignment if it exists
@@ -407,6 +421,7 @@ class CodeGenerator:
         # If there's an assignment, use its value; otherwise use default
         if assign_node:
             value = self.execute_node(assign_node)
+            
             # Special handling for input_statement results
             if assign_node.type == "input_statement" and value is None and self.input_value is not None:
                 value = self.input_value
@@ -414,12 +429,20 @@ class CodeGenerator:
             
             self.log(f"Evaluated expression value: {value}")
             
-            # Type conversion based on variable declaration
-            if data_type == "int" and value is not None:
-                try:
-                    value = int(value)
-                except (ValueError, TypeError):
-                    print(f"Warning: Could not convert {value} to int")
+            # Apply type conversion based on declaration
+            # Boolean to Integer conversion
+            if data_type == "int" and isinstance(value, bool):
+                value = 1 if value else 0
+            # Boolean to Float conversion
+            elif (data_type == "float" or data_type == "flt") and isinstance(value, bool):
+                value = 1.0 if value else 0.0
+            # Apply other conversions using the standard method
+            elif data_type and value is not None:
+                python_type = self.casper_to_python_type(data_type)
+                if python_type:
+                    original_value = value
+                    value = self.convert_type(value, python_type)
+                    self.log(f"Applied implicit conversion from {type(original_value).__name__} to {data_type}: {original_value} -> {value}")
         else:
             value = default_value
             self.log(f"No assignment found, using default value: {value}")
@@ -431,6 +454,20 @@ class CodeGenerator:
         
         return value
         
+    def casper_to_python_type(self, casper_type):
+        """Convert CASPER type names to Python type names."""
+        if casper_type == "int":
+            return "int"
+        elif casper_type == "float" or casper_type == "flt":
+            return "float"
+        elif casper_type == "bool" or casper_type == "bln":
+            return "bool"
+        elif casper_type == "string" or casper_type == "str":
+            return "string"
+        else:
+            self.log(f"Unknown CASPER type: {casper_type}")
+            return None
+
     def execute_local_var_assign(self, node):
         self.log(f"Executing local_var_assign: {node}")
 
@@ -463,8 +500,15 @@ class CodeGenerator:
                 value = self.lookup_variable(var_name)
                 self.log(f"Directly displaying variable {var_name} = {value}")
                 
+                # Ensure we never display numeric values as Day/Night
                 if value is not None:
-                    print(value)  # Changed to use default newline
+                    if isinstance(value, bool) and not (isinstance(value, int) and not isinstance(value, bool)):
+                        # Only format as Day/Night if it's SPECIFICALLY a boolean (not an int)
+                        formatted_value = "Day" if value else "Night"
+                        print(formatted_value, end="")
+                    else:
+                        # Never format integers or other types as Day/Night
+                        print(value, end="")  # Changed to not add newline
                 return value
         
         # Standard processing for other types of output children
@@ -476,10 +520,13 @@ class CodeGenerator:
             if isinstance(result, str) and result.startswith('"') and result.endswith('"'):
                 # Remove the quotes and handle escape sequences
                 result = result[1:-1].replace('\\n', '\n').replace('\\t', '\t')
+            # Format boolean values as Day/Night ONLY IF they are specifically boolean, not int
+            elif isinstance(result, bool) and not (isinstance(result, int) and not isinstance(result, bool)):
+                result = "Day" if result else "Night"
             
             # Make sure we display the result properly, even if it's a number
             if result is not None:
-                print(result)  # Changed to use default newline
+                print(result, end="")  # Changed to not add newline
         
         return None  # The output statement doesn't return a value
         
@@ -499,22 +546,33 @@ class CodeGenerator:
                 value = self.lookup_variable(var_name)
                 self.log(f"Display variable: {var_name} = {value}")
                 
+                # Ensure we never display numeric values as Day/Night
                 if value is not None:
-                    print(f"{value}")  # Added newline by using print without end=""
+                    if isinstance(value, bool) and not (isinstance(value, int) and not isinstance(value, bool)):
+                        # Only format as Day/Night if it's SPECIFICALLY a boolean (not an int)
+                        formatted_value = "Day" if value else "Night"
+                        print(formatted_value, end="")
+                    else:
+                        # Never format integers or other types as Day/Night
+                        print(value, end="")
                 return value
         
         # Process other types of display children
         result = self.execute_node(child)
         self.log(f"Display result: {result}")
         
+        # Ensure we never display numeric values as Day/Night
         # Handle string literals
         if isinstance(result, str) and result.startswith('"') and result.endswith('"'):
             # Remove quotes for display
             result = result[1:-1].replace('\\n', '\n').replace('\\t', '\t')
+        # Format boolean values as Day/Night ONLY IF they are specifically boolean, not int
+        elif isinstance(result, bool) and not (isinstance(result, int) and not isinstance(result, bool)):
+            result = "Day" if result else "Night"
         
-        # Display the result
+        # Display the result without adding a newline
         if result is not None:
-            print(f"{result}")  # Added newline by using print without end=""
+            print(f"{result}", end="")
         
         return result
 
@@ -524,6 +582,14 @@ class CodeGenerator:
 
     def execute_value(self, node):
         self.log(f"Executing value: {node}")
+        
+        # Special handling for direct Day/Night values
+        if hasattr(node, 'value'):
+            if node.value == "Day":
+                return True
+            elif node.value == "Night": 
+                return False
+                
         if node.children:
             result = self.execute_node(node.children[0])
             self.log(f"Value result: {result}")
@@ -631,6 +697,10 @@ class CodeGenerator:
 
     def apply_operator(self, operator, left, right):
         self.log(f"Applying operator: {left} {operator} {right}")
+        
+        # Apply implicit type conversion based on the operation type
+        left, right = self.apply_implicit_conversion(left, right, operator)
+        
         if operator == "+":
             return left + right
         elif operator == "-":
@@ -664,9 +734,151 @@ class CodeGenerator:
             print(f"Unsupported operator: {operator}")
             return None
 
+    def apply_implicit_conversion(self, left, right, operator=None):
+        """Apply implicit type conversion based on the types of operands and the conversion table."""
+        self.log(f"Applying implicit conversion: {type(left).__name__} {operator} {type(right).__name__}")
+        
+        if operator in ["+", "-", "*", "/", "%"]:
+            if isinstance(left, int) and isinstance(right, float):
+                # int → flt: Add .0
+                left = float(left)
+                self.log(f"Converted left from int to float: {left}")
+            elif isinstance(left, float) and isinstance(right, int):
+                # flt → int not applied here, keep as float for math ops
+                right = float(right)
+                self.log(f"Converted right from int to float: {right}")
+            
+            # Handle boolean conversions
+            if isinstance(left, bool):
+                if isinstance(right, float):
+                    # bln → flt: Day → 1.0, Night → 0.0
+                    left = 1.0 if left else 0.0
+                    self.log(f"Converted left from bool to float: {left}")
+                elif isinstance(right, int):
+                    # bln → int: Day → 1, Night → 0
+                    left = 1 if left else 0
+                    self.log(f"Converted left from bool to int: {left}")
+            
+            if isinstance(right, bool):
+                if isinstance(left, float):
+                    # bln → flt: Day → 1.0, Night → 0.0
+                    right = 1.0 if right else 0.0
+                    self.log(f"Converted right from bool to float: {right}")
+                elif isinstance(left, int):
+                    # bln → int: Day → 1, Night → 0
+                    right = 1 if right else 0
+                    self.log(f"Converted right from bool to int: {right}")
+        
+        # For comparison operations
+        elif operator in ["==", "!=", ">", "<", ">=", "<="]:
+            # Try to make types match based on conversion table
+            if isinstance(left, int) and isinstance(right, float):
+                # int → flt: Add .0
+                left = float(left)
+                self.log(f"Converted left from int to float for comparison: {left}")
+            elif isinstance(left, float) and isinstance(right, int):
+                # int → flt: Add .0 (converting right to match left)
+                right = float(right)
+                self.log(f"Converted right from int to float for comparison: {right}")
+            elif isinstance(left, bool) and isinstance(right, int):
+                # bln → int: Day → 1, Night → 0
+                left = 1 if left else 0
+                self.log(f"Converted left from bool to int for comparison: {left}")
+            elif isinstance(left, int) and isinstance(right, bool):
+                # bln → int: Day → 1, Night → 0 (converting right to match left)
+                right = 1 if right else 0
+                self.log(f"Converted right from bool to int for comparison: {right}")
+            elif isinstance(left, bool) and isinstance(right, float):
+                # bln → flt: Day → 1.0, Night → 0.0
+                left = 1.0 if left else 0.0
+                self.log(f"Converted left from bool to float for comparison: {left}")
+            elif isinstance(left, float) and isinstance(right, bool):
+                # bln → flt: Day → 1.0, Night → 0.0 (converting right to match left)
+                right = 1.0 if right else 0.0
+                self.log(f"Converted right from bool to float for comparison: {right}")
+        
+        return left, right
+
+    
+    def convert_type(self, value, target_type):
+        """Convert a value to the specified target type using the conversion rules from the table."""
+        self.log(f"Converting {value} ({type(value).__name__}) to {target_type}")
+        
+        # No conversion needed if types match
+        if type(value).__name__.lower() == target_type:
+            return value
+            
+        # Handle specific conversions based on the table from the image
+        
+        # int → flt: Add .0
+        if isinstance(value, int) and target_type in ["float", "flt"]:
+            return float(value)
+            
+        # flt → int: Truncate decimal
+        elif isinstance(value, float) and target_type == "int":
+            return int(value)  # Python's int() truncates toward zero
+            
+        # bln → flt: Day → 1.0, Night → 0.0
+        elif isinstance(value, bool) and target_type in ["float", "flt"]:
+            result = 1.0 if value else 0.0
+            return result
+            
+        # flt → bln: 0.0 → Night, else Day
+        elif isinstance(value, float) and target_type in ["bool", "bln"]:
+            result = False if value == 0.0 else True
+            return result
+            
+        # int → bln: 0 → Night, else Day
+        elif isinstance(value, int) and target_type in ["bool", "bln"]:
+            result = False if value == 0 else True
+            return result
+            
+        # bln → int: Day → 1, Night → 0
+        elif isinstance(value, bool) and target_type == "int":
+            result = 1 if value else 0
+            return result
+            
+        # str conversions (handling string type)
+        elif target_type in ["string", "str"]:
+            # For boolean values to string, convert to "Day"/"Night" instead of "True"/"False"
+            if isinstance(value, bool):
+                result = "Day" if value else "Night"
+                return result
+            return str(value)
+            
+        # If no rule is defined, try a standard Python conversion
+        else:
+            try:
+                if target_type == "int":
+                    result = int(value)
+                    return result
+                elif target_type in ["float", "flt"]:
+                    result = float(value)
+                    return result
+                elif target_type in ["bool", "bln"]:
+                    result = bool(value)
+                    return result
+                elif target_type in ["string", "str"]:
+                    result = str(value)
+                    return result
+                else:
+                    self.log(f"No conversion rule for {type(value).__name__} to {target_type}")
+                    return value
+            except:
+                self.log(f"Failed to convert {value} to {target_type}")
+                return value
+
     def execute_literal(self, node):
         self.log(f"Executing literal: {node}, value={node.value}")
         value = node.value
+        
+        # Handle Day and Night literals as boolean values first
+        if value == "Day":
+            self.log(f"Converting Day literal to boolean True")
+            return True
+        elif value == "Night":
+            self.log(f"Converting Night literal to boolean False")
+            return False
         
         # Special handling for strings with escape sequences
         if isinstance(value, str) and value.startswith('"') and value.endswith('"'):
@@ -1049,6 +1261,17 @@ class CodeGenerator:
 
         value = self.execute_node(value_node)
         self.log(f"Assignment value for {var_name}: {value}")
+        
+        # Apply implicit type conversion based on the existing variable's type
+        # Look up the existing variable to get its current type
+        existing_value = self.lookup_variable(var_name)
+        if existing_value is not None:
+            # Only convert if the types differ
+            if type(existing_value) != type(value) and value is not None:
+                original_value = value
+                target_type = type(existing_value).__name__.lower()
+                value = self.convert_type(value, target_type)
+                self.log(f"Applied implicit conversion for assignment: {type(original_value).__name__} -> {target_type}: {original_value} -> {value}")
 
         self.assign_variable(var_name, value)
         
@@ -1345,6 +1568,14 @@ class CodeGenerator:
         return None
 
 def run_code_generation(ast):
+    """Create a CodeGenerator and run code generation on the given AST."""
     generator = CodeGenerator()
+    generator.debug = True
+    
+    # Create global scope
+    generator.global_vars = {}
+    generator.env_stack = [generator.global_vars]
+    
     generator.generate(ast)
-    return generator  # Return the generator instance for input handling
+    
+    return generator

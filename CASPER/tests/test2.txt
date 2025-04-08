@@ -47,9 +47,9 @@ int $multiply_value = $a * $b;
 revive $multiply_value;
 }
 
-function_int @div(int $a, int $b){
+function_flt @div(int $a, int $b){
 
-int $div_value = $a / $b;
+flt $div_value = $a / $b;
 revive $div_value;
 }
 
@@ -62,7 +62,7 @@ int $num2 = 9;
 int $add = @add($num1,$num2);
 int $sub = @sub($num1,$num2);
 int $multiply = @multiply($num1,$num2);
-int $div = @div($num1,$num2); << naging float, even if return type ay int, dapat may data loss unless typecasted
+flt $div = @div($num1,$num2); 
 
 display $add;
 display $sub;
@@ -383,7 +383,7 @@ birth {
 
 @main_casper(){
 
-int $num = 7;
+int $num = Day;
 
     check ($num % 2 == 0) {
         display("The number is even");

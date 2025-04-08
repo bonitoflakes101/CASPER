@@ -1,0 +1,19 @@
+birth {
+    @main_casper(){
+        int $num = Day;
+        
+        display $num;
+        
+        bln $flag = Day;
+        display $flag;
+        
+        bln $night = Night;
+        display $night;
+        
+        int $converted = $flag;
+        display $converted;
+        
+        flt $floatVal = $flag;
+        display $floatVal;
+    }
+} ghost 
