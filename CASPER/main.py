@@ -250,35 +250,32 @@ def provide_input():
     sys.stdout = output_buffer
     
     try:
-        print("CREATING FRESH GENERATOR")
+       
         fresh_generator = CodeGenerator()
         
-        print("COPYING STATE FROM CURRENT GENERATOR")
-        # Make a detailed copy of all important state
-        print(f"GLOBALS: {current_generator.global_vars}")
+        
+       
         fresh_generator.global_vars = current_generator.global_vars.copy()
         fresh_generator.env_stack = [fresh_generator.global_vars]
         
-        # Keep track of important state information
-        print(f"AST: {current_generator.ast}")
+    
         fresh_generator.ast = current_generator.ast
         
         # Check specifically for input statement nodes
-        print(f"ORIGINAL PAUSED NODE: {current_generator.paused_node}")
+      
         if current_generator.paused_node and hasattr(current_generator.paused_node, 'type'):
-            print(f"ORIGINAL PAUSED NODE TYPE: {current_generator.paused_node.type}")
+           
             if current_generator.paused_node.type == "input_statement":
-                print("FOUND INPUT STATEMENT NODE")
+                pass
                 
         fresh_generator.debug = True  # Enable debug for more visibility
         
-        print(f"SETTING INPUT: '{user_input}'")
+       
         fresh_generator.input_value = int(user_input) if user_input.isdigit() else user_input
         fresh_generator.waiting_for_input = False
         
         already_got_input = True
-        
-        print("EXECUTING PROGRAM WITH INPUT")
+      
         backup_stdout2 = sys.stdout
         temp_buffer = io.StringIO()
         sys.stdout = temp_buffer
@@ -288,7 +285,7 @@ def provide_input():
         temp_output = temp_buffer.getvalue()
         
         sys.stdout = backup_stdout2
-        print(f"RAW EXECUTION OUTPUT:\n{temp_output}")
+       
         
         lines = temp_output.split('\n')
         output_after_input = []
@@ -311,9 +308,9 @@ def provide_input():
    
         print('\n'.join(output_after_input))
         
-        print("SWAPPING GENERATOR")
+       
         current_generator = fresh_generator
-        print(f"NEW GENERATOR WAITING: {current_generator.is_waiting_for_input()}")
+        
         
     except Exception as e:
         print(f"ERROR PROCESSING INPUT: {str(e)}")
@@ -322,7 +319,7 @@ def provide_input():
     finally:
         sys.stdout = backup_stdout
     
-    print("FINALIZING OUTPUT")
+   
     new_output = output_buffer.getvalue().strip()
     if new_output:
         program_output += f"\n{new_output}"

@@ -18,7 +18,7 @@ class CodeGenerator:
 
     def log(self, message):
         if self.debug:
-            print(f"DEBUG: {message}")
+            pass
 
     def get_current_env(self):
         return self.env_stack[-1]
@@ -30,7 +30,7 @@ class CodeGenerator:
         if len(self.env_stack) > 1:
             self.env_stack.pop()
         else:
-            print("Warning: Attempted to pop global environment.")
+            pass
 
     def lookup_variable(self, var_name):
         self.log(f"Looking up variable: '{var_name}'")
@@ -81,48 +81,47 @@ class CodeGenerator:
         Main entry point for code generation.
         If ast is None, it means we're resuming execution after input.
         """
-        print(f"\n===== GENERATE called with ast={ast is not None}, stopped={self.stopped}, waiting={self.waiting_for_input} =====")
         
         if self.stopped:
-            print("Program execution stopped, cannot generate code")
+           
             return None
             
         if ast is not None:
-            print(f"Setting new AST with {len(ast.children) if hasattr(ast, 'children') else 'unknown'} root children")
+            
             self.ast = ast
             
         if ast is None and not self.waiting_for_input:       
-            print("Resuming execution after input - but no input node provided")
+            
             return
             
-        print(f"Executing node tree from {'AST' if ast else 'None'}")
+      
         result = self.execute_node(ast)
         # Mark program as completed when done executing
         if not self.waiting_for_input:
-            print("Program execution completed, setting completed flag")
+            
             self.completed = True
         else:
-            print(f"Program execution paused, waiting for input with prompt: '{self.input_prompt}'")
+            pass
         return result
 
     def execute_node(self, node):
         # Check if execution is stopped
         if self.stopped:
-            print("Execution is stopped, skipping node execution")
+        
             return None
             
         if node is None and self.paused_node and not self.waiting_for_input:
-            print(f"Resuming execution with paused node type: {self.paused_node.type if hasattr(self.paused_node, 'type') else 'unknown'}")
+            
             temp_node = self.paused_node
             self.paused_node = None
             return self.execute_node(temp_node)
 
         if self.waiting_for_input:
-            print("Waiting for input, pausing execution")
+     
             return None
             
         if node is None:
-            print("execute_node received None")
+           
             return None
 
         # Handle Day/Night literals at the node level
@@ -134,7 +133,7 @@ class CodeGenerator:
             return False
 
         if isinstance(node, list):
-            print(f"execute_node processing list of length {len(node)}")
+           
             results = []
             for subnode in self.flatten_nodes(node):
                 res = self.execute_node(subnode)
@@ -143,14 +142,13 @@ class CodeGenerator:
             return results if results else None
 
         if not hasattr(node, 'type'):
-            print(f"Node has no type attribute: {node}")
+       
             return None
 
-        print(f"execute_node processing node of type: {node.type}")
         
         if node.type == "input_statement" and self.input_value is not None and not self.waiting_for_input:
             input_val = self.input_value
-            print(f"Found input_statement with input value: {input_val}")
+           
             self.input_value = None
             return input_val
         
@@ -229,7 +227,7 @@ class CodeGenerator:
                 result = self.execute_node(child)
                 results.append(result)
         else:
-            print("Warning: main_function node has no statements.")
+            pass
         self.pop_scope()
         return results[-1] if results else None
 
@@ -247,7 +245,7 @@ class CodeGenerator:
                 break
                 
         if not func_name:
-            print("Error: Function declaration missing name")
+            pass
             return None
             
         self.log(f"Defining function: {func_name}")
@@ -287,14 +285,14 @@ class CodeGenerator:
                 break
                 
         if not func_name:
-            print("Error: Function call missing name")
+            pass
             return None
             
         self.log(f"Calling function: {func_name}")
         
    
         if func_name not in self.functions:
-            print(f"Error: Undefined function '{func_name}'")
+            pass
             return None
             
     
@@ -397,9 +395,8 @@ class CodeGenerator:
         valid_children = [child for child in node.children if child is not None]
         self.log(f"Valid children after filtering None: {valid_children}")
         
-        # Fix: Allow variable declaration without initialization
         if len(valid_children) < 1:  
-            print("Error: Not enough valid children in var_statement.")
+            pass
             return None
 
         var_name = None
@@ -418,7 +415,7 @@ class CodeGenerator:
                 data_type = valid_children[0].value
         
         if not var_name:
-            print("Error: Could not find variable name in var_statement.")
+            pass
             return None
         
         # Initialize with default value based on data type
@@ -507,7 +504,7 @@ class CodeGenerator:
         self.log("Executing output_statement")
         
         if not node.children:
-            print("Warning: output_statement has no children.")
+            pass
             return None
         
         # Special handling for IDENT nodes (variable display)
@@ -554,7 +551,7 @@ class CodeGenerator:
     def execute_display_statement(self, node):
         self.log("Executing display_statement")
         if len(node.children) < 1:
-            print("Warning: display_statement has no children.")
+            pass
             return None
         
         child = node.children[0]
@@ -1315,7 +1312,6 @@ class CodeGenerator:
             return None
 
     def execute_input_statement(self, node):
-        print(f"\n>>>>> EXECUTE_INPUT_STATEMENT called with input_value={self.input_value}, waiting={self.waiting_for_input}")
         
         # If input value is already available, return it immediately without showing prompt again
         if self.input_value is not None and not self.waiting_for_input:
@@ -1346,16 +1342,12 @@ class CodeGenerator:
                 print(f"Processing prompt node of type: {prompt_node.type if hasattr(prompt_node, 'type') else 'unknown'}")
                 prompt = self.execute_node(prompt_node)
                 if prompt:
-                    # Print the prompt without newline to match typical input behavior
+                    
                     print(f"Displaying prompt: '{prompt}'", end="")
         
-        # Set prompt in object state
+       
         self.input_prompt = prompt
-        print(f"Set input prompt to: '{prompt}'")
-        print("Waiting for input...")
-        print("<<<<< Input statement execution paused\n")
-        
-        # This will pause execution until input is provided
+    
         return None
     
     def provide_input(self, input_value):
@@ -1603,26 +1595,26 @@ class CodeGenerator:
 
 def run_code_generation(ast):
     """Create a CodeGenerator and run code generation on the given AST."""
-    print("\n--- CREATING NEW CODE GENERATOR ---")
+    
     generator = CodeGenerator()
     generator.debug = True
     
     # Create global scope
-    print("Initializing global scope")
+   
     generator.global_vars = {}
     generator.env_stack = [generator.global_vars]
     
-    print(f"Running code generation on AST with {len(ast.children) if hasattr(ast, 'children') else 'unknown'} root children")
+    
     
     try:
         generator.generate(ast)
-        print("Code generation completed")
+       
     except Exception as e:
-        print(f"ERROR in code generation: {str(e)}")
+       
         import traceback
         traceback.print_exc()
     
     print(f"Generator state after execution: waiting={generator.waiting_for_input}, stopped={generator.stopped}")
-    print("--- CODE GENERATOR CREATION DONE ---\n")
+   
     
     return generator
