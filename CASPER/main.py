@@ -23,10 +23,11 @@ program_output = ""
 def home():
     global current_generator, program_output
     
-    # Make sure on GET requests (initial page load) we reset the generator
+    
     if request.method == "GET":
         current_generator = None
         program_output = ""
+
     
     code = ""
     lexer_results = []
@@ -41,75 +42,78 @@ def home():
 
     if request.method == "POST":
         code = request.form.get("code_input", "")
+    else:
+        # For GET requests, use our default code to test logical operators
+        code = default_code
 
-        # Reset global state
-        current_generator = None
-        program_output = ""
+    # Reset global state
+    current_generator = None
+    program_output = ""
 
-        # 1. LEXICAL ANALYSIS
-        lexer = Lexer(source=code)
-        while lexer.current_char is not None:
-            token = lexer.next_token()
-            token_type = str(token.type).split(".")[-1]
-            if token_type == "ILLEGAL":
-                illegal_tokens.append(str(token))
+    # 1. LEXICAL ANALYSIS
+    lexer = Lexer(source=code)
+    while lexer.current_char is not None:
+        token = lexer.next_token()
+        token_type = str(token.type).split(".")[-1]
+        if token_type == "ILLEGAL":
+            illegal_tokens.append(str(token))
 
-        if illegal_tokens:
-            error_count += len(illegal_tokens)
+    if illegal_tokens:
+        error_count += len(illegal_tokens)
 
-        if not illegal_tokens:
-            # 2. PARSING
-            parser = build_parser()
-            try:
-                ast = parser.parse(lexer=Lexer(code))
-                parser_output = "No Syntax Error"
+    if not illegal_tokens:
+        # 2. PARSING
+        parser = build_parser()
+        try:
+            ast = parser.parse(lexer=Lexer(code))
+            parser_output = "No Syntax Error"
 
-                # 3. SEMANTIC ANALYSIS
-                semantic_errors = run_semantic_analysis(ast)
-                if semantic_errors:
-                    semantic_output = "Semantic Errors:\n" + "\n".join(semantic_errors)
-                    error_count += len(semantic_errors)
-                else:
-                    # If no semantic errors, set success message
-                    semantic_output = "Compilation successful: no lexical, syntax, or semantic errors detected."
-                    generated_code = "Code Generation Executed Successfully."
+            # 3. SEMANTIC ANALYSIS
+            semantic_errors = run_semantic_analysis(ast)
+            if semantic_errors:
+                semantic_output = "Semantic Errors:\n" + "\n".join(semantic_errors)
+                error_count += len(semantic_errors)
+            else:
+                # If no semantic errors, set success message
+                semantic_output = "Compilation successful: no lexical, syntax, or semantic errors detected."
+                generated_code = "Code Generation Executed Successfully."
 
-                    # 4. CAPTURE CODE GENERATION OUTPUT
-                    backup_stdout = sys.stdout
-                    codegen_buffer = io.StringIO()
-                    try:
-                        sys.stdout = codegen_buffer
-                        current_generator = run_code_generation(ast)
-                    finally:
-                        sys.stdout = backup_stdout
+                # 4. CAPTURE CODE GENERATION OUTPUT
+                backup_stdout = sys.stdout
+                codegen_buffer = io.StringIO()
+                try:
+                    sys.stdout = codegen_buffer
+                    current_generator = run_code_generation(ast)
+                finally:
+                    sys.stdout = backup_stdout
 
-                    # The codegen_buffer now holds whatever the code generator printed
-                    program_output = codegen_buffer.getvalue()
+                # The codegen_buffer now holds whatever the code generator printed
+                program_output = codegen_buffer.getvalue()
 
-                    # We'll combine the success message and the codegen prints
-                    output = f"{semantic_output}\n{program_output}"
+                # We'll combine the success message and the codegen prints
+                output = f"{semantic_output}\n{program_output}"
 
-            except SyntaxError as e:
-                parser_output = str(e)
-                error_count += 1
-            except Exception as e:
-                parser_output = f"Unexpected Error: {str(e)}"
-                error_count += 1
+        except SyntaxError as e:
+            parser_output = str(e)
+            error_count += 1
+        except Exception as e:
+            parser_output = f"Unexpected Error: {str(e)}"
+            error_count += 1
 
-        # 5. SET ERRORS AND OUTPUT
-        if illegal_tokens:
-            errors = "\n".join(illegal_tokens)
-            show_error_tab = True
-        elif parser_output != "No Syntax Error":
-            errors = parser_output
-            show_error_tab = True
-        elif semantic_output.startswith("Semantic Errors"):
-            errors = semantic_output
-            show_error_tab = True
+    # 5. SET ERRORS AND OUTPUT
+    if illegal_tokens:
+        errors = "\n".join(illegal_tokens)
+        show_error_tab = True
+    elif parser_output != "No Syntax Error":
+        errors = parser_output
+        show_error_tab = True
+    elif semantic_output.startswith("Semantic Errors"):
+        errors = semantic_output
+        show_error_tab = True
 
-        # If we never set 'output' above (like in an error case), default it now:
-        if not output:
-            output = semantic_output or "WIP WIP WIP"
+    # If we never set 'output' above (like in an error case), default it now:
+    if not output:
+        output = semantic_output or "WIP WIP WIP"
 
     return render_template(
         "index.html",

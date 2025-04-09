@@ -735,7 +735,10 @@ class CodeGenerator:
                 print("Error: Modulo by zero")
                 return 0
             return left % right
-        # Add comparison operators as fallback
+        elif operator == "||":
+            return bool(left) or bool(right)
+        elif operator == "&&":
+            return bool(left) and bool(right)
         elif operator == "==":
             return left == right
         elif operator == "!=":
