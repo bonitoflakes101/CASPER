@@ -18,7 +18,7 @@ class CodeGenerator:
 
     def log(self, message):
         if self.debug:
-            pass  # Remove debug print statement
+            print(f"DEBUG: {message}")
 
     def get_current_env(self):
         return self.env_stack[-1]
@@ -81,42 +81,48 @@ class CodeGenerator:
         Main entry point for code generation.
         If ast is None, it means we're resuming execution after input.
         """
+        print(f"\n===== GENERATE called with ast={ast is not None}, stopped={self.stopped}, waiting={self.waiting_for_input} =====")
+        
         if self.stopped:
-            self.log("Program execution stopped, cannot generate code")
+            print("Program execution stopped, cannot generate code")
             return None
             
         if ast is not None:
-       
+            print(f"Setting new AST with {len(ast.children) if hasattr(ast, 'children') else 'unknown'} root children")
             self.ast = ast
             
         if ast is None and not self.waiting_for_input:       
-            self.log("Resuming execution after input")
+            print("Resuming execution after input - but no input node provided")
             return
             
+        print(f"Executing node tree from {'AST' if ast else 'None'}")
         result = self.execute_node(ast)
         # Mark program as completed when done executing
         if not self.waiting_for_input:
+            print("Program execution completed, setting completed flag")
             self.completed = True
+        else:
+            print(f"Program execution paused, waiting for input with prompt: '{self.input_prompt}'")
         return result
 
     def execute_node(self, node):
         # Check if execution is stopped
         if self.stopped:
-            self.log("Execution is stopped, skipping node execution")
+            print("Execution is stopped, skipping node execution")
             return None
             
         if node is None and self.paused_node and not self.waiting_for_input:
-            self.log("Resuming execution with paused node after input")
+            print(f"Resuming execution with paused node type: {self.paused_node.type if hasattr(self.paused_node, 'type') else 'unknown'}")
             temp_node = self.paused_node
             self.paused_node = None
             return self.execute_node(temp_node)
 
         if self.waiting_for_input:
-            self.log("Waiting for input, pausing execution")
+            print("Waiting for input, pausing execution")
             return None
             
         if node is None:
-            self.log("execute_node received None")
+            print("execute_node received None")
             return None
 
         # Handle Day/Night literals at the node level
@@ -128,7 +134,7 @@ class CodeGenerator:
             return False
 
         if isinstance(node, list):
-            self.log(f"execute_node processing list of length {len(node)}")
+            print(f"execute_node processing list of length {len(node)}")
             results = []
             for subnode in self.flatten_nodes(node):
                 res = self.execute_node(subnode)
@@ -137,14 +143,14 @@ class CodeGenerator:
             return results if results else None
 
         if not hasattr(node, 'type'):
-            self.log(f"Node has no type attribute: {node}")
+            print(f"Node has no type attribute: {node}")
             return None
 
-        self.log(f"execute_node processing node of type: {node.type}")
+        print(f"execute_node processing node of type: {node.type}")
         
         if node.type == "input_statement" and self.input_value is not None and not self.waiting_for_input:
             input_val = self.input_value
-            self.log(f"Returning input value from input statement: {input_val}")
+            print(f"Found input_statement with input value: {input_val}")
             self.input_value = None
             return input_val
         
@@ -1309,12 +1315,12 @@ class CodeGenerator:
             return None
 
     def execute_input_statement(self, node):
-        self.log("Executing input_statement")
+        print(f"\n>>>>> EXECUTE_INPUT_STATEMENT called with input_value={self.input_value}, waiting={self.waiting_for_input}")
         
         # If input value is already available, return it immediately without showing prompt again
         if self.input_value is not None and not self.waiting_for_input:
             input_val = self.input_value
-            self.log(f"Using provided input value: {input_val}")
+            print(f"Using provided input value: {input_val}")
             
             # Clear input value to prevent reuse
             self.input_value = None
@@ -1322,7 +1328,9 @@ class CodeGenerator:
             
             # Return the value with appropriate type conversion
             if isinstance(input_val, str) and input_val.isdigit():
+                print(f"Converting input string to integer: {input_val} -> {int(input_val)}")
                 return int(input_val)
+            print(f"Returning input as-is: {input_val}")
             return input_val
         
         # Always set waiting flag and store the current node
@@ -1335,14 +1343,17 @@ class CodeGenerator:
             # Use first child as prompt if available
             prompt_node = node.children[0]
             if prompt_node:
+                print(f"Processing prompt node of type: {prompt_node.type if hasattr(prompt_node, 'type') else 'unknown'}")
                 prompt = self.execute_node(prompt_node)
                 if prompt:
                     # Print the prompt without newline to match typical input behavior
-                    print(prompt, end="")
+                    print(f"Displaying prompt: '{prompt}'", end="")
         
         # Set prompt in object state
         self.input_prompt = prompt
-        self.log("Waiting for input...")
+        print(f"Set input prompt to: '{prompt}'")
+        print("Waiting for input...")
+        print("<<<<< Input statement execution paused\n")
         
         # This will pause execution until input is provided
         return None
@@ -1370,7 +1381,7 @@ class CodeGenerator:
     
     def is_waiting_for_input(self):
         """Check if the program is waiting for input"""
-        self.log(f"is_waiting_for_input called, returning: {self.waiting_for_input}")
+        print(f"is_waiting_for_input called, status: waiting={self.waiting_for_input}, stopped={self.stopped}, has_paused_node={self.paused_node is not None}")
         # Return False if program is stopped, regardless of waiting_for_input status
         if self.stopped:
             return False
@@ -1592,13 +1603,26 @@ class CodeGenerator:
 
 def run_code_generation(ast):
     """Create a CodeGenerator and run code generation on the given AST."""
+    print("\n--- CREATING NEW CODE GENERATOR ---")
     generator = CodeGenerator()
     generator.debug = True
     
     # Create global scope
+    print("Initializing global scope")
     generator.global_vars = {}
     generator.env_stack = [generator.global_vars]
     
-    generator.generate(ast)
+    print(f"Running code generation on AST with {len(ast.children) if hasattr(ast, 'children') else 'unknown'} root children")
+    
+    try:
+        generator.generate(ast)
+        print("Code generation completed")
+    except Exception as e:
+        print(f"ERROR in code generation: {str(e)}")
+        import traceback
+        traceback.print_exc()
+    
+    print(f"Generator state after execution: waiting={generator.waiting_for_input}, stopped={generator.stopped}")
+    print("--- CODE GENERATOR CREATION DONE ---\n")
     
     return generator
