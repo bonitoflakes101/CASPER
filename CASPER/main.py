@@ -207,6 +207,8 @@ def program_status():
     if current_generator.is_waiting_for_input():
         prompt = current_generator.get_input_prompt()
         
+        # Make sure any display output before the input statement is preserved
+        # by not filtering it out from the output
         return jsonify({
             "status": "waiting_for_input",
             "prompt": prompt,
@@ -223,38 +225,24 @@ def provide_input():
     """Handle user input for a running program."""
     global current_generator, program_output
     
-    print("\n===================== PROVIDE_INPUT DEBUGGING =====================")
-    print(f"INPUT RECEIVED: {request.json.get('input', '')}")
-    print(f"GENERATOR EXISTS: {current_generator is not None}")
-    
-    if current_generator:
-        print(f"GENERATOR WAITING: {current_generator.is_waiting_for_input()}")
-        print(f"GENERATOR STOPPED: {current_generator.stopped}")
-        print(f"PAUSED NODE: {current_generator.paused_node}")
-        print(f"PAUSED NODE TYPE: {current_generator.paused_node.type if current_generator.paused_node and hasattr(current_generator.paused_node, 'type') else 'None'}")
-        print(f"CURRENT PROMPT: {current_generator.get_input_prompt()}")
-    
     if not current_generator or not current_generator.is_waiting_for_input() or current_generator.stopped:
-        print("ERROR: Cannot process input - program not running or not waiting for input")
         return jsonify({"error": "Program is not waiting for input or has been stopped"}), 400
     
     user_input = request.json.get('input', '')
-    print(f"PROCESSING INPUT: '{user_input}'")
     
-    filtered_output = '\n'.join([line for line in program_output.split('\n') 
-                               if not line.startswith('DEBUG:') and 
-                                  not 'EXECUTE_INPUT_STATEMENT CALLED' in line and
-                                  not 'Waiting for input...' in line and
-                                  not 'is_waiting_for_input called' in line])
+    # Keep all existing output, including any display statement results
+    # Don't filter out any output at this point
+    existing_output = program_output
     
-    program_output = filtered_output + f"\n> {user_input}"
+    # Add the user input to the output
+    program_output = existing_output + f"\n> {user_input}"
     
+    # Capture standard output during execution
     backup_stdout = sys.stdout
     output_buffer = io.StringIO()
     sys.stdout = output_buffer
     
     try:
-        # Instead of creating a new generator, use the current one directly
         # Process the input using the generator's built-in method
         current_generator.provide_input(int(user_input) if user_input.isdigit() else user_input)
         
@@ -262,17 +250,17 @@ def provide_input():
         current_generator.generate(None)  # Pass None to continue from paused node
         
     except Exception as e:
-        print(f"ERROR PROCESSING INPUT: {str(e)}")
         import traceback
         traceback.print_exc()
     finally:
         sys.stdout = backup_stdout
     
-    # Capture the new output
+    # Capture the new output and append it to the existing output
     new_output = output_buffer.getvalue().strip()
     if new_output:
         program_output += f"\n{new_output}"
     
+    # Filter debug messages from the final output
     final_output = '\n'.join([line for line in program_output.split('\n') 
                             if not line.startswith('DEBUG:') and 
                                not 'EXECUTE_INPUT_STATEMENT CALLED' in line and
@@ -284,8 +272,6 @@ def provide_input():
         "waiting_for_more": current_generator.is_waiting_for_input(),
         "output": final_output
     }
-    print(f"RESPONSE WAITING_FOR_MORE: {status_info['waiting_for_more']}")
-    print("===================== END DEBUGGING =====================\n")
     
     return jsonify(status_info)
 
