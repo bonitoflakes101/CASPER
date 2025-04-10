@@ -260,7 +260,7 @@ function @drawRectangle(int $height) {
     display "4 - Rectangle\n";
     
     display "Enter shape number (1-4): ";
-    int $choice = input();
+    int $choice = 1;
     
     display "Enter number of rows/size: ";
     int $rows = input();
