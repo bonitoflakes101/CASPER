@@ -239,8 +239,8 @@ document.addEventListener("DOMContentLoaded", function () {
             console.log("Input disabled - not waiting for input");
           }
         } else {
-          // Program is not running, disable everything
-          console.log("Program is idle - disabling input and stop button");
+          // Program is not running or has finished, disable everything
+          console.log("Program is idle or finished - disabling input and stop button");
           terminalInput.disabled = true;
           if (stopButton) {
             stopButton.disabled = true;
@@ -249,11 +249,6 @@ document.addEventListener("DOMContentLoaded", function () {
       })
       .catch(error => {
         console.error('Error checking program status:', error);
-        // On error, make sure buttons are in a safe state
-        if (stopButton) {
-          stopButton.disabled = true;
-        }
-        terminalInput.disabled = true;
       });
   }
 
@@ -301,8 +296,14 @@ document.addEventListener("DOMContentLoaded", function () {
         // Scroll to the bottom
         outputElement.scrollTop = outputElement.scrollHeight;
 
+        // Check if program is finished (including validation failures)
+        if (data.status === "program_finished") {
+          console.log("Program has finished executing - disabling input");
+          terminalInput.disabled = true;
+          stopButton.disabled = true;
+        }
         // If still waiting for input, focus the input field
-        if (data.waiting_for_more) {
+        else if (data.waiting_for_more) {
           terminalInput.focus();
         }
       })

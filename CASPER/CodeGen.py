@@ -15,6 +15,10 @@ class CodeGenerator:
         self.parent_nodes = []
         self.stopped = False  # Flag to indicate if execution should be stopped
         self.completed = False  # Flag to indicate if program has completed execution
+        # New variables for tracking multiple inputs
+        self.input_target_queue = []  # Queue to hold pending input targets
+        self.current_assignment_target = None  # Current variable being assigned to
+        self.expected_type = None  # Expected type for the current input
 
     def log(self, message):
         if self.debug:
@@ -80,6 +84,7 @@ class CodeGenerator:
         """
         
         if self.stopped:
+            self.completed = True  # Make sure any stopped program is marked as completed
             return None
             
         if ast is not None:
@@ -112,24 +117,32 @@ class CodeGenerator:
             
             # If this is an input statement that just received input, execute it and continue with next node
             if hasattr(temp_node, 'type') and temp_node.type == "input_statement":
+                self.log("Resuming execution of paused input node")
                 input_result = self.execute_input_statement(temp_node)
                 
-                # Find the variable to update with the input value
-                variable_to_update = None
-                
-                # First, search parent nodes for var_statement
-                if hasattr(self, 'parent_nodes') and len(self.parent_nodes) > 0:
-                    for parent in reversed(self.parent_nodes):
-                        if hasattr(parent, 'type') and parent.type == "var_statement":
-                            for child in parent.children:
-                                if hasattr(child, 'type') and child.type == "IDENT":
-                                    var_name = child.value.lstrip('$')
-                                    variable_to_update = var_name
-                                    break
-                
-                # If we found a variable to update, do it
-                if variable_to_update:
-                    self.get_current_env()[variable_to_update] = input_result
+                # Find the variable to update with the input value if we have a tracked assignment target
+                if self.current_assignment_target:
+                    var_name = self.current_assignment_target
+                    self.log(f"Updating tracked variable {var_name} with input value: {input_result}")
+                    
+                    # Apply type conversion based on expected type if available
+                    if self.expected_type and input_result is not None:
+                        input_result = self.convert_type(input_result, self.expected_type)
+                        self.log(f"Converted input to expected type {self.expected_type}: {input_result}")
+                    
+                    # Update the variable with the input result
+                    self.assign_variable(var_name, input_result)
+                    
+                    # Move to next input target if available
+                    if self.input_target_queue:
+                        next_target = self.input_target_queue.pop(0)
+                        self.current_assignment_target = next_target.get('variable')
+                        self.expected_type = next_target.get('type')
+                        self.log(f"Moving to next input target: {self.current_assignment_target} of type {self.expected_type}")
+                    else:
+                        # Clear tracking if no more targets
+                        self.current_assignment_target = None
+                        self.expected_type = None
                 
                 # If parent is main_function, directly look at its children structure
                 if hasattr(self, 'parent_nodes') and len(self.parent_nodes) > 0:
@@ -165,7 +178,9 @@ class CodeGenerator:
                                                                     for vchild in inner_stmt.children:
                                                                         if hasattr(vchild, 'type') and vchild.type == "IDENT":
                                                                             var_name = vchild.value.lstrip('$')
-                                                                            self.get_current_env()[var_name] = input_result
+                                                                            # Only update if not already updated via tracked assignment
+                                                                            if not self.current_assignment_target or self.current_assignment_target != var_name:
+                                                                                self.get_current_env()[var_name] = input_result
                                                                             break
                                                             
                                                             found_index = i
@@ -473,30 +488,27 @@ class CodeGenerator:
         return var_value
 
     def execute_var_statement(self, node):
+        """Execute a var statement"""
         self.log("Executing var_statement")
-        self.log(f"var_statement children: {node.children}")
-        
-        valid_children = [child for child in node.children if child is not None]
-        self.log(f"Valid children after filtering None: {valid_children}")
-        
-        if len(valid_children) < 1:  
-            pass
-            return None
 
-        var_name = None
-        data_type = None
-        for child in valid_children:
-            if hasattr(child, 'type'):
-                if child.type == "IDENT":
-                    var_name = child.value.lstrip('$')
-                elif child.type == "data_type" or child.type == "local_data_type":
-                    data_type = child.value
+        valid_children = [n for n in node.children if n is not None]
         
-        # Look for the data_type in the first child if not found
-        if data_type is None and len(valid_children) > 0 and hasattr(valid_children[0], 'value'):
-            # Sometimes the data_type is directly in the first child
-            if valid_children[0].value in ["int", "flt", "bln", "str", "chr"]:
-                data_type = valid_children[0].value
+        if len(valid_children) < 2:
+            self.log(f"var_statement has insufficient children: {len(valid_children)}")
+            return None
+        
+        # Get the data type and variable name
+        data_type_node = valid_children[0]
+        ident_node = valid_children[1]
+        
+        if not hasattr(data_type_node, 'value') or not hasattr(ident_node, 'value'):
+            self.log("Missing data_type or ident value")
+            return None
+        
+        data_type = data_type_node.value
+        var_name = ident_node.value.lstrip('$')
+        
+        self.log(f"Variable declaration: {data_type} {var_name}")
         
         if not var_name:
             return None
@@ -514,10 +526,30 @@ class CodeGenerator:
         
         # Find assignment if it exists
         assign_node = None
+        contains_input = False
         for child in valid_children:
-            if hasattr(child, 'type') and (child.type == "local_var_assign" or child.type == "expression" or child.type == "function_call" or child.type == "input_statement"):
-                assign_node = child
-                break
+            if hasattr(child, 'type'):
+                if child.type == "local_var_assign" or child.type == "expression" or child.type == "function_call":
+                    assign_node = child
+                    # Check if this assignment contains an input statement
+                    if child.type == "local_var_assign" and child.children:
+                        for gc in child.children:
+                            if hasattr(gc, 'type') and gc.type == "value" and gc.children:
+                                for gcc in gc.children:
+                                    if hasattr(gcc, 'type') and gcc.type == "input_statement":
+                                        contains_input = True
+                                        break
+                    break
+                elif child.type == "input_statement":
+                    assign_node = child
+                    contains_input = True
+                    break
+        
+        # If this is an input assignment, track it
+        if contains_input:
+            self.current_assignment_target = var_name
+            self.expected_type = data_type
+            self.log(f"Setting input target: {var_name} with expected type {data_type}")
         
         # Get the value from the assignment if it exists
         if assign_node:
@@ -1237,6 +1269,28 @@ class CodeGenerator:
             self.log(f"Expected assign_tail_op, got {assign_node.type if hasattr(assign_node, 'type') else 'unknown'}")
             return None
 
+        # Check if we're tracking this as the current assignment target
+        if var_name:
+            self.current_assignment_target = var_name
+            self.log(f"Setting current assignment target to: {var_name}")
+            
+            # Look up the variable to get its type
+            var_type = None
+            existing_value = self.lookup_variable(var_name)
+            if existing_value is not None:
+                if isinstance(existing_value, int):
+                    var_type = "int"
+                elif isinstance(existing_value, float):
+                    var_type = "float"
+                elif isinstance(existing_value, bool):
+                    var_type = "bool"
+                elif isinstance(existing_value, str):
+                    var_type = "string"
+                
+            if var_type:
+                self.expected_type = var_type
+                self.log(f"Setting expected input type to: {var_type}")
+
         value_node = None
         for child in assign_node.children:
             if child is not None and hasattr(child, 'type') and child.type == "value":
@@ -1247,6 +1301,14 @@ class CodeGenerator:
             self.log("No value node found in assign_tail_op")
             return None
 
+        # Check if this assignment contains an input statement
+        contains_input = False
+        if value_node and value_node.children:
+            for child in value_node.children:
+                if hasattr(child, 'type') and child.type == "input_statement":
+                    contains_input = True
+                    break
+        
         value = self.execute_node(value_node)
         self.log(f"Assignment value for {var_name}: {value}")
         
@@ -1262,6 +1324,13 @@ class CodeGenerator:
                 self.log(f"Applied implicit conversion for assignment: {type(original_value).__name__} -> {target_type}: {original_value} -> {value}")
 
         self.assign_variable(var_name, value)
+        
+        # If this was an input assignment, clear the current assignment target
+        if contains_input:
+            self.log(f"Keeping assignment target {var_name} for input tracking")
+        else:
+            self.log(f"Clearing current assignment target since no input detected")
+            self.current_assignment_target = None
         
         return value
 
@@ -1290,9 +1359,74 @@ class CodeGenerator:
             self.input_value = None
             self.paused_node = None
             
+            # Convert input value based on expected type if available
+            if self.expected_type:
+                try:
+                    if self.expected_type == "int":
+                        # Try to convert to integer
+                        if isinstance(input_val, str) and input_val.isdigit():
+                            self.log(f"Converting input to integer as expected type is int")
+                            input_val = int(input_val)
+                        elif not isinstance(input_val, int):
+                            self.log(f"Error: Expected integer input but got {type(input_val).__name__}")
+                            # Mark execution as stopped and completed due to type error
+                            self.stopped = True
+                            self.completed = True
+                            self.waiting_for_input = False
+                            self.paused_node = None
+                            print(f"Error: Input value must be an integer. Received: '{input_val}'")
+                            return None
+                    elif self.expected_type == "float" or self.expected_type == "flt":
+                        # Try to convert to float
+                        try:
+                            if not isinstance(input_val, float):
+                                self.log(f"Converting input to float as expected type is float")
+                                input_val = float(input_val)
+                        except ValueError:
+                            self.log(f"Error: Expected float input but could not convert '{input_val}'")
+                            self.stopped = True
+                            self.completed = True
+                            self.waiting_for_input = False
+                            self.paused_node = None
+                            print(f"Error: Input value must be a float. Received: '{input_val}'")
+                            return None
+                    elif self.expected_type == "bool" or self.expected_type == "bln":
+                        # Try to convert to boolean - accept "Day"/"Night", "True"/"False", "1"/"0"
+                        if isinstance(input_val, str):
+                            if input_val.lower() == "day" or input_val.lower() == "true" or input_val == "1":
+                                input_val = True
+                            elif input_val.lower() == "night" or input_val.lower() == "false" or input_val == "0":
+                                input_val = False
+                            else:
+                                self.log(f"Error: Expected boolean input but got '{input_val}'")
+                                self.stopped = True
+                                self.completed = True
+                                self.waiting_for_input = False
+                                self.paused_node = None
+                                print(f"Error: Input value must be a boolean (Day/Night, True/False, 1/0). Received: '{input_val}'")
+                                return None
+                except Exception as e:
+                    self.log(f"Error during input validation: {str(e)}")
+                    self.stopped = True
+                    self.completed = True
+                    self.waiting_for_input = False
+                    self.paused_node = None
+                    print(f"Error: Invalid input value: '{input_val}'. Expected type: {self.expected_type}")
+                    return None
+                
+            # Reset expected type and assignment target after successful processing
+            self.expected_type = None
+            
+            # If we have more targets in queue, move to the next one
+            if self.input_target_queue:
+                next_target = self.input_target_queue.pop(0)
+                self.current_assignment_target = next_target.get('variable')
+                self.expected_type = next_target.get('type')
+                self.log(f"Moving to next input target: {self.current_assignment_target} of type {self.expected_type}")
+            else:
+                self.current_assignment_target = None
+            
             # Return the value with appropriate type conversion
-            if isinstance(input_val, str) and input_val.isdigit():
-                return int(input_val)
             return input_val
         
         # Always set waiting flag and store the current node
@@ -1327,14 +1461,8 @@ class CodeGenerator:
         """Process user input and continue execution"""
         self.log(f"Received input: {input_value}")
         
-        # Try to convert to integer if it looks like one
-        try:
-            converted_value = int(input_value)
-            self.log(f"Converted input to integer: {converted_value}")
-            self.input_value = converted_value
-        except ValueError:
-            self.log(f"Keeping input as string: {input_value}")
-            self.input_value = input_value
+        # Store the raw input value
+        self.input_value = input_value
         
         # Mark that we're no longer waiting for input
         self.waiting_for_input = False

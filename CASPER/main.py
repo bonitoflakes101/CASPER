@@ -192,14 +192,18 @@ def program_status():
             "output": filtered_output
         })
     
-    # If program is stopped or completed, return idle
+    # If program is stopped or completed, return appropriate status
     if current_generator.stopped or current_generator.completed:
+        # Determine if program was stopped due to validation error or completed normally
+        is_validation_error = current_generator.stopped and not current_generator.waiting_for_input
+        status = "program_finished" if is_validation_error else "idle"
+        
         # If program completed normally, reset the generator
-        if current_generator.completed:
+        if current_generator.completed and not current_generator.waiting_for_input:
             current_generator = None
         
         return jsonify({
-            "status": "idle",
+            "status": status,
             "output": filtered_output
         })
     
@@ -244,7 +248,7 @@ def provide_input():
     
     try:
         # Process the input using the generator's built-in method
-        current_generator.provide_input(int(user_input) if user_input.isdigit() else user_input)
+        current_generator.provide_input(user_input)
         
         # Continue execution from where it was paused
         current_generator.generate(None)  # Pass None to continue from paused node
@@ -267,8 +271,11 @@ def provide_input():
                                not 'Waiting for input...' in line and
                                not 'is_waiting_for_input called' in line])
     
+    # Check if validation failed, which would be indicated by program being stopped
+    is_validation_failed = current_generator.stopped and not current_generator.waiting_for_input
+    
     status_info = {
-        "status": "input_processed",
+        "status": "program_finished" if is_validation_failed else "input_processed",
         "waiting_for_more": current_generator.is_waiting_for_input(),
         "output": final_output
     }
