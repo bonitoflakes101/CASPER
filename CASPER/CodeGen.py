@@ -33,15 +33,19 @@ class CodeGenerator:
             pass
 
     def lookup_variable(self, var_name):
-        self.log(f"Looking up variable: '{var_name}'")
+        print(f"===== LOOKUP_VARIABLE: '{var_name}' =====")
         
         # Search through the environment stack, starting with the most local scope
-        for env in reversed(self.env_stack):
+        for i, env in enumerate(reversed(self.env_stack)):
+            scope_name = "local" if i == 0 else f"parent {i}"
+            print(f"Checking {scope_name} scope: {env}")
             if var_name in env:
-                self.log(f"Found '{var_name}' with value: {env[var_name]}")
-                return env[var_name]
+                value = env[var_name]
+                print(f"Found '{var_name}' in {scope_name} scope with value: {value}")
+                return value
         
-        self.log(f"Variable '{var_name}' not found in any environment")
+        print(f"Variable '{var_name}' not found in any environment")
+        print("===== LOOKUP_VARIABLE COMPLETE =====")
         return None
 
     def assign_variable(self, var_name, value):
@@ -83,15 +87,20 @@ class CodeGenerator:
         """
         
         if self.stopped:
-           
+            print("STOPPED")
             return None
             
         if ast is not None:
-            
+            print("AST NOT NONE")
+            print(self.waiting_for_input)
             self.ast = ast
+            # Debug print AST structure
+            if self.debug:
+                pass
             
-        if ast is None and not self.waiting_for_input:       
-            
+        # Only return early if we have no AST, no paused node, and are not waiting for input
+        if ast is None and not self.waiting_for_input and self.paused_node is None:       
+            print("AST NOT NONE AND NOT WAITING FOR INPUT AND NO PAUSED NODE")    
             return
             
       
@@ -107,21 +116,110 @@ class CodeGenerator:
     def execute_node(self, node):
         # Check if execution is stopped
         if self.stopped:
-        
+            print("STOPPED")
             return None
             
         if node is None and self.paused_node and not self.waiting_for_input:
-            
+            print(f"RESUMING FROM PAUSED NODE: {self.paused_node.type if hasattr(self.paused_node, 'type') else 'unknown'}")
             temp_node = self.paused_node
             self.paused_node = None
+            
+            # If this is an input statement that just received input, execute it and continue with next node
+            if hasattr(temp_node, 'type') and temp_node.type == "input_statement":
+                print("RESUMING FROM INPUT STATEMENT")
+                input_result = self.execute_input_statement(temp_node)
+                print(f"INPUT RESULT: {input_result}")
+                
+                # Find the variable to update with the input value
+                variable_to_update = None
+                
+                # First, search parent nodes for var_statement
+                if hasattr(self, 'parent_nodes') and len(self.parent_nodes) > 0:
+                    for parent in reversed(self.parent_nodes):
+                        if hasattr(parent, 'type') and parent.type == "var_statement":
+                            print(f"Found var_statement parent for input")
+                            for child in parent.children:
+                                if hasattr(child, 'type') and child.type == "IDENT":
+                                    var_name = child.value.lstrip('$')
+                                    print(f"Found variable {var_name} to update with input")
+                                    variable_to_update = var_name
+                                    break
+                
+                # If we found a variable to update, do it
+                if variable_to_update:
+                    print(f"UPDATING VARIABLE {variable_to_update} = {input_result}")
+                    self.get_current_env()[variable_to_update] = input_result
+                
+                # If parent is main_function, directly look at its children structure
+                if hasattr(self, 'parent_nodes') and len(self.parent_nodes) > 0:
+                    parent = self.parent_nodes.pop()
+                    print(f"FOUND PARENT NODE: {parent.type if hasattr(parent, 'type') else 'unknown'}")
+                    
+                    if hasattr(parent, 'type') and parent.type == "main_function":
+                        print("DIRECT PROCESSING OF MAIN FUNCTION CHILDREN")
+                        # Get the main statements list (first child)
+                        if parent.children and len(parent.children) > 0:
+                            statements_list = parent.children[0]
+                            print(f"Found statements_list with {len(statements_list) if isinstance(statements_list, list) else 'not list'} items")
+                            
+                            # Find the parent list that contains our input statement
+                            if isinstance(statements_list, list):
+                                found_index = -1
+                                for i, stmt_group in enumerate(statements_list):
+                                    # Each statement may be wrapped in a list
+                                    if isinstance(stmt_group, list) and len(stmt_group) > 0:
+                                        inner_stmt = stmt_group[0]
+                                        if inner_stmt == temp_node:
+                                            print(f"Found input at position {i}")
+                                            found_index = i
+                                            break
+                                        
+                                        # Also check if the input is inside a var_statement
+                                        if hasattr(inner_stmt, 'type') and inner_stmt.type == "var_statement" and inner_stmt.children:
+                                            # Look for input_statement in var_statement children
+                                            for child in inner_stmt.children:
+                                                if hasattr(child, 'type') and child.type == "local_var_assign" and child.children:
+                                                    value_node = child.children[0]
+                                                    if hasattr(value_node, 'type') and value_node.type == "value" and value_node.children:
+                                                        if hasattr(value_node.children[0], 'type') and value_node.children[0].type == "input_statement":
+                                                            if value_node.children[0] == temp_node:
+                                                                print(f"Found input in var_statement at position {i}")
+                                                                
+                                                                # Get variable name from var_statement
+                                                                if hasattr(inner_stmt, 'children'):
+                                                                    for vchild in inner_stmt.children:
+                                                                        if hasattr(vchild, 'type') and vchild.type == "IDENT":
+                                                                            var_name = vchild.value.lstrip('$')
+                                                                            print(f"UPDATING VARIABLE {var_name} = {input_result}")
+                                                                            self.get_current_env()[var_name] = input_result
+                                                                            break
+                                                                
+                                                                found_index = i
+                                                                break
+                                
+                                # Execute all statements after the input statement
+                                if found_index >= 0:
+                                    print(f"EXECUTING ALL STATEMENTS AFTER POSITION {found_index}")
+                                    for i in range(found_index + 1, len(statements_list)):
+                                        next_stmt = statements_list[i]
+                                        print(f"EXECUTING STATEMENT {i}: {next_stmt[0].type if isinstance(next_stmt, list) and len(next_stmt) > 0 and hasattr(next_stmt[0], 'type') else 'unknown'}")
+                                        self.execute_node(next_stmt)
+                                else:
+                                    print("WARNING: Could not find input statement in main_function")
+                                    self.print_ast_structure(parent)
+                    
+                # Return the input result
+                return input_result
+            
+            # Otherwise just continue with the paused node
             return self.execute_node(temp_node)
 
         if self.waiting_for_input:
-     
+            print("STILL WAITING FOR INPUT - NOT EXECUTING")
             return None
             
         if node is None:
-           
+            print("NODE IS NONE - NOTHING TO EXECUTE")
             return None
 
         # Handle Day/Night literals at the node level
@@ -133,16 +231,30 @@ class CodeGenerator:
             return False
 
         if isinstance(node, list):
-           
+            print(f"EXECUTING LIST NODE with {len(node)} items")
             results = []
-            for subnode in self.flatten_nodes(node):
-                res = self.execute_node(subnode)
-                if res is not None:
-                    results.append(res)
+            
+            # If this is a doubly-nested list (like in the main_function), handle each inner list
+            if len(node) > 0 and isinstance(node[0], list):
+                print("DOUBLY NESTED LIST DETECTED")
+                for inner_list in node:
+                    inner_result = self.execute_node(inner_list)
+                    if inner_result is not None:
+                        results.append(inner_result)
+            # Otherwise just execute each item in the list
+            else:
+                for subnode in self.flatten_nodes(node):
+                    if self.waiting_for_input:
+                        print("EXECUTION PAUSED DUE TO INPUT REQUEST")
+                        break
+                    res = self.execute_node(subnode)
+                    if res is not None:
+                        results.append(res)
+                        
             return results if results else None
 
         if not hasattr(node, 'type'):
-       
+            print(f"NODE HAS NO TYPE: {node}")
             return None
 
         
@@ -218,18 +330,30 @@ class CodeGenerator:
 
     def execute_main_function(self, node):
         self.log("Executing main_function")
+        if not node.children or len(node.children) < 1:
+            self.log("No statements in main function")
+            return None
     
+        # Create a new scope for the main function
         self.push_scope()
-        results = []
-    
-        if node.children:
-            for child in node.children:
-                result = self.execute_node(child)
-                results.append(result)
-        else:
-            pass
-        self.pop_scope()
-        return results[-1] if results else None
+        
+        self.log(f"Main function has {len(node.children)} statements")
+        
+        # Check if we have a statements block
+        if len(node.children) > 0 and node.children[0] is not None:
+            # For resuming from input, track this as a parent node
+            self.parent_nodes.append(node)
+            
+            result = self.execute_node(node.children[0])
+            
+            if not self.waiting_for_input:
+                self.parent_nodes.pop()  # Clean up parent node reference
+                self.pop_scope()  # Only pop scope if we're not waiting for input
+                
+            return result
+        
+        self.pop_scope()  # Pop scope if there were no children
+        return None
 
     # ==========================
     #    FUNCTION HANDLING
@@ -389,6 +513,7 @@ class CodeGenerator:
         return var_value
 
     def execute_var_statement(self, node):
+        print("===== EXECUTE_VAR_STATEMENT =====")
         self.log("Executing var_statement")
         self.log(f"var_statement children: {node.children}")
         
@@ -405,17 +530,20 @@ class CodeGenerator:
             if hasattr(child, 'type'):
                 if child.type == "IDENT":
                     var_name = child.value.lstrip('$')
-                elif child.type == "data_type":
+                    print(f"Found variable name: {var_name}")
+                elif child.type == "data_type" or child.type == "local_data_type":
                     data_type = child.value
+                    print(f"Found data type: {data_type}")
         
         # Look for the data_type in the first child if not found
         if data_type is None and len(valid_children) > 0 and hasattr(valid_children[0], 'value'):
             # Sometimes the data_type is directly in the first child
             if valid_children[0].value in ["int", "flt", "bln", "str", "chr"]:
                 data_type = valid_children[0].value
+                print(f"Found data type from first child: {data_type}")
         
         if not var_name:
-            pass
+            print("ERROR: No variable name found")
             return None
         
         # Initialize with default value based on data type
@@ -429,48 +557,31 @@ class CodeGenerator:
         elif data_type == "bool" or data_type == "bln":
             default_value = False
         
+        print(f"Default value for {data_type}: {default_value}")
+        
         # Find assignment if it exists
         assign_node = None
         for child in valid_children:
             if hasattr(child, 'type') and (child.type == "local_var_assign" or child.type == "expression" or child.type == "function_call" or child.type == "input_statement"):
                 assign_node = child
+                print(f"Found assignment node of type: {child.type}")
                 break
         
-        # If there's an assignment, use its value; otherwise use default
+        # Get the value from the assignment if it exists
         if assign_node:
-            value = self.execute_node(assign_node)
-            
-            # Special handling for input_statement results
-            if assign_node.type == "input_statement" and value is None and self.input_value is not None:
-                value = self.input_value
-                self.input_value = None  # Clear to prevent reuse
-            
-            self.log(f"Evaluated expression value: {value}")
-            
-            # Apply type conversion based on declaration
-            # Boolean to Integer conversion
-            if data_type == "int" and isinstance(value, bool):
-                value = 1 if value else 0
-            # Boolean to Float conversion
-            elif (data_type == "float" or data_type == "flt") and isinstance(value, bool):
-                value = 1.0 if value else 0.0
-            # Apply other conversions using the standard method
-            elif data_type and value is not None:
-                python_type = self.casper_to_python_type(data_type)
-                if python_type:
-                    original_value = value
-                    value = self.convert_type(value, python_type)
-                    self.log(f"Applied implicit conversion from {type(original_value).__name__} to {data_type}: {original_value} -> {value}")
+            print(f"Processing assignment of type: {assign_node.type}")
+            assigned_value = self.execute_node(assign_node)
+            print(f"Assignment result for {var_name}: {assigned_value}")
+            # Update the variable's value
+            self.get_current_env()[var_name] = assigned_value
         else:
-            value = default_value
-            self.log(f"No assignment found, using default value: {value}")
-        
-        # Assign the variable
-        self.get_current_env()[var_name] = value
-        self.log(f"Assigned variable '{var_name}' = {value}")
-        self.log(f"Environment after assignment: {self.get_current_env()}")
-        
-        return value
+            # Initialize with default value if no assignment
+            self.get_current_env()[var_name] = default_value
+            print(f"No assignment found, initializing {var_name} with default: {default_value}")
+                
+        print(f"Variable {var_name} set to: {self.get_current_env()[var_name]}")
+        print("===== VAR_STATEMENT COMPLETE =====")
+        return self.get_current_env()[var_name]
         
     def casper_to_python_type(self, casper_type):
         """Convert CASPER type names to Python type names."""
@@ -487,17 +598,98 @@ class CodeGenerator:
             return None
 
     def execute_local_var_assign(self, node):
-        self.log(f"Executing local_var_assign: {node}")
+        print("===== EXECUTE_LOCAL_VAR_ASSIGN =====")
+        self.log("Executing local_var_assign")
 
-        if not node.children:
-            self.log("local_var_assign has no children")
+        if not node.children or len(node.children) < 1:
+            print("No children in local_var_assign")
             return None
-        
        
         value_node = node.children[0]
-        self.log(f"local_var_assign value node: {value_node}")
+        print(f"Evaluating value node of type: {value_node.type if hasattr(value_node, 'type') else 'unknown'}")
+        
         result = self.execute_node(value_node)
-        self.log(f"local_var_assign result: {result}")
+        print(f"Assignment value result: {result}")
+        print("===== LOCAL_VAR_ASSIGN COMPLETE =====")
+        
+        return result
+        
+    def execute_value(self, node):
+        print("===== EXECUTE_VALUE =====")
+        
+        if not node.children or len(node.children) < 1:
+            print("No children in value node")
+            return None
+            
+        value_expr = node.children[0]
+        print(f"Evaluating value expression of type: {value_expr.type if hasattr(value_expr, 'type') else 'unknown'}")
+        
+        result = self.execute_node(value_expr)
+        print(f"Value result: {result}")
+        print("===== VALUE COMPLETE =====")
+        
+        return result
+        
+    def execute_expression(self, node):
+        print("===== EXECUTE_EXPRESSION =====")
+        self.log("Executing expression")
+        
+        # Execute the first term in the expression
+        if not node.children or len(node.children) < 1:
+            print("No children in expression")
+            return None
+            
+        left_node = node.children[0]
+        print(f"Evaluating left node of type: {left_node.type if hasattr(left_node, 'type') else 'unknown'}")
+        
+        left_value = self.execute_node(left_node)
+        print(f"Left value: {left_value}")
+        
+        # If there's a binary operation part (the rest of the expression after the first term)
+        if len(node.children) > 1 and node.children[1]:
+            binop_node = node.children[1]
+            print(f"Found binary operation of type: {binop_node.type if hasattr(binop_node, 'type') else 'unknown'}")
+            
+            # Execute the binary operation chain
+            result = self.evaluate_expression_chain(left_value, binop_node)
+            print(f"Expression result after operations: {result}")
+            print("===== EXPRESSION COMPLETE =====")
+            return result
+        else:
+            print("No binary operation in expression")
+            print("===== EXPRESSION COMPLETE =====")
+            return left_value
+
+    def evaluate_expression_chain(self, left_value, binop_node):
+        print(f"===== EVALUATE_EXPRESSION_CHAIN with left_value={left_value} =====")
+        
+        # If no binary operation, just return the left value
+        if not binop_node or not hasattr(binop_node, 'children') or len(binop_node.children) < 2:
+            print("No binary operation to evaluate")
+            return left_value
+            
+        # Extract operator and right operand
+        operator_node = binop_node.children[0]
+        right_node = binop_node.children[1]
+        
+        # Get the operator and right value
+        operator = operator_node.value if hasattr(operator_node, 'value') else operator_node
+        print(f"Operator: {operator}")
+        
+        print(f"Evaluating right node of type: {right_node.type if hasattr(right_node, 'type') else 'unknown'}")
+        right_value = self.execute_node(right_node)
+        print(f"Right value: {right_value}")
+        
+        # Apply the operator
+        result = self.apply_operator(operator, left_value, right_value)
+        print(f"Result after applying {operator}: {result}")
+        
+        # If there's more to the chain, continue evaluating
+        if len(binop_node.children) > 2 and binop_node.children[2]:
+            next_binop = binop_node.children[2]
+            return self.evaluate_expression_chain(result, next_binop)
+            
+        print("===== EXPRESSION_CHAIN COMPLETE =====")
         return result
 
     def execute_output_statement(self, node):
@@ -597,113 +789,6 @@ class CodeGenerator:
     # ==========================
     #    EXPRESSIONS
     # ==========================
-
-    def execute_value(self, node):
-        self.log(f"Executing value: {node}")
-        
-        # Special handling for direct Day/Night values
-        if hasattr(node, 'value'):
-            if node.value == "Day":
-                return True
-            elif node.value == "Night": 
-                return False
-                
-        if node.children:
-            result = self.execute_node(node.children[0])
-            self.log(f"Value result: {result}")
-            return result
-        self.log("Value has no children")
-        return None
-
-    def execute_expression(self, node):
-        self.log(f"Executing expression: {node}")
-        
-        if not node.children:
-            self.log("Expression has no children")
-            return None
-        
-   
-        if len(node.children) == 1:
-            return self.execute_node(node.children[0])
-
-        result = self.execute_node(node.children[0])
-        self.log(f"Initial term: {result}")
-   
-        operations = []
-        
-  
-        i = 1
-        while i < len(node.children):
-            if hasattr(node.children[i], 'type') and node.children[i].type == "factor_tail_binop":
-                self.log(f"Processing factor_tail_binop at index {i}")
-                binop_node = node.children[i]
-             
-                result = self.evaluate_expression_chain(result, binop_node)
-                self.log(f"Expression result after chain evaluation: {result}")
-                break
-            i += 1
-            
-        self.log(f"Final expression result: {result}")
-        return result
-        
-    def evaluate_expression_chain(self, left_value, binop_node):
-        self.log(f"Evaluating expression chain starting with {left_value}")
-        
-        if not binop_node or not hasattr(binop_node, 'type') or binop_node.type != "factor_tail_binop":
-            return left_value
-            
-        
-        if len(binop_node.children) < 2:
-            self.log("Invalid binop node structure")
-            return left_value
-            
-        op_node = binop_node.children[0]
-        if not hasattr(op_node, 'type') or op_node.type != "operator":
-            self.log("Expected operator node")
-            return left_value
-            
-        operator = op_node.value
-        self.log(f"Operator: {operator}")
-        
-    
-        right_value = self.execute_node(binop_node.children[1])
-        self.log(f"Right operand: {right_value}")
-        
-       
-        next_binop = None
-        if len(binop_node.children) > 2 and binop_node.children[2] is not None:
-            next_binop = binop_node.children[2]
-            
-        if next_binop is not None and hasattr(next_binop, 'type') and next_binop.type == "factor_tail_binop":
-            next_op_node = next_binop.children[0]
-            if hasattr(next_op_node, 'type') and next_op_node.type == "operator":
-                next_operator = next_op_node.value
-                
-             
-                if self.has_higher_precedence(next_operator, operator):
-                    self.log(f"Evaluating higher precedence operation first: {next_operator}")
-              
-                    right_value = self.evaluate_expression_chain(right_value, next_binop)
-                    self.log(f"Result of higher precedence chain: {right_value}")
-             
-                    result = self.apply_operator(operator, left_value, right_value)
-                    self.log(f"Result of current operation: {result}")
-                    return result
-
-        result = self.apply_operator(operator, left_value, right_value)
-        self.log(f"Operation result: {left_value} {operator} {right_value} = {result}")
-        
-        if next_binop is not None and hasattr(next_binop, 'type') and next_binop.type == "factor_tail_binop":
-            result = self.evaluate_expression_chain(result, next_binop)
-            
-        return result
-    
-    def has_higher_precedence(self, op1, op2):
-        precedence = {
-            '*': 2, '/': 2, '%': 2,  #
-            '+': 1, '-': 1            
-        }
-        return precedence.get(op1, 0) > precedence.get(op2, 0)
 
     def execute_factor_tail_binop(self, node):
         self.log(f"Executing factor_tail_binop: {node}")
@@ -936,20 +1021,43 @@ class CodeGenerator:
         return result
 
     def execute_var_call(self, node):
-        self.log(f"Executing var_call: {node}")
-        # var_call -> IDENT (value=$hello)
+        print("===== EXECUTE_VAR_CALL =====")
+        self.log("Executing var_call")
         if not node.children:
             self.log("var_call has no children")
             return None
             
-        var_name = node.children[0].value
-        # Remove $ prefix if present for variable lookups
-        clean_var_name = var_name.lstrip('$')
-        self.log(f"var_call looking up: '{clean_var_name}'")
+        # Get the variable name from the first child (IDENT node)
+        ident_node = node.children[0]
+        var_name = ident_node.value.lstrip('$')
+        print(f"Looking up variable: {var_name}")
         
-        result = self.lookup_variable(clean_var_name)
-        self.log(f"var_call result: {result}")
-        return result
+        # Print the current environment for debugging
+        print(f"Current environment: {self.get_current_env()}")
+        
+        # Look up variable in environment
+        value = self.lookup_variable(var_name)
+        print(f"Value of {var_name}: {value}")
+        
+        # Check for indexing operation: $arr[0], $arr[1][2] etc.
+        if len(node.children) > 1 and node.children[1]:
+            indices = node.children[1]
+            self.log(f"Array indices: {indices}")
+            if isinstance(value, list) and indices:
+                for idx in indices:
+                    idx_val = self.execute_node(idx)
+                    self.log(f"Index value: {idx_val}")
+                    if isinstance(idx_val, int) and 0 <= idx_val < len(value):
+                        value = value[idx_val]
+                    else:
+                        self.log(f"Invalid index {idx_val} for array of length {len(value)}")
+                        return None
+            else:
+                pass
+        
+        print(f"Final value of {var_name}: {value}")
+        print("===== VAR_CALL COMPLETE =====")
+        return value
 
     # ==========================
     #    PARAMETER HANDLING
@@ -986,12 +1094,45 @@ class CodeGenerator:
     
     # Handle statements block
     def execute_statements(self, node):
-        self.log(f"Executing statements block: {node}")
+        self.log("Executing statements")
+        if not node.children:
+            return None
+        
+        print(f"EXECUTE_STATEMENTS: Node has {len(node.children)} children")
         results = []
-        if node.children:
-            for child in node.children:
-                result = self.execute_node(child)
+        
+        for i, statement in enumerate(node.children):
+            if statement is None:
+                continue
+                
+            print(f"EXECUTE_STATEMENTS: Processing statement {i} of type {statement.type if hasattr(statement, 'type') else 'unknown'}")
+                
+            # Store parent-child relationship for resuming from input
+            if hasattr(self, 'parent_nodes'):
+                self.parent_nodes.append(node)
+                
+            # Store additional information for input statements
+            if hasattr(statement, 'type') and statement.type == "input_statement":
+                print(f"FOUND INPUT STATEMENT at index {i} in statements")
+                # Keep track of this statement's position
+                statement.stmt_index = i
+                statement.parent_stmt = node
+            
+            result = self.execute_node(statement)
+            
+            # Pop parent node if we just added it and didn't pause
+            if hasattr(self, 'parent_nodes') and len(self.parent_nodes) > 0 and not self.waiting_for_input:
+                self.parent_nodes.pop()
+            
+            # If we're waiting for input, stop execution and return
+            if self.waiting_for_input:
+                print(f"EXECUTE_STATEMENTS: Paused at statement {i} waiting for input")
+                return None
+                
+            if result is not None:
                 results.append(result)
+                
+        print("EXECUTE_STATEMENTS: Completed all statements")
         return results[-1] if results else None
     
     # ==========================
@@ -1168,59 +1309,6 @@ class CodeGenerator:
 
         return bool(left_val)
 
-    def evaluate_condition_chain(self, left_value, binop_node):
-        """Helper function to evaluate condition chains with operators"""
-        self.log(f"Evaluating condition chain starting with {left_value}")
-        
-        if not binop_node or not hasattr(binop_node, 'type') or binop_node.type != "factor_tail_binop":
-            return left_value
-            
-        op_node = binop_node.children[0]
-        if not hasattr(op_node, 'type') or op_node.type != "operator":
-            self.log("Expected operator node")
-            return left_value
-            
-        operator = op_node.value
-        self.log(f"Condition operator: {operator}")
-        
-        right_value = self.execute_node(binop_node.children[1])
-        self.log(f"Condition right operand: {right_value}")
-        
-        next_binop = None
-        if len(binop_node.children) > 2 and binop_node.children[2] is not None:
-            next_binop = binop_node.children[2]
-            
-        if operator in ["==", "!=", ">", "<", ">=", "<="]:
-            temp_result = self.apply_comparison(operator, left_value, right_value)
-        else:
-            temp_result = self.apply_operator(operator, left_value, right_value)
-        
-        self.log(f"Intermediate result: {left_value} {operator} {right_value} = {temp_result}")
-
-        if next_binop is not None and hasattr(next_binop, 'type') and next_binop.type == "factor_tail_binop":
-            return self.evaluate_condition_chain(temp_result, next_binop)
-        
-        return temp_result
-
-    def apply_comparison(self, operator, left, right):
-        """Apply comparison operators"""
-        self.log(f"Applying comparison: {left} {operator} {right}")
-        if operator == "==":
-            return left == right
-        elif operator == "!=":
-            return left != right
-        elif operator == ">":
-            return left > right
-        elif operator == "<":
-            return left < right
-        elif operator == ">=":
-            return left >= right
-        elif operator == "<=":
-            return left <= right
-        
-        
-        else:
-            return self.apply_operator(operator, left, right)
     def execute_otherwise(self, node):
         """Execute an otherwise statement (else block)"""
         self.log("Executing otherwise")
@@ -1315,6 +1403,7 @@ class CodeGenerator:
             return None
 
     def execute_input_statement(self, node):
+        print("EXECUTE_INPUT_STATEMENT CALLED")
         
         # If input value is already available, return it immediately without showing prompt again
         if self.input_value is not None and not self.waiting_for_input:
@@ -1350,6 +1439,12 @@ class CodeGenerator:
         
        
         self.input_prompt = prompt
+        
+        # Make sure we're still paused even after executing the prompt
+        self.waiting_for_input = True
+        self.paused_node = node
+        
+        print("Waiting for input...")
     
         return None
     
@@ -1595,6 +1690,36 @@ class CodeGenerator:
         """Stop the execution of the program"""
         self.stopped = True
         print("Program execution stopped")
+
+    def print_ast_structure(self, node, level=0):
+        """Debug helper to print AST structure"""
+        if node is None:
+            print(" " * level + "None")
+            return
+            
+        if isinstance(node, list):
+            print(" " * level + "[List]")
+            for item in node:
+                self.print_ast_structure(item, level+2)
+            return
+            
+        # Print node type and value if available
+        node_str = f"{node.type}" if hasattr(node, 'type') else str(node)
+        if hasattr(node, 'value') and node.value is not None:
+            node_str += f" (value={node.value})"
+        print(" " * level + node_str)
+        
+        # Print children recursively
+        if hasattr(node, 'children') and node.children:
+            for child in node.children:
+                self.print_ast_structure(child, level+2)
+                
+    def print_parent_nodes(self):
+        """Debug helper to print parent nodes stack"""
+        print("PARENT NODES STACK:")
+        for i, node in enumerate(self.parent_nodes):
+            node_type = node.type if hasattr(node, 'type') else str(node)
+            print(f"  {i}: {node_type}")
 
 def run_code_generation(ast):
     """Create a CodeGenerator and run code generation on the given AST."""

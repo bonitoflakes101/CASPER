@@ -254,67 +254,12 @@ def provide_input():
     sys.stdout = output_buffer
     
     try:
-       
-        fresh_generator = CodeGenerator()
+        # Instead of creating a new generator, use the current one directly
+        # Process the input using the generator's built-in method
+        current_generator.provide_input(int(user_input) if user_input.isdigit() else user_input)
         
-        
-       
-        fresh_generator.global_vars = current_generator.global_vars.copy()
-        fresh_generator.env_stack = [fresh_generator.global_vars]
-        
-    
-        fresh_generator.ast = current_generator.ast
-        
-        # Check specifically for input statement nodes
-      
-        if current_generator.paused_node and hasattr(current_generator.paused_node, 'type'):
-           
-            if current_generator.paused_node.type == "input_statement":
-                pass
-                
-        fresh_generator.debug = True  # Enable debug for more visibility
-        
-       
-        fresh_generator.input_value = int(user_input) if user_input.isdigit() else user_input
-        fresh_generator.waiting_for_input = False
-        
-        already_got_input = True
-      
-        backup_stdout2 = sys.stdout
-        temp_buffer = io.StringIO()
-        sys.stdout = temp_buffer
-        
-        fresh_generator.generate(fresh_generator.ast)
-        
-        temp_output = temp_buffer.getvalue()
-        
-        sys.stdout = backup_stdout2
-       
-        
-        lines = temp_output.split('\n')
-        output_after_input = []
-        prompt = current_generator.get_input_prompt().strip()
-        
-        # Process all output without filtering for specific prompts
-        for line in lines:
-            if (line.startswith('DEBUG:') or 
-                'EXECUTE_INPUT_STATEMENT CALLED' in line or 
-                'Waiting for input...' in line or 
-                'is_waiting_for_input called' in line):
-                continue
-            
-            # Skip lines that match or start with the prompt
-            if line == prompt or (prompt and line.startswith(prompt)):
-                continue
-                
-            # Keep all other output lines
-            output_after_input.append(line)
-   
-        print('\n'.join(output_after_input))
-        
-       
-        current_generator = fresh_generator
-        
+        # Continue execution from where it was paused
+        current_generator.generate(None)  # Pass None to continue from paused node
         
     except Exception as e:
         print(f"ERROR PROCESSING INPUT: {str(e)}")
@@ -323,7 +268,7 @@ def provide_input():
     finally:
         sys.stdout = backup_stdout
     
-   
+    # Capture the new output
     new_output = output_buffer.getvalue().strip()
     if new_output:
         program_output += f"\n{new_output}"
