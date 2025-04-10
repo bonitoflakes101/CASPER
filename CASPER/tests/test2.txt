@@ -259,7 +259,7 @@ function @drawRectangle(int $height) {
     display "3 - Square\n";
     display "4 - Rectangle\n";
     
-    display "Enter shape number (1-4): ";
+    display "Enter shape number (1-4): \n";
     int $choice = 1;
     
     display "Enter number of rows/size: ";
