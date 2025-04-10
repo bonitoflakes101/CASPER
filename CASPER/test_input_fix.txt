@@ -1,0 +1,14 @@
+birth {
+
+@main_casper() {
+    display "Enter a number (1 or 0):\n";
+    bln $bool_val = input();  // Should convert to Day or Night
+    display "Boolean value: ", $bool_val, "\n";
+    
+    // Test boolean to integer conversion
+    int $int_val = $bool_val;
+    display "Same value as integer: ", $int_val, "\n";
+}
+
+}
+ghost 

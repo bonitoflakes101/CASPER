@@ -807,7 +807,7 @@ class CodeGenerator:
                     self.log(f"Converted right from bool to float: {right}")
                 elif isinstance(left, int):
                     # bln → int: Day → 1, Night → 0
-                    right = 1 if right else 0
+                    right = 1 if left else 0
                     self.log(f"Converted right from bool to int: {right}")
         
         # For comparison operations
@@ -1366,52 +1366,138 @@ class CodeGenerator:
             self.input_value = None
             self.paused_node = None
             
+            # Handle basic conversions from string inputs
+            if isinstance(input_val, str):
+                # Handle Day/Night values exactly - case sensitive
+                if input_val == "Day":
+                    input_val = True  # Convert to boolean True (Day)
+                elif input_val == "Night":
+                    input_val = False  # Convert to boolean False (Night)
+                # Try numeric conversion for numeric strings
+                elif input_val.replace('.', '', 1).isdigit():
+                    try:
+                        if '.' in input_val:
+                            input_val = float(input_val)
+                        else:
+                            input_val = int(input_val)
+                    except ValueError:
+                        pass
+            
             # Convert input value based on expected type if available
             if self.expected_type:
                 try:
+                    # Store original value for logging
+                    original_val = input_val
+                    
+                    # Apply specific conversion rules based on the type table in the image
                     if self.expected_type == "int":
-                        # Try to convert to integer
-                        if isinstance(input_val, str) and input_val.isdigit():
-                            self.log(f"Converting input to integer as expected type is int")
+                        # Allow float, bool, or numeric string inputs
+                        if isinstance(input_val, float):
+                            # flt → int: Truncate decimal
                             input_val = int(input_val)
-                        elif not isinstance(input_val, int):
-                            self.log(f"Error: Expected integer input but got {type(input_val).__name__}")
-                            # Mark execution as stopped and completed due to type error
-                            self.stopped = True
-                            self.completed = True
-                            self.waiting_for_input = False
-                            self.paused_node = None
-                            print(f"Error: Input value must be an integer. Received: '{input_val}'")
-                            return None
-                    elif self.expected_type == "float" or self.expected_type == "flt":
-                        # Try to convert to float
-                        try:
-                            if not isinstance(input_val, float):
-                                self.log(f"Converting input to float as expected type is float")
+                            self.log(f"Applied flt → int conversion (truncate decimal): {original_val} → {input_val}")
+                        elif isinstance(input_val, bool):
+                            # bln → int: Day → 1, Night → 0
+                            input_val = 1 if input_val else 0
+                            self.log(f"Applied bln → int conversion: {original_val} → {input_val}")
+                        elif isinstance(input_val, str):
+                            # Try to convert string input to appropriate numeric value
+                            try:
                                 input_val = float(input_val)
-                        except ValueError:
-                            self.log(f"Error: Expected float input but could not convert '{input_val}'")
-                            self.stopped = True
-                            self.completed = True
-                            self.waiting_for_input = False
-                            self.paused_node = None
-                            print(f"Error: Input value must be a float. Received: '{input_val}'")
-                            return None
-                    elif self.expected_type == "bool" or self.expected_type == "bln":
-                        # Try to convert to boolean - accept "Day"/"Night", "True"/"False", "1"/"0"
-                        if isinstance(input_val, str):
-                            if input_val.lower() == "day" or input_val.lower() == "true" or input_val == "1":
-                                input_val = True
-                            elif input_val.lower() == "night" or input_val.lower() == "false" or input_val == "0":
-                                input_val = False
-                            else:
-                                self.log(f"Error: Expected boolean input but got '{input_val}'")
+                                input_val = int(input_val)  # Truncate decimal part
+                                self.log(f"Converted string to int (with truncation): {original_val} → {input_val}")
+                            except ValueError:
+                                self.log(f"Error: Cannot convert '{input_val}' to int")
                                 self.stopped = True
                                 self.completed = True
                                 self.waiting_for_input = False
                                 self.paused_node = None
-                                print(f"Error: Input value must be a boolean (Day/Night, True/False, 1/0). Received: '{input_val}'")
+                                print(f"Error: Input value must be a number. Received: '{input_val}'")
                                 return None
+                        elif not isinstance(input_val, int):
+                            self.log(f"Error: Expected numeric input but got {type(input_val).__name__}")
+                            self.stopped = True
+                            self.completed = True
+                            self.waiting_for_input = False
+                            self.paused_node = None
+                            print(f"Error: Input value must be a number. Received: '{input_val}'")
+                            return None
+                            
+                    elif self.expected_type == "float" or self.expected_type == "flt":
+                        # Allow int, bool, or numeric string inputs
+                        if isinstance(input_val, int):
+                            # int → flt: Add .0
+                            input_val = float(input_val)
+                            self.log(f"Applied int → flt conversion (add .0): {original_val} → {input_val}")
+                        elif isinstance(input_val, bool):
+                            # bln → flt: Day → 1.0, Night → 0.0
+                            input_val = 1.0 if input_val else 0.0
+                            self.log(f"Applied bln → flt conversion: {original_val} → {input_val}")
+                        elif isinstance(input_val, str):
+                            # Try to convert string input to float
+                            try:
+                                input_val = float(input_val)
+                                self.log(f"Converted string to float: {original_val} → {input_val}")
+                            except ValueError:
+                                self.log(f"Error: Cannot convert '{input_val}' to float")
+                                self.stopped = True
+                                self.completed = True
+                                self.waiting_for_input = False
+                                self.paused_node = None
+                                print(f"Error: Input value must be a number. Received: '{input_val}'")
+                                return None
+                        elif not isinstance(input_val, float):
+                            self.log(f"Error: Expected float input but got {type(input_val).__name__}")
+                            self.stopped = True
+                            self.completed = True
+                            self.waiting_for_input = False
+                            self.paused_node = None
+                            print(f"Error: Input value must be a number. Received: '{input_val}'")
+                            return None
+                            
+                    elif self.expected_type == "bool" or self.expected_type == "bln":
+                        # Allow int, float, or boolean string inputs
+                        if isinstance(input_val, int):
+                            # int → bln: 0 → Night, else Day
+                            input_val = False if input_val == 0 else True
+                            self.log(f"Applied int → bln conversion: {original_val} → {input_val}")
+                        elif isinstance(input_val, float):
+                            # flt → bln: 0.0 → Night, else Day
+                            input_val = False if input_val == 0.0 else True
+                            self.log(f"Applied flt → bln conversion: {original_val} → {input_val}")
+                        elif isinstance(input_val, str):
+                            # Accept ONLY exact "Day" and "Night" strings
+                            if input_val == "Day":
+                                input_val = True
+                            elif input_val == "Night":
+                                input_val = False
+                            else:
+                                # Try to convert numeric strings to boolean
+                                try:
+                                    num_val = float(input_val)
+                                    input_val = False if num_val == 0 else True
+                                    self.log(f"Converted numeric string to boolean: {original_val} → {input_val}")
+                                except ValueError:
+                                    self.log(f"Error: Cannot convert '{input_val}' to boolean")
+                                    self.stopped = True
+                                    self.completed = True
+                                    self.waiting_for_input = False
+                                    self.paused_node = None
+                                    print(f"Error: Input value must be a boolean (Day/Night) or a number (0 for Night, other numbers for Day). Received: '{input_val}'")
+                                    return None
+                        elif not isinstance(input_val, bool):
+                            self.log(f"Error: Expected boolean input but got {type(input_val).__name__}")
+                            self.stopped = True
+                            self.completed = True
+                            self.waiting_for_input = False
+                            self.paused_node = None
+                            print(f"Error: Input value must be a boolean. Received: '{input_val}'")
+                            return None
+                    
+                    # Apply final implicit type casting for consistency
+                    input_val = self.convert_type(input_val, self.expected_type)
+                    self.log(f"Final input value after conversion: {input_val} (type: {type(input_val).__name__})")
+                                
                 except Exception as e:
                     self.log(f"Error during input validation: {str(e)}")
                     self.stopped = True
