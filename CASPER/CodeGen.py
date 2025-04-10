@@ -554,6 +554,13 @@ class CodeGenerator:
         # Get the value from the assignment if it exists
         if assign_node:
             assigned_value = self.execute_node(assign_node)
+            
+            # Apply type conversion based on the variable's declared data type
+            if assigned_value is not None and data_type:
+                original_value = assigned_value
+                assigned_value = self.convert_type(assigned_value, data_type)
+                self.log(f"Applied type conversion for variable declaration: {type(original_value).__name__} -> {data_type}: {original_value} -> {assigned_value}")
+            
             # Update the variable's value
             self.get_current_env()[var_name] = assigned_value
         else:
@@ -1587,6 +1594,12 @@ class CodeGenerator:
         
         # Execute the initial value
         initial_value = self.execute_node(init_value_node)
+        
+        # Apply type conversion based on the variable's declared data type
+        if initial_value is not None and data_type:
+            original_value = initial_value
+            initial_value = self.convert_type(initial_value, data_type)
+            self.log(f"Applied type conversion for control variable: {type(original_value).__name__} -> {data_type}: {original_value} -> {initial_value}")
         
         # Assign the variable to the current scope
         self.get_current_env()[var_name] = initial_value
