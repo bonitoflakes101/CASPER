@@ -44,7 +44,7 @@ def home():
         code = request.form.get("code_input", "")
     else:
         # For GET requests, use our default code to test logical operators
-        code = default_code
+        code = ""
 
     # Reset global state
     current_generator = None
