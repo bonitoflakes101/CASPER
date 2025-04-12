@@ -83,31 +83,27 @@ birth{
 ghost
 
 
+4.) Lists/String Manipulation/While loop
+
+
+
+
+
+
+5.) Sum of squares
 
 birth{
 
-@main_casper() { 
-
-    --- int $num, $i, $sum; ---
-    display "Perfect numbers between 1 and 100 are: ";
-   
-    for(int $num = 1; $num <= 100; $num++) {
-          int $sum = 0; 
-            for (int $i = 1; $i < $num; $i++) {
-                check ($num % $i == 0) {
-                    $sum += $i;
-                } otherwise {
-                    
-                    }
-            }
-
-            check ($sum == $num) {
-                display $num;
-            } otherwise {
-                
-            }
-        }
-
-
-    }
-} ghost
+@main_casper(){
+	display "Input a number: ";
+	int $num = input();
+	int $sum = 0;
+	int $mul = 0;
+	for(int $i = $num; $i> 0; $i--){
+		$mul = $i*$i;
+		$sum += $mul;
+	}
+	display ($sum);
+}
+}
+ghost
