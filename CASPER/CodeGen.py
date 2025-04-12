@@ -378,57 +378,99 @@ class CodeGenerator:
     def execute_function_call(self, node):
         self.log("Executing function_call")
         
-      
-        func_name = None
-        for child in node.children:
-            if hasattr(child, 'type') and child.type == "FUNCTION_NAME":
-                func_name = child.value
-                break
+        try:
+            func_name = None
+            for child in node.children:
+                if hasattr(child, 'type') and child.type == "FUNCTION_NAME":
+                    func_name = child.value
+                    break
+                    
+            if not func_name:
+                self.log("ERROR: Function call missing function name")
+                print("Error: Invalid function call - missing function name")
+                self.stopped = True
+                return None
                 
-        if not func_name:
-            return None
+            self.log(f"Calling function: {func_name}")
             
-        self.log(f"Calling function: {func_name}")
-        
-   
-        if func_name not in self.functions:
-            return None
+            if func_name not in self.functions:
+                self.log(f"ERROR: Undefined function: {func_name}")
+                print(f"Error: Undefined function: {func_name}")
+                self.stopped = True
+                return None
+                
+            args = []
+            for child in node.children:
+                if hasattr(child, 'type') and child.type == "arguments":
+                    for arg in child.children:
+                        arg_value = self.execute_node(arg)
+                        args.append(arg_value)
+                        self.log(f"Argument value: {arg_value}")
             
-    
-        args = []
-        for child in node.children:
-            if hasattr(child, 'type') and child.type == "arguments":
-                for arg in child.children:
-                    arg_value = self.execute_node(arg)
-                    args.append(arg_value)
-                    self.log(f"Argument value: {arg_value}")
-   
-        self.push_scope()
-        
-  
-        for i, param in enumerate(self.functions[func_name]['params']):
-            if i < len(args):
-                param_name = param["name"]
-                self.get_current_env()[param_name] = args[i]
-                self.log(f"Bound parameter '{param_name}' to value {args[i]}")
- 
-        func_node = self.functions[func_name]['node']
-        for child in func_node.children:
-            if hasattr(child, 'type') and child.type == "statements":
-                for statement in child.children:
-                    self.execute_node(statement)
-            else:
-                self.execute_node(child)
+            # Check argument count against parameter count
+            expected_params = len(self.functions[func_name]['params'])
+            actual_args = len(args)
+            if actual_args != expected_params:
+                self.log(f"ERROR: Function {func_name} expected {expected_params} arguments, got {actual_args}")
+                print(f"Error: Function {func_name} expected {expected_params} arguments, got {actual_args}")
+                self.stopped = True
+                return None
+       
+            self.push_scope()
+            
+            for i, param in enumerate(self.functions[func_name]['params']):
+                if i < len(args):
+                    param_name = param["name"]
+                    param_type = param.get("type")
+                    arg_value = args[i]
+                    
+                    # Type check and conversion
+                    if param_type and arg_value is not None:
+                        if self.casper_to_python_type(param_type) != type(arg_value).__name__.lower():
+                            try:
+                                # Apply conversion if types don't match
+                                converted_value = self.convert_type(arg_value, param_type)
+                                self.log(f"Converted argument from {type(arg_value).__name__} to {param_type}: {arg_value} → {converted_value}")
+                                arg_value = converted_value
+                            except Exception as e:
+                                self.log(f"ERROR: Failed to convert argument to expected type for function {func_name}: {str(e)}")
+                                print(f"Error: Type mismatch in function {func_name} for parameter '{param_name}'. Expected {param_type}, got {type(arg_value).__name__}")
+                                self.stopped = True
+                                self.pop_scope()
+                                return None
+                    
+                    self.get_current_env()[param_name] = arg_value
+                    self.log(f"Bound parameter '{param_name}' to value {arg_value}")
+     
+            func_node = self.functions[func_name]['node']
+            for child in func_node.children:
+                if self.stopped:
+                    break
+                    
+                if hasattr(child, 'type') and child.type == "statements":
+                    for statement in child.children:
+                        if self.stopped:
+                            break
+                        self.execute_node(statement)
+                else:
+                    self.execute_node(child)
 
-        return_value = None
-        if self.return_values:
-            return_value = self.return_values.pop()
-            self.log(f"Function returned: {return_value}")
+            return_value = None
+            if self.return_values:
+                return_value = self.return_values.pop()
+                self.log(f"Function returned: {return_value}")
 
-        self.pop_scope()
-        
-        return return_value
-        
+            self.pop_scope()
+            
+            return return_value
+        except Exception as e:
+            self.log(f"ERROR: Exception in function call {func_name if func_name else 'unknown'}: {str(e)}")
+            print(f"Error: Exception in function call: {str(e)}")
+            self.stopped = True
+            if 'scope_pushed' in locals() and scope_pushed:
+                self.pop_scope()
+            return None
+
     def execute_revive_statement(self, node):
         self.log("Executing revive_statement")
 
@@ -649,14 +691,20 @@ class CodeGenerator:
         # Evaluate the right side
         right_value = self.execute_node(right_node)
         
-        # Apply the operator
-        result = self.apply_operator(operator, left_value, right_value)
-        
-        # If there's a tail, recursively evaluate it
-        if tail_node is not None:
-            result = self.evaluate_expression_chain(result, tail_node)
-        
-        return result
+        # Apply the operator with appropriate error handling
+        try:
+            result = self.apply_operator(operator, left_value, right_value)
+            
+            # If there's a tail, recursively evaluate it
+            if tail_node is not None and not self.stopped:
+                result = self.evaluate_expression_chain(result, tail_node)
+            
+            return result
+        except Exception as e:
+            self.log(f"ERROR: Expression evaluation failed: {left_value} {operator} {right_value} - {str(e)}")
+            print(f"Error: Expression evaluation failed: {str(e)}")
+            self.stopped = True
+            return 0
 
     def execute_output_statement(self, node):
         self.log("Executing output_statement")
@@ -750,38 +798,56 @@ class CodeGenerator:
         # Apply implicit type conversion based on the operation type
         left, right = self.apply_implicit_conversion(left, right, operator)
         
-        if operator == "+":
-            return left + right
-        elif operator == "-":
-            return left - right
-        elif operator == "*":
-            return left * right
-        elif operator == "/":
-            if right == 0:
-                return 0
-            return left / right
-        elif operator == "%":
-            if right == 0:
-                return 0
-            return left % right
-        elif operator == "||":
-            return bool(left) or bool(right)
-        elif operator == "&&":
-            return bool(left) and bool(right)
-        elif operator == "==":
-            return left == right
-        elif operator == "!=":
-            return left != right
-        elif operator == ">":
-            return left > right
-        elif operator == "<":
-            return left < right
-        elif operator == ">=":
-            return left >= right
-        elif operator == "<=":
-            return left <= right
-        else:
-            return None
+        try:
+            if operator == "+":
+                return left + right
+            elif operator == "-":
+                return left - right
+            elif operator == "*":
+                return left * right
+            elif operator == "/":
+                if right == 0:
+                    self.log("ERROR: Division by zero detected")
+                    print("Error: Division by zero")
+                    self.stopped = True
+                    return 0
+                return left / right
+            elif operator == "%":
+                if right == 0:
+                    self.log("ERROR: Modulo by zero detected")
+                    print("Error: Modulo by zero")
+                    self.stopped = True
+                    return 0
+                return left % right
+            elif operator == "||":
+                return bool(left) or bool(right)
+            elif operator == "&&":
+                return bool(left) and bool(right)
+            elif operator == "==":
+                return left == right
+            elif operator == "!=":
+                return left != right
+            elif operator == ">":
+                return left > right
+            elif operator == "<":
+                return left < right
+            elif operator == ">=":
+                return left >= right
+            elif operator == "<=":
+                return left <= right
+            else:
+                self.log(f"WARNING: Unknown operator '{operator}'")
+                return None
+        except OverflowError:
+            self.log(f"ERROR: Numeric overflow in operation {left} {operator} {right}")
+            print(f"Error: Numeric overflow in operation {left} {operator} {right}")
+            self.stopped = True
+            return 0
+        except Exception as e:
+            self.log(f"ERROR: Operation failed: {left} {operator} {right} - {str(e)}")
+            print(f"Error: Operation failed: {str(e)}")
+            self.stopped = True
+            return 0
 
     def apply_implicit_conversion(self, left, right, operator=None):
         """Apply implicit type conversion based on the types of operands and the conversion table."""
@@ -980,14 +1046,32 @@ class CodeGenerator:
         if len(node.children) > 1 and node.children[1]:
             indices = node.children[1]
             if isinstance(value, list) and indices:
-                for idx in indices:
-                    idx_val = self.execute_node(idx)
-                    if isinstance(idx_val, int) and 0 <= idx_val < len(value):
-                        value = value[idx_val]
-                    else:
-                        return None
-            else:
-                pass
+                try:
+                    for idx in indices:
+                        idx_val = self.execute_node(idx)
+                        if isinstance(idx_val, int):
+                            if 0 <= idx_val < len(value):
+                                value = value[idx_val]
+                            else:
+                                self.log(f"ERROR: Array index out of bounds: {var_name}[{idx_val}], array length: {len(value)}")
+                                print(f"Error: Array index out of bounds: {var_name}[{idx_val}], array length: {len(value)}")
+                                self.stopped = True
+                                return None
+                        else:
+                            self.log(f"ERROR: Array index must be an integer, got: {type(idx_val).__name__}")
+                            print(f"Error: Array index must be an integer, got: {type(idx_val).__name__}")
+                            self.stopped = True
+                            return None
+                except Exception as e:
+                    self.log(f"ERROR: Array access failed: {var_name} - {str(e)}")
+                    print(f"Error: Array access failed: {str(e)}")
+                    self.stopped = True
+                    return None
+            elif not isinstance(value, list) and indices:
+                self.log(f"ERROR: Cannot index non-array variable: {var_name}")
+                print(f"Error: Cannot index non-array variable: {var_name}")
+                self.stopped = True
+                return None
         
         return value
 
@@ -1310,125 +1394,157 @@ class CodeGenerator:
         """Execute an assignment statement"""
         self.log("Executing assignment_statement")
         
-        if len(node.children) < 2:
-            self.log("Assignment statement missing parts")
-            return None
-  
-        var_node = node.children[0]
-        if not hasattr(var_node, 'type') or var_node.type != "IDENT":
-            self.log(f"Expected IDENT, got {var_node.type if hasattr(var_node, 'type') else 'unknown'}")
-            return None
-        
-        var_name = var_node.value.lstrip('$')
-
-        assign_node = node.children[1]
-        if not hasattr(assign_node, 'type'):
-            self.log(f"Invalid assign_node without type")
-            return None
-
-        # Check if we're tracking this as the current assignment target
-        if var_name:
-            self.current_assignment_target = var_name
-            self.log(f"Setting current assignment target to: {var_name}")
+        try:
+            if len(node.children) < 2:
+                self.log("ERROR: Assignment statement missing parts")
+                print("Error: Invalid assignment statement - missing parts")
+                self.stopped = True
+                return None
+      
+            var_node = node.children[0]
+            if not hasattr(var_node, 'type') or var_node.type != "IDENT":
+                self.log(f"ERROR: Expected IDENT, got {var_node.type if hasattr(var_node, 'type') else 'unknown'}")
+                print("Error: Invalid assignment target")
+                self.stopped = True
+                return None
             
-            # Look up the variable to get its type
-            var_type = None
+            var_name = var_node.value.lstrip('$')
+            if not var_name:
+                self.log("ERROR: Empty variable name in assignment")
+                print("Error: Empty variable name in assignment")
+                self.stopped = True
+                return None
+
+            assign_node = node.children[1]
+            if not hasattr(assign_node, 'type'):
+                self.log(f"ERROR: Invalid assign_node without type")
+                print("Error: Invalid assignment operation")
+                self.stopped = True
+                return None
+
+            # Check if we're tracking this as the current assignment target
+            if var_name:
+                self.current_assignment_target = var_name
+                self.log(f"Setting current assignment target to: {var_name}")
+                
+                # Look up the variable to get its type
+                var_type = None
+                existing_value = self.lookup_variable(var_name)
+                if existing_value is not None:
+                    if isinstance(existing_value, int):
+                        var_type = "int"
+                    elif isinstance(existing_value, float):
+                        var_type = "float"
+                    elif isinstance(existing_value, bool):
+                        var_type = "bool"
+                    elif isinstance(existing_value, str):
+                        var_type = "string"
+                    
+                if var_type:
+                    self.expected_type = var_type
+                    self.log(f"Setting expected input type to: {var_type}")
+
+            # Execute the assign_tail_op to get the value (or value and operator for compound assignments)
+            assign_result = self.execute_node(assign_node)
+            if self.stopped:
+                return None
+                
+            self.log(f"Assignment result: {assign_result}")
+            
+            # Handle compound operators (+=, -=, *=, /=, %=)
+            if isinstance(assign_result, dict) and "value" in assign_result and "operator" in assign_result:
+                # Get the current value of the variable
+                current_value = self.lookup_variable(var_name)
+                self.log(f"Current value of '{var_name}': {current_value}")
+                
+                if current_value is None:
+                    self.log(f"ERROR: Variable '{var_name}' not found for compound assignment")
+                    print(f"Error: Variable '{var_name}' not found for compound assignment")
+                    self.stopped = True
+                    return None
+                    
+                # Get the operator and the right-side value
+                operator = assign_result["operator"]
+                right_value = assign_result["value"]
+                
+                self.log(f"Compound assignment: {var_name} {operator} {right_value}, current value: {current_value}")
+                
+                # Apply the compound operation
+                if operator == "+=":
+                    value = current_value + right_value
+                    self.log(f"Addition operation: {current_value} + {right_value} = {value}")
+                elif operator == "-=":
+                    value = current_value - right_value
+                    self.log(f"Subtraction operation: {current_value} - {right_value} = {value}")
+                elif operator == "*=":
+                    value = current_value * right_value
+                    self.log(f"Multiplication operation: {current_value} * {right_value} = {value}")
+                elif operator == "/=":
+                    if right_value == 0:
+                        self.log("ERROR: Division by zero in compound assignment")
+                        print(f"Error: Division by zero in assignment to {var_name}")
+                        self.stopped = True
+                        return None
+                    value = current_value / right_value
+                    self.log(f"Division operation: {current_value} / {right_value} = {value}")
+                elif operator == "%=":
+                    if right_value == 0:
+                        self.log("ERROR: Modulo by zero in compound assignment")
+                        print(f"Error: Modulo by zero in assignment to {var_name}")
+                        self.stopped = True
+                        return None
+                    value = current_value % right_value
+                    self.log(f"Modulo operation: {current_value} % {right_value} = {value}")
+                else:
+                    self.log(f"ERROR: Unknown compound operator: {operator}")
+                    print(f"Error: Unknown compound operator: {operator}")
+                    self.stopped = True
+                    return None
+                    
+                # Maintain type consistency for integer operations
+                if isinstance(current_value, int) and not isinstance(current_value, bool):
+                    value = int(value)
+                    self.log(f"Converted result to int: {value}")
+                    
+                self.log(f"Compound assignment result: {var_name} = {value}")
+            else:
+                # Regular assignment
+                value = assign_result
+                self.log(f"Regular assignment value for {var_name}: {value}")
+            
+            # Apply implicit type conversion based on the existing variable's type
+            # Look up the existing variable to get its current type
             existing_value = self.lookup_variable(var_name)
             if existing_value is not None:
-                if isinstance(existing_value, int):
-                    var_type = "int"
-                elif isinstance(existing_value, float):
-                    var_type = "float"
-                elif isinstance(existing_value, bool):
-                    var_type = "bool"
-                elif isinstance(existing_value, str):
-                    var_type = "string"
-                
-            if var_type:
-                self.expected_type = var_type
-                self.log(f"Setting expected input type to: {var_type}")
+                # Only convert if the types differ
+                if type(existing_value) != type(value) and value is not None:
+                    try:
+                        original_value = value
+                        target_type = type(existing_value).__name__.lower()
+                        value = self.convert_type(value, target_type)
+                        self.log(f"Applied implicit conversion for assignment: {type(original_value).__name__} -> {target_type}: {original_value} -> {value}")
+                    except Exception as e:
+                        self.log(f"ERROR: Type conversion failed in assignment: {str(e)}")
+                        print(f"Error: Type conversion failed in assignment to {var_name}")
+                        self.stopped = True
+                        return None
 
-        # Execute the assign_tail_op to get the value (or value and operator for compound assignments)
-        assign_result = self.execute_node(assign_node)
-        self.log(f"Assignment result: {assign_result}")
-        
-        # Handle compound operators (+=, -=, *=, /=, %=)
-        if isinstance(assign_result, dict) and "value" in assign_result and "operator" in assign_result:
-            # Get the current value of the variable
-            current_value = self.lookup_variable(var_name)
-            self.log(f"Current value of '{var_name}': {current_value}")
+            self.assign_variable(var_name, value)
+            self.log(f"Final value assigned to {var_name}: {value}")
             
-            if current_value is None:
-                self.log(f"Variable '{var_name}' not found for compound assignment")
-                return None
-                
-            # Get the operator and the right-side value
-            operator = assign_result["operator"]
-            right_value = assign_result["value"]
-            
-            self.log(f"Compound assignment: {var_name} {operator} {right_value}, current value: {current_value}")
-            
-            # Apply the compound operation
-            if operator == "+=":
-                value = current_value + right_value
-                self.log(f"Addition operation: {current_value} + {right_value} = {value}")
-            elif operator == "-=":
-                value = current_value - right_value
-                self.log(f"Subtraction operation: {current_value} - {right_value} = {value}")
-            elif operator == "*=":
-                value = current_value * right_value
-                self.log(f"Multiplication operation: {current_value} * {right_value} = {value}")
-            elif operator == "/=":
-                if right_value == 0:
-                    self.log("Error: Division by zero in compound assignment")
-                    print(f"Error: Division by zero in assignment to {var_name}")
-                    return None
-                value = current_value / right_value
-                self.log(f"Division operation: {current_value} / {right_value} = {value}")
-            elif operator == "%=":
-                if right_value == 0:
-                    self.log("Error: Modulo by zero in compound assignment")
-                    print(f"Error: Modulo by zero in assignment to {var_name}")
-                    return None
-                value = current_value % right_value
-                self.log(f"Modulo operation: {current_value} % {right_value} = {value}")
+            # If this was an input assignment, clear the current assignment target
+            if 'contains_input' in locals() and contains_input:
+                self.log(f"Keeping assignment target {var_name} for input tracking")
             else:
-                self.log(f"Unknown compound operator: {operator}")
-                return None
-                
-            # Maintain type consistency for integer operations
-            if isinstance(current_value, int) and not isinstance(current_value, bool):
-                value = int(value)
-                self.log(f"Converted result to int: {value}")
-                
-            self.log(f"Compound assignment result: {var_name} = {value}")
-        else:
-            # Regular assignment
-            value = assign_result
-            self.log(f"Regular assignment value for {var_name}: {value}")
-        
-        # Apply implicit type conversion based on the existing variable's type
-        # Look up the existing variable to get its current type
-        existing_value = self.lookup_variable(var_name)
-        if existing_value is not None:
-            # Only convert if the types differ
-            if type(existing_value) != type(value) and value is not None:
-                original_value = value
-                target_type = type(existing_value).__name__.lower()
-                value = self.convert_type(value, target_type)
-                self.log(f"Applied implicit conversion for assignment: {type(original_value).__name__} -> {target_type}: {original_value} -> {value}")
-
-        self.assign_variable(var_name, value)
-        self.log(f"Final value assigned to {var_name}: {value}")
-        
-        # If this was an input assignment, clear the current assignment target
-        if 'contains_input' in locals() and contains_input:
-            self.log(f"Keeping assignment target {var_name} for input tracking")
-        else:
-            self.log(f"Clearing current assignment target since no input detected")
-            self.current_assignment_target = None
-        
-        return value
+                self.log(f"Clearing current assignment target since no input detected")
+                self.current_assignment_target = None
+            
+            return value
+        except Exception as e:
+            self.log(f"ERROR: Exception in assignment statement: {str(e)}")
+            print(f"Error: Exception in assignment: {str(e)}")
+            self.stopped = True
+            return None
 
     def execute_assign_tail_op(self, node):
         """Execute an assign_tail_op node"""
@@ -1714,40 +1830,55 @@ class CodeGenerator:
         self.push_scope()
         
         # Execute the control variable initialization
-        self.execute_control_variable(control_var_node)
+        try:
+            self.execute_control_variable(control_var_node)
+        except Exception as e:
+            self.log(f"ERROR: Failed to initialize loop control variable: {str(e)}")
+            print(f"Error: Failed to initialize loop control variable: {str(e)}")
+            self.stopped = True
+            self.pop_scope()
+            return None
         
         loop_count = 0
         # Loop execution
-        while True:
+        while not self.stopped:
             # Safety limit to prevent infinite loops during debugging
             loop_count += 1
             if loop_count > 1000:  # Reasonable limit for most loops
-                self.log("Loop safety limit reached (1000 iterations)")
+                self.log("ERROR: Loop safety limit reached (1000 iterations)")
+                print("Error: Infinite loop detected - exceeded 1000 iterations")
+                self.stopped = True
                 break
                 
             # Check the loop condition - ensuring we handle it as a condition, not a regular expression
-            if condition_node.type == "condition":
-                # If it's already a condition node, use execute_condition
-                condition_result = self.execute_condition(condition_node)
-            elif condition_node.type == "for_expression":
-                # Convert for_expression to condition evaluation pattern
-                left_val = self.execute_node(condition_node.children[0])
-                if len(condition_node.children) > 1 and hasattr(condition_node.children[1], 'type') and condition_node.children[1].type == "factor_tail_binop":
-                    binop = condition_node.children[1]
-                    op_node = binop.children[0]
-                    operator = op_node.value
-                    right_val = self.execute_node(binop.children[1])
-                    
-                    # Use apply_comparison for comparison operators
-                    if operator in ["==", "!=", ">", "<", ">=", "<="]:
-                        condition_result = self.apply_comparison(operator, left_val, right_val)
+            try:
+                if condition_node.type == "condition":
+                    # If it's already a condition node, use execute_condition
+                    condition_result = self.execute_condition(condition_node)
+                elif condition_node.type == "for_expression":
+                    # Convert for_expression to condition evaluation pattern
+                    left_val = self.execute_node(condition_node.children[0])
+                    if len(condition_node.children) > 1 and hasattr(condition_node.children[1], 'type') and condition_node.children[1].type == "factor_tail_binop":
+                        binop = condition_node.children[1]
+                        op_node = binop.children[0]
+                        operator = op_node.value
+                        right_val = self.execute_node(binop.children[1])
+                        
+                        # Use apply_comparison for comparison operators
+                        if operator in ["==", "!=", ">", "<", ">=", "<="]:
+                            condition_result = self.apply_operator(operator, left_val, right_val)
+                        else:
+                            condition_result = self.apply_operator(operator, left_val, right_val)
                     else:
-                        condition_result = self.apply_operator(operator, left_val, right_val)
+                        condition_result = bool(left_val)
                 else:
-                    condition_result = bool(left_val)
-            else:
-                # Otherwise just try to execute and convert to boolean
-                condition_result = bool(self.execute_node(condition_node))
+                    # Otherwise just try to execute and convert to boolean
+                    condition_result = bool(self.execute_node(condition_node))
+            except Exception as e:
+                self.log(f"ERROR: Failed to evaluate loop condition: {str(e)}")
+                print(f"Error: Failed to evaluate loop condition: {str(e)}")
+                self.stopped = True
+                break
                 
             self.log(f"For loop condition result: {condition_result}")
             
@@ -1755,20 +1886,38 @@ class CodeGenerator:
                 break
                 
             # Execute each statement in the loop body
-            for stmt_node in statement_nodes:
-                self.log(f"Executing statement of type: {stmt_node.type}")
-                self.execute_node(stmt_node)
-                
-                # Check if waiting for input, and if so, pause execution
-                if self.waiting_for_input:
-                    self.log("For loop paused waiting for input")
-                    # Save state so we can resume later
-                    self.paused_node = node
-                    # Exit the loop without popping scope
-                    return None
+            try:
+                for stmt_node in statement_nodes:
+                    if self.stopped:
+                        break
+                        
+                    self.log(f"Executing statement of type: {stmt_node.type}")
+                    self.execute_node(stmt_node)
+                    
+                    # Check if waiting for input, and if so, pause execution
+                    if self.waiting_for_input:
+                        self.log("For loop paused waiting for input")
+                        # Save state so we can resume later
+                        self.paused_node = node
+                        # Exit the loop without popping scope
+                        return None
+            except Exception as e:
+                self.log(f"ERROR: Exception in loop body: {str(e)}")
+                print(f"Error: Exception in loop body: {str(e)}")
+                self.stopped = True
+                break
             
             # Execute the update statement
-            self.execute_node(update_node)
+            try:
+                if self.stopped:
+                    break
+                    
+                self.execute_node(update_node)
+            except Exception as e:
+                self.log(f"ERROR: Failed to execute loop update statement: {str(e)}")
+                print(f"Error: Failed to execute loop update statement: {str(e)}")
+                self.stopped = True
+                break
         
         # Clean up the loop scope
         self.pop_scope()

@@ -410,9 +410,7 @@ birth {
 display "Enter a year: ";
 int $year = input();
 
-check ($year % 400 == 0) {
-    display("Leap year");
-} otherwise_check (($year % 4 == 0) && ($year % 100 != 0)) {
+check (($year % 4 == 0) && ($year % 100 != 0) || ($year % 400 == 0)) {
     display("Leap year");
 } otherwise {
     display("Not a leap year");
