@@ -619,12 +619,20 @@ class CodeGenerator:
         if len(node.children) > 1 and node.children[1] is not None:
             binop_node = node.children[1]
             
+            # Check if we have a logical expression (&&, ||)
+            if isinstance(binop_node, list) or len(binop_node.children) > 1:
+                # Special handling for logical operations to ensure correct precedence
+                for child in binop_node.children:
+                    if hasattr(child, 'type') and hasattr(child, 'value') and child.value in ["&&", "||"]:
+                        self.log(f"EXPRESSION DEBUG: Handling logical operator: {child.value}")
+                        return self.evaluate_logical_expression(left_value, binop_node)
+            
             result = self.evaluate_expression_chain(left_value, binop_node)
             
             return result
         
         return left_value
-
+        
     def evaluate_expression_chain(self, left_value, binop_node):
         
         if not binop_node or not binop_node.children:
@@ -1065,12 +1073,20 @@ class CodeGenerator:
             self.log("CONDITIONAL DEBUG: Invalid conditional statement structure")
             return None
         
-        condition_result = self.execute_node(node.children[0])
-        self.log(f"CONDITIONAL DEBUG: Condition result: {condition_result}")
+        # First child should be the condition
+        # Execute the condition properly using execute_condition instead of execute_node
+        if hasattr(node.children[0], 'type') and node.children[0].type == "condition":
+            condition_result = self.execute_condition(node.children[0])
+        else:
+            condition_result = self.execute_node(node.children[0])
+            
+        self.log(f"CONDITIONAL DEBUG: Main condition result: {condition_result}")
         
         if condition_result:
             self.log("CONDITIONAL DEBUG: Main condition is TRUE, executing check block")
             return self.execute_node(node.children[1])
+            
+        # Check for otherwise blocks
         for i in range(2, len(node.children)):
             child = node.children[i]
             if child is None:
@@ -1078,8 +1094,14 @@ class CodeGenerator:
                 
             if hasattr(child, 'type'):
                 if child.type == "otherwise_check":
+                    # Get the condition from otherwise_check and evaluate it properly
+                    if child.children and hasattr(child.children[0], 'type') and child.children[0].type == "condition":
+                        cond_result = self.execute_condition(child.children[0])
+                    else:
+                        cond_result = self.execute_node(child.children[0])
+                        
+                    self.log(f"CONDITIONAL DEBUG: Otherwise_check condition result: {cond_result}")
                     
-                    cond_result = self.execute_condition(child.children[0])
                     if cond_result:
                         results = []
                         for j in range(1, len(child.children)):
@@ -1087,7 +1109,7 @@ class CodeGenerator:
                             results.append(result)
                         return results[-1] if results else None
                 elif child.type == "otherwise_block":
-            
+                    self.log("CONDITIONAL DEBUG: Executing otherwise block")
                     return self.execute_otherwise_block(child)
         
         return None
@@ -1127,7 +1149,13 @@ class CodeGenerator:
         if not node.children:
             return None
             
-        condition_result = self.execute_condition(node.children[0])
+        # Properly evaluate the condition using execute_condition
+        if hasattr(node.children[0], 'type') and node.children[0].type == "condition":
+            condition_result = self.execute_condition(node.children[0])
+        else:
+            condition_result = self.execute_node(node.children[0])
+            
+        self.log(f"CONDITIONAL DEBUG: Otherwise_check condition result: {condition_result}")
         
         if condition_result:
             results = []
@@ -1181,12 +1209,13 @@ class CodeGenerator:
             operator = op_node.value
             right_val = self.execute_node(binop.children[1])
             
-       
+            self.log(f"CONDITIONAL DEBUG: Operator: {operator}, Right value: {right_val}")
+            
+            # Handle modulo operation with comparison
             if operator == "%":
                 result = left_val % right_val
                 self.log(f"CONDITIONAL DEBUG: Modulo operation: {left_val} % {right_val} = {result}")
                 
-             
                 if len(binop.children) > 2 and binop.children[2] is not None:
                     next_binop = binop.children[2]
                     if hasattr(next_binop, 'type') and next_binop.type == "factor_tail_binop":
@@ -1194,7 +1223,6 @@ class CodeGenerator:
                         next_val = self.execute_node(next_binop.children[1])
                         self.log(f"CONDITIONAL DEBUG: Next operation: {result} {next_op} {next_val}")
                         
-                    
                         if next_op == "==":
                             return result == next_val
                         elif next_op == "!=":
@@ -1208,22 +1236,44 @@ class CodeGenerator:
                         elif next_op == "<=":
                             return result <= next_val
                 
-           
                 return bool(result)
-                
-
+            
+            # Handle comparison operations
             elif operator == "==":
-                return left_val == right_val
+                result = left_val == right_val
             elif operator == "!=":
-                return left_val != right_val
+                result = left_val != right_val
             elif operator == ">":
-                return left_val > right_val
+                result = left_val > right_val
             elif operator == "<":
-                return left_val < right_val
+                result = left_val < right_val
             elif operator == ">=":
-                return left_val >= right_val
+                result = left_val >= right_val
             elif operator == "<=":
-                return left_val <= right_val
+                result = left_val <= right_val
+            # Handle logical operations
+            elif operator == "&&":
+                result = bool(left_val) and bool(right_val)
+            elif operator == "||":
+                result = bool(left_val) or bool(right_val)
+            else:
+                # For other operators, use apply_operator method
+                result = self.apply_operator(operator, left_val, right_val)
+                
+            self.log(f"CONDITIONAL DEBUG: Operation result: {left_val} {operator} {right_val} = {result}")
+            
+            # Check for additional operations in the chain (for complex conditions)
+            if len(binop.children) > 2 and binop.children[2] is not None:
+                next_binop = binop.children[2]
+                if hasattr(next_binop, 'type') and next_binop.type == "factor_tail_binop":
+                    next_op = next_binop.children[0].value
+                    next_val = self.execute_node(next_binop.children[1])
+                    self.log(f"CONDITIONAL DEBUG: Additional operation: {result} {next_op} {next_val}")
+                    
+                    # Recursively apply the next operation
+                    return self.apply_operator(next_op, result, next_val)
+            
+            return result
 
         return bool(left_val)
 
@@ -1880,6 +1930,42 @@ class CodeGenerator:
         for i, node in enumerate(self.parent_nodes):
             node_type = node.type if hasattr(node, 'type') else str(node)
             print(f"  {i}: {node_type}")
+
+    def evaluate_logical_expression(self, left_value, binop_node):
+        """Special handler for logical expressions with AND/OR to ensure correct precedence"""
+        self.log(f"LOGICAL DEBUG: Evaluating logical expression with left value: {left_value}")
+        
+        if not binop_node or not binop_node.children:
+            return bool(left_value)
+        
+        operator_node = binop_node.children[0]
+        right_node = binop_node.children[1]
+        tail_node = binop_node.children[2] if len(binop_node.children) > 2 else None
+        
+        # Get the operator value
+        operator = operator_node.value if hasattr(operator_node, 'value') else operator_node
+        
+        # Evaluate the right side 
+        right_value = self.execute_node(right_node)
+        
+        self.log(f"LOGICAL DEBUG: Operator: {operator}, Right value: {right_value}")
+        
+        # Apply the operator with proper type conversions
+        if operator == "&&":
+            result = bool(left_value) and bool(right_value)
+        elif operator == "||":
+            result = bool(left_value) or bool(right_value)
+        else:
+            # For other operators, use regular apply_operator
+            result = self.apply_operator(operator, left_value, right_value)
+        
+        self.log(f"LOGICAL DEBUG: Operation result: {left_value} {operator} {right_value} = {result}")
+        
+        # If there's a tail with more operations, evaluate it with the current result as the left value
+        if tail_node is not None:
+            result = self.evaluate_logical_expression(result, tail_node)
+        
+        return result
 
 def run_code_generation(ast):
     """Create a CodeGenerator and run code generation on the given AST."""
