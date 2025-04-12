@@ -1272,8 +1272,8 @@ class CodeGenerator:
         var_name = var_node.value.lstrip('$')
 
         assign_node = node.children[1]
-        if not hasattr(assign_node, 'type') or assign_node.type != "assign_tail_op":
-            self.log(f"Expected assign_tail_op, got {assign_node.type if hasattr(assign_node, 'type') else 'unknown'}")
+        if not hasattr(assign_node, 'type'):
+            self.log(f"Invalid assign_node without type")
             return None
 
         # Check if we're tracking this as the current assignment target
@@ -1298,26 +1298,64 @@ class CodeGenerator:
                 self.expected_type = var_type
                 self.log(f"Setting expected input type to: {var_type}")
 
-        value_node = None
-        for child in assign_node.children:
-            if child is not None and hasattr(child, 'type') and child.type == "value":
-                value_node = child
-                break
+        # Execute the assign_tail_op to get the value (or value and operator for compound assignments)
+        assign_result = self.execute_node(assign_node)
+        self.log(f"Assignment result: {assign_result}")
         
-        if not value_node:
-            self.log("No value node found in assign_tail_op")
-            return None
-
-        # Check if this assignment contains an input statement
-        contains_input = False
-        if value_node and value_node.children:
-            for child in value_node.children:
-                if hasattr(child, 'type') and child.type == "input_statement":
-                    contains_input = True
-                    break
-        
-        value = self.execute_node(value_node)
-        self.log(f"Assignment value for {var_name}: {value}")
+        # Handle compound operators (+=, -=, *=, /=, %=)
+        if isinstance(assign_result, dict) and "value" in assign_result and "operator" in assign_result:
+            # Get the current value of the variable
+            current_value = self.lookup_variable(var_name)
+            self.log(f"Current value of '{var_name}': {current_value}")
+            
+            if current_value is None:
+                self.log(f"Variable '{var_name}' not found for compound assignment")
+                return None
+                
+            # Get the operator and the right-side value
+            operator = assign_result["operator"]
+            right_value = assign_result["value"]
+            
+            self.log(f"Compound assignment: {var_name} {operator} {right_value}, current value: {current_value}")
+            
+            # Apply the compound operation
+            if operator == "+=":
+                value = current_value + right_value
+                self.log(f"Addition operation: {current_value} + {right_value} = {value}")
+            elif operator == "-=":
+                value = current_value - right_value
+                self.log(f"Subtraction operation: {current_value} - {right_value} = {value}")
+            elif operator == "*=":
+                value = current_value * right_value
+                self.log(f"Multiplication operation: {current_value} * {right_value} = {value}")
+            elif operator == "/=":
+                if right_value == 0:
+                    self.log("Error: Division by zero in compound assignment")
+                    print(f"Error: Division by zero in assignment to {var_name}")
+                    return None
+                value = current_value / right_value
+                self.log(f"Division operation: {current_value} / {right_value} = {value}")
+            elif operator == "%=":
+                if right_value == 0:
+                    self.log("Error: Modulo by zero in compound assignment")
+                    print(f"Error: Modulo by zero in assignment to {var_name}")
+                    return None
+                value = current_value % right_value
+                self.log(f"Modulo operation: {current_value} % {right_value} = {value}")
+            else:
+                self.log(f"Unknown compound operator: {operator}")
+                return None
+                
+            # Maintain type consistency for integer operations
+            if isinstance(current_value, int) and not isinstance(current_value, bool):
+                value = int(value)
+                self.log(f"Converted result to int: {value}")
+                
+            self.log(f"Compound assignment result: {var_name} = {value}")
+        else:
+            # Regular assignment
+            value = assign_result
+            self.log(f"Regular assignment value for {var_name}: {value}")
         
         # Apply implicit type conversion based on the existing variable's type
         # Look up the existing variable to get its current type
@@ -1331,9 +1369,10 @@ class CodeGenerator:
                 self.log(f"Applied implicit conversion for assignment: {type(original_value).__name__} -> {target_type}: {original_value} -> {value}")
 
         self.assign_variable(var_name, value)
+        self.log(f"Final value assigned to {var_name}: {value}")
         
         # If this was an input assignment, clear the current assignment target
-        if contains_input:
+        if 'contains_input' in locals() and contains_input:
             self.log(f"Keeping assignment target {var_name} for input tracking")
         else:
             self.log(f"Clearing current assignment target since no input detected")
@@ -1345,14 +1384,37 @@ class CodeGenerator:
         """Execute an assign_tail_op node"""
         self.log("Executing assign_tail_op")
         
+        # Check for compound assignment operators in the node
+        compound_op = None
+        
+        # Get the operator node (first child)
+        if node.children and len(node.children) > 0:
+            op_node = node.children[0]
+            
+            # Check if this is a compound operator
+            if hasattr(op_node, 'type'):
+                if op_node.type == "operator" and hasattr(op_node, 'value'):
+                    op_value = op_node.value
+                    # Check if op_value is a compound operator
+                    if op_value in ["+=", "-=", "*=", "/=", "%="]:
+                        compound_op = op_value
+                        self.log(f"Found compound operator: {compound_op}")
+            
+        # Get the value node (second child)
         value_node = None
-        for child in node.children:
-            if child is not None and hasattr(child, 'type') and child.type == "value":
-                value_node = child
-                break
+        if len(node.children) > 1:
+            value_node = node.children[1]
         
         if value_node:
-            return self.execute_node(value_node)
+            # Get the value from the right side of the assignment
+            value = self.execute_node(value_node)
+            
+            # If this is a compound operator, return both the value and operator
+            if compound_op:
+                self.log(f"Returning compound op data: {compound_op}, value: {value}")
+                return {"value": value, "operator": compound_op}
+            
+            return value
         else:
             self.log("No value node found in assign_tail_op")
             return None

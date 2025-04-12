@@ -2088,7 +2088,9 @@ def p_assign_tail(p):
     elif len(p) == 6:
         p[0] = ASTNode("assign_tail_push", children=[p[4]])
     else:
-        p[0] = ASTNode("assign_tail_op", children=[p[1], p[2]])
+        # Debug to see what kind of node p[1] is
+        op_value = p[1].value if hasattr(p[1], 'value') else p[1]
+        p[0] = ASTNode("assign_tail_op", children=[ASTNode("operator", value=op_value), p[2]])
 
 def p_assign_value(p):
     """assign_value : assign_type_cast
@@ -2241,7 +2243,12 @@ def p_assign_op(p):
     assign_op : compound_op  
               | EQ           
     """
-    p[0] = p[1]
+    # Pass the compound_op ASTNode directly if it's a compound operator
+    if hasattr(p[1], 'type') and p[1].type == "compound_op":
+        p[0] = p[1]
+    else:
+        # Create an assign_op ASTNode for regular equals
+        p[0] = ASTNode("assign_op", value=p[1])
 
 # -----------------------------------------------------------------------------
 # (134) <compound_op> → +=
@@ -2258,7 +2265,8 @@ def p_compound_op(p):
                 | DIV_EQ    
                 | MOD_EQ   
     """
-    p[0] = p[1]
+    # Create a proper ASTNode instead of returning the raw token
+    p[0] = ASTNode("compound_op", value=p[1])
 
 # -----------------------------------------------------------------------------
 # (139) <start> → int_literal

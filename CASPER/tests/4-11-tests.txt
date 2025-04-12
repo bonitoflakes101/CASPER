@@ -1,0 +1,113 @@
+1.) FIBONACCI
+birth{
+
+@main_casper(){
+    display "Enter number of terms: ";
+    int $n = input();
+    
+    int $first = 0;
+    int $second = 1;
+    int $next;
+    
+    display "Fibonacci Sequence:\n";
+    
+    for(int $i = 0; $i < $n; $i++) {
+        display $first, "\n";
+        
+        $next = $first + $second;
+        $first = $second;
+        $second = $next;
+    }
+}
+
+}
+ghost
+
+2.) Check if positive/negative and even/odd
+
+birth{
+
+@main_casper(){
+    display("Enter a Digit");
+    int $number = input();
+
+    check($number > 0){
+        display("Number is Positive and ");
+    }
+    otherwise_check($number < 0){
+        display("Number is Negative and ");
+    }
+    otherwise{
+        display("Number is Zero");
+    }
+
+    check ($number % 2 == 0){
+        display("Number is Even");
+    }
+    otherwise{
+        display("Number is Odd");
+    }
+}
+
+}
+ghost
+
+3.)
+
+birth{
+
+@main_casper(){
+    int $limit = 100;
+    
+    for(int $num = 1; $num <= $limit; $num++) {
+        int $sum = 0;
+        
+        for(int $i = 1; $i < $num; $i++) {
+            check($num % $i == 0) {
+                $sum = $sum + $i;
+            } otherwise{
+
+            }
+        }
+        
+        check($sum == $num) {
+            display $num;
+            display "\n";
+        } otherwise{
+
+            }
+    }
+}
+
+}
+ghost
+
+
+
+birth{
+
+@main_casper() { 
+
+    --- int $num, $i, $sum; ---
+    display "Perfect numbers between 1 and 100 are: ";
+   
+    for(int $num = 1; $num <= 100; $num++) {
+          int $sum = 0; 
+            for (int $i = 1; $i < $num; $i++) {
+                check ($num % $i == 0) {
+                    $sum += $i;
+                } otherwise {
+                    
+                    }
+            }
+
+            check ($sum == $num) {
+                display $num;
+            } otherwise {
+                
+            }
+        }
+
+
+    }
+} ghost

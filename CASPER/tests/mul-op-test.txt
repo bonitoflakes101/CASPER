@@ -1,0 +1,26 @@
+birth{
+
+@main_casper(){
+    // Simple test for *= operator
+    
+    int $a = 0;
+    display "Initial value of a: ";
+    display $a;
+    display "\n";
+    
+    $a *= 3;
+    display "After a *= 3: ";
+    display $a;
+    display "\n";
+    
+    $a = 2;
+    display "Reset a to 2\n";
+    
+    $a *= 3;
+    display "After a *= 3: ";
+    display $a;
+    display "\n";
+}
+
+}
+ghost 
