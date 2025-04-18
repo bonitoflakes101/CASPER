@@ -263,6 +263,9 @@ class CodeGenerator:
         elif node.type == "otherwise":
             self.log("CONDITIONAL: Routing to execute_otherwise")
             return self.execute_otherwise(node)
+        elif node.type == "switch_statement":
+            self.log("SWITCH: Routing to execute_switch_statement")
+            return self.execute_switch_statement(node)
         
         method_name = f"execute_{node.type}"
         executor = getattr(self, method_name, self.generic_execute)
@@ -1389,7 +1392,98 @@ class CodeGenerator:
                 self.log(" " * indent + f"Child {i}:")
                 self.print_node_structure(child, indent + 2)
 
-    
+    # ==========================
+    #    SWITCH EXECUTION (SWAP)
+    # ==========================
+
+    def execute_switch_statement(self, node):
+        """Execute a switch statement (swap)"""
+        self.log(f"SWITCH DEBUG: Starting execute_switch_statement")
+
+        if len(node.children) < 3:
+            self.log("SWITCH DEBUG: Invalid switch statement structure")
+            print("Error: Invalid switch statement structure")
+            self.stopped = True
+            return None
+
+        ident_node = node.children[0]
+        first_switch_condition_node = node.children[1]
+        otherwise_statements_node = node.children[2]
+
+        if not hasattr(ident_node, 'value'):
+            self.log("SWITCH DEBUG: Switch variable identifier missing")
+            print("Error: Switch variable identifier missing")
+            self.stopped = True
+            return None
+
+        switch_var_name = ident_node.value.lstrip('$')
+        switch_value = self.lookup_variable(switch_var_name)
+
+        if switch_value is None:
+            # Check if it's Day/Night literal directly (should ideally be handled earlier)
+            if switch_var_name == "Day":
+                switch_value = True
+            elif switch_var_name == "Night":
+                switch_value = False
+            else:
+                self.log(f"SWITCH DEBUG: Switch variable '{switch_var_name}' not found or is None")
+                print(f"Error: Switch variable '{switch_var_name}' not found or is None")
+                self.stopped = True
+                return None
+
+        self.log(f"SWITCH DEBUG: Switching on variable '{switch_var_name}' with value: {switch_value} (type: {type(switch_value).__name__})")
+
+        case_matched = False
+        current_case_node = first_switch_condition_node
+
+        while current_case_node is not None and not self.stopped:
+            if not hasattr(current_case_node, 'type') or current_case_node.type != "switch_condition":
+                self.log("SWITCH DEBUG: Expected switch_condition node, skipping")
+                break # Should not happen with correct parsing
+
+            if len(current_case_node.children) < 3:
+                self.log("SWITCH DEBUG: Invalid switch_condition structure")
+                break # Should not happen
+
+            case_value_node = current_case_node.children[0]
+            case_statements_node = current_case_node.children[1]
+            switchcond_tail = current_case_node.children[2]
+
+            # Evaluate the case value
+            case_value = self.execute_node(case_value_node)
+            if self.stopped: # Stop if evaluation failed
+                return None
+
+            self.log(f"SWITCH DEBUG: Comparing {switch_value} == {case_value} (types: {type(switch_value).__name__}, {type(case_value).__name__})")
+
+            # Comparison: Apply implicit conversion for comparison
+            switch_val_cmp, case_val_cmp = self.apply_implicit_conversion(switch_value, case_value, operator="==")
+
+            if switch_val_cmp == case_val_cmp:
+                self.log(f"SWITCH DEBUG: Match found! Executing case block for value {case_value}")
+                self.execute_node(case_statements_node) # Execute the statements for this case
+                case_matched = True
+                break # Exit switch statement after first match
+            else:
+                # Move to the next case in the tail
+                if switchcond_tail and isinstance(switchcond_tail, list) and len(switchcond_tail) > 0:
+                    # The tail contains the next switch_condition node
+                    current_case_node = switchcond_tail[0]
+                else:
+                    # No more cases in the tail
+                    current_case_node = None
+
+        # Execute otherwise block if no case matched
+        if not case_matched and not self.stopped:
+            self.log("SWITCH DEBUG: No case matched, executing otherwise block")
+            self.execute_node(otherwise_statements_node)
+
+        return None # Switch statements don't return a value
+
+    # ==========================
+    #    ASSIGNMENT EXECUTION
+    # ==========================
+
     def execute_assignment_statement(self, node):
         """Execute an assignment statement"""
         self.log("Executing assignment_statement")
