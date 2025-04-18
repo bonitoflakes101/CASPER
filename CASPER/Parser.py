@@ -844,7 +844,7 @@ def p_statements(p):
    
         p[0] = [p[1]] + p[2]
 # -----------------------------------------------------------------------------
-# Production: <statements_tail> →  one of: <conditional_statement> | <switch_statement> | <loop_statement> | <function_call> | <string_operation_statement> | <output_statement> | <stop_statement> then <statements_tail2>
+# Production: <statements_tail> →  one of: <conditional_statement> | <switch_statement> | <loop_statement> | <function_call> | <string_operation_statement> | <output_statement> | <stop_statement> | <continue_statement> then <statements_tail2>
 # -----------------------------------------------------------------------------
 def p_statements_tail(p):
     """
@@ -855,10 +855,11 @@ def p_statements_tail(p):
                     | output_statement statements
                     | conditional_statement statements
                     | stop_statement statements  
+                    | continue_statement statements 
                     | statements
     """
     if len(p) == 3:
-        # Handle stop_statement similar to other statements
+      
         p[0] = [p[1]] + p[2]
     else:
         p[0] = p[1]
@@ -2823,3 +2824,9 @@ def p_stop_statement(p):
     stop_statement : STOP SEMICOLON
     """
     p[0] = ASTNode("stop_statement")
+
+def p_continue_statement(p):
+    """
+    continue_statement : CONTINUE SEMICOLON
+    """
+    p[0] = ASTNode("continue_statement")

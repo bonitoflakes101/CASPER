@@ -275,6 +275,9 @@ class CodeGenerator:
         elif node.type == "stop_statement":
             self.log("STOP: Routing to execute_stop_statement")
             return self.execute_stop_statement(node)
+        elif node.type == "update": # ADDED: Route update nodes to execute_update
+            self.log("UPDATE: Routing to execute_update")
+            return self.execute_update(node)
         
         method_name = f"execute_{node.type}"
         executor = getattr(self, method_name, self.generic_execute)
@@ -2230,8 +2233,11 @@ class CodeGenerator:
                     self.log("Invalid update_tail_compound structure")
                     return None
                     
-                compound_op = update_tail_node.children[0]
+                compound_op_node = update_tail_node.children[0] # Get the operator node
                 value_node = update_tail_node.children[1]
+
+                # FIX: Extract the VALUE ('=', '-=', etc.) from the operator node
+                compound_op = compound_op_node.value 
                 
                 update_value = self.execute_node(value_node)
                 

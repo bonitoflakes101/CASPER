@@ -46,6 +46,7 @@ KEYWORD_DELIMITERS = {
     "REPEAT": Delimiters.DEL1,
     "STOP": Delimiters.DEL21,
     "SKIP": Delimiters.DEL21,
+    "CONTINUE": Delimiters.DEL21,
     "SWAP": Delimiters.DEL2,
     "SHIFT": Delimiters.SPACE,
 

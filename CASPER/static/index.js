@@ -84,7 +84,7 @@ function defineCasperLanguage(monaco) {
         [/<<.*/, "comment"],
         [/---/, { token: "comment", next: "@multiLineComment" }],
         [
-          /\b(?:birth|ghost|check|otherwise|otherwise_check|for|repeat|until|stop|skip|swap|shift|revive|Day|Night|measure|function|function_int|function_str|function_bln|function_flt|function_chr|function_list_int|function_list_str|function_list_bln|function_list_flt|function_list_chr|input|display|to_int|to_str|to_bln|to_flt|int|flt|bln|chr|str)\b/,
+          /\b(?:birth|ghost|check|otherwise|otherwise_check|for|repeat|continue|until|stop|skip|swap|shift|revive|Day|Night|measure|function|function_int|function_str|function_bln|function_flt|function_chr|function_list_int|function_list_str|function_list_bln|function_list_flt|function_list_chr|input|display|to_int|to_str|to_bln|to_flt|int|flt|bln|chr|str)\b/,
           "keyword",
         ],
         [/'([^'\\]|\\.)*'/, "string"],

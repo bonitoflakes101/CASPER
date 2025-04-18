@@ -120,6 +120,7 @@ class TokenType(Enum):
     UNTIL = "UNTIL"
     STOP = "STOP"
     SKIP = "SKIP"
+    CONTINUE = "CONTINUE"
     SWAP = "SWAP"
     SHIFT = "SHIFT"
     REVIVE = "REVIVE"
@@ -190,6 +191,7 @@ KEYWORDS: dict[str, TokenType] = {
     "until": TokenType.UNTIL,
     "stop": TokenType.STOP,
     "skip": TokenType.SKIP,
+    "continue": TokenType.CONTINUE,
     "swap": TokenType.SWAP,
     "shift": TokenType.SHIFT,
     "revive": TokenType.REVIVE,
