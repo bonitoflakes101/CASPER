@@ -233,10 +233,10 @@ class CodeGenerator:
             return results if results else None
 
         if not hasattr(node, 'type'):
-            print(f"DEBUG execute_node: Received non-node object: {repr(node)}")
+            # print(f"DEBUG execute_node: Received non-node object: {repr(node)}")
             return None
 
-        print(f"DEBUG execute_node: Processing node type = {node.type}")
+        # print(f"DEBUG execute_node: Processing node type = {node.type}")
 
         if node.type == "input_statement" and self.input_value is not None and not self.waiting_for_input:
             input_val = self.input_value
@@ -591,7 +591,7 @@ class CodeGenerator:
     def execute_var_statement(self, node):
         """Execute a var statement"""
         self.log("Executing var_statement")
-        print(f"DEBUG execute_var_statement: START node={node.type}")
+        # print(f"DEBUG execute_var_statement: START node={node.type}")
 
         valid_children = [n for n in node.children if n is not None]
 
@@ -649,15 +649,15 @@ class CodeGenerator:
             self.expected_type = data_type # Assuming input should match declared type
             self.log(f"Setting input target: {var_name} with expected type {data_type}")
 
-        print(f"DEBUG execute_var_statement: Declaring '{var_name}' of type {data_type}")
-        print(f"DEBUG execute_var_statement: Found assignment node = {assign_node is not None}")
+        # print(f"DEBUG execute_var_statement: Declaring '{var_name}' of type {data_type}\")
+        # print(f"DEBUG execute_var_statement: Found assignment node = {assign_node is not None}\")
 
         final_value = None
 
         if assign_node and value_expression_node:
-            print(f"DEBUG execute_var_statement: Assignment - evaluating node type: {getattr(value_expression_node, 'type', 'N/A')}")
+            # print(f"DEBUG execute_var_statement: Assignment - evaluating node type: {getattr(value_expression_node, 'type', 'N/A')}\")
             evaluated_value = self.execute_node(value_expression_node)
-            print(f"DEBUG execute_var_statement: Assignment - evaluated value = {repr(evaluated_value)}")
+            # print(f"DEBUG execute_var_statement: Assignment - evaluated value = {repr(evaluated_value)}\")
 
             # Handle list vs non-list assignment checks (simplified example)
             if hasattr(value_expression_node, 'type') and value_expression_node.type == "list_value":
@@ -691,7 +691,7 @@ class CodeGenerator:
                 # --- End Type Conversion ---
 
             self.assign_variable(var_name, final_value)
-            print(f"DEBUG execute_var_statement: Assigned '{var_name}' = {repr(final_value)}")
+            # print(f"DEBUG execute_var_statement: Assigned '{var_name}' = {repr(final_value)}\")
         else:
             # Default initialization logic...
             if is_list:
@@ -705,7 +705,7 @@ class CodeGenerator:
             elif data_type in ["bool", "bln"]:
                 final_value = False
             self.assign_variable(var_name, final_value)
-            print(f"DEBUG execute_var_statement: Initialized '{var_name}' = {repr(final_value)}")
+            # print(f"DEBUG execute_var_statement: Initialized '{var_name}' = {repr(final_value)}\")
 
         return final_value
 
@@ -2374,9 +2374,9 @@ class CodeGenerator:
 
     def execute_measure_call(self, node):
         """Executes a measure call and returns the 'measure' of the value."""
-        print("Executing measure_call")
+        # print("Executing measure_call")
         if not node.children or len(node.children) < 1:
-            print("ERROR: measure_call missing value child")
+            # print("ERROR: measure_call missing value child")
             print("Error: Invalid measure call - missing value.")
             self.stopped = True
             return None
@@ -2384,15 +2384,15 @@ class CodeGenerator:
         value_node = node.children[0]
         # HANDLING FOR EXTRA EXPRESSION NODE
         if hasattr(value_node, 'type') and value_node.type == "expression" and value_node.children:
-             print(f"DEBUG: Found wrapped expression node in measure_call. Using its child.")
+             # print(f"DEBUG: Found wrapped expression node in measure_call. Using its child.")
              value_node = value_node.children[0] # Use the node inside the expression
 
         # DEBUG LOG
-        print(f"DEBUG: Measuring value_node: type={getattr(value_node, 'type', 'N/A')}, value={getattr(value_node, 'value', 'N/A')}")
+        # print(f"DEBUG: Measuring value_node: type={getattr(value_node, 'type', 'N/A')}, value={getattr(value_node, 'value', 'N/A')}\")
         value = self.execute_node(value_node)
 
         # DEBUG LOG
-        print(f"DEBUG: Evaluated value for measure: {repr(value)} (type: {type(value).__name__})")
+        # print(f"DEBUG: Evaluated value for measure: {repr(value)} (type: {type(value).__name__})\")
 
         if self.stopped: # Check if evaluation failed
              return None
@@ -2400,22 +2400,22 @@ class CodeGenerator:
         measure_result = 0
         if isinstance(value, str):
             measure_result = len(value)
-            print(f"Measured string: length = {measure_result}")
+            # print(f"Measured string: length = {measure_result}\")
         elif isinstance(value, list):
             measure_result = len(value)
-            print(f"Measured list: length = {measure_result}")
+            # print(f"Measured list: length = {measure_result}\")
         elif isinstance(value, (int, float, bool)):
              measure_result = 1 # Measure for single numeric/boolean is 1
-             print(f"Measured numeric/boolean: count = {measure_result}")
+             # print(f"Measured numeric/boolean: count = {measure_result}\")
         elif value is None:
              measure_result = 0 # Measure for None is 0
-             print(f"Measured None: count = {measure_result}")
+             # print(f"Measured None: count = {measure_result}\")
         else:
-            print(f"WARNING: Cannot measure value of type {type(value).__name__}. Returning 0.")
+            # print(f"WARNING: Cannot measure value of type {type(value).__name__}. Returning 0.\")
             measure_result = 0 # Default measure for unmeasurable types
 
         # DEBUG LOG
-        print(f"DEBUG: Measure result calculated: {measure_result}")
+        # print(f"DEBUG: Measure result calculated: {measure_result}\")
         return measure_result
 
 def run_code_generation(ast):
