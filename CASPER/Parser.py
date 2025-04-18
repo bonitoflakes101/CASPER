@@ -302,10 +302,12 @@ def p_factor(p):
         p[0] = ASTNode("literal", value=p[1])
     elif len(p) == 3 and p[1] == '~' and isinstance(p[2], int):
         # TILDE INT_LIT
-        p[0] = ASTNode("factor_neg_int", value=p[2])
+        # FIX: Create unary_negation node with literal child
+        p[0] = ASTNode("unary_negation", children=[ASTNode("literal", value=p[2])])
     elif len(p) == 3 and p[1] == '~' and isinstance(p[2], float):
         # TILDE FLT_LIT
-        p[0] = ASTNode("factor_neg_flt", value=p[2])
+        # FIX: Create unary_negation node with literal child
+        p[0] = ASTNode("unary_negation", children=[ASTNode("literal", value=p[2])])
     else: # Should be LPAREN factor_expression RPAREN (len 4)
         # ( expression )
         p[0] = ASTNode("factor_paren", [p[2]])
@@ -1011,10 +1013,12 @@ def p_local_factor(p):
         p[0] = ASTNode("literal", value=p[1])
     elif len(p) == 3 and p[1] == '~' and isinstance(p[2], int):
         # TILDE INT_LIT
-        p[0] = ASTNode("neg_int", value=p[2])
+        # FIX: Create unary_negation node with literal child
+        p[0] = ASTNode("unary_negation", children=[ASTNode("literal", value=p[2])])
     elif len(p) == 3 and p[1] == '~' and isinstance(p[2], float):
         # TILDE FLT_LIT
-        p[0] = ASTNode("neg_flt", value=p[2])
+        # FIX: Create unary_negation node with literal child
+        p[0] = ASTNode("unary_negation", children=[ASTNode("literal", value=p[2])])
     else: # Should be LPAREN local_expression RPAREN (len 4)
         # ( expression )
         p[0] = ASTNode("paren", [p[2]])

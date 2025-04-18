@@ -278,6 +278,9 @@ class CodeGenerator:
         elif node.type == "update": # ADDED: Route update nodes to execute_update
             self.log("UPDATE: Routing to execute_update")
             return self.execute_update(node)
+        elif node.type == "unary_negation": # ADDED: Route unary negation
+            self.log("UNARY NEG: Routing to execute_unary_negation")
+            return self.execute_unary_negation(node)
         
         method_name = f"execute_{node.type}"
         executor = getattr(self, method_name, self.generic_execute)
@@ -2440,6 +2443,48 @@ class CodeGenerator:
         self.log("Executing stop_statement - setting break_flag")
         self.break_flag = True
         return None # Stop statement itself doesn't return a value
+
+    # ==========================
+    #    UNARY OPERATIONS
+    # ==========================
+
+    def execute_unary_negation(self, node):
+        """Executes a unary negation operation (~)"""
+        self.log("Executing unary_negation")
+
+        if not node.children or len(node.children) != 1:
+            self.log("ERROR: Unary negation node has incorrect number of children")
+            print("Error: Invalid unary negation operation structure.")
+            self.stopped = True
+            return None
+
+        operand_node = node.children[0]
+        operand_value = self.execute_node(operand_node)
+
+        if self.stopped: # Check if operand evaluation failed
+            return None
+
+        # Check if the operand is numeric (int or float)
+        if not isinstance(operand_value, (int, float)):
+            # Allow negation of booleans (Day=True=1, Night=False=0)
+            if isinstance(operand_value, bool):
+                 operand_value = 1 if operand_value else 0 # Convert bool to int
+                 self.log(f"Converted boolean operand to int for negation: {operand_value}")
+            else:
+                 self.log(f"ERROR: Unary negation operand must be numeric or boolean, got {type(operand_value).__name__}")
+                 print(f"Error: Operand for '~' must be numeric or boolean (Day/Night).")
+                 self.stopped = True
+                 return None
+
+        # Perform negation
+        negated_value = -operand_value
+        self.log(f"Unary negation result: ~({operand_value}) = {negated_value}")
+
+        # Maintain type consistency if original was int (after bool conversion)
+        if isinstance(operand_value, int):
+            negated_value = int(negated_value)
+
+        return negated_value
 
 def run_code_generation(ast):
     """Create a CodeGenerator and run code generation on the given AST."""

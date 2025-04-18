@@ -34,7 +34,7 @@ class Delimiters:
     DEL2 = SPACE | {'('}  | NEWLINE
     DEL3 = SPACE | NUM | BOOLEAN | {'(', '$', '|'} # logical ops
     DEL4 = SPACE | NUM | {'(', '$', '\'', '"', None,'', '\r'} # plus delim
-    DEL5 = SPACE | ALPHANUM |{'$', '(', '@','',None,'\r', ''}  # minus, multiply, divide, modulo delims, all assignment ops
+    DEL5 = SPACE | ALPHANUM |{'$', '(', '@','',None,'\r', '', '~'}  # minus, multiply, divide, modulo delims, all assignment ops
     DEL6 = NUM | {'$', '(', '\''} #prefix | **
     DEL7 =  SPACE | ALPHANUM | NEWLINE | {'$', '@', '"', '(', '{', '\'', ')','['} # open LPAREN (
     DEL8 = SPACE | NEWLINE | ALPHANUM | NULL | {'+', '-', '*', '/', '{', '(', ')', ']', '}', ',','$', '@','|','&', ';'} # closing RPAREN )
