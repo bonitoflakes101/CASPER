@@ -499,35 +499,86 @@ class CodeGenerator:
         var_name = None
         var_value = None
         data_type = None
+        list_dec_node = None
+        assignment_node = None
+        is_list = False
+        is_2d_list = False
         
-        for child in node.children:
-            if child is None:
-                continue
-                
-            if hasattr(child, 'type'):
-                if child.type == "data_type":
-                    data_type = child.value
-                elif child.type == "IDENT":
-                    var_name = child.value.lstrip('$')
-                elif child.type == "expression":
-                    var_value = self.execute_node(child)
-                elif child.type == "literal":
-                    var_value = child.value
+        # Parse the basic declaration parts first
+        if len(node.children) > 0 and hasattr(node.children[0], 'type') and node.children[0].type == "data_type":
+            data_type = node.children[0].value
+        if len(node.children) > 1 and hasattr(node.children[1], 'type') and node.children[1].type == "IDENT":
+            var_name = node.children[1].value.lstrip('$')
+        if len(node.children) > 2 and node.children[2] is not None and hasattr(node.children[2], 'type') and node.children[2].type == "list_dec":
+            list_dec_node = node.children[2]
+            is_list = True
+            # Check for 2D list
+            if list_dec_node.children and hasattr(list_dec_node.children[0], 'type') and list_dec_node.children[0].type == "2d_list":
+                is_2d_list = True
+                self.log(f"Variable '{var_name}' declared as 2D list.")
+            else:
+                self.log(f"Variable '{var_name}' declared as 1D list.")
+        if len(node.children) > 3 and node.children[3] is not None:
+             # Assignment node can be expression or list_value
+            assignment_node = node.children[3]
+
+        self.log(f"Parsed global: name={var_name}, type={data_type}, is_list={is_list}, is_2d={is_2d_list}, assignment_node_type={getattr(assignment_node, 'type', None)}")
         
-        self.log(f"Parsed global: name={var_name}, type={data_type}, value={var_value}")
-        
-        if var_value is None:
-            if data_type == "int":
+        # Determine initial/default value
+        if assignment_node:
+            # If there is an assignment, evaluate it
+            if hasattr(assignment_node, 'type') and assignment_node.type == "list_value":
+                var_value = self.execute_list_value(assignment_node)
+                # Ensure assigned value is a list if declared as list
+                if not is_list:
+                    self.log(f"ERROR: Assigning list value to non-list variable '{var_name}'")
+                    print(f"Error: Cannot assign list value to non-list variable '{var_name}'")
+                    self.stopped = True
+                    return None
+                # Basic check for 2D structure if declared as 2D
+                if is_2d_list and not all(isinstance(item, list) for item in var_value):
+                    self.log(f"WARNING: Assigning potentially non-2D list value to 2D list variable '{var_name}'")
+                    # Allow assignment but log warning. Strict type checking could go here.
+            else:
+                var_value = self.execute_node(assignment_node)
+                # Ensure non-list assignment isn't made to a list variable
+                if is_list:
+                    self.log(f"ERROR: Assigning non-list value to list variable '{var_name}'")
+                    print(f"Error: Cannot assign non-list value to list variable '{var_name}'")
+                    self.stopped = True
+                    return None
+        else:
+            # No assignment, use default value
+            if is_list:
+                var_value = [] # Default for lists is empty list
+            elif data_type == "int":
                 var_value = 0
-            elif data_type == "string":
+            elif data_type == "string" or data_type == "str":
                 var_value = ""
-            elif data_type == "float":
+            elif data_type == "float" or data_type == "flt":
                 var_value = 0.0
-            elif data_type == "bool":
+            elif data_type == "bool" or data_type == "bln":
                 var_value = False
+            # Add other type defaults if necessary
+            else:
+                 var_value = None # Default for unknown types
 
         if var_name:
-            self.global_vars[var_name] = var_value
+            # Apply type conversion if not a list assignment and types differ
+            if not is_list and assignment_node and hasattr(assignment_node, 'type') and assignment_node.type != "list_value":
+                if var_value is not None and data_type:
+                    try:
+                        converted_value = self.convert_type(var_value, data_type)
+                        if converted_value != var_value:
+                            self.log(f"Applied type conversion for global declaration: {type(var_value).__name__} -> {data_type}: {var_value} -> {converted_value}")
+                            var_value = converted_value
+                    except Exception as e:
+                        self.log(f"ERROR: Type conversion failed for global variable '{var_name}': {str(e)}")
+                        print(f"Error: Type conversion failed for global variable '{var_name}': {str(e)}")
+                        self.stopped = True
+                        return None
+            
+            self.assign_variable(var_name, var_value)
             self.log(f"Set global variable '{var_name}' to {var_value}")
         
         return var_value
@@ -542,77 +593,149 @@ class CodeGenerator:
             self.log(f"var_statement has insufficient children: {len(valid_children)}")
             return None
         
-        # Get the data type and variable name
+        # Get the data type, variable name, and optional list declaration
         data_type_node = valid_children[0]
         ident_node = valid_children[1]
+        list_dec_node = valid_children[2] if len(valid_children) > 2 else None
         
-        if not hasattr(data_type_node, 'value') or not hasattr(ident_node, 'value'):
-            self.log("Missing data_type or ident value")
+        # Check data type and identifier
+        if not (hasattr(data_type_node, 'type') and data_type_node.type == "local_data_type" and hasattr(data_type_node, 'value')) or \
+           not (hasattr(ident_node, 'type') and ident_node.type == "IDENT" and hasattr(ident_node, 'value')):
+            self.log("Missing data_type or ident value in var_statement")
             return None
         
         data_type = data_type_node.value
         var_name = ident_node.value.lstrip('$')
-        
-        self.log(f"Variable declaration: {data_type} {var_name}")
+        is_list = False
+        is_2d_list = False
+
+        if list_dec_node and hasattr(list_dec_node, 'type') and list_dec_node.type == "list_dec":
+            is_list = True
+            if list_dec_node.children and hasattr(list_dec_node.children[0], 'type') and list_dec_node.children[0].type == "2d_list":
+                is_2d_list = True
+                self.log(f"Variable '{var_name}' declared as 2D list.")
+            else:
+                self.log(f"Variable '{var_name}' declared as 1D list.")
+
+        self.log(f"Variable declaration: {data_type} {var_name}{'[]' if is_list else ''}{'[]' if is_2d_list else ''}")
         
         if not var_name:
             return None
         
-        # Initialize with default value based on data type
-        default_value = None
-        if data_type == "int":
-            default_value = 0
-        elif data_type == "string" or data_type == "str":
-            default_value = ""
-        elif data_type == "float" or data_type == "flt":
-            default_value = 0.0
-        elif data_type == "bool" or data_type == "bln":
-            default_value = False
-        
-        # Find assignment if it exists
+        # Find assignment node and check for input
         assign_node = None
         contains_input = False
-        for child in valid_children:
-            if hasattr(child, 'type'):
-                if child.type == "local_var_assign" or child.type == "expression" or child.type == "function_call":
-                    assign_node = child
+        assignment_value_node = None
+        if len(valid_children) > 3 and hasattr(valid_children[3], 'type') and valid_children[3].type == "local_var_assign":
+            assign_node = valid_children[3]
+            if assign_node.children and hasattr(assign_node.children[0], 'type') and assign_node.children[0].type == "value":
+                value_container = assign_node.children[0]
+                if value_container.children:
+                    assignment_value_node = value_container.children[0] # This is the actual value/expression/list node
                     # Check if this assignment contains an input statement
-                    if child.type == "local_var_assign" and child.children:
-                        for gc in child.children:
-                            if hasattr(gc, 'type') and gc.type == "value" and gc.children:
-                                for gcc in gc.children:
-                                    if hasattr(gcc, 'type') and gcc.type == "input_statement":
-                                        contains_input = True
-                                        break
-                    break
-                elif child.type == "input_statement":
-                    assign_node = child
-                    contains_input = True
-                    break
-        
+                    if hasattr(assignment_value_node, 'type') and assignment_value_node.type == "input_statement":
+                         contains_input = True
+
         # If this is an input assignment, track it
         if contains_input:
             self.current_assignment_target = var_name
-            self.expected_type = data_type
+            self.expected_type = data_type # Assuming input should match declared type
             self.log(f"Setting input target: {var_name} with expected type {data_type}")
         
-        # Get the value from the assignment if it exists
+        # Initialize or assign value
+        final_value = None
+
         if assign_node:
-            assigned_value = self.execute_node(assign_node)
+            self.log(f"DEBUG: In assignment for '{var_name}'. assign_node type: {getattr(assign_node, 'type', 'None')}")
             
-            # Apply type conversion based on the variable's declared data type
-            if assigned_value is not None and data_type:
-                original_value = assigned_value
-                assigned_value = self.convert_type(assigned_value, data_type)
-                self.log(f"Applied type conversion for variable declaration: {type(original_value).__name__} -> {data_type}: {original_value} -> {assigned_value}")
+            # We expect assign_node (local_var_assign) to have one child: the value expression node.
+            value_expression_node = None 
+            node_children = getattr(assign_node, 'children', []) # Get children or empty list
+            self.log(f"DEBUG: assign_node raw children: {node_children}")
+
+            # Iterate to find the first valid child node (more robust than direct indexing)
+            for child in node_children:
+                if child is not None:
+                    value_expression_node = child
+                    self.log(f"DEBUG: Found first child of assign_node. Type: {getattr(value_expression_node, 'type', 'None')}")
+                    break # Found the first (and expected only) child
+                else:
+                    self.log(f"DEBUG: Found a None child in assign_node children for '{var_name}'")
             
-            # Update the variable's value
-            self.get_current_env()[var_name] = assigned_value
+            # Check if we successfully extracted the value node.
+            if value_expression_node is None:
+                 self.log(f"ERROR: Could not extract value expression from assignment for '{var_name}'. No valid child found for assign_node.")
+                 print(f"Error: Invalid assignment structure for '{var_name}'") 
+                 self.stopped = True
+                 return None
+
+            # Now evaluate based on the type of the value_expression_node
+            if hasattr(value_expression_node, 'type') and value_expression_node.type == "list_value":
+                # Case 1: Assigning a list literal
+                if not is_list:
+                    self.log(f"ERROR: Assigning list literal to non-list variable '{var_name}'")
+                    print(f"Error: Cannot assign list literal to non-list variable '{var_name}'")
+                    self.stopped = True
+                    return None
+                
+                final_value = self.execute_list_value(value_expression_node)
+                
+                # Optional: Check 2D compatibility warning
+                if is_2d_list and not all(isinstance(item, list) for item in final_value):
+                    self.log(f"WARNING: Assigning potentially non-2D list value to 2D list variable '{var_name}'")
+                
+                self.log(f"Assigning list literal to '{var_name}': {final_value}")
+
+            else:
+                # Case 2: Assigning a non-list expression (literal, var, function call, etc.)
+                if is_list:
+                    # Check if we are trying to assign a simple value TO a list variable
+                    self.log(f"ERROR: Assigning non-list expression/value to list variable '{var_name}'")
+                    print(f"Error: Cannot assign non-list value to list variable '{var_name}'")
+                    self.stopped = True
+                    return None
+
+                # Evaluate the expression/node
+                evaluated_value = self.execute_node(value_expression_node)
+                
+                # Apply type conversion based on the declared variable type
+                if evaluated_value is not None and data_type:
+                    original_value = evaluated_value
+                    try:
+                        converted_value = self.convert_type(evaluated_value, data_type)
+                        if converted_value != original_value:
+                            self.log(f"Applied type conversion for assignment: {type(original_value).__name__} -> {data_type}: {original_value} -> {converted_value}")
+                        final_value = converted_value
+                    except Exception as e:
+                        self.log(f"ERROR: Type conversion failed for variable '{var_name}': {str(e)}")
+                        print(f"Error: Type conversion failed for variable '{var_name}': {str(e)}")
+                        self.stopped = True
+                        return None
+                else:
+                    final_value = evaluated_value # No conversion needed or possible
+                
+                self.log(f"Assigning evaluated value to '{var_name}': {final_value}")
+
+            # Assign the final evaluated and possibly converted value
+            # self.get_current_env()[var_name] = final_value # Old direct assignment
+            self.assign_variable(var_name, final_value) # Use the proper assignment method
+            # self.log(f"Assigned var '{var_name}' = {final_value}") # Logging done in assign_variable
         else:
             # Initialize with default value if no assignment
-            self.get_current_env()[var_name] = default_value
+            if is_list:
+                final_value = []
+            elif data_type == "int":
+                final_value = 0
+            elif data_type == "string" or data_type == "str":
+                final_value = ""
+            elif data_type == "float" or data_type == "flt":
+                final_value = 0.0
+            elif data_type == "bool" or data_type == "bln":
+                final_value = False
+            self.assign_variable(var_name, final_value)
+            self.log(f"Initialized var '{var_name}' = {final_value}")
             
-        return self.get_current_env()[var_name]
+        return final_value
         
     def casper_to_python_type(self, casper_type):
         """Convert CASPER type names to Python type names."""
@@ -1047,17 +1170,42 @@ class CodeGenerator:
         
         # Check for indexing operation: $arr[0], $arr[1][2] etc.
         if len(node.children) > 1 and node.children[1]:
-            indices = node.children[1]
-            if isinstance(value, list) and indices:
+            index_info = node.children[1]
+            
+            # Determine if index_info is a list of indices or a single index node
+            index_nodes_to_process = []
+            if isinstance(index_info, list):
+                # Standard case (potentially multi-dimensional) - list of index nodes
+                index_nodes_to_process = index_info
+                self.log(f"Processing list of indices for {var_name}: {index_nodes_to_process}")
+            elif hasattr(index_info, 'type'): 
+                # Handle case where a single index node is passed directly (like in the provided AST)
+                index_nodes_to_process = [index_info] # Wrap the single node in a list
+                self.log(f"Processing single index node found for {var_name}: {index_nodes_to_process}")
+            else:
+                self.log(f"ERROR: Invalid index structure for variable '{var_name}': {index_info}")
+                print(f"Error: Invalid index structure for variable '{var_name}'")
+                self.stopped = True
+                return None
+
+            # Now proceed with the iteration using the guaranteed list index_nodes_to_process
+            if isinstance(value, list) and index_nodes_to_process:
                 try:
-                    for idx in indices:
-                        idx_val = self.execute_node(idx)
+                    current_value = value
+                    for idx_node in index_nodes_to_process:
+                        idx_val = self.execute_node(idx_node)
                         if isinstance(idx_val, int):
-                            if 0 <= idx_val < len(value):
-                                value = value[idx_val]
+                            # Check bounds before accessing
+                            if not isinstance(current_value, list):
+                                 self.log(f"ERROR: Trying to index non-list element during multi-dimensional access: {var_name}")
+                                 print(f"Error: Trying to index non-list element: {var_name}")
+                                 self.stopped = True
+                                 return None
+                            if 0 <= idx_val < len(current_value):
+                                current_value = current_value[idx_val]
                             else:
-                                self.log(f"ERROR: Array index out of bounds: {var_name}[{idx_val}], array length: {len(value)}")
-                                print(f"Error: Array index out of bounds: {var_name}[{idx_val}], array length: {len(value)}")
+                                self.log(f"ERROR: Array index out of bounds: {var_name}[...][{idx_val}], current level length: {len(current_value)}")
+                                print(f"Error: Array index out of bounds: {var_name}[{idx_val}]")
                                 self.stopped = True
                                 return None
                         else:
@@ -1065,12 +1213,14 @@ class CodeGenerator:
                             print(f"Error: Array index must be an integer, got: {type(idx_val).__name__}")
                             self.stopped = True
                             return None
+                    # After iterating through all indices
+                    value = current_value 
                 except Exception as e:
                     self.log(f"ERROR: Array access failed: {var_name} - {str(e)}")
                     print(f"Error: Array access failed: {str(e)}")
                     self.stopped = True
                     return None
-            elif not isinstance(value, list) and indices:
+            elif not isinstance(value, list) and index_nodes_to_process:
                 self.log(f"ERROR: Cannot index non-array variable: {var_name}")
                 print(f"Error: Cannot index non-array variable: {var_name}")
                 self.stopped = True
@@ -1483,7 +1633,7 @@ class CodeGenerator:
     # ==========================
     #    ASSIGNMENT EXECUTION
     # ==========================
-
+    
     def execute_assignment_statement(self, node):
         """Execute an assignment statement"""
         self.log("Executing assignment_statement")
@@ -2209,6 +2359,55 @@ class CodeGenerator:
             result = self.evaluate_logical_expression(result, tail_node)
         
         return result
+
+    # ==========================
+    #    LIST HANDLING
+    # ==========================
+
+    def execute_list_value(self, node):
+        """Executes a list_value node, returning a Python list."""
+        self.log(f"Executing list_value: {node}")
+        if not node.children or not hasattr(node.children[0], 'type') or node.children[0].type != "list_element":
+            self.log("List value is empty or has invalid structure")
+            return [] # Return empty list for `[]` case
+        
+        # The first child is the list_element node
+        return self.execute_list_element(node.children[0])
+
+    def execute_list_element(self, node):
+        """Recursively executes list_element nodes to build a flat Python list."""
+        self.log(f"Executing list_element: {node}")
+        elements = []
+        
+        if not node.children:
+             return elements
+             
+        # First child: either literal_element or list_value (for nested lists)
+        first_child = node.children[0]
+        value = None
+        if hasattr(first_child, 'type'):
+            if first_child.type == "literal_element" and first_child.children:
+                 # Execute the literal inside literal_element
+                 value = self.execute_node(first_child.children[0])
+            elif first_child.type == "list_value":
+                 # Handle nested lists
+                 value = self.execute_list_value(first_child)
+            else:
+                 # Should not happen based on grammar, but try executing anyway
+                 value = self.execute_node(first_child)
+        else:
+             # Fallback if structure is unexpected
+             value = self.execute_node(first_child)
+
+        if value is not None:
+             elements.append(value)
+
+        # Second child: element_tail (optional)
+        if len(node.children) > 1 and node.children[1] is not None:
+            tail_node = node.children[1] # This is the next list_element
+            elements.extend(self.execute_list_element(tail_node))
+            
+        return elements
 
 def run_code_generation(ast):
     """Create a CodeGenerator and run code generation on the given AST."""
