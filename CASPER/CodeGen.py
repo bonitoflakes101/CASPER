@@ -1170,29 +1170,20 @@ class CodeGenerator:
         
         # Check for indexing operation: $arr[0], $arr[1][2] etc.
         if len(node.children) > 1 and node.children[1]:
-            index_info = node.children[1]
-            
-            # Determine if index_info is a list of indices or a single index node
-            index_nodes_to_process = []
-            if isinstance(index_info, list):
-                # Standard case (potentially multi-dimensional) - list of index nodes
-                index_nodes_to_process = index_info
-                self.log(f"Processing list of indices for {var_name}: {index_nodes_to_process}")
-            elif hasattr(index_info, 'type'): 
-                # Handle case where a single index node is passed directly (like in the provided AST)
-                index_nodes_to_process = [index_info] # Wrap the single node in a list
-                self.log(f"Processing single index node found for {var_name}: {index_nodes_to_process}")
-            else:
-                self.log(f"ERROR: Invalid index structure for variable '{var_name}': {index_info}")
-                print(f"Error: Invalid index structure for variable '{var_name}'")
-                self.stopped = True
-                return None
+            # Correctly gather ALL children after IDENT as index nodes
+            index_nodes_to_process = node.children[1:] 
+            self.log(f"Processing collected index nodes for {var_name}: {index_nodes_to_process}")
 
-            # Now proceed with the iteration using the guaranteed list index_nodes_to_process
+            # Now proceed with the iteration using the collected index nodes
             if isinstance(value, list) and index_nodes_to_process:
                 try:
                     current_value = value
                     for idx_node in index_nodes_to_process:
+                        # Skip None nodes if they somehow appear in the list
+                        if idx_node is None:
+                            self.log(f"WARNING: Skipped None node during index processing for {var_name}")
+                            continue
+                            
                         idx_val = self.execute_node(idx_node)
                         if isinstance(idx_val, int):
                             # Check bounds before accessing
