@@ -844,7 +844,7 @@ def p_statements(p):
    
         p[0] = [p[1]] + p[2]
 # -----------------------------------------------------------------------------
-# Production: <statements_tail> →  one of: <conditional_statement> | <switch_statement> | <loop_statement> | <function_call> | <string_operation_statement> | <output_statement> then <statements_tail2>
+# Production: <statements_tail> →  one of: <conditional_statement> | <switch_statement> | <loop_statement> | <function_call> | <string_operation_statement> | <output_statement> | <stop_statement> then <statements_tail2>
 # -----------------------------------------------------------------------------
 def p_statements_tail(p):
     """
@@ -854,9 +854,11 @@ def p_statements_tail(p):
                     | assignment_statement statements
                     | output_statement statements
                     | conditional_statement statements
+                    | stop_statement statements  
                     | statements
     """
     if len(p) == 3:
+        # Handle stop_statement similar to other statements
         p[0] = [p[1]] + p[2]
     else:
         p[0] = p[1]
@@ -1486,14 +1488,17 @@ def p_for_expression(p):
 
 def p_for_factor(p):
     """
-    for_factor : for_var_call for_postfix           
-           | for_factor1                    
-           | TILDE INT_LIT               
-           | TILDE FLT_LIT                
-           | LPAREN for_expression RPAREN    
+    for_factor : for_var_call for_postfix
+           | for_factor1
+           | TILDE INT_LIT
+           | TILDE FLT_LIT
+           | LPAREN for_expression RPAREN
+           | measure_call 
     """
-    # We must handle each case by length of p
-    if len(p) == 3 and p[2] in ("++", "--", None):  # var_call postfix
+  
+    if len(p) == 2 and hasattr(p[1], 'type') and p[1].type == 'measure_call': # ADDED check
+         p[0] = p[1] 
+    elif len(p) == 3 and p[2] in ("++", "--", None):  
         p[0] = ASTNode("var_postfix", [p[1], p[2]])
     elif len(p) == 2:
         # literal1
@@ -1504,7 +1509,7 @@ def p_for_factor(p):
     elif len(p) == 3 and p[1] == '~' and isinstance(p[2], float):
         # TILDE FLT_LIT
         p[0] = ASTNode("neg_flt", value=p[2])
-    else:
+    else: # Should be LPAREN for_expression RPAREN (len 4)
         # ( expression )
         p[0] = ASTNode("paren", [p[2]])
 
@@ -2811,3 +2816,10 @@ def p_measure_call(p):
     measure_call : MEASURE LPAREN value RPAREN
     """
     p[0] = ASTNode("measure_call", children=[p[3]])
+
+# ADD NEW FUNCTION for stop_statement
+def p_stop_statement(p):
+    """
+    stop_statement : STOP SEMICOLON
+    """
+    p[0] = ASTNode("stop_statement")

@@ -15,6 +15,7 @@ class CodeGenerator:
         self.parent_nodes = []
         self.stopped = False  # Flag to indicate if execution should be stopped
         self.completed = False  # Flag to indicate if program has completed execution
+        self.break_flag = False # ADDED Flag for break/stop statements
         # New variables for tracking multiple inputs
         self.input_target_queue = []  # Queue to hold pending input targets
         self.current_assignment_target = None  # Current variable being assigned to
@@ -271,6 +272,9 @@ class CodeGenerator:
         elif node.type == "measure_call":
             self.log("MEASURE: Routing to execute_measure_call")
             return self.execute_measure_call(node)
+        elif node.type == "stop_statement":
+            self.log("STOP: Routing to execute_stop_statement")
+            return self.execute_stop_statement(node)
         
         method_name = f"execute_{node.type}"
         executor = getattr(self, method_name, self.generic_execute)
@@ -1146,8 +1150,8 @@ class CodeGenerator:
             index_nodes_to_process = node.children[1:] 
             self.log(f"Processing collected index nodes for {var_name}: {index_nodes_to_process}")
 
-            # Now proceed with the iteration using the collected index nodes
-            if isinstance(value, list) and index_nodes_to_process:
+            # --- MODIFIED: Allow indexing on list OR str ---
+            if isinstance(value, (list, str)) and index_nodes_to_process:
                 try:
                     current_value = value
                     for idx_node in index_nodes_to_process:
@@ -1156,36 +1160,55 @@ class CodeGenerator:
                             self.log(f"WARNING: Skipped None node during index processing for {var_name}")
                             continue
                             
-                        idx_val = self.execute_node(idx_node)
+                        # --- MODIFIED: Evaluate index node correctly --- 
+                        idx_val = None
+                        if hasattr(idx_node, 'type') and idx_node.type == 'IDENT':
+                            # If the index node is an identifier, look up its value
+                            index_var_name = idx_node.value.lstrip('$')
+                            idx_val = self.lookup_variable(index_var_name)
+                            self.log(f"Evaluated index variable '{index_var_name}' to: {idx_val}")
+                            if idx_val is None:
+                                self.log(f"ERROR: Index variable '{index_var_name}' not found.")
+                                print(f"Error: Index variable '{index_var_name}' not found.")
+                                self.stopped = True
+                                return None # Stop if index variable is not defined
+                        else:
+                            # Otherwise, execute the node normally (e.g., for literals)
+                            idx_val = self.execute_node(idx_node)
+                        # --- End Index Evaluation --- 
+                            
                         if isinstance(idx_val, int):
                             # Check bounds before accessing
-                            if not isinstance(current_value, list):
-                                 self.log(f"ERROR: Trying to index non-list element during multi-dimensional access: {var_name}")
-                                 print(f"Error: Trying to index non-list element: {var_name}")
+                            # Check type for appropriate error msg
+                            if not isinstance(current_value, (list, str)):
+                                 # This should ideally not happen if the outer check passed, but good safety
+                                 self.log(f"ERROR: Trying to index non-indexable element during multi-dimensional access: {var_name}")
+                                 print(f"Error: Trying to index non-indexable element: {var_name}")
                                  self.stopped = True
                                  return None
                             if 0 <= idx_val < len(current_value):
                                 current_value = current_value[idx_val]
                             else:
-                                self.log(f"ERROR: Array index out of bounds: {var_name}[...][{idx_val}], current level length: {len(current_value)}")
-                                print(f"Error: Array index out of bounds: {var_name}[{idx_val}]")
+                                self.log(f"ERROR: Index out of bounds: {var_name}[...][{idx_val}], current level length: {len(current_value)}")
+                                print(f"Error: Index out of bounds: {var_name}[{idx_val}]")
                                 self.stopped = True
                                 return None
                         else:
-                            self.log(f"ERROR: Array index must be an integer, got: {type(idx_val).__name__}")
-                            print(f"Error: Array index must be an integer, got: {type(idx_val).__name__}")
+                            self.log(f"ERROR: Index must be an integer, got: {type(idx_val).__name__}")
+                            print(f"Error: Index must be an integer, got: {type(idx_val).__name__}")
                             self.stopped = True
                             return None
                     # After iterating through all indices
                     value = current_value 
                 except Exception as e:
-                    self.log(f"ERROR: Array access failed: {var_name} - {str(e)}")
-                    print(f"Error: Array access failed: {str(e)}")
+                    self.log(f"ERROR: Indexing failed: {var_name} - {str(e)}")
+                    print(f"Error: Indexing failed: {str(e)}")
                     self.stopped = True
                     return None
-            elif not isinstance(value, list) and index_nodes_to_process:
-                self.log(f"ERROR: Cannot index non-array variable: {var_name}")
-                print(f"Error: Cannot index non-array variable: {var_name}")
+            # --- MODIFIED: Check if it's NOT list/str before error --- 
+            elif not isinstance(value, (list, str)) and index_nodes_to_process:
+                self.log(f"ERROR: Cannot index non-array/non-string variable: {var_name}")
+                print(f"Error: Cannot index non-array/non-string variable: {var_name}")
                 self.stopped = True
                 return None
         
@@ -2024,110 +2047,97 @@ class CodeGenerator:
             self.log("for_loop has insufficient children")
             return None
             
-        # The children should be [control_variable, condition, update, statements...]
         control_var_node = node.children[0]
         condition_node = node.children[1]
         update_node = node.children[2]
-        
-        # Get all statement nodes (everything from index 3 onwards)
         statement_nodes = node.children[3:]
-        self.log(f"For loop has {len(statement_nodes)} statement nodes")
         
         # Create a new scope for the loop variables
         self.push_scope()
+        self.break_flag = False # Reset break flag before loop
         
-        # Execute the control variable initialization
         try:
             self.execute_control_variable(control_var_node)
-        except Exception as e:
-            self.log(f"ERROR: Failed to initialize loop control variable: {str(e)}")
-            print(f"Error: Failed to initialize loop control variable: {str(e)}")
-            self.stopped = True
-            self.pop_scope()
-            return None
-        
-        loop_count = 0
-        # Loop execution
-        while not self.stopped:
-            # Safety limit to prevent infinite loops during debugging
-            loop_count += 1
-            if loop_count > 1000:  # Reasonable limit for most loops
-                self.log("ERROR: Loop safety limit reached (1000 iterations)")
-                print("Error: Infinite loop detected - exceeded 1000 iterations")
-                self.stopped = True
-                break
-                
-            # Check the loop condition - ensuring we handle it as a condition, not a regular expression
-            try:
-                if condition_node.type == "condition":
-                    # If it's already a condition node, use execute_condition
-                    condition_result = self.execute_condition(condition_node)
-                elif condition_node.type == "for_expression":
-                    # Convert for_expression to condition evaluation pattern
-                    left_val = self.execute_node(condition_node.children[0])
-                    if len(condition_node.children) > 1 and hasattr(condition_node.children[1], 'type') and condition_node.children[1].type == "factor_tail_binop":
-                        binop = condition_node.children[1]
-                        op_node = binop.children[0]
-                        operator = op_node.value
-                        right_val = self.execute_node(binop.children[1])
-                        
-                        # Use apply_comparison for comparison operators
-                        if operator in ["==", "!=", ">", "<", ">=", "<="]:
-                            condition_result = self.apply_operator(operator, left_val, right_val)
-                        else:
-                            condition_result = self.apply_operator(operator, left_val, right_val)
-                    else:
-                        condition_result = bool(left_val)
-                else:
-                    # Otherwise just try to execute and convert to boolean
-                    condition_result = bool(self.execute_node(condition_node))
-            except Exception as e:
-                self.log(f"ERROR: Failed to evaluate loop condition: {str(e)}")
-                print(f"Error: Failed to evaluate loop condition: {str(e)}")
-                self.stopped = True
-                break
-                
-            self.log(f"For loop condition result: {condition_result}")
+            if self.stopped: raise Exception("Stopped during control variable init") # Check if stopped
             
-            if not condition_result:
-                break
-                
-            # Execute each statement in the loop body
-            try:
-                for stmt_node in statement_nodes:
-                    if self.stopped:
-                        break
-                        
-                    self.log(f"Executing statement of type: {stmt_node.type}")
-                    self.execute_node(stmt_node)
-                    
-                    # Check if waiting for input, and if so, pause execution
-                    if self.waiting_for_input:
-                        self.log("For loop paused waiting for input")
-                        # Save state so we can resume later
-                        self.paused_node = node
-                        # Exit the loop without popping scope
-                        return None
-            except Exception as e:
-                self.log(f"ERROR: Exception in loop body: {str(e)}")
-                print(f"Error: Exception in loop body: {str(e)}")
-                self.stopped = True
-                break
-            
-            # Execute the update statement
-            try:
-                if self.stopped:
+            loop_count = 0
+            while not self.stopped:
+                loop_count += 1
+                if loop_count > 1000:
+                    self.log("ERROR: Loop safety limit reached (1000 iterations)")
+                    print("Error: Infinite loop detected - exceeded 1000 iterations")
+                    self.stopped = True
                     break
                     
-                self.execute_node(update_node)
-            except Exception as e:
-                self.log(f"ERROR: Failed to execute loop update statement: {str(e)}")
-                print(f"Error: Failed to execute loop update statement: {str(e)}")
-                self.stopped = True
-                break
+                # Check the loop condition
+                condition_result = False # Default to false
+                try:
+                    # Simplified condition evaluation (adjust based on actual node types)
+                    if hasattr(condition_node, 'type') and condition_node.type == "condition":
+                        condition_result = self.execute_condition(condition_node)
+                    else:
+                        condition_result = bool(self.execute_node(condition_node))
+                except Exception as e:
+                    self.log(f"ERROR: Failed to evaluate loop condition: {str(e)}")
+                    print(f"Error: Failed to evaluate loop condition: {str(e)}")
+                    self.stopped = True
+                    break # Exit while loop on condition error
+                
+                if self.stopped: break # Exit while if stopped during condition eval
+                self.log(f"For loop condition result: {condition_result}")
+                if not condition_result:
+                    break # Exit while loop if condition is false
+                    
+                # Execute statements in the loop body
+                try:
+                    for stmt_node in statement_nodes:
+                        if self.stopped: break # Check if stopped before statement
+                        self.log(f"Executing statement of type: {getattr(stmt_node, 'type', 'Unknown')}") # Use getattr for safety
+                        self.execute_node(stmt_node)
+                        
+                        if self.waiting_for_input: # Handle pausing for input
+                            self.log("For loop paused waiting for input")
+                            self.paused_node = node 
+                            self.pop_scope() # Pop scope before pausing
+                            return None # Exit execution to wait
+                            
+                        if self.break_flag: # Check break flag AFTER executing statement
+                            self.log("STOP detected in for loop body.")
+                            break # Exit inner statement loop
+                            
+                    if self.break_flag: # Check flag again to exit outer loop
+                        break # Exit outer while loop
+                        
+                except Exception as e:
+                    self.log(f"ERROR: Exception in loop body: {str(e)}")
+                    print(f"Error: Exception in loop body: {str(e)}")
+                    self.stopped = True
+                    break # Exit while loop on body error
+                
+                if self.stopped: break # Check if stopped after body execution
+                
+                # Execute the update statement
+                try:
+                    self.execute_node(update_node)
+                except Exception as e:
+                    self.log(f"ERROR: Failed to execute loop update statement: {str(e)}")
+                    print(f"Error: Failed to execute loop update statement: {str(e)}")
+                    self.stopped = True
+                    break # Exit while loop on update error
+                    
+                if self.stopped: break # Exit while if stopped during update
+                
+        except Exception as e: # Catch errors during loop setup/execution
+             self.log(f"ERROR: Unhandled exception during for loop execution: {str(e)}")
+             # Don't print here if already printed in inner blocks
+             self.stopped = True
+             # Fall through to finally block
+             
+        finally:
+            # Clean up the loop scope and reset break flag
+            self.pop_scope()
+            self.break_flag = False # Ensure flag is reset
         
-        # Clean up the loop scope
-        self.pop_scope()
         return None
         
     def execute_control_variable(self, node):
@@ -2417,6 +2427,13 @@ class CodeGenerator:
         # DEBUG LOG
         # print(f"DEBUG: Measure result calculated: {measure_result}\")
         return measure_result
+
+    # ADDED Method to handle stop statement
+    def execute_stop_statement(self, node):
+        """Sets the break flag to stop the current loop."""
+        self.log("Executing stop_statement - setting break_flag")
+        self.break_flag = True
+        return None # Stop statement itself doesn't return a value
 
 def run_code_generation(ast):
     """Create a CodeGenerator and run code generation on the given AST."""
