@@ -291,9 +291,11 @@ def p_factor(p):
            | TILDE INT_LIT               
            | TILDE FLT_LIT                
            | LPAREN factor_expression RPAREN    
+           | measure_call 
     """
-    # We must handle each case by length of p
-    if len(p) == 3 and p[2] in ("++", "--", None):  # var_call postfix
+    if len(p) == 2 and hasattr(p[1], 'type') and p[1].type == 'measure_call': # ADDED check
+         p[0] = p[1] # Pass the measure_call node
+    elif len(p) == 3 and p[2] in ("++", "--", None):  # var_call postfix
         p[0] = ASTNode("factor_var_postfix", [p[1], p[2]])
     elif len(p) == 2:
         # literal1
@@ -304,7 +306,7 @@ def p_factor(p):
     elif len(p) == 3 and p[1] == '~' and isinstance(p[2], float):
         # TILDE FLT_LIT
         p[0] = ASTNode("factor_neg_flt", value=p[2])
-    else:
+    else: # Should be LPAREN factor_expression RPAREN (len 4)
         # ( expression )
         p[0] = ASTNode("factor_paren", [p[2]])
 
@@ -995,9 +997,11 @@ def p_local_factor(p):
            | TILDE INT_LIT               
            | TILDE FLT_LIT                
            | LPAREN local_expression RPAREN    
+           | measure_call 
     """
-     # We must handle each case by length of p
-    if len(p) == 3 and p[2] in ("++", "--", None):  # var_call postfix
+    if len(p) == 2 and hasattr(p[1], 'type') and p[1].type == 'measure_call': # ADDED check
+         p[0] = p[1] # Pass the measure_call node
+    elif len(p) == 3 and p[2] in ("++", "--", None):  # var_call postfix
         p[0] = ASTNode("var_postfix", [p[1], p[2]])
     elif len(p) == 2:
         # literal1
@@ -1008,7 +1012,7 @@ def p_local_factor(p):
     elif len(p) == 3 and p[1] == '~' and isinstance(p[2], float):
         # TILDE FLT_LIT
         p[0] = ASTNode("neg_flt", value=p[2])
-    else:
+    else: # Should be LPAREN local_expression RPAREN (len 4)
         # ( expression )
         p[0] = ASTNode("paren", [p[2]])
 
@@ -2376,8 +2380,9 @@ def p_value(p):
     """
     value : type_cast     
           | value_expression   
-          | function_call 
+          | function_call
     """
+    # This function should simply pass up the result of its constituent rules.
     p[0] = p[1]
 
 
@@ -2398,9 +2403,11 @@ def p_value_factor(p):
            | TILDE INT_LIT               
            | TILDE FLT_LIT                
            | LPAREN value_expression RPAREN    
+           | measure_call 
     """
-    # We must handle each case by length of p
-    if len(p) == 3 and p[2] in ("++", "--", None):  # var_call postfix
+    if len(p) == 2 and hasattr(p[1], 'type') and p[1].type == 'measure_call': # ADDED check
+         p[0] = p[1] # Pass the measure_call node
+    elif len(p) == 3 and p[2] in ("++", "--", None):  # var_call postfix
         p[0] = ASTNode("var_postfix", [p[1], p[2]])
     elif len(p) == 2:
         # literal1
@@ -2411,7 +2418,7 @@ def p_value_factor(p):
     elif len(p) == 3 and p[1] == '~' and isinstance(p[2], float):
         # TILDE FLT_LIT
         p[0] = ASTNode("neg_flt", value=p[2])
-    else:
+    else: # Should be LPAREN value_expression RPAREN (len 4)
         # ( expression )
         p[0] = ASTNode("paren", [p[2]])
 
@@ -2797,3 +2804,10 @@ def build_parser():
     global parser
     parser = yacc.yacc()
     return parser
+
+# ADD NEW FUNCTION for measure_call
+def p_measure_call(p):
+    """
+    measure_call : MEASURE LPAREN value RPAREN
+    """
+    p[0] = ASTNode("measure_call", children=[p[3]])

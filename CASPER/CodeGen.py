@@ -233,9 +233,11 @@ class CodeGenerator:
             return results if results else None
 
         if not hasattr(node, 'type'):
+            print(f"DEBUG execute_node: Received non-node object: {repr(node)}")
             return None
 
-        
+        print(f"DEBUG execute_node: Processing node type = {node.type}")
+
         if node.type == "input_statement" and self.input_value is not None and not self.waiting_for_input:
             input_val = self.input_value
            
@@ -266,6 +268,9 @@ class CodeGenerator:
         elif node.type == "switch_statement":
             self.log("SWITCH: Routing to execute_switch_statement")
             return self.execute_switch_statement(node)
+        elif node.type == "measure_call":
+            self.log("MEASURE: Routing to execute_measure_call")
+            return self.execute_measure_call(node)
         
         method_name = f"execute_{node.type}"
         executor = getattr(self, method_name, self.generic_execute)
@@ -586,24 +591,24 @@ class CodeGenerator:
     def execute_var_statement(self, node):
         """Execute a var statement"""
         self.log("Executing var_statement")
+        print(f"DEBUG execute_var_statement: START node={node.type}")
 
         valid_children = [n for n in node.children if n is not None]
-        
+
         if len(valid_children) < 2:
             self.log(f"var_statement has insufficient children: {len(valid_children)}")
             return None
-        
-        # Get the data type, variable name, and optional list declaration
+
         data_type_node = valid_children[0]
         ident_node = valid_children[1]
         list_dec_node = valid_children[2] if len(valid_children) > 2 else None
-        
+
         # Check data type and identifier
         if not (hasattr(data_type_node, 'type') and data_type_node.type == "local_data_type" and hasattr(data_type_node, 'value')) or \
            not (hasattr(ident_node, 'type') and ident_node.type == "IDENT" and hasattr(ident_node, 'value')):
             self.log("Missing data_type or ident value in var_statement")
             return None
-        
+
         data_type = data_type_node.value
         var_name = ident_node.value.lstrip('$')
         is_list = False
@@ -618,87 +623,57 @@ class CodeGenerator:
                 self.log(f"Variable '{var_name}' declared as 1D list.")
 
         self.log(f"Variable declaration: {data_type} {var_name}{'[]' if is_list else ''}{'[]' if is_2d_list else ''}")
-        
+
         if not var_name:
             return None
-        
-        # Find assignment node and check for input
+
+        # --- MODIFIED ASSIGNMENT NODE FINDING LOGIC ---
         assign_node = None
-        contains_input = False
-        assignment_value_node = None
-        if len(valid_children) > 3 and hasattr(valid_children[3], 'type') and valid_children[3].type == "local_var_assign":
-            assign_node = valid_children[3]
-            if assign_node.children and hasattr(assign_node.children[0], 'type') and assign_node.children[0].type == "value":
-                value_container = assign_node.children[0]
-                if value_container.children:
-                    assignment_value_node = value_container.children[0] # This is the actual value/expression/list node
-                    # Check if this assignment contains an input statement
-                    if hasattr(assignment_value_node, 'type') and assignment_value_node.type == "input_statement":
-                         contains_input = True
+        value_expression_node = None
+        contains_input = False # Reset contains_input flag
+        for child in valid_children:
+            if hasattr(child, 'type') and child.type == "local_var_assign":
+                assign_node = child
+                if assign_node.children:
+                    value_expression_node = assign_node.children[0]
+                    # Check for input statement within the assignment value node
+                    if hasattr(value_expression_node, 'type') and value_expression_node.type == "value" and value_expression_node.children:
+                       actual_value_node = value_expression_node.children[0]
+                       if hasattr(actual_value_node, 'type') and actual_value_node.type == "input_statement":
+                           contains_input = True
+                break
 
         # If this is an input assignment, track it
         if contains_input:
             self.current_assignment_target = var_name
             self.expected_type = data_type # Assuming input should match declared type
             self.log(f"Setting input target: {var_name} with expected type {data_type}")
-        
-        # Initialize or assign value
+
+        print(f"DEBUG execute_var_statement: Declaring '{var_name}' of type {data_type}")
+        print(f"DEBUG execute_var_statement: Found assignment node = {assign_node is not None}")
+
         final_value = None
 
-        if assign_node:
-            self.log(f"DEBUG: In assignment for '{var_name}'. assign_node type: {getattr(assign_node, 'type', 'None')}")
-            
-            # We expect assign_node (local_var_assign) to have one child: the value expression node.
-            value_expression_node = None 
-            node_children = getattr(assign_node, 'children', []) # Get children or empty list
-            self.log(f"DEBUG: assign_node raw children: {node_children}")
+        if assign_node and value_expression_node:
+            print(f"DEBUG execute_var_statement: Assignment - evaluating node type: {getattr(value_expression_node, 'type', 'N/A')}")
+            evaluated_value = self.execute_node(value_expression_node)
+            print(f"DEBUG execute_var_statement: Assignment - evaluated value = {repr(evaluated_value)}")
 
-            # Iterate to find the first valid child node (more robust than direct indexing)
-            for child in node_children:
-                if child is not None:
-                    value_expression_node = child
-                    self.log(f"DEBUG: Found first child of assign_node. Type: {getattr(value_expression_node, 'type', 'None')}")
-                    break # Found the first (and expected only) child
-                else:
-                    self.log(f"DEBUG: Found a None child in assign_node children for '{var_name}'")
-            
-            # Check if we successfully extracted the value node.
-            if value_expression_node is None:
-                 self.log(f"ERROR: Could not extract value expression from assignment for '{var_name}'. No valid child found for assign_node.")
-                 print(f"Error: Invalid assignment structure for '{var_name}'") 
-                 self.stopped = True
-                 return None
-
-            # Now evaluate based on the type of the value_expression_node
+            # Handle list vs non-list assignment checks (simplified example)
             if hasattr(value_expression_node, 'type') and value_expression_node.type == "list_value":
-                # Case 1: Assigning a list literal
                 if not is_list:
                     self.log(f"ERROR: Assigning list literal to non-list variable '{var_name}'")
                     print(f"Error: Cannot assign list literal to non-list variable '{var_name}'")
                     self.stopped = True
                     return None
-                
-                final_value = self.execute_list_value(value_expression_node)
-                
-                # Optional: Check 2D compatibility warning
-                if is_2d_list and not all(isinstance(item, list) for item in final_value):
-                    self.log(f"WARNING: Assigning potentially non-2D list value to 2D list variable '{var_name}'")
-                
-                self.log(f"Assigning list literal to '{var_name}': {final_value}")
-
+                final_value = evaluated_value # Already a list from execute_list_value
+            elif is_list:
+                 self.log(f"ERROR: Assigning non-list expression/value to list variable '{var_name}'")
+                 print(f"Error: Cannot assign non-list value to list variable '{var_name}'")
+                 self.stopped = True
+                 return None
             else:
-                # Case 2: Assigning a non-list expression (literal, var, function call, etc.)
-                if is_list:
-                    # Check if we are trying to assign a simple value TO a list variable
-                    self.log(f"ERROR: Assigning non-list expression/value to list variable '{var_name}'")
-                    print(f"Error: Cannot assign non-list value to list variable '{var_name}'")
-                    self.stopped = True
-                    return None
-
-                # Evaluate the expression/node
-                evaluated_value = self.execute_node(value_expression_node)
-                
-                # Apply type conversion based on the declared variable type
+                # --- Type Conversion Logic --- 
                 if evaluated_value is not None and data_type:
                     original_value = evaluated_value
                     try:
@@ -712,31 +687,28 @@ class CodeGenerator:
                         self.stopped = True
                         return None
                 else:
-                    final_value = evaluated_value # No conversion needed or possible
-                
-                self.log(f"Assigning evaluated value to '{var_name}': {final_value}")
+                    final_value = evaluated_value
+                # --- End Type Conversion ---
 
-            # Assign the final evaluated and possibly converted value
-            # self.get_current_env()[var_name] = final_value # Old direct assignment
-            self.assign_variable(var_name, final_value) # Use the proper assignment method
-            # self.log(f"Assigned var '{var_name}' = {final_value}") # Logging done in assign_variable
+            self.assign_variable(var_name, final_value)
+            print(f"DEBUG execute_var_statement: Assigned '{var_name}' = {repr(final_value)}")
         else:
-            # Initialize with default value if no assignment
+            # Default initialization logic...
             if is_list:
                 final_value = []
             elif data_type == "int":
                 final_value = 0
-            elif data_type == "string" or data_type == "str":
+            elif data_type in ["string", "str"]:
                 final_value = ""
-            elif data_type == "float" or data_type == "flt":
+            elif data_type in ["float", "flt"]:
                 final_value = 0.0
-            elif data_type == "bool" or data_type == "bln":
+            elif data_type in ["bool", "bln"]:
                 final_value = False
             self.assign_variable(var_name, final_value)
-            self.log(f"Initialized var '{var_name}' = {final_value}")
-            
+            print(f"DEBUG execute_var_statement: Initialized '{var_name}' = {repr(final_value)}")
+
         return final_value
-        
+
     def casper_to_python_type(self, casper_type):
         """Convert CASPER type names to Python type names."""
         if casper_type == "int":
@@ -2399,6 +2371,52 @@ class CodeGenerator:
             elements.extend(self.execute_list_element(tail_node))
             
         return elements
+
+    def execute_measure_call(self, node):
+        """Executes a measure call and returns the 'measure' of the value."""
+        print("Executing measure_call")
+        if not node.children or len(node.children) < 1:
+            print("ERROR: measure_call missing value child")
+            print("Error: Invalid measure call - missing value.")
+            self.stopped = True
+            return None
+
+        value_node = node.children[0]
+        # HANDLING FOR EXTRA EXPRESSION NODE
+        if hasattr(value_node, 'type') and value_node.type == "expression" and value_node.children:
+             print(f"DEBUG: Found wrapped expression node in measure_call. Using its child.")
+             value_node = value_node.children[0] # Use the node inside the expression
+
+        # DEBUG LOG
+        print(f"DEBUG: Measuring value_node: type={getattr(value_node, 'type', 'N/A')}, value={getattr(value_node, 'value', 'N/A')}")
+        value = self.execute_node(value_node)
+
+        # DEBUG LOG
+        print(f"DEBUG: Evaluated value for measure: {repr(value)} (type: {type(value).__name__})")
+
+        if self.stopped: # Check if evaluation failed
+             return None
+
+        measure_result = 0
+        if isinstance(value, str):
+            measure_result = len(value)
+            print(f"Measured string: length = {measure_result}")
+        elif isinstance(value, list):
+            measure_result = len(value)
+            print(f"Measured list: length = {measure_result}")
+        elif isinstance(value, (int, float, bool)):
+             measure_result = 1 # Measure for single numeric/boolean is 1
+             print(f"Measured numeric/boolean: count = {measure_result}")
+        elif value is None:
+             measure_result = 0 # Measure for None is 0
+             print(f"Measured None: count = {measure_result}")
+        else:
+            print(f"WARNING: Cannot measure value of type {type(value).__name__}. Returning 0.")
+            measure_result = 0 # Default measure for unmeasurable types
+
+        # DEBUG LOG
+        print(f"DEBUG: Measure result calculated: {measure_result}")
+        return measure_result
 
 def run_code_generation(ast):
     """Create a CodeGenerator and run code generation on the given AST."""
