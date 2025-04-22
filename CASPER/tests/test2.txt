@@ -419,3 +419,56 @@ check (($year % 4 == 0) && ($year % 100 != 0) || ($year % 400 == 0)) {
 }
 
 } ghost
+
+!!!!!!!!
+
+birth {
+    @main_casper() {
+      
+
+        display "Simple Day Selector\n";
+        display "--------------------\n";
+        display "Enter a number (1-7) to see the day of the week:\n";
+        display "1. Monday\n";
+        display "2. Tuesday\n";
+        display "3. Wednesday\n";
+        display "4. Thursday\n";
+        display "5. Friday\n";
+        display "6. Saturday\n";
+        display "7. Sunday\n";
+        display "Your choice: ";
+
+        int $dayNumber = input();
+
+        display "You chose: ";
+        swap ($dayNumber) {
+            shift 1: 
+                display "Monday\n";
+            
+            shift 2: 
+                display "Tuesday\n";
+            
+            shift 3: 
+                display "Wednesday\n";
+            
+            shift 4: 
+                display "Thursday\n";
+            
+            shift 5: 
+                display "Friday\n";
+            
+            shift 6: 
+                display "Saturday\n";
+        
+            shift 7: 
+                display "Sunday\n";
+            
+            otherwise {
+        
+                display "an invalid day number!\n";
+            }
+        }
+
+        display "End of program.\n";
+    }
+} ghost
