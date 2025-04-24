@@ -117,7 +117,7 @@ class TokenType(Enum):
     OTHERWISE_CHECK = "OTHERWISE_CHECK"
     FOR = "FOR"
     REPEAT = "REPEAT"
-    UNTIL = "UNTIL"
+    WHILE = "WHILE"
     STOP = "STOP"
     SKIP = "SKIP"
     CONTINUE = "CONTINUE"
@@ -188,7 +188,7 @@ KEYWORDS: dict[str, TokenType] = {
     "otherwise_check": TokenType.OTHERWISE_CHECK,
     "for": TokenType.FOR,
     "repeat": TokenType.REPEAT,
-    "until": TokenType.UNTIL,
+    "while": TokenType.WHILE,
     "stop": TokenType.STOP,
     "skip": TokenType.SKIP,
     "continue": TokenType.CONTINUE,

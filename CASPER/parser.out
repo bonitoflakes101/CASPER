@@ -359,8 +359,8 @@ Rule 322   switch_type_cast -> CONVERT_TO_STR LPAREN typecast_value RPAREN
 Rule 323   switchcond_tail -> switch_condition
 Rule 324   switchcond_tail -> empty
 Rule 325   loop_statement -> for_loop
-Rule 326   loop_statement -> until_loop
-Rule 327   loop_statement -> repeat_until
+Rule 326   loop_statement -> while_loop
+Rule 327   loop_statement -> repeat_while
 Rule 328   for_loop -> FOR LPAREN control_variable SEMICOLON for_expression SEMICOLON update RPAREN LBRACE statements RBRACE
 Rule 329   for_expression -> for_factor for_factor_tail
 Rule 330   for_factor -> for_var_call for_postfix
@@ -400,45 +400,45 @@ Rule 363   for_factor1 -> FLT_LIT
 Rule 364   for_factor1 -> DAY
 Rule 365   for_factor1 -> NIGHT
 Rule 366   for_factor1 -> STR_LIT
-Rule 367   until_loop -> UNTIL LPAREN until_expression RPAREN LBRACE statements RBRACE
-Rule 368   until_expression -> until_factor until_factor_tail
-Rule 369   until_factor -> until_var_call until_postfix
-Rule 370   until_factor -> until_factor1
-Rule 371   until_factor -> TILDE INT_LIT
-Rule 372   until_factor -> TILDE FLT_LIT
-Rule 373   until_factor -> LPAREN until_expression RPAREN
-Rule 374   until_var_call -> IDENT until_list_index
-Rule 375   until_postfix_op -> PLUS_PLUS
-Rule 376   until_postfix_op -> MINUS_MINUS
-Rule 377   until_postfix -> empty
-Rule 378   until_postfix -> until_postfix_op
-Rule 379   until_list_index -> LBRACKET until_index RBRACKET until_list_index2
-Rule 380   until_list_index -> empty
-Rule 381   until_list_index2 -> LBRACKET until_index RBRACKET
-Rule 382   until_list_index2 -> empty
-Rule 383   until_index -> INT_LIT
-Rule 384   until_index -> IDENT
-Rule 385   until_factor_tail -> PLUS until_factor until_factor_tail
-Rule 386   until_factor_tail -> MINUS until_factor until_factor_tail
-Rule 387   until_factor_tail -> MULTIPLY until_factor until_factor_tail
-Rule 388   until_factor_tail -> DIVISION until_factor until_factor_tail
-Rule 389   until_factor_tail -> MODULO until_factor until_factor_tail
-Rule 390   until_factor_tail -> EXPONENT until_factor until_factor_tail
-Rule 391   until_factor_tail -> GT until_factor until_factor_tail
-Rule 392   until_factor_tail -> LT until_factor until_factor_tail
-Rule 393   until_factor_tail -> EQ_EQ until_factor until_factor_tail
-Rule 394   until_factor_tail -> GT_EQ until_factor until_factor_tail
-Rule 395   until_factor_tail -> LT_EQ until_factor until_factor_tail
-Rule 396   until_factor_tail -> NOT_EQ until_factor until_factor_tail
-Rule 397   until_factor_tail -> AND until_factor until_factor_tail
-Rule 398   until_factor_tail -> OR until_factor until_factor_tail
-Rule 399   until_factor_tail -> empty
-Rule 400   until_factor1 -> INT_LIT
-Rule 401   until_factor1 -> FLT_LIT
-Rule 402   until_factor1 -> DAY
-Rule 403   until_factor1 -> NIGHT
-Rule 404   until_factor1 -> STR_LIT
-Rule 405   repeat_until -> REPEAT LBRACE statements RBRACE UNTIL LPAREN until_expression RPAREN SEMICOLON
+Rule 367   while_loop -> WHILE LPAREN while_expression RPAREN LBRACE statements RBRACE
+Rule 368   while_expression -> while_factor while_factor_tail
+Rule 369   while_factor -> while_var_call while_postfix
+Rule 370   while_factor -> while_factor1
+Rule 371   while_factor -> TILDE INT_LIT
+Rule 372   while_factor -> TILDE FLT_LIT
+Rule 373   while_factor -> LPAREN while_expression RPAREN
+Rule 374   while_var_call -> IDENT while_list_index
+Rule 375   while_postfix_op -> PLUS_PLUS
+Rule 376   while_postfix_op -> MINUS_MINUS
+Rule 377   while_postfix -> empty
+Rule 378   while_postfix -> while_postfix_op
+Rule 379   while_list_index -> LBRACKET while_index RBRACKET while_list_index2
+Rule 380   while_list_index -> empty
+Rule 381   while_list_index2 -> LBRACKET while_index RBRACKET
+Rule 382   while_list_index2 -> empty
+Rule 383   while_index -> INT_LIT
+Rule 384   while_index -> IDENT
+Rule 385   while_factor_tail -> PLUS while_factor while_factor_tail
+Rule 386   while_factor_tail -> MINUS while_factor while_factor_tail
+Rule 387   while_factor_tail -> MULTIPLY while_factor while_factor_tail
+Rule 388   while_factor_tail -> DIVISION while_factor while_factor_tail
+Rule 389   while_factor_tail -> MODULO while_factor while_factor_tail
+Rule 390   while_factor_tail -> EXPONENT while_factor while_factor_tail
+Rule 391   while_factor_tail -> GT while_factor while_factor_tail
+Rule 392   while_factor_tail -> LT while_factor while_factor_tail
+Rule 393   while_factor_tail -> EQ_EQ while_factor while_factor_tail
+Rule 394   while_factor_tail -> GT_EQ while_factor while_factor_tail
+Rule 395   while_factor_tail -> LT_EQ while_factor while_factor_tail
+Rule 396   while_factor_tail -> NOT_EQ while_factor while_factor_tail
+Rule 397   while_factor_tail -> AND while_factor while_factor_tail
+Rule 398   while_factor_tail -> OR while_factor while_factor_tail
+Rule 399   while_factor_tail -> empty
+Rule 400   while_factor1 -> INT_LIT
+Rule 401   while_factor1 -> FLT_LIT
+Rule 402   while_factor1 -> DAY
+Rule 403   while_factor1 -> NIGHT
+Rule 404   while_factor1 -> STR_LIT
+Rule 405   repeat_while -> REPEAT LBRACE statements RBRACE WHILE LPAREN while_expression RPAREN SEMICOLON
 Rule 406   control_variable -> INT IDENT EQ control_var_tail
 Rule 407   control_var_tail -> INT_LIT
 Rule 408   control_var_tail -> var_call
@@ -767,7 +767,7 @@ STR_LIT              : 72 94 157 232 276 318 366 404 464 515 581 618
 SWAP                 : 277
 TILDE                : 32 33 39 40 124 125 198 199 243 244 285 286 332 333 371 372 431 432 482 483 547 548 596 597
 TYPE                 : 
-UNTIL                : 367 405
+WHILE                : 367 405
 error                : 
 
 Nonterminals, with rules where they appear
@@ -898,7 +898,7 @@ parameters_tail      : 112 114
 postfix              : 30 594
 postfix_op           : 410 540
 program              : 0
-repeat_until         : 327
+repeat_while         : 327
 ret_type             : 96
 revive               : 96
 revive_expression    : 119 126
@@ -939,17 +939,6 @@ typecast_factor      : 593 599 600 601 602 603 604 605 606 607 608 609 610 611 6
 typecast_factor1     : 595
 typecast_factor_tail : 593 599 600 601 602 603 604 605 606 607 608 609 610 611 612
 typecast_value       : 158 159 160 161 233 234 235 236 319 320 321 322 465 466 467 468 516 517 518 519 582 583 584 585 586 587 588 589
-until_expression     : 367 373 405
-until_factor         : 368 385 386 387 388 389 390 391 392 393 394 395 396 397 398
-until_factor1        : 370
-until_factor_tail    : 368 385 386 387 388 389 390 391 392 393 394 395 396 397 398
-until_index          : 379 381
-until_list_index     : 374
-until_list_index2    : 379
-until_loop           : 326
-until_postfix        : 369
-until_postfix_op     : 378
-until_var_call       : 369
 update               : 328
 update_tail          : 409
 value                : 411 469 471 621
@@ -966,6 +955,17 @@ value_type_cast      :
 value_var_call       : 545
 var_call             : 30 408 409 423 471 594
 var_statement        : 6
+while_expression     : 367 373 405
+while_factor         : 368 385 386 387 388 389 390 391 392 393 394 395 396 397 398
+while_factor1        : 370
+while_factor_tail    : 368 385 386 387 388 389 390 391 392 393 394 395 396 397 398
+while_index          : 379 381
+while_list_index     : 374
+while_list_index2    : 379
+while_loop           : 326
+while_postfix        : 369
+while_postfix_op     : 378
+while_var_call       : 369
 
 Parsing method: LALR
 
@@ -4788,7 +4788,7 @@ state 196
     STOP            reduce using rule 620 (empty -> .)
     CONTINUE        reduce using rule 620 (empty -> .)
     FOR             reduce using rule 620 (empty -> .)
-    UNTIL           reduce using rule 620 (empty -> .)
+    WHILE           reduce using rule 620 (empty -> .)
     REPEAT          reduce using rule 620 (empty -> .)
     INPUT           reduce using rule 620 (empty -> .)
     INT             shift and go to state 274
@@ -6530,7 +6530,7 @@ state 270
     STOP            reduce using rule 174 (local_dec -> empty .)
     CONTINUE        reduce using rule 174 (local_dec -> empty .)
     FOR             reduce using rule 174 (local_dec -> empty .)
-    UNTIL           reduce using rule 174 (local_dec -> empty .)
+    WHILE           reduce using rule 174 (local_dec -> empty .)
     REPEAT          reduce using rule 174 (local_dec -> empty .)
     INPUT           reduce using rule 174 (local_dec -> empty .)
     INT             reduce using rule 174 (local_dec -> empty .)
@@ -6559,8 +6559,8 @@ state 271
     (172) statements_tail -> . statements
     (277) switch_statement -> . SWAP LPAREN IDENT RPAREN LBRACE switch_condition OTHERWISE LBRACE statements RBRACE RBRACE
     (325) loop_statement -> . for_loop
-    (326) loop_statement -> . until_loop
-    (327) loop_statement -> . repeat_until
+    (326) loop_statement -> . while_loop
+    (327) loop_statement -> . repeat_while
     (414) function_call_statement -> . FUNCTION_NAME LPAREN arguments RPAREN SEMICOLON
     (415) function_call_statement -> . input_statement SEMICOLON
     (471) assignment_statement -> . var_call EQ value SEMICOLON
@@ -6572,8 +6572,8 @@ state 271
     (162) statements -> . empty
     (163) statements -> . local_dec statements_tail
     (328) for_loop -> . FOR LPAREN control_variable SEMICOLON for_expression SEMICOLON update RPAREN LBRACE statements RBRACE
-    (367) until_loop -> . UNTIL LPAREN until_expression RPAREN LBRACE statements RBRACE
-    (405) repeat_until -> . REPEAT LBRACE statements RBRACE UNTIL LPAREN until_expression RPAREN SEMICOLON
+    (367) while_loop -> . WHILE LPAREN while_expression RPAREN LBRACE statements RBRACE
+    (405) repeat_while -> . REPEAT LBRACE statements RBRACE WHILE LPAREN while_expression RPAREN SEMICOLON
     (619) input_statement -> . INPUT LPAREN RPAREN
     (532) var_call -> . IDENT list_index
     (620) empty -> .
@@ -6594,7 +6594,7 @@ state 271
   ! shift/reduce conflict for STOP resolved as shift
   ! shift/reduce conflict for CONTINUE resolved as shift
   ! shift/reduce conflict for FOR resolved as shift
-  ! shift/reduce conflict for UNTIL resolved as shift
+  ! shift/reduce conflict for WHILE resolved as shift
   ! shift/reduce conflict for REPEAT resolved as shift
   ! shift/reduce conflict for INPUT resolved as shift
   ! shift/reduce conflict for INT resolved as shift
@@ -6610,7 +6610,7 @@ state 271
     STOP            shift and go to state 363
     CONTINUE        shift and go to state 364
     FOR             shift and go to state 365
-    UNTIL           shift and go to state 366
+    WHILE           shift and go to state 366
     REPEAT          shift and go to state 367
     INPUT           shift and go to state 188
     RBRACE          reduce using rule 620 (empty -> .)
@@ -6631,7 +6631,7 @@ state 271
   ! STOP            [ reduce using rule 620 (empty -> .) ]
   ! CONTINUE        [ reduce using rule 620 (empty -> .) ]
   ! FOR             [ reduce using rule 620 (empty -> .) ]
-  ! UNTIL           [ reduce using rule 620 (empty -> .) ]
+  ! WHILE           [ reduce using rule 620 (empty -> .) ]
   ! REPEAT          [ reduce using rule 620 (empty -> .) ]
   ! INPUT           [ reduce using rule 620 (empty -> .) ]
   ! INT             [ reduce using rule 620 (empty -> .) ]
@@ -6652,8 +6652,8 @@ state 271
     stop_statement                 shift and go to state 351
     continue_statement             shift and go to state 352
     for_loop                       shift and go to state 355
-    until_loop                     shift and go to state 356
-    repeat_until                   shift and go to state 357
+    while_loop                     shift and go to state 356
+    repeat_while                   shift and go to state 357
     input_statement                shift and go to state 359
     var_call                       shift and go to state 360
     empty                          shift and go to state 270
@@ -6747,7 +6747,7 @@ state 279
     STOP            reduce using rule 620 (empty -> .)
     CONTINUE        reduce using rule 620 (empty -> .)
     FOR             reduce using rule 620 (empty -> .)
-    UNTIL           reduce using rule 620 (empty -> .)
+    WHILE           reduce using rule 620 (empty -> .)
     REPEAT          reduce using rule 620 (empty -> .)
     INPUT           reduce using rule 620 (empty -> .)
     INT             shift and go to state 274
@@ -8003,7 +8003,7 @@ state 344
     STOP            reduce using rule 620 (empty -> .)
     CONTINUE        reduce using rule 620 (empty -> .)
     FOR             reduce using rule 620 (empty -> .)
-    UNTIL           reduce using rule 620 (empty -> .)
+    WHILE           reduce using rule 620 (empty -> .)
     REPEAT          reduce using rule 620 (empty -> .)
     INPUT           reduce using rule 620 (empty -> .)
     INT             shift and go to state 274
@@ -8066,7 +8066,7 @@ state 346
     STOP            reduce using rule 620 (empty -> .)
     CONTINUE        reduce using rule 620 (empty -> .)
     FOR             reduce using rule 620 (empty -> .)
-    UNTIL           reduce using rule 620 (empty -> .)
+    WHILE           reduce using rule 620 (empty -> .)
     REPEAT          reduce using rule 620 (empty -> .)
     INPUT           reduce using rule 620 (empty -> .)
     INT             shift and go to state 274
@@ -8119,7 +8119,7 @@ state 347
     STOP            reduce using rule 620 (empty -> .)
     CONTINUE        reduce using rule 620 (empty -> .)
     FOR             reduce using rule 620 (empty -> .)
-    UNTIL           reduce using rule 620 (empty -> .)
+    WHILE           reduce using rule 620 (empty -> .)
     REPEAT          reduce using rule 620 (empty -> .)
     INPUT           reduce using rule 620 (empty -> .)
     INT             shift and go to state 274
@@ -8172,7 +8172,7 @@ state 348
     STOP            reduce using rule 620 (empty -> .)
     CONTINUE        reduce using rule 620 (empty -> .)
     FOR             reduce using rule 620 (empty -> .)
-    UNTIL           reduce using rule 620 (empty -> .)
+    WHILE           reduce using rule 620 (empty -> .)
     REPEAT          reduce using rule 620 (empty -> .)
     INPUT           reduce using rule 620 (empty -> .)
     INT             shift and go to state 274
@@ -8225,7 +8225,7 @@ state 349
     STOP            reduce using rule 620 (empty -> .)
     CONTINUE        reduce using rule 620 (empty -> .)
     FOR             reduce using rule 620 (empty -> .)
-    UNTIL           reduce using rule 620 (empty -> .)
+    WHILE           reduce using rule 620 (empty -> .)
     REPEAT          reduce using rule 620 (empty -> .)
     INPUT           reduce using rule 620 (empty -> .)
     INT             shift and go to state 274
@@ -8278,7 +8278,7 @@ state 350
     STOP            reduce using rule 620 (empty -> .)
     CONTINUE        reduce using rule 620 (empty -> .)
     FOR             reduce using rule 620 (empty -> .)
-    UNTIL           reduce using rule 620 (empty -> .)
+    WHILE           reduce using rule 620 (empty -> .)
     REPEAT          reduce using rule 620 (empty -> .)
     INPUT           reduce using rule 620 (empty -> .)
     INT             shift and go to state 274
@@ -8331,7 +8331,7 @@ state 351
     STOP            reduce using rule 620 (empty -> .)
     CONTINUE        reduce using rule 620 (empty -> .)
     FOR             reduce using rule 620 (empty -> .)
-    UNTIL           reduce using rule 620 (empty -> .)
+    WHILE           reduce using rule 620 (empty -> .)
     REPEAT          reduce using rule 620 (empty -> .)
     INPUT           reduce using rule 620 (empty -> .)
     INT             shift and go to state 274
@@ -8384,7 +8384,7 @@ state 352
     STOP            reduce using rule 620 (empty -> .)
     CONTINUE        reduce using rule 620 (empty -> .)
     FOR             reduce using rule 620 (empty -> .)
-    UNTIL           reduce using rule 620 (empty -> .)
+    WHILE           reduce using rule 620 (empty -> .)
     REPEAT          reduce using rule 620 (empty -> .)
     INPUT           reduce using rule 620 (empty -> .)
     INT             shift and go to state 274
@@ -8465,7 +8465,7 @@ state 355
     STOP            reduce using rule 325 (loop_statement -> for_loop .)
     CONTINUE        reduce using rule 325 (loop_statement -> for_loop .)
     FOR             reduce using rule 325 (loop_statement -> for_loop .)
-    UNTIL           reduce using rule 325 (loop_statement -> for_loop .)
+    WHILE           reduce using rule 325 (loop_statement -> for_loop .)
     REPEAT          reduce using rule 325 (loop_statement -> for_loop .)
     INPUT           reduce using rule 325 (loop_statement -> for_loop .)
     RBRACE          reduce using rule 325 (loop_statement -> for_loop .)
@@ -8476,54 +8476,54 @@ state 355
 
 state 356
 
-    (326) loop_statement -> until_loop .
+    (326) loop_statement -> while_loop .
 
-    INT             reduce using rule 326 (loop_statement -> until_loop .)
-    FLT             reduce using rule 326 (loop_statement -> until_loop .)
-    BLN             reduce using rule 326 (loop_statement -> until_loop .)
-    CHR             reduce using rule 326 (loop_statement -> until_loop .)
-    STR             reduce using rule 326 (loop_statement -> until_loop .)
-    SWAP            reduce using rule 326 (loop_statement -> until_loop .)
-    FUNCTION_NAME   reduce using rule 326 (loop_statement -> until_loop .)
-    IDENT           reduce using rule 326 (loop_statement -> until_loop .)
-    DISPLAY         reduce using rule 326 (loop_statement -> until_loop .)
-    CHECK           reduce using rule 326 (loop_statement -> until_loop .)
-    STOP            reduce using rule 326 (loop_statement -> until_loop .)
-    CONTINUE        reduce using rule 326 (loop_statement -> until_loop .)
-    FOR             reduce using rule 326 (loop_statement -> until_loop .)
-    UNTIL           reduce using rule 326 (loop_statement -> until_loop .)
-    REPEAT          reduce using rule 326 (loop_statement -> until_loop .)
-    INPUT           reduce using rule 326 (loop_statement -> until_loop .)
-    RBRACE          reduce using rule 326 (loop_statement -> until_loop .)
-    REVIVE          reduce using rule 326 (loop_statement -> until_loop .)
-    SHIFT           reduce using rule 326 (loop_statement -> until_loop .)
-    OTHERWISE       reduce using rule 326 (loop_statement -> until_loop .)
+    INT             reduce using rule 326 (loop_statement -> while_loop .)
+    FLT             reduce using rule 326 (loop_statement -> while_loop .)
+    BLN             reduce using rule 326 (loop_statement -> while_loop .)
+    CHR             reduce using rule 326 (loop_statement -> while_loop .)
+    STR             reduce using rule 326 (loop_statement -> while_loop .)
+    SWAP            reduce using rule 326 (loop_statement -> while_loop .)
+    FUNCTION_NAME   reduce using rule 326 (loop_statement -> while_loop .)
+    IDENT           reduce using rule 326 (loop_statement -> while_loop .)
+    DISPLAY         reduce using rule 326 (loop_statement -> while_loop .)
+    CHECK           reduce using rule 326 (loop_statement -> while_loop .)
+    STOP            reduce using rule 326 (loop_statement -> while_loop .)
+    CONTINUE        reduce using rule 326 (loop_statement -> while_loop .)
+    FOR             reduce using rule 326 (loop_statement -> while_loop .)
+    WHILE           reduce using rule 326 (loop_statement -> while_loop .)
+    REPEAT          reduce using rule 326 (loop_statement -> while_loop .)
+    INPUT           reduce using rule 326 (loop_statement -> while_loop .)
+    RBRACE          reduce using rule 326 (loop_statement -> while_loop .)
+    REVIVE          reduce using rule 326 (loop_statement -> while_loop .)
+    SHIFT           reduce using rule 326 (loop_statement -> while_loop .)
+    OTHERWISE       reduce using rule 326 (loop_statement -> while_loop .)
 
 
 state 357
 
-    (327) loop_statement -> repeat_until .
+    (327) loop_statement -> repeat_while .
 
-    INT             reduce using rule 327 (loop_statement -> repeat_until .)
-    FLT             reduce using rule 327 (loop_statement -> repeat_until .)
-    BLN             reduce using rule 327 (loop_statement -> repeat_until .)
-    CHR             reduce using rule 327 (loop_statement -> repeat_until .)
-    STR             reduce using rule 327 (loop_statement -> repeat_until .)
-    SWAP            reduce using rule 327 (loop_statement -> repeat_until .)
-    FUNCTION_NAME   reduce using rule 327 (loop_statement -> repeat_until .)
-    IDENT           reduce using rule 327 (loop_statement -> repeat_until .)
-    DISPLAY         reduce using rule 327 (loop_statement -> repeat_until .)
-    CHECK           reduce using rule 327 (loop_statement -> repeat_until .)
-    STOP            reduce using rule 327 (loop_statement -> repeat_until .)
-    CONTINUE        reduce using rule 327 (loop_statement -> repeat_until .)
-    FOR             reduce using rule 327 (loop_statement -> repeat_until .)
-    UNTIL           reduce using rule 327 (loop_statement -> repeat_until .)
-    REPEAT          reduce using rule 327 (loop_statement -> repeat_until .)
-    INPUT           reduce using rule 327 (loop_statement -> repeat_until .)
-    RBRACE          reduce using rule 327 (loop_statement -> repeat_until .)
-    REVIVE          reduce using rule 327 (loop_statement -> repeat_until .)
-    SHIFT           reduce using rule 327 (loop_statement -> repeat_until .)
-    OTHERWISE       reduce using rule 327 (loop_statement -> repeat_until .)
+    INT             reduce using rule 327 (loop_statement -> repeat_while .)
+    FLT             reduce using rule 327 (loop_statement -> repeat_while .)
+    BLN             reduce using rule 327 (loop_statement -> repeat_while .)
+    CHR             reduce using rule 327 (loop_statement -> repeat_while .)
+    STR             reduce using rule 327 (loop_statement -> repeat_while .)
+    SWAP            reduce using rule 327 (loop_statement -> repeat_while .)
+    FUNCTION_NAME   reduce using rule 327 (loop_statement -> repeat_while .)
+    IDENT           reduce using rule 327 (loop_statement -> repeat_while .)
+    DISPLAY         reduce using rule 327 (loop_statement -> repeat_while .)
+    CHECK           reduce using rule 327 (loop_statement -> repeat_while .)
+    STOP            reduce using rule 327 (loop_statement -> repeat_while .)
+    CONTINUE        reduce using rule 327 (loop_statement -> repeat_while .)
+    FOR             reduce using rule 327 (loop_statement -> repeat_while .)
+    WHILE           reduce using rule 327 (loop_statement -> repeat_while .)
+    REPEAT          reduce using rule 327 (loop_statement -> repeat_while .)
+    INPUT           reduce using rule 327 (loop_statement -> repeat_while .)
+    RBRACE          reduce using rule 327 (loop_statement -> repeat_while .)
+    REVIVE          reduce using rule 327 (loop_statement -> repeat_while .)
+    SHIFT           reduce using rule 327 (loop_statement -> repeat_while .)
+    OTHERWISE       reduce using rule 327 (loop_statement -> repeat_while .)
 
 
 state 358
@@ -8627,14 +8627,14 @@ state 365
 
 state 366
 
-    (367) until_loop -> UNTIL . LPAREN until_expression RPAREN LBRACE statements RBRACE
+    (367) while_loop -> WHILE . LPAREN while_expression RPAREN LBRACE statements RBRACE
 
     LPAREN          shift and go to state 468
 
 
 state 367
 
-    (405) repeat_until -> REPEAT . LBRACE statements RBRACE UNTIL LPAREN until_expression RPAREN SEMICOLON
+    (405) repeat_while -> REPEAT . LBRACE statements RBRACE WHILE LPAREN while_expression RPAREN SEMICOLON
 
     LBRACE          shift and go to state 469
 
@@ -9898,7 +9898,7 @@ state 443
     STOP            reduce using rule 415 (function_call_statement -> input_statement SEMICOLON .)
     CONTINUE        reduce using rule 415 (function_call_statement -> input_statement SEMICOLON .)
     FOR             reduce using rule 415 (function_call_statement -> input_statement SEMICOLON .)
-    UNTIL           reduce using rule 415 (function_call_statement -> input_statement SEMICOLON .)
+    WHILE           reduce using rule 415 (function_call_statement -> input_statement SEMICOLON .)
     REPEAT          reduce using rule 415 (function_call_statement -> input_statement SEMICOLON .)
     INPUT           reduce using rule 415 (function_call_statement -> input_statement SEMICOLON .)
     RBRACE          reduce using rule 415 (function_call_statement -> input_statement SEMICOLON .)
@@ -10355,7 +10355,7 @@ state 465
     STOP            reduce using rule 622 (stop_statement -> STOP SEMICOLON .)
     CONTINUE        reduce using rule 622 (stop_statement -> STOP SEMICOLON .)
     FOR             reduce using rule 622 (stop_statement -> STOP SEMICOLON .)
-    UNTIL           reduce using rule 622 (stop_statement -> STOP SEMICOLON .)
+    WHILE           reduce using rule 622 (stop_statement -> STOP SEMICOLON .)
     REPEAT          reduce using rule 622 (stop_statement -> STOP SEMICOLON .)
     INPUT           reduce using rule 622 (stop_statement -> STOP SEMICOLON .)
     RBRACE          reduce using rule 622 (stop_statement -> STOP SEMICOLON .)
@@ -10381,7 +10381,7 @@ state 466
     STOP            reduce using rule 623 (continue_statement -> CONTINUE SEMICOLON .)
     CONTINUE        reduce using rule 623 (continue_statement -> CONTINUE SEMICOLON .)
     FOR             reduce using rule 623 (continue_statement -> CONTINUE SEMICOLON .)
-    UNTIL           reduce using rule 623 (continue_statement -> CONTINUE SEMICOLON .)
+    WHILE           reduce using rule 623 (continue_statement -> CONTINUE SEMICOLON .)
     REPEAT          reduce using rule 623 (continue_statement -> CONTINUE SEMICOLON .)
     INPUT           reduce using rule 623 (continue_statement -> CONTINUE SEMICOLON .)
     RBRACE          reduce using rule 623 (continue_statement -> CONTINUE SEMICOLON .)
@@ -10401,19 +10401,19 @@ state 467
 
 state 468
 
-    (367) until_loop -> UNTIL LPAREN . until_expression RPAREN LBRACE statements RBRACE
-    (368) until_expression -> . until_factor until_factor_tail
-    (369) until_factor -> . until_var_call until_postfix
-    (370) until_factor -> . until_factor1
-    (371) until_factor -> . TILDE INT_LIT
-    (372) until_factor -> . TILDE FLT_LIT
-    (373) until_factor -> . LPAREN until_expression RPAREN
-    (374) until_var_call -> . IDENT until_list_index
-    (400) until_factor1 -> . INT_LIT
-    (401) until_factor1 -> . FLT_LIT
-    (402) until_factor1 -> . DAY
-    (403) until_factor1 -> . NIGHT
-    (404) until_factor1 -> . STR_LIT
+    (367) while_loop -> WHILE LPAREN . while_expression RPAREN LBRACE statements RBRACE
+    (368) while_expression -> . while_factor while_factor_tail
+    (369) while_factor -> . while_var_call while_postfix
+    (370) while_factor -> . while_factor1
+    (371) while_factor -> . TILDE INT_LIT
+    (372) while_factor -> . TILDE FLT_LIT
+    (373) while_factor -> . LPAREN while_expression RPAREN
+    (374) while_var_call -> . IDENT while_list_index
+    (400) while_factor1 -> . INT_LIT
+    (401) while_factor1 -> . FLT_LIT
+    (402) while_factor1 -> . DAY
+    (403) while_factor1 -> . NIGHT
+    (404) while_factor1 -> . STR_LIT
 
     TILDE           shift and go to state 601
     LPAREN          shift and go to state 596
@@ -10424,14 +10424,14 @@ state 468
     NIGHT           shift and go to state 606
     STR_LIT         shift and go to state 607
 
-    until_expression               shift and go to state 597
-    until_factor                   shift and go to state 598
-    until_var_call                 shift and go to state 599
-    until_factor1                  shift and go to state 600
+    while_expression               shift and go to state 597
+    while_factor                   shift and go to state 598
+    while_var_call                 shift and go to state 599
+    while_factor1                  shift and go to state 600
 
 state 469
 
-    (405) repeat_until -> REPEAT LBRACE . statements RBRACE UNTIL LPAREN until_expression RPAREN SEMICOLON
+    (405) repeat_while -> REPEAT LBRACE . statements RBRACE WHILE LPAREN while_expression RPAREN SEMICOLON
     (162) statements -> . empty
     (163) statements -> . local_dec statements_tail
     (620) empty -> .
@@ -10458,7 +10458,7 @@ state 469
     STOP            reduce using rule 620 (empty -> .)
     CONTINUE        reduce using rule 620 (empty -> .)
     FOR             reduce using rule 620 (empty -> .)
-    UNTIL           reduce using rule 620 (empty -> .)
+    WHILE           reduce using rule 620 (empty -> .)
     REPEAT          reduce using rule 620 (empty -> .)
     INPUT           reduce using rule 620 (empty -> .)
     INT             shift and go to state 274
@@ -10491,7 +10491,7 @@ state 470
     STOP            reduce using rule 173 (local_dec -> local_var_statement local_dec_tail SEMICOLON .)
     CONTINUE        reduce using rule 173 (local_dec -> local_var_statement local_dec_tail SEMICOLON .)
     FOR             reduce using rule 173 (local_dec -> local_var_statement local_dec_tail SEMICOLON .)
-    UNTIL           reduce using rule 173 (local_dec -> local_var_statement local_dec_tail SEMICOLON .)
+    WHILE           reduce using rule 173 (local_dec -> local_var_statement local_dec_tail SEMICOLON .)
     REPEAT          reduce using rule 173 (local_dec -> local_var_statement local_dec_tail SEMICOLON .)
     INPUT           reduce using rule 173 (local_dec -> local_var_statement local_dec_tail SEMICOLON .)
     INT             reduce using rule 173 (local_dec -> local_var_statement local_dec_tail SEMICOLON .)
@@ -11722,7 +11722,7 @@ state 524
     STOP            reduce using rule 472 (assignment_statement -> IDENT assign_tail SEMICOLON .)
     CONTINUE        reduce using rule 472 (assignment_statement -> IDENT assign_tail SEMICOLON .)
     FOR             reduce using rule 472 (assignment_statement -> IDENT assign_tail SEMICOLON .)
-    UNTIL           reduce using rule 472 (assignment_statement -> IDENT assign_tail SEMICOLON .)
+    WHILE           reduce using rule 472 (assignment_statement -> IDENT assign_tail SEMICOLON .)
     REPEAT          reduce using rule 472 (assignment_statement -> IDENT assign_tail SEMICOLON .)
     INPUT           reduce using rule 472 (assignment_statement -> IDENT assign_tail SEMICOLON .)
     RBRACE          reduce using rule 472 (assignment_statement -> IDENT assign_tail SEMICOLON .)
@@ -13234,19 +13234,19 @@ state 595
 
 state 596
 
-    (373) until_factor -> LPAREN . until_expression RPAREN
-    (368) until_expression -> . until_factor until_factor_tail
-    (369) until_factor -> . until_var_call until_postfix
-    (370) until_factor -> . until_factor1
-    (371) until_factor -> . TILDE INT_LIT
-    (372) until_factor -> . TILDE FLT_LIT
-    (373) until_factor -> . LPAREN until_expression RPAREN
-    (374) until_var_call -> . IDENT until_list_index
-    (400) until_factor1 -> . INT_LIT
-    (401) until_factor1 -> . FLT_LIT
-    (402) until_factor1 -> . DAY
-    (403) until_factor1 -> . NIGHT
-    (404) until_factor1 -> . STR_LIT
+    (373) while_factor -> LPAREN . while_expression RPAREN
+    (368) while_expression -> . while_factor while_factor_tail
+    (369) while_factor -> . while_var_call while_postfix
+    (370) while_factor -> . while_factor1
+    (371) while_factor -> . TILDE INT_LIT
+    (372) while_factor -> . TILDE FLT_LIT
+    (373) while_factor -> . LPAREN while_expression RPAREN
+    (374) while_var_call -> . IDENT while_list_index
+    (400) while_factor1 -> . INT_LIT
+    (401) while_factor1 -> . FLT_LIT
+    (402) while_factor1 -> . DAY
+    (403) while_factor1 -> . NIGHT
+    (404) while_factor1 -> . STR_LIT
 
     TILDE           shift and go to state 601
     LPAREN          shift and go to state 596
@@ -13257,36 +13257,36 @@ state 596
     NIGHT           shift and go to state 606
     STR_LIT         shift and go to state 607
 
-    until_expression               shift and go to state 773
-    until_factor                   shift and go to state 598
-    until_var_call                 shift and go to state 599
-    until_factor1                  shift and go to state 600
+    while_expression               shift and go to state 773
+    while_factor                   shift and go to state 598
+    while_var_call                 shift and go to state 599
+    while_factor1                  shift and go to state 600
 
 state 597
 
-    (367) until_loop -> UNTIL LPAREN until_expression . RPAREN LBRACE statements RBRACE
+    (367) while_loop -> WHILE LPAREN while_expression . RPAREN LBRACE statements RBRACE
 
     RPAREN          shift and go to state 774
 
 
 state 598
 
-    (368) until_expression -> until_factor . until_factor_tail
-    (385) until_factor_tail -> . PLUS until_factor until_factor_tail
-    (386) until_factor_tail -> . MINUS until_factor until_factor_tail
-    (387) until_factor_tail -> . MULTIPLY until_factor until_factor_tail
-    (388) until_factor_tail -> . DIVISION until_factor until_factor_tail
-    (389) until_factor_tail -> . MODULO until_factor until_factor_tail
-    (390) until_factor_tail -> . EXPONENT until_factor until_factor_tail
-    (391) until_factor_tail -> . GT until_factor until_factor_tail
-    (392) until_factor_tail -> . LT until_factor until_factor_tail
-    (393) until_factor_tail -> . EQ_EQ until_factor until_factor_tail
-    (394) until_factor_tail -> . GT_EQ until_factor until_factor_tail
-    (395) until_factor_tail -> . LT_EQ until_factor until_factor_tail
-    (396) until_factor_tail -> . NOT_EQ until_factor until_factor_tail
-    (397) until_factor_tail -> . AND until_factor until_factor_tail
-    (398) until_factor_tail -> . OR until_factor until_factor_tail
-    (399) until_factor_tail -> . empty
+    (368) while_expression -> while_factor . while_factor_tail
+    (385) while_factor_tail -> . PLUS while_factor while_factor_tail
+    (386) while_factor_tail -> . MINUS while_factor while_factor_tail
+    (387) while_factor_tail -> . MULTIPLY while_factor while_factor_tail
+    (388) while_factor_tail -> . DIVISION while_factor while_factor_tail
+    (389) while_factor_tail -> . MODULO while_factor while_factor_tail
+    (390) while_factor_tail -> . EXPONENT while_factor while_factor_tail
+    (391) while_factor_tail -> . GT while_factor while_factor_tail
+    (392) while_factor_tail -> . LT while_factor while_factor_tail
+    (393) while_factor_tail -> . EQ_EQ while_factor while_factor_tail
+    (394) while_factor_tail -> . GT_EQ while_factor while_factor_tail
+    (395) while_factor_tail -> . LT_EQ while_factor while_factor_tail
+    (396) while_factor_tail -> . NOT_EQ while_factor while_factor_tail
+    (397) while_factor_tail -> . AND while_factor while_factor_tail
+    (398) while_factor_tail -> . OR while_factor while_factor_tail
+    (399) while_factor_tail -> . empty
     (620) empty -> .
 
     PLUS            shift and go to state 776
@@ -13305,17 +13305,17 @@ state 598
     OR              shift and go to state 789
     RPAREN          reduce using rule 620 (empty -> .)
 
-    until_factor_tail              shift and go to state 775
+    while_factor_tail              shift and go to state 775
     empty                          shift and go to state 790
 
 state 599
 
-    (369) until_factor -> until_var_call . until_postfix
-    (377) until_postfix -> . empty
-    (378) until_postfix -> . until_postfix_op
+    (369) while_factor -> while_var_call . while_postfix
+    (377) while_postfix -> . empty
+    (378) while_postfix -> . while_postfix_op
     (620) empty -> .
-    (375) until_postfix_op -> . PLUS_PLUS
-    (376) until_postfix_op -> . MINUS_MINUS
+    (375) while_postfix_op -> . PLUS_PLUS
+    (376) while_postfix_op -> . MINUS_MINUS
 
     PLUS            reduce using rule 620 (empty -> .)
     MINUS           reduce using rule 620 (empty -> .)
@@ -13335,35 +13335,35 @@ state 599
     PLUS_PLUS       shift and go to state 794
     MINUS_MINUS     shift and go to state 795
 
-    until_postfix                  shift and go to state 791
+    while_postfix                  shift and go to state 791
     empty                          shift and go to state 792
-    until_postfix_op               shift and go to state 793
+    while_postfix_op               shift and go to state 793
 
 state 600
 
-    (370) until_factor -> until_factor1 .
+    (370) while_factor -> while_factor1 .
 
-    PLUS            reduce using rule 370 (until_factor -> until_factor1 .)
-    MINUS           reduce using rule 370 (until_factor -> until_factor1 .)
-    MULTIPLY        reduce using rule 370 (until_factor -> until_factor1 .)
-    DIVISION        reduce using rule 370 (until_factor -> until_factor1 .)
-    MODULO          reduce using rule 370 (until_factor -> until_factor1 .)
-    EXPONENT        reduce using rule 370 (until_factor -> until_factor1 .)
-    GT              reduce using rule 370 (until_factor -> until_factor1 .)
-    LT              reduce using rule 370 (until_factor -> until_factor1 .)
-    EQ_EQ           reduce using rule 370 (until_factor -> until_factor1 .)
-    GT_EQ           reduce using rule 370 (until_factor -> until_factor1 .)
-    LT_EQ           reduce using rule 370 (until_factor -> until_factor1 .)
-    NOT_EQ          reduce using rule 370 (until_factor -> until_factor1 .)
-    AND             reduce using rule 370 (until_factor -> until_factor1 .)
-    OR              reduce using rule 370 (until_factor -> until_factor1 .)
-    RPAREN          reduce using rule 370 (until_factor -> until_factor1 .)
+    PLUS            reduce using rule 370 (while_factor -> while_factor1 .)
+    MINUS           reduce using rule 370 (while_factor -> while_factor1 .)
+    MULTIPLY        reduce using rule 370 (while_factor -> while_factor1 .)
+    DIVISION        reduce using rule 370 (while_factor -> while_factor1 .)
+    MODULO          reduce using rule 370 (while_factor -> while_factor1 .)
+    EXPONENT        reduce using rule 370 (while_factor -> while_factor1 .)
+    GT              reduce using rule 370 (while_factor -> while_factor1 .)
+    LT              reduce using rule 370 (while_factor -> while_factor1 .)
+    EQ_EQ           reduce using rule 370 (while_factor -> while_factor1 .)
+    GT_EQ           reduce using rule 370 (while_factor -> while_factor1 .)
+    LT_EQ           reduce using rule 370 (while_factor -> while_factor1 .)
+    NOT_EQ          reduce using rule 370 (while_factor -> while_factor1 .)
+    AND             reduce using rule 370 (while_factor -> while_factor1 .)
+    OR              reduce using rule 370 (while_factor -> while_factor1 .)
+    RPAREN          reduce using rule 370 (while_factor -> while_factor1 .)
 
 
 state 601
 
-    (371) until_factor -> TILDE . INT_LIT
-    (372) until_factor -> TILDE . FLT_LIT
+    (371) while_factor -> TILDE . INT_LIT
+    (372) while_factor -> TILDE . FLT_LIT
 
     INT_LIT         shift and go to state 796
     FLT_LIT         shift and go to state 797
@@ -13371,51 +13371,51 @@ state 601
 
 state 602
 
-    (400) until_factor1 -> INT_LIT .
+    (400) while_factor1 -> INT_LIT .
 
-    PLUS            reduce using rule 400 (until_factor1 -> INT_LIT .)
-    MINUS           reduce using rule 400 (until_factor1 -> INT_LIT .)
-    MULTIPLY        reduce using rule 400 (until_factor1 -> INT_LIT .)
-    DIVISION        reduce using rule 400 (until_factor1 -> INT_LIT .)
-    MODULO          reduce using rule 400 (until_factor1 -> INT_LIT .)
-    EXPONENT        reduce using rule 400 (until_factor1 -> INT_LIT .)
-    GT              reduce using rule 400 (until_factor1 -> INT_LIT .)
-    LT              reduce using rule 400 (until_factor1 -> INT_LIT .)
-    EQ_EQ           reduce using rule 400 (until_factor1 -> INT_LIT .)
-    GT_EQ           reduce using rule 400 (until_factor1 -> INT_LIT .)
-    LT_EQ           reduce using rule 400 (until_factor1 -> INT_LIT .)
-    NOT_EQ          reduce using rule 400 (until_factor1 -> INT_LIT .)
-    AND             reduce using rule 400 (until_factor1 -> INT_LIT .)
-    OR              reduce using rule 400 (until_factor1 -> INT_LIT .)
-    RPAREN          reduce using rule 400 (until_factor1 -> INT_LIT .)
+    PLUS            reduce using rule 400 (while_factor1 -> INT_LIT .)
+    MINUS           reduce using rule 400 (while_factor1 -> INT_LIT .)
+    MULTIPLY        reduce using rule 400 (while_factor1 -> INT_LIT .)
+    DIVISION        reduce using rule 400 (while_factor1 -> INT_LIT .)
+    MODULO          reduce using rule 400 (while_factor1 -> INT_LIT .)
+    EXPONENT        reduce using rule 400 (while_factor1 -> INT_LIT .)
+    GT              reduce using rule 400 (while_factor1 -> INT_LIT .)
+    LT              reduce using rule 400 (while_factor1 -> INT_LIT .)
+    EQ_EQ           reduce using rule 400 (while_factor1 -> INT_LIT .)
+    GT_EQ           reduce using rule 400 (while_factor1 -> INT_LIT .)
+    LT_EQ           reduce using rule 400 (while_factor1 -> INT_LIT .)
+    NOT_EQ          reduce using rule 400 (while_factor1 -> INT_LIT .)
+    AND             reduce using rule 400 (while_factor1 -> INT_LIT .)
+    OR              reduce using rule 400 (while_factor1 -> INT_LIT .)
+    RPAREN          reduce using rule 400 (while_factor1 -> INT_LIT .)
 
 
 state 603
 
-    (401) until_factor1 -> FLT_LIT .
+    (401) while_factor1 -> FLT_LIT .
 
-    PLUS            reduce using rule 401 (until_factor1 -> FLT_LIT .)
-    MINUS           reduce using rule 401 (until_factor1 -> FLT_LIT .)
-    MULTIPLY        reduce using rule 401 (until_factor1 -> FLT_LIT .)
-    DIVISION        reduce using rule 401 (until_factor1 -> FLT_LIT .)
-    MODULO          reduce using rule 401 (until_factor1 -> FLT_LIT .)
-    EXPONENT        reduce using rule 401 (until_factor1 -> FLT_LIT .)
-    GT              reduce using rule 401 (until_factor1 -> FLT_LIT .)
-    LT              reduce using rule 401 (until_factor1 -> FLT_LIT .)
-    EQ_EQ           reduce using rule 401 (until_factor1 -> FLT_LIT .)
-    GT_EQ           reduce using rule 401 (until_factor1 -> FLT_LIT .)
-    LT_EQ           reduce using rule 401 (until_factor1 -> FLT_LIT .)
-    NOT_EQ          reduce using rule 401 (until_factor1 -> FLT_LIT .)
-    AND             reduce using rule 401 (until_factor1 -> FLT_LIT .)
-    OR              reduce using rule 401 (until_factor1 -> FLT_LIT .)
-    RPAREN          reduce using rule 401 (until_factor1 -> FLT_LIT .)
+    PLUS            reduce using rule 401 (while_factor1 -> FLT_LIT .)
+    MINUS           reduce using rule 401 (while_factor1 -> FLT_LIT .)
+    MULTIPLY        reduce using rule 401 (while_factor1 -> FLT_LIT .)
+    DIVISION        reduce using rule 401 (while_factor1 -> FLT_LIT .)
+    MODULO          reduce using rule 401 (while_factor1 -> FLT_LIT .)
+    EXPONENT        reduce using rule 401 (while_factor1 -> FLT_LIT .)
+    GT              reduce using rule 401 (while_factor1 -> FLT_LIT .)
+    LT              reduce using rule 401 (while_factor1 -> FLT_LIT .)
+    EQ_EQ           reduce using rule 401 (while_factor1 -> FLT_LIT .)
+    GT_EQ           reduce using rule 401 (while_factor1 -> FLT_LIT .)
+    LT_EQ           reduce using rule 401 (while_factor1 -> FLT_LIT .)
+    NOT_EQ          reduce using rule 401 (while_factor1 -> FLT_LIT .)
+    AND             reduce using rule 401 (while_factor1 -> FLT_LIT .)
+    OR              reduce using rule 401 (while_factor1 -> FLT_LIT .)
+    RPAREN          reduce using rule 401 (while_factor1 -> FLT_LIT .)
 
 
 state 604
 
-    (374) until_var_call -> IDENT . until_list_index
-    (379) until_list_index -> . LBRACKET until_index RBRACKET until_list_index2
-    (380) until_list_index -> . empty
+    (374) while_var_call -> IDENT . while_list_index
+    (379) while_list_index -> . LBRACKET while_index RBRACKET while_list_index2
+    (380) while_list_index -> . empty
     (620) empty -> .
 
     LBRACKET        shift and go to state 799
@@ -13437,75 +13437,75 @@ state 604
     OR              reduce using rule 620 (empty -> .)
     RPAREN          reduce using rule 620 (empty -> .)
 
-    until_list_index               shift and go to state 798
+    while_list_index               shift and go to state 798
     empty                          shift and go to state 800
 
 state 605
 
-    (402) until_factor1 -> DAY .
+    (402) while_factor1 -> DAY .
 
-    PLUS            reduce using rule 402 (until_factor1 -> DAY .)
-    MINUS           reduce using rule 402 (until_factor1 -> DAY .)
-    MULTIPLY        reduce using rule 402 (until_factor1 -> DAY .)
-    DIVISION        reduce using rule 402 (until_factor1 -> DAY .)
-    MODULO          reduce using rule 402 (until_factor1 -> DAY .)
-    EXPONENT        reduce using rule 402 (until_factor1 -> DAY .)
-    GT              reduce using rule 402 (until_factor1 -> DAY .)
-    LT              reduce using rule 402 (until_factor1 -> DAY .)
-    EQ_EQ           reduce using rule 402 (until_factor1 -> DAY .)
-    GT_EQ           reduce using rule 402 (until_factor1 -> DAY .)
-    LT_EQ           reduce using rule 402 (until_factor1 -> DAY .)
-    NOT_EQ          reduce using rule 402 (until_factor1 -> DAY .)
-    AND             reduce using rule 402 (until_factor1 -> DAY .)
-    OR              reduce using rule 402 (until_factor1 -> DAY .)
-    RPAREN          reduce using rule 402 (until_factor1 -> DAY .)
+    PLUS            reduce using rule 402 (while_factor1 -> DAY .)
+    MINUS           reduce using rule 402 (while_factor1 -> DAY .)
+    MULTIPLY        reduce using rule 402 (while_factor1 -> DAY .)
+    DIVISION        reduce using rule 402 (while_factor1 -> DAY .)
+    MODULO          reduce using rule 402 (while_factor1 -> DAY .)
+    EXPONENT        reduce using rule 402 (while_factor1 -> DAY .)
+    GT              reduce using rule 402 (while_factor1 -> DAY .)
+    LT              reduce using rule 402 (while_factor1 -> DAY .)
+    EQ_EQ           reduce using rule 402 (while_factor1 -> DAY .)
+    GT_EQ           reduce using rule 402 (while_factor1 -> DAY .)
+    LT_EQ           reduce using rule 402 (while_factor1 -> DAY .)
+    NOT_EQ          reduce using rule 402 (while_factor1 -> DAY .)
+    AND             reduce using rule 402 (while_factor1 -> DAY .)
+    OR              reduce using rule 402 (while_factor1 -> DAY .)
+    RPAREN          reduce using rule 402 (while_factor1 -> DAY .)
 
 
 state 606
 
-    (403) until_factor1 -> NIGHT .
+    (403) while_factor1 -> NIGHT .
 
-    PLUS            reduce using rule 403 (until_factor1 -> NIGHT .)
-    MINUS           reduce using rule 403 (until_factor1 -> NIGHT .)
-    MULTIPLY        reduce using rule 403 (until_factor1 -> NIGHT .)
-    DIVISION        reduce using rule 403 (until_factor1 -> NIGHT .)
-    MODULO          reduce using rule 403 (until_factor1 -> NIGHT .)
-    EXPONENT        reduce using rule 403 (until_factor1 -> NIGHT .)
-    GT              reduce using rule 403 (until_factor1 -> NIGHT .)
-    LT              reduce using rule 403 (until_factor1 -> NIGHT .)
-    EQ_EQ           reduce using rule 403 (until_factor1 -> NIGHT .)
-    GT_EQ           reduce using rule 403 (until_factor1 -> NIGHT .)
-    LT_EQ           reduce using rule 403 (until_factor1 -> NIGHT .)
-    NOT_EQ          reduce using rule 403 (until_factor1 -> NIGHT .)
-    AND             reduce using rule 403 (until_factor1 -> NIGHT .)
-    OR              reduce using rule 403 (until_factor1 -> NIGHT .)
-    RPAREN          reduce using rule 403 (until_factor1 -> NIGHT .)
+    PLUS            reduce using rule 403 (while_factor1 -> NIGHT .)
+    MINUS           reduce using rule 403 (while_factor1 -> NIGHT .)
+    MULTIPLY        reduce using rule 403 (while_factor1 -> NIGHT .)
+    DIVISION        reduce using rule 403 (while_factor1 -> NIGHT .)
+    MODULO          reduce using rule 403 (while_factor1 -> NIGHT .)
+    EXPONENT        reduce using rule 403 (while_factor1 -> NIGHT .)
+    GT              reduce using rule 403 (while_factor1 -> NIGHT .)
+    LT              reduce using rule 403 (while_factor1 -> NIGHT .)
+    EQ_EQ           reduce using rule 403 (while_factor1 -> NIGHT .)
+    GT_EQ           reduce using rule 403 (while_factor1 -> NIGHT .)
+    LT_EQ           reduce using rule 403 (while_factor1 -> NIGHT .)
+    NOT_EQ          reduce using rule 403 (while_factor1 -> NIGHT .)
+    AND             reduce using rule 403 (while_factor1 -> NIGHT .)
+    OR              reduce using rule 403 (while_factor1 -> NIGHT .)
+    RPAREN          reduce using rule 403 (while_factor1 -> NIGHT .)
 
 
 state 607
 
-    (404) until_factor1 -> STR_LIT .
+    (404) while_factor1 -> STR_LIT .
 
-    PLUS            reduce using rule 404 (until_factor1 -> STR_LIT .)
-    MINUS           reduce using rule 404 (until_factor1 -> STR_LIT .)
-    MULTIPLY        reduce using rule 404 (until_factor1 -> STR_LIT .)
-    DIVISION        reduce using rule 404 (until_factor1 -> STR_LIT .)
-    MODULO          reduce using rule 404 (until_factor1 -> STR_LIT .)
-    EXPONENT        reduce using rule 404 (until_factor1 -> STR_LIT .)
-    GT              reduce using rule 404 (until_factor1 -> STR_LIT .)
-    LT              reduce using rule 404 (until_factor1 -> STR_LIT .)
-    EQ_EQ           reduce using rule 404 (until_factor1 -> STR_LIT .)
-    GT_EQ           reduce using rule 404 (until_factor1 -> STR_LIT .)
-    LT_EQ           reduce using rule 404 (until_factor1 -> STR_LIT .)
-    NOT_EQ          reduce using rule 404 (until_factor1 -> STR_LIT .)
-    AND             reduce using rule 404 (until_factor1 -> STR_LIT .)
-    OR              reduce using rule 404 (until_factor1 -> STR_LIT .)
-    RPAREN          reduce using rule 404 (until_factor1 -> STR_LIT .)
+    PLUS            reduce using rule 404 (while_factor1 -> STR_LIT .)
+    MINUS           reduce using rule 404 (while_factor1 -> STR_LIT .)
+    MULTIPLY        reduce using rule 404 (while_factor1 -> STR_LIT .)
+    DIVISION        reduce using rule 404 (while_factor1 -> STR_LIT .)
+    MODULO          reduce using rule 404 (while_factor1 -> STR_LIT .)
+    EXPONENT        reduce using rule 404 (while_factor1 -> STR_LIT .)
+    GT              reduce using rule 404 (while_factor1 -> STR_LIT .)
+    LT              reduce using rule 404 (while_factor1 -> STR_LIT .)
+    EQ_EQ           reduce using rule 404 (while_factor1 -> STR_LIT .)
+    GT_EQ           reduce using rule 404 (while_factor1 -> STR_LIT .)
+    LT_EQ           reduce using rule 404 (while_factor1 -> STR_LIT .)
+    NOT_EQ          reduce using rule 404 (while_factor1 -> STR_LIT .)
+    AND             reduce using rule 404 (while_factor1 -> STR_LIT .)
+    OR              reduce using rule 404 (while_factor1 -> STR_LIT .)
+    RPAREN          reduce using rule 404 (while_factor1 -> STR_LIT .)
 
 
 state 608
 
-    (405) repeat_until -> REPEAT LBRACE statements . RBRACE UNTIL LPAREN until_expression RPAREN SEMICOLON
+    (405) repeat_while -> REPEAT LBRACE statements . RBRACE WHILE LPAREN while_expression RPAREN SEMICOLON
 
     RBRACE          shift and go to state 801
 
@@ -15760,7 +15760,7 @@ state 718
     STOP            reduce using rule 471 (assignment_statement -> var_call EQ value SEMICOLON .)
     CONTINUE        reduce using rule 471 (assignment_statement -> var_call EQ value SEMICOLON .)
     FOR             reduce using rule 471 (assignment_statement -> var_call EQ value SEMICOLON .)
-    UNTIL           reduce using rule 471 (assignment_statement -> var_call EQ value SEMICOLON .)
+    WHILE           reduce using rule 471 (assignment_statement -> var_call EQ value SEMICOLON .)
     REPEAT          reduce using rule 471 (assignment_statement -> var_call EQ value SEMICOLON .)
     INPUT           reduce using rule 471 (assignment_statement -> var_call EQ value SEMICOLON .)
     RBRACE          reduce using rule 471 (assignment_statement -> var_call EQ value SEMICOLON .)
@@ -15786,7 +15786,7 @@ state 719
     STOP            reduce using rule 424 (output_statement -> DISPLAY output_value next_val SEMICOLON .)
     CONTINUE        reduce using rule 424 (output_statement -> DISPLAY output_value next_val SEMICOLON .)
     FOR             reduce using rule 424 (output_statement -> DISPLAY output_value next_val SEMICOLON .)
-    UNTIL           reduce using rule 424 (output_statement -> DISPLAY output_value next_val SEMICOLON .)
+    WHILE           reduce using rule 424 (output_statement -> DISPLAY output_value next_val SEMICOLON .)
     REPEAT          reduce using rule 424 (output_statement -> DISPLAY output_value next_val SEMICOLON .)
     INPUT           reduce using rule 424 (output_statement -> DISPLAY output_value next_val SEMICOLON .)
     RBRACE          reduce using rule 424 (output_statement -> DISPLAY output_value next_val SEMICOLON .)
@@ -17121,39 +17121,39 @@ state 772
 
 state 773
 
-    (373) until_factor -> LPAREN until_expression . RPAREN
+    (373) while_factor -> LPAREN while_expression . RPAREN
 
     RPAREN          shift and go to state 944
 
 
 state 774
 
-    (367) until_loop -> UNTIL LPAREN until_expression RPAREN . LBRACE statements RBRACE
+    (367) while_loop -> WHILE LPAREN while_expression RPAREN . LBRACE statements RBRACE
 
     LBRACE          shift and go to state 945
 
 
 state 775
 
-    (368) until_expression -> until_factor until_factor_tail .
+    (368) while_expression -> while_factor while_factor_tail .
 
-    RPAREN          reduce using rule 368 (until_expression -> until_factor until_factor_tail .)
+    RPAREN          reduce using rule 368 (while_expression -> while_factor while_factor_tail .)
 
 
 state 776
 
-    (385) until_factor_tail -> PLUS . until_factor until_factor_tail
-    (369) until_factor -> . until_var_call until_postfix
-    (370) until_factor -> . until_factor1
-    (371) until_factor -> . TILDE INT_LIT
-    (372) until_factor -> . TILDE FLT_LIT
-    (373) until_factor -> . LPAREN until_expression RPAREN
-    (374) until_var_call -> . IDENT until_list_index
-    (400) until_factor1 -> . INT_LIT
-    (401) until_factor1 -> . FLT_LIT
-    (402) until_factor1 -> . DAY
-    (403) until_factor1 -> . NIGHT
-    (404) until_factor1 -> . STR_LIT
+    (385) while_factor_tail -> PLUS . while_factor while_factor_tail
+    (369) while_factor -> . while_var_call while_postfix
+    (370) while_factor -> . while_factor1
+    (371) while_factor -> . TILDE INT_LIT
+    (372) while_factor -> . TILDE FLT_LIT
+    (373) while_factor -> . LPAREN while_expression RPAREN
+    (374) while_var_call -> . IDENT while_list_index
+    (400) while_factor1 -> . INT_LIT
+    (401) while_factor1 -> . FLT_LIT
+    (402) while_factor1 -> . DAY
+    (403) while_factor1 -> . NIGHT
+    (404) while_factor1 -> . STR_LIT
 
     TILDE           shift and go to state 601
     LPAREN          shift and go to state 596
@@ -17164,24 +17164,24 @@ state 776
     NIGHT           shift and go to state 606
     STR_LIT         shift and go to state 607
 
-    until_factor                   shift and go to state 946
-    until_var_call                 shift and go to state 599
-    until_factor1                  shift and go to state 600
+    while_factor                   shift and go to state 946
+    while_var_call                 shift and go to state 599
+    while_factor1                  shift and go to state 600
 
 state 777
 
-    (386) until_factor_tail -> MINUS . until_factor until_factor_tail
-    (369) until_factor -> . until_var_call until_postfix
-    (370) until_factor -> . until_factor1
-    (371) until_factor -> . TILDE INT_LIT
-    (372) until_factor -> . TILDE FLT_LIT
-    (373) until_factor -> . LPAREN until_expression RPAREN
-    (374) until_var_call -> . IDENT until_list_index
-    (400) until_factor1 -> . INT_LIT
-    (401) until_factor1 -> . FLT_LIT
-    (402) until_factor1 -> . DAY
-    (403) until_factor1 -> . NIGHT
-    (404) until_factor1 -> . STR_LIT
+    (386) while_factor_tail -> MINUS . while_factor while_factor_tail
+    (369) while_factor -> . while_var_call while_postfix
+    (370) while_factor -> . while_factor1
+    (371) while_factor -> . TILDE INT_LIT
+    (372) while_factor -> . TILDE FLT_LIT
+    (373) while_factor -> . LPAREN while_expression RPAREN
+    (374) while_var_call -> . IDENT while_list_index
+    (400) while_factor1 -> . INT_LIT
+    (401) while_factor1 -> . FLT_LIT
+    (402) while_factor1 -> . DAY
+    (403) while_factor1 -> . NIGHT
+    (404) while_factor1 -> . STR_LIT
 
     TILDE           shift and go to state 601
     LPAREN          shift and go to state 596
@@ -17192,24 +17192,24 @@ state 777
     NIGHT           shift and go to state 606
     STR_LIT         shift and go to state 607
 
-    until_factor                   shift and go to state 947
-    until_var_call                 shift and go to state 599
-    until_factor1                  shift and go to state 600
+    while_factor                   shift and go to state 947
+    while_var_call                 shift and go to state 599
+    while_factor1                  shift and go to state 600
 
 state 778
 
-    (387) until_factor_tail -> MULTIPLY . until_factor until_factor_tail
-    (369) until_factor -> . until_var_call until_postfix
-    (370) until_factor -> . until_factor1
-    (371) until_factor -> . TILDE INT_LIT
-    (372) until_factor -> . TILDE FLT_LIT
-    (373) until_factor -> . LPAREN until_expression RPAREN
-    (374) until_var_call -> . IDENT until_list_index
-    (400) until_factor1 -> . INT_LIT
-    (401) until_factor1 -> . FLT_LIT
-    (402) until_factor1 -> . DAY
-    (403) until_factor1 -> . NIGHT
-    (404) until_factor1 -> . STR_LIT
+    (387) while_factor_tail -> MULTIPLY . while_factor while_factor_tail
+    (369) while_factor -> . while_var_call while_postfix
+    (370) while_factor -> . while_factor1
+    (371) while_factor -> . TILDE INT_LIT
+    (372) while_factor -> . TILDE FLT_LIT
+    (373) while_factor -> . LPAREN while_expression RPAREN
+    (374) while_var_call -> . IDENT while_list_index
+    (400) while_factor1 -> . INT_LIT
+    (401) while_factor1 -> . FLT_LIT
+    (402) while_factor1 -> . DAY
+    (403) while_factor1 -> . NIGHT
+    (404) while_factor1 -> . STR_LIT
 
     TILDE           shift and go to state 601
     LPAREN          shift and go to state 596
@@ -17220,24 +17220,24 @@ state 778
     NIGHT           shift and go to state 606
     STR_LIT         shift and go to state 607
 
-    until_factor                   shift and go to state 948
-    until_var_call                 shift and go to state 599
-    until_factor1                  shift and go to state 600
+    while_factor                   shift and go to state 948
+    while_var_call                 shift and go to state 599
+    while_factor1                  shift and go to state 600
 
 state 779
 
-    (388) until_factor_tail -> DIVISION . until_factor until_factor_tail
-    (369) until_factor -> . until_var_call until_postfix
-    (370) until_factor -> . until_factor1
-    (371) until_factor -> . TILDE INT_LIT
-    (372) until_factor -> . TILDE FLT_LIT
-    (373) until_factor -> . LPAREN until_expression RPAREN
-    (374) until_var_call -> . IDENT until_list_index
-    (400) until_factor1 -> . INT_LIT
-    (401) until_factor1 -> . FLT_LIT
-    (402) until_factor1 -> . DAY
-    (403) until_factor1 -> . NIGHT
-    (404) until_factor1 -> . STR_LIT
+    (388) while_factor_tail -> DIVISION . while_factor while_factor_tail
+    (369) while_factor -> . while_var_call while_postfix
+    (370) while_factor -> . while_factor1
+    (371) while_factor -> . TILDE INT_LIT
+    (372) while_factor -> . TILDE FLT_LIT
+    (373) while_factor -> . LPAREN while_expression RPAREN
+    (374) while_var_call -> . IDENT while_list_index
+    (400) while_factor1 -> . INT_LIT
+    (401) while_factor1 -> . FLT_LIT
+    (402) while_factor1 -> . DAY
+    (403) while_factor1 -> . NIGHT
+    (404) while_factor1 -> . STR_LIT
 
     TILDE           shift and go to state 601
     LPAREN          shift and go to state 596
@@ -17248,24 +17248,24 @@ state 779
     NIGHT           shift and go to state 606
     STR_LIT         shift and go to state 607
 
-    until_factor                   shift and go to state 949
-    until_var_call                 shift and go to state 599
-    until_factor1                  shift and go to state 600
+    while_factor                   shift and go to state 949
+    while_var_call                 shift and go to state 599
+    while_factor1                  shift and go to state 600
 
 state 780
 
-    (389) until_factor_tail -> MODULO . until_factor until_factor_tail
-    (369) until_factor -> . until_var_call until_postfix
-    (370) until_factor -> . until_factor1
-    (371) until_factor -> . TILDE INT_LIT
-    (372) until_factor -> . TILDE FLT_LIT
-    (373) until_factor -> . LPAREN until_expression RPAREN
-    (374) until_var_call -> . IDENT until_list_index
-    (400) until_factor1 -> . INT_LIT
-    (401) until_factor1 -> . FLT_LIT
-    (402) until_factor1 -> . DAY
-    (403) until_factor1 -> . NIGHT
-    (404) until_factor1 -> . STR_LIT
+    (389) while_factor_tail -> MODULO . while_factor while_factor_tail
+    (369) while_factor -> . while_var_call while_postfix
+    (370) while_factor -> . while_factor1
+    (371) while_factor -> . TILDE INT_LIT
+    (372) while_factor -> . TILDE FLT_LIT
+    (373) while_factor -> . LPAREN while_expression RPAREN
+    (374) while_var_call -> . IDENT while_list_index
+    (400) while_factor1 -> . INT_LIT
+    (401) while_factor1 -> . FLT_LIT
+    (402) while_factor1 -> . DAY
+    (403) while_factor1 -> . NIGHT
+    (404) while_factor1 -> . STR_LIT
 
     TILDE           shift and go to state 601
     LPAREN          shift and go to state 596
@@ -17276,24 +17276,24 @@ state 780
     NIGHT           shift and go to state 606
     STR_LIT         shift and go to state 607
 
-    until_factor                   shift and go to state 950
-    until_var_call                 shift and go to state 599
-    until_factor1                  shift and go to state 600
+    while_factor                   shift and go to state 950
+    while_var_call                 shift and go to state 599
+    while_factor1                  shift and go to state 600
 
 state 781
 
-    (390) until_factor_tail -> EXPONENT . until_factor until_factor_tail
-    (369) until_factor -> . until_var_call until_postfix
-    (370) until_factor -> . until_factor1
-    (371) until_factor -> . TILDE INT_LIT
-    (372) until_factor -> . TILDE FLT_LIT
-    (373) until_factor -> . LPAREN until_expression RPAREN
-    (374) until_var_call -> . IDENT until_list_index
-    (400) until_factor1 -> . INT_LIT
-    (401) until_factor1 -> . FLT_LIT
-    (402) until_factor1 -> . DAY
-    (403) until_factor1 -> . NIGHT
-    (404) until_factor1 -> . STR_LIT
+    (390) while_factor_tail -> EXPONENT . while_factor while_factor_tail
+    (369) while_factor -> . while_var_call while_postfix
+    (370) while_factor -> . while_factor1
+    (371) while_factor -> . TILDE INT_LIT
+    (372) while_factor -> . TILDE FLT_LIT
+    (373) while_factor -> . LPAREN while_expression RPAREN
+    (374) while_var_call -> . IDENT while_list_index
+    (400) while_factor1 -> . INT_LIT
+    (401) while_factor1 -> . FLT_LIT
+    (402) while_factor1 -> . DAY
+    (403) while_factor1 -> . NIGHT
+    (404) while_factor1 -> . STR_LIT
 
     TILDE           shift and go to state 601
     LPAREN          shift and go to state 596
@@ -17304,24 +17304,24 @@ state 781
     NIGHT           shift and go to state 606
     STR_LIT         shift and go to state 607
 
-    until_factor                   shift and go to state 951
-    until_var_call                 shift and go to state 599
-    until_factor1                  shift and go to state 600
+    while_factor                   shift and go to state 951
+    while_var_call                 shift and go to state 599
+    while_factor1                  shift and go to state 600
 
 state 782
 
-    (391) until_factor_tail -> GT . until_factor until_factor_tail
-    (369) until_factor -> . until_var_call until_postfix
-    (370) until_factor -> . until_factor1
-    (371) until_factor -> . TILDE INT_LIT
-    (372) until_factor -> . TILDE FLT_LIT
-    (373) until_factor -> . LPAREN until_expression RPAREN
-    (374) until_var_call -> . IDENT until_list_index
-    (400) until_factor1 -> . INT_LIT
-    (401) until_factor1 -> . FLT_LIT
-    (402) until_factor1 -> . DAY
-    (403) until_factor1 -> . NIGHT
-    (404) until_factor1 -> . STR_LIT
+    (391) while_factor_tail -> GT . while_factor while_factor_tail
+    (369) while_factor -> . while_var_call while_postfix
+    (370) while_factor -> . while_factor1
+    (371) while_factor -> . TILDE INT_LIT
+    (372) while_factor -> . TILDE FLT_LIT
+    (373) while_factor -> . LPAREN while_expression RPAREN
+    (374) while_var_call -> . IDENT while_list_index
+    (400) while_factor1 -> . INT_LIT
+    (401) while_factor1 -> . FLT_LIT
+    (402) while_factor1 -> . DAY
+    (403) while_factor1 -> . NIGHT
+    (404) while_factor1 -> . STR_LIT
 
     TILDE           shift and go to state 601
     LPAREN          shift and go to state 596
@@ -17332,24 +17332,24 @@ state 782
     NIGHT           shift and go to state 606
     STR_LIT         shift and go to state 607
 
-    until_factor                   shift and go to state 952
-    until_var_call                 shift and go to state 599
-    until_factor1                  shift and go to state 600
+    while_factor                   shift and go to state 952
+    while_var_call                 shift and go to state 599
+    while_factor1                  shift and go to state 600
 
 state 783
 
-    (392) until_factor_tail -> LT . until_factor until_factor_tail
-    (369) until_factor -> . until_var_call until_postfix
-    (370) until_factor -> . until_factor1
-    (371) until_factor -> . TILDE INT_LIT
-    (372) until_factor -> . TILDE FLT_LIT
-    (373) until_factor -> . LPAREN until_expression RPAREN
-    (374) until_var_call -> . IDENT until_list_index
-    (400) until_factor1 -> . INT_LIT
-    (401) until_factor1 -> . FLT_LIT
-    (402) until_factor1 -> . DAY
-    (403) until_factor1 -> . NIGHT
-    (404) until_factor1 -> . STR_LIT
+    (392) while_factor_tail -> LT . while_factor while_factor_tail
+    (369) while_factor -> . while_var_call while_postfix
+    (370) while_factor -> . while_factor1
+    (371) while_factor -> . TILDE INT_LIT
+    (372) while_factor -> . TILDE FLT_LIT
+    (373) while_factor -> . LPAREN while_expression RPAREN
+    (374) while_var_call -> . IDENT while_list_index
+    (400) while_factor1 -> . INT_LIT
+    (401) while_factor1 -> . FLT_LIT
+    (402) while_factor1 -> . DAY
+    (403) while_factor1 -> . NIGHT
+    (404) while_factor1 -> . STR_LIT
 
     TILDE           shift and go to state 601
     LPAREN          shift and go to state 596
@@ -17360,24 +17360,24 @@ state 783
     NIGHT           shift and go to state 606
     STR_LIT         shift and go to state 607
 
-    until_factor                   shift and go to state 953
-    until_var_call                 shift and go to state 599
-    until_factor1                  shift and go to state 600
+    while_factor                   shift and go to state 953
+    while_var_call                 shift and go to state 599
+    while_factor1                  shift and go to state 600
 
 state 784
 
-    (393) until_factor_tail -> EQ_EQ . until_factor until_factor_tail
-    (369) until_factor -> . until_var_call until_postfix
-    (370) until_factor -> . until_factor1
-    (371) until_factor -> . TILDE INT_LIT
-    (372) until_factor -> . TILDE FLT_LIT
-    (373) until_factor -> . LPAREN until_expression RPAREN
-    (374) until_var_call -> . IDENT until_list_index
-    (400) until_factor1 -> . INT_LIT
-    (401) until_factor1 -> . FLT_LIT
-    (402) until_factor1 -> . DAY
-    (403) until_factor1 -> . NIGHT
-    (404) until_factor1 -> . STR_LIT
+    (393) while_factor_tail -> EQ_EQ . while_factor while_factor_tail
+    (369) while_factor -> . while_var_call while_postfix
+    (370) while_factor -> . while_factor1
+    (371) while_factor -> . TILDE INT_LIT
+    (372) while_factor -> . TILDE FLT_LIT
+    (373) while_factor -> . LPAREN while_expression RPAREN
+    (374) while_var_call -> . IDENT while_list_index
+    (400) while_factor1 -> . INT_LIT
+    (401) while_factor1 -> . FLT_LIT
+    (402) while_factor1 -> . DAY
+    (403) while_factor1 -> . NIGHT
+    (404) while_factor1 -> . STR_LIT
 
     TILDE           shift and go to state 601
     LPAREN          shift and go to state 596
@@ -17388,24 +17388,24 @@ state 784
     NIGHT           shift and go to state 606
     STR_LIT         shift and go to state 607
 
-    until_factor                   shift and go to state 954
-    until_var_call                 shift and go to state 599
-    until_factor1                  shift and go to state 600
+    while_factor                   shift and go to state 954
+    while_var_call                 shift and go to state 599
+    while_factor1                  shift and go to state 600
 
 state 785
 
-    (394) until_factor_tail -> GT_EQ . until_factor until_factor_tail
-    (369) until_factor -> . until_var_call until_postfix
-    (370) until_factor -> . until_factor1
-    (371) until_factor -> . TILDE INT_LIT
-    (372) until_factor -> . TILDE FLT_LIT
-    (373) until_factor -> . LPAREN until_expression RPAREN
-    (374) until_var_call -> . IDENT until_list_index
-    (400) until_factor1 -> . INT_LIT
-    (401) until_factor1 -> . FLT_LIT
-    (402) until_factor1 -> . DAY
-    (403) until_factor1 -> . NIGHT
-    (404) until_factor1 -> . STR_LIT
+    (394) while_factor_tail -> GT_EQ . while_factor while_factor_tail
+    (369) while_factor -> . while_var_call while_postfix
+    (370) while_factor -> . while_factor1
+    (371) while_factor -> . TILDE INT_LIT
+    (372) while_factor -> . TILDE FLT_LIT
+    (373) while_factor -> . LPAREN while_expression RPAREN
+    (374) while_var_call -> . IDENT while_list_index
+    (400) while_factor1 -> . INT_LIT
+    (401) while_factor1 -> . FLT_LIT
+    (402) while_factor1 -> . DAY
+    (403) while_factor1 -> . NIGHT
+    (404) while_factor1 -> . STR_LIT
 
     TILDE           shift and go to state 601
     LPAREN          shift and go to state 596
@@ -17416,24 +17416,24 @@ state 785
     NIGHT           shift and go to state 606
     STR_LIT         shift and go to state 607
 
-    until_factor                   shift and go to state 955
-    until_var_call                 shift and go to state 599
-    until_factor1                  shift and go to state 600
+    while_factor                   shift and go to state 955
+    while_var_call                 shift and go to state 599
+    while_factor1                  shift and go to state 600
 
 state 786
 
-    (395) until_factor_tail -> LT_EQ . until_factor until_factor_tail
-    (369) until_factor -> . until_var_call until_postfix
-    (370) until_factor -> . until_factor1
-    (371) until_factor -> . TILDE INT_LIT
-    (372) until_factor -> . TILDE FLT_LIT
-    (373) until_factor -> . LPAREN until_expression RPAREN
-    (374) until_var_call -> . IDENT until_list_index
-    (400) until_factor1 -> . INT_LIT
-    (401) until_factor1 -> . FLT_LIT
-    (402) until_factor1 -> . DAY
-    (403) until_factor1 -> . NIGHT
-    (404) until_factor1 -> . STR_LIT
+    (395) while_factor_tail -> LT_EQ . while_factor while_factor_tail
+    (369) while_factor -> . while_var_call while_postfix
+    (370) while_factor -> . while_factor1
+    (371) while_factor -> . TILDE INT_LIT
+    (372) while_factor -> . TILDE FLT_LIT
+    (373) while_factor -> . LPAREN while_expression RPAREN
+    (374) while_var_call -> . IDENT while_list_index
+    (400) while_factor1 -> . INT_LIT
+    (401) while_factor1 -> . FLT_LIT
+    (402) while_factor1 -> . DAY
+    (403) while_factor1 -> . NIGHT
+    (404) while_factor1 -> . STR_LIT
 
     TILDE           shift and go to state 601
     LPAREN          shift and go to state 596
@@ -17444,24 +17444,24 @@ state 786
     NIGHT           shift and go to state 606
     STR_LIT         shift and go to state 607
 
-    until_factor                   shift and go to state 956
-    until_var_call                 shift and go to state 599
-    until_factor1                  shift and go to state 600
+    while_factor                   shift and go to state 956
+    while_var_call                 shift and go to state 599
+    while_factor1                  shift and go to state 600
 
 state 787
 
-    (396) until_factor_tail -> NOT_EQ . until_factor until_factor_tail
-    (369) until_factor -> . until_var_call until_postfix
-    (370) until_factor -> . until_factor1
-    (371) until_factor -> . TILDE INT_LIT
-    (372) until_factor -> . TILDE FLT_LIT
-    (373) until_factor -> . LPAREN until_expression RPAREN
-    (374) until_var_call -> . IDENT until_list_index
-    (400) until_factor1 -> . INT_LIT
-    (401) until_factor1 -> . FLT_LIT
-    (402) until_factor1 -> . DAY
-    (403) until_factor1 -> . NIGHT
-    (404) until_factor1 -> . STR_LIT
+    (396) while_factor_tail -> NOT_EQ . while_factor while_factor_tail
+    (369) while_factor -> . while_var_call while_postfix
+    (370) while_factor -> . while_factor1
+    (371) while_factor -> . TILDE INT_LIT
+    (372) while_factor -> . TILDE FLT_LIT
+    (373) while_factor -> . LPAREN while_expression RPAREN
+    (374) while_var_call -> . IDENT while_list_index
+    (400) while_factor1 -> . INT_LIT
+    (401) while_factor1 -> . FLT_LIT
+    (402) while_factor1 -> . DAY
+    (403) while_factor1 -> . NIGHT
+    (404) while_factor1 -> . STR_LIT
 
     TILDE           shift and go to state 601
     LPAREN          shift and go to state 596
@@ -17472,24 +17472,24 @@ state 787
     NIGHT           shift and go to state 606
     STR_LIT         shift and go to state 607
 
-    until_factor                   shift and go to state 957
-    until_var_call                 shift and go to state 599
-    until_factor1                  shift and go to state 600
+    while_factor                   shift and go to state 957
+    while_var_call                 shift and go to state 599
+    while_factor1                  shift and go to state 600
 
 state 788
 
-    (397) until_factor_tail -> AND . until_factor until_factor_tail
-    (369) until_factor -> . until_var_call until_postfix
-    (370) until_factor -> . until_factor1
-    (371) until_factor -> . TILDE INT_LIT
-    (372) until_factor -> . TILDE FLT_LIT
-    (373) until_factor -> . LPAREN until_expression RPAREN
-    (374) until_var_call -> . IDENT until_list_index
-    (400) until_factor1 -> . INT_LIT
-    (401) until_factor1 -> . FLT_LIT
-    (402) until_factor1 -> . DAY
-    (403) until_factor1 -> . NIGHT
-    (404) until_factor1 -> . STR_LIT
+    (397) while_factor_tail -> AND . while_factor while_factor_tail
+    (369) while_factor -> . while_var_call while_postfix
+    (370) while_factor -> . while_factor1
+    (371) while_factor -> . TILDE INT_LIT
+    (372) while_factor -> . TILDE FLT_LIT
+    (373) while_factor -> . LPAREN while_expression RPAREN
+    (374) while_var_call -> . IDENT while_list_index
+    (400) while_factor1 -> . INT_LIT
+    (401) while_factor1 -> . FLT_LIT
+    (402) while_factor1 -> . DAY
+    (403) while_factor1 -> . NIGHT
+    (404) while_factor1 -> . STR_LIT
 
     TILDE           shift and go to state 601
     LPAREN          shift and go to state 596
@@ -17500,24 +17500,24 @@ state 788
     NIGHT           shift and go to state 606
     STR_LIT         shift and go to state 607
 
-    until_factor                   shift and go to state 958
-    until_var_call                 shift and go to state 599
-    until_factor1                  shift and go to state 600
+    while_factor                   shift and go to state 958
+    while_var_call                 shift and go to state 599
+    while_factor1                  shift and go to state 600
 
 state 789
 
-    (398) until_factor_tail -> OR . until_factor until_factor_tail
-    (369) until_factor -> . until_var_call until_postfix
-    (370) until_factor -> . until_factor1
-    (371) until_factor -> . TILDE INT_LIT
-    (372) until_factor -> . TILDE FLT_LIT
-    (373) until_factor -> . LPAREN until_expression RPAREN
-    (374) until_var_call -> . IDENT until_list_index
-    (400) until_factor1 -> . INT_LIT
-    (401) until_factor1 -> . FLT_LIT
-    (402) until_factor1 -> . DAY
-    (403) until_factor1 -> . NIGHT
-    (404) until_factor1 -> . STR_LIT
+    (398) while_factor_tail -> OR . while_factor while_factor_tail
+    (369) while_factor -> . while_var_call while_postfix
+    (370) while_factor -> . while_factor1
+    (371) while_factor -> . TILDE INT_LIT
+    (372) while_factor -> . TILDE FLT_LIT
+    (373) while_factor -> . LPAREN while_expression RPAREN
+    (374) while_var_call -> . IDENT while_list_index
+    (400) while_factor1 -> . INT_LIT
+    (401) while_factor1 -> . FLT_LIT
+    (402) while_factor1 -> . DAY
+    (403) while_factor1 -> . NIGHT
+    (404) while_factor1 -> . STR_LIT
 
     TILDE           shift and go to state 601
     LPAREN          shift and go to state 596
@@ -17528,226 +17528,226 @@ state 789
     NIGHT           shift and go to state 606
     STR_LIT         shift and go to state 607
 
-    until_factor                   shift and go to state 959
-    until_var_call                 shift and go to state 599
-    until_factor1                  shift and go to state 600
+    while_factor                   shift and go to state 959
+    while_var_call                 shift and go to state 599
+    while_factor1                  shift and go to state 600
 
 state 790
 
-    (399) until_factor_tail -> empty .
+    (399) while_factor_tail -> empty .
 
-    RPAREN          reduce using rule 399 (until_factor_tail -> empty .)
+    RPAREN          reduce using rule 399 (while_factor_tail -> empty .)
 
 
 state 791
 
-    (369) until_factor -> until_var_call until_postfix .
+    (369) while_factor -> while_var_call while_postfix .
 
-    PLUS            reduce using rule 369 (until_factor -> until_var_call until_postfix .)
-    MINUS           reduce using rule 369 (until_factor -> until_var_call until_postfix .)
-    MULTIPLY        reduce using rule 369 (until_factor -> until_var_call until_postfix .)
-    DIVISION        reduce using rule 369 (until_factor -> until_var_call until_postfix .)
-    MODULO          reduce using rule 369 (until_factor -> until_var_call until_postfix .)
-    EXPONENT        reduce using rule 369 (until_factor -> until_var_call until_postfix .)
-    GT              reduce using rule 369 (until_factor -> until_var_call until_postfix .)
-    LT              reduce using rule 369 (until_factor -> until_var_call until_postfix .)
-    EQ_EQ           reduce using rule 369 (until_factor -> until_var_call until_postfix .)
-    GT_EQ           reduce using rule 369 (until_factor -> until_var_call until_postfix .)
-    LT_EQ           reduce using rule 369 (until_factor -> until_var_call until_postfix .)
-    NOT_EQ          reduce using rule 369 (until_factor -> until_var_call until_postfix .)
-    AND             reduce using rule 369 (until_factor -> until_var_call until_postfix .)
-    OR              reduce using rule 369 (until_factor -> until_var_call until_postfix .)
-    RPAREN          reduce using rule 369 (until_factor -> until_var_call until_postfix .)
+    PLUS            reduce using rule 369 (while_factor -> while_var_call while_postfix .)
+    MINUS           reduce using rule 369 (while_factor -> while_var_call while_postfix .)
+    MULTIPLY        reduce using rule 369 (while_factor -> while_var_call while_postfix .)
+    DIVISION        reduce using rule 369 (while_factor -> while_var_call while_postfix .)
+    MODULO          reduce using rule 369 (while_factor -> while_var_call while_postfix .)
+    EXPONENT        reduce using rule 369 (while_factor -> while_var_call while_postfix .)
+    GT              reduce using rule 369 (while_factor -> while_var_call while_postfix .)
+    LT              reduce using rule 369 (while_factor -> while_var_call while_postfix .)
+    EQ_EQ           reduce using rule 369 (while_factor -> while_var_call while_postfix .)
+    GT_EQ           reduce using rule 369 (while_factor -> while_var_call while_postfix .)
+    LT_EQ           reduce using rule 369 (while_factor -> while_var_call while_postfix .)
+    NOT_EQ          reduce using rule 369 (while_factor -> while_var_call while_postfix .)
+    AND             reduce using rule 369 (while_factor -> while_var_call while_postfix .)
+    OR              reduce using rule 369 (while_factor -> while_var_call while_postfix .)
+    RPAREN          reduce using rule 369 (while_factor -> while_var_call while_postfix .)
 
 
 state 792
 
-    (377) until_postfix -> empty .
+    (377) while_postfix -> empty .
 
-    PLUS            reduce using rule 377 (until_postfix -> empty .)
-    MINUS           reduce using rule 377 (until_postfix -> empty .)
-    MULTIPLY        reduce using rule 377 (until_postfix -> empty .)
-    DIVISION        reduce using rule 377 (until_postfix -> empty .)
-    MODULO          reduce using rule 377 (until_postfix -> empty .)
-    EXPONENT        reduce using rule 377 (until_postfix -> empty .)
-    GT              reduce using rule 377 (until_postfix -> empty .)
-    LT              reduce using rule 377 (until_postfix -> empty .)
-    EQ_EQ           reduce using rule 377 (until_postfix -> empty .)
-    GT_EQ           reduce using rule 377 (until_postfix -> empty .)
-    LT_EQ           reduce using rule 377 (until_postfix -> empty .)
-    NOT_EQ          reduce using rule 377 (until_postfix -> empty .)
-    AND             reduce using rule 377 (until_postfix -> empty .)
-    OR              reduce using rule 377 (until_postfix -> empty .)
-    RPAREN          reduce using rule 377 (until_postfix -> empty .)
+    PLUS            reduce using rule 377 (while_postfix -> empty .)
+    MINUS           reduce using rule 377 (while_postfix -> empty .)
+    MULTIPLY        reduce using rule 377 (while_postfix -> empty .)
+    DIVISION        reduce using rule 377 (while_postfix -> empty .)
+    MODULO          reduce using rule 377 (while_postfix -> empty .)
+    EXPONENT        reduce using rule 377 (while_postfix -> empty .)
+    GT              reduce using rule 377 (while_postfix -> empty .)
+    LT              reduce using rule 377 (while_postfix -> empty .)
+    EQ_EQ           reduce using rule 377 (while_postfix -> empty .)
+    GT_EQ           reduce using rule 377 (while_postfix -> empty .)
+    LT_EQ           reduce using rule 377 (while_postfix -> empty .)
+    NOT_EQ          reduce using rule 377 (while_postfix -> empty .)
+    AND             reduce using rule 377 (while_postfix -> empty .)
+    OR              reduce using rule 377 (while_postfix -> empty .)
+    RPAREN          reduce using rule 377 (while_postfix -> empty .)
 
 
 state 793
 
-    (378) until_postfix -> until_postfix_op .
+    (378) while_postfix -> while_postfix_op .
 
-    PLUS            reduce using rule 378 (until_postfix -> until_postfix_op .)
-    MINUS           reduce using rule 378 (until_postfix -> until_postfix_op .)
-    MULTIPLY        reduce using rule 378 (until_postfix -> until_postfix_op .)
-    DIVISION        reduce using rule 378 (until_postfix -> until_postfix_op .)
-    MODULO          reduce using rule 378 (until_postfix -> until_postfix_op .)
-    EXPONENT        reduce using rule 378 (until_postfix -> until_postfix_op .)
-    GT              reduce using rule 378 (until_postfix -> until_postfix_op .)
-    LT              reduce using rule 378 (until_postfix -> until_postfix_op .)
-    EQ_EQ           reduce using rule 378 (until_postfix -> until_postfix_op .)
-    GT_EQ           reduce using rule 378 (until_postfix -> until_postfix_op .)
-    LT_EQ           reduce using rule 378 (until_postfix -> until_postfix_op .)
-    NOT_EQ          reduce using rule 378 (until_postfix -> until_postfix_op .)
-    AND             reduce using rule 378 (until_postfix -> until_postfix_op .)
-    OR              reduce using rule 378 (until_postfix -> until_postfix_op .)
-    RPAREN          reduce using rule 378 (until_postfix -> until_postfix_op .)
+    PLUS            reduce using rule 378 (while_postfix -> while_postfix_op .)
+    MINUS           reduce using rule 378 (while_postfix -> while_postfix_op .)
+    MULTIPLY        reduce using rule 378 (while_postfix -> while_postfix_op .)
+    DIVISION        reduce using rule 378 (while_postfix -> while_postfix_op .)
+    MODULO          reduce using rule 378 (while_postfix -> while_postfix_op .)
+    EXPONENT        reduce using rule 378 (while_postfix -> while_postfix_op .)
+    GT              reduce using rule 378 (while_postfix -> while_postfix_op .)
+    LT              reduce using rule 378 (while_postfix -> while_postfix_op .)
+    EQ_EQ           reduce using rule 378 (while_postfix -> while_postfix_op .)
+    GT_EQ           reduce using rule 378 (while_postfix -> while_postfix_op .)
+    LT_EQ           reduce using rule 378 (while_postfix -> while_postfix_op .)
+    NOT_EQ          reduce using rule 378 (while_postfix -> while_postfix_op .)
+    AND             reduce using rule 378 (while_postfix -> while_postfix_op .)
+    OR              reduce using rule 378 (while_postfix -> while_postfix_op .)
+    RPAREN          reduce using rule 378 (while_postfix -> while_postfix_op .)
 
 
 state 794
 
-    (375) until_postfix_op -> PLUS_PLUS .
+    (375) while_postfix_op -> PLUS_PLUS .
 
-    PLUS            reduce using rule 375 (until_postfix_op -> PLUS_PLUS .)
-    MINUS           reduce using rule 375 (until_postfix_op -> PLUS_PLUS .)
-    MULTIPLY        reduce using rule 375 (until_postfix_op -> PLUS_PLUS .)
-    DIVISION        reduce using rule 375 (until_postfix_op -> PLUS_PLUS .)
-    MODULO          reduce using rule 375 (until_postfix_op -> PLUS_PLUS .)
-    EXPONENT        reduce using rule 375 (until_postfix_op -> PLUS_PLUS .)
-    GT              reduce using rule 375 (until_postfix_op -> PLUS_PLUS .)
-    LT              reduce using rule 375 (until_postfix_op -> PLUS_PLUS .)
-    EQ_EQ           reduce using rule 375 (until_postfix_op -> PLUS_PLUS .)
-    GT_EQ           reduce using rule 375 (until_postfix_op -> PLUS_PLUS .)
-    LT_EQ           reduce using rule 375 (until_postfix_op -> PLUS_PLUS .)
-    NOT_EQ          reduce using rule 375 (until_postfix_op -> PLUS_PLUS .)
-    AND             reduce using rule 375 (until_postfix_op -> PLUS_PLUS .)
-    OR              reduce using rule 375 (until_postfix_op -> PLUS_PLUS .)
-    RPAREN          reduce using rule 375 (until_postfix_op -> PLUS_PLUS .)
+    PLUS            reduce using rule 375 (while_postfix_op -> PLUS_PLUS .)
+    MINUS           reduce using rule 375 (while_postfix_op -> PLUS_PLUS .)
+    MULTIPLY        reduce using rule 375 (while_postfix_op -> PLUS_PLUS .)
+    DIVISION        reduce using rule 375 (while_postfix_op -> PLUS_PLUS .)
+    MODULO          reduce using rule 375 (while_postfix_op -> PLUS_PLUS .)
+    EXPONENT        reduce using rule 375 (while_postfix_op -> PLUS_PLUS .)
+    GT              reduce using rule 375 (while_postfix_op -> PLUS_PLUS .)
+    LT              reduce using rule 375 (while_postfix_op -> PLUS_PLUS .)
+    EQ_EQ           reduce using rule 375 (while_postfix_op -> PLUS_PLUS .)
+    GT_EQ           reduce using rule 375 (while_postfix_op -> PLUS_PLUS .)
+    LT_EQ           reduce using rule 375 (while_postfix_op -> PLUS_PLUS .)
+    NOT_EQ          reduce using rule 375 (while_postfix_op -> PLUS_PLUS .)
+    AND             reduce using rule 375 (while_postfix_op -> PLUS_PLUS .)
+    OR              reduce using rule 375 (while_postfix_op -> PLUS_PLUS .)
+    RPAREN          reduce using rule 375 (while_postfix_op -> PLUS_PLUS .)
 
 
 state 795
 
-    (376) until_postfix_op -> MINUS_MINUS .
+    (376) while_postfix_op -> MINUS_MINUS .
 
-    PLUS            reduce using rule 376 (until_postfix_op -> MINUS_MINUS .)
-    MINUS           reduce using rule 376 (until_postfix_op -> MINUS_MINUS .)
-    MULTIPLY        reduce using rule 376 (until_postfix_op -> MINUS_MINUS .)
-    DIVISION        reduce using rule 376 (until_postfix_op -> MINUS_MINUS .)
-    MODULO          reduce using rule 376 (until_postfix_op -> MINUS_MINUS .)
-    EXPONENT        reduce using rule 376 (until_postfix_op -> MINUS_MINUS .)
-    GT              reduce using rule 376 (until_postfix_op -> MINUS_MINUS .)
-    LT              reduce using rule 376 (until_postfix_op -> MINUS_MINUS .)
-    EQ_EQ           reduce using rule 376 (until_postfix_op -> MINUS_MINUS .)
-    GT_EQ           reduce using rule 376 (until_postfix_op -> MINUS_MINUS .)
-    LT_EQ           reduce using rule 376 (until_postfix_op -> MINUS_MINUS .)
-    NOT_EQ          reduce using rule 376 (until_postfix_op -> MINUS_MINUS .)
-    AND             reduce using rule 376 (until_postfix_op -> MINUS_MINUS .)
-    OR              reduce using rule 376 (until_postfix_op -> MINUS_MINUS .)
-    RPAREN          reduce using rule 376 (until_postfix_op -> MINUS_MINUS .)
+    PLUS            reduce using rule 376 (while_postfix_op -> MINUS_MINUS .)
+    MINUS           reduce using rule 376 (while_postfix_op -> MINUS_MINUS .)
+    MULTIPLY        reduce using rule 376 (while_postfix_op -> MINUS_MINUS .)
+    DIVISION        reduce using rule 376 (while_postfix_op -> MINUS_MINUS .)
+    MODULO          reduce using rule 376 (while_postfix_op -> MINUS_MINUS .)
+    EXPONENT        reduce using rule 376 (while_postfix_op -> MINUS_MINUS .)
+    GT              reduce using rule 376 (while_postfix_op -> MINUS_MINUS .)
+    LT              reduce using rule 376 (while_postfix_op -> MINUS_MINUS .)
+    EQ_EQ           reduce using rule 376 (while_postfix_op -> MINUS_MINUS .)
+    GT_EQ           reduce using rule 376 (while_postfix_op -> MINUS_MINUS .)
+    LT_EQ           reduce using rule 376 (while_postfix_op -> MINUS_MINUS .)
+    NOT_EQ          reduce using rule 376 (while_postfix_op -> MINUS_MINUS .)
+    AND             reduce using rule 376 (while_postfix_op -> MINUS_MINUS .)
+    OR              reduce using rule 376 (while_postfix_op -> MINUS_MINUS .)
+    RPAREN          reduce using rule 376 (while_postfix_op -> MINUS_MINUS .)
 
 
 state 796
 
-    (371) until_factor -> TILDE INT_LIT .
+    (371) while_factor -> TILDE INT_LIT .
 
-    PLUS            reduce using rule 371 (until_factor -> TILDE INT_LIT .)
-    MINUS           reduce using rule 371 (until_factor -> TILDE INT_LIT .)
-    MULTIPLY        reduce using rule 371 (until_factor -> TILDE INT_LIT .)
-    DIVISION        reduce using rule 371 (until_factor -> TILDE INT_LIT .)
-    MODULO          reduce using rule 371 (until_factor -> TILDE INT_LIT .)
-    EXPONENT        reduce using rule 371 (until_factor -> TILDE INT_LIT .)
-    GT              reduce using rule 371 (until_factor -> TILDE INT_LIT .)
-    LT              reduce using rule 371 (until_factor -> TILDE INT_LIT .)
-    EQ_EQ           reduce using rule 371 (until_factor -> TILDE INT_LIT .)
-    GT_EQ           reduce using rule 371 (until_factor -> TILDE INT_LIT .)
-    LT_EQ           reduce using rule 371 (until_factor -> TILDE INT_LIT .)
-    NOT_EQ          reduce using rule 371 (until_factor -> TILDE INT_LIT .)
-    AND             reduce using rule 371 (until_factor -> TILDE INT_LIT .)
-    OR              reduce using rule 371 (until_factor -> TILDE INT_LIT .)
-    RPAREN          reduce using rule 371 (until_factor -> TILDE INT_LIT .)
+    PLUS            reduce using rule 371 (while_factor -> TILDE INT_LIT .)
+    MINUS           reduce using rule 371 (while_factor -> TILDE INT_LIT .)
+    MULTIPLY        reduce using rule 371 (while_factor -> TILDE INT_LIT .)
+    DIVISION        reduce using rule 371 (while_factor -> TILDE INT_LIT .)
+    MODULO          reduce using rule 371 (while_factor -> TILDE INT_LIT .)
+    EXPONENT        reduce using rule 371 (while_factor -> TILDE INT_LIT .)
+    GT              reduce using rule 371 (while_factor -> TILDE INT_LIT .)
+    LT              reduce using rule 371 (while_factor -> TILDE INT_LIT .)
+    EQ_EQ           reduce using rule 371 (while_factor -> TILDE INT_LIT .)
+    GT_EQ           reduce using rule 371 (while_factor -> TILDE INT_LIT .)
+    LT_EQ           reduce using rule 371 (while_factor -> TILDE INT_LIT .)
+    NOT_EQ          reduce using rule 371 (while_factor -> TILDE INT_LIT .)
+    AND             reduce using rule 371 (while_factor -> TILDE INT_LIT .)
+    OR              reduce using rule 371 (while_factor -> TILDE INT_LIT .)
+    RPAREN          reduce using rule 371 (while_factor -> TILDE INT_LIT .)
 
 
 state 797
 
-    (372) until_factor -> TILDE FLT_LIT .
+    (372) while_factor -> TILDE FLT_LIT .
 
-    PLUS            reduce using rule 372 (until_factor -> TILDE FLT_LIT .)
-    MINUS           reduce using rule 372 (until_factor -> TILDE FLT_LIT .)
-    MULTIPLY        reduce using rule 372 (until_factor -> TILDE FLT_LIT .)
-    DIVISION        reduce using rule 372 (until_factor -> TILDE FLT_LIT .)
-    MODULO          reduce using rule 372 (until_factor -> TILDE FLT_LIT .)
-    EXPONENT        reduce using rule 372 (until_factor -> TILDE FLT_LIT .)
-    GT              reduce using rule 372 (until_factor -> TILDE FLT_LIT .)
-    LT              reduce using rule 372 (until_factor -> TILDE FLT_LIT .)
-    EQ_EQ           reduce using rule 372 (until_factor -> TILDE FLT_LIT .)
-    GT_EQ           reduce using rule 372 (until_factor -> TILDE FLT_LIT .)
-    LT_EQ           reduce using rule 372 (until_factor -> TILDE FLT_LIT .)
-    NOT_EQ          reduce using rule 372 (until_factor -> TILDE FLT_LIT .)
-    AND             reduce using rule 372 (until_factor -> TILDE FLT_LIT .)
-    OR              reduce using rule 372 (until_factor -> TILDE FLT_LIT .)
-    RPAREN          reduce using rule 372 (until_factor -> TILDE FLT_LIT .)
+    PLUS            reduce using rule 372 (while_factor -> TILDE FLT_LIT .)
+    MINUS           reduce using rule 372 (while_factor -> TILDE FLT_LIT .)
+    MULTIPLY        reduce using rule 372 (while_factor -> TILDE FLT_LIT .)
+    DIVISION        reduce using rule 372 (while_factor -> TILDE FLT_LIT .)
+    MODULO          reduce using rule 372 (while_factor -> TILDE FLT_LIT .)
+    EXPONENT        reduce using rule 372 (while_factor -> TILDE FLT_LIT .)
+    GT              reduce using rule 372 (while_factor -> TILDE FLT_LIT .)
+    LT              reduce using rule 372 (while_factor -> TILDE FLT_LIT .)
+    EQ_EQ           reduce using rule 372 (while_factor -> TILDE FLT_LIT .)
+    GT_EQ           reduce using rule 372 (while_factor -> TILDE FLT_LIT .)
+    LT_EQ           reduce using rule 372 (while_factor -> TILDE FLT_LIT .)
+    NOT_EQ          reduce using rule 372 (while_factor -> TILDE FLT_LIT .)
+    AND             reduce using rule 372 (while_factor -> TILDE FLT_LIT .)
+    OR              reduce using rule 372 (while_factor -> TILDE FLT_LIT .)
+    RPAREN          reduce using rule 372 (while_factor -> TILDE FLT_LIT .)
 
 
 state 798
 
-    (374) until_var_call -> IDENT until_list_index .
+    (374) while_var_call -> IDENT while_list_index .
 
-    PLUS_PLUS       reduce using rule 374 (until_var_call -> IDENT until_list_index .)
-    MINUS_MINUS     reduce using rule 374 (until_var_call -> IDENT until_list_index .)
-    PLUS            reduce using rule 374 (until_var_call -> IDENT until_list_index .)
-    MINUS           reduce using rule 374 (until_var_call -> IDENT until_list_index .)
-    MULTIPLY        reduce using rule 374 (until_var_call -> IDENT until_list_index .)
-    DIVISION        reduce using rule 374 (until_var_call -> IDENT until_list_index .)
-    MODULO          reduce using rule 374 (until_var_call -> IDENT until_list_index .)
-    EXPONENT        reduce using rule 374 (until_var_call -> IDENT until_list_index .)
-    GT              reduce using rule 374 (until_var_call -> IDENT until_list_index .)
-    LT              reduce using rule 374 (until_var_call -> IDENT until_list_index .)
-    EQ_EQ           reduce using rule 374 (until_var_call -> IDENT until_list_index .)
-    GT_EQ           reduce using rule 374 (until_var_call -> IDENT until_list_index .)
-    LT_EQ           reduce using rule 374 (until_var_call -> IDENT until_list_index .)
-    NOT_EQ          reduce using rule 374 (until_var_call -> IDENT until_list_index .)
-    AND             reduce using rule 374 (until_var_call -> IDENT until_list_index .)
-    OR              reduce using rule 374 (until_var_call -> IDENT until_list_index .)
-    RPAREN          reduce using rule 374 (until_var_call -> IDENT until_list_index .)
+    PLUS_PLUS       reduce using rule 374 (while_var_call -> IDENT while_list_index .)
+    MINUS_MINUS     reduce using rule 374 (while_var_call -> IDENT while_list_index .)
+    PLUS            reduce using rule 374 (while_var_call -> IDENT while_list_index .)
+    MINUS           reduce using rule 374 (while_var_call -> IDENT while_list_index .)
+    MULTIPLY        reduce using rule 374 (while_var_call -> IDENT while_list_index .)
+    DIVISION        reduce using rule 374 (while_var_call -> IDENT while_list_index .)
+    MODULO          reduce using rule 374 (while_var_call -> IDENT while_list_index .)
+    EXPONENT        reduce using rule 374 (while_var_call -> IDENT while_list_index .)
+    GT              reduce using rule 374 (while_var_call -> IDENT while_list_index .)
+    LT              reduce using rule 374 (while_var_call -> IDENT while_list_index .)
+    EQ_EQ           reduce using rule 374 (while_var_call -> IDENT while_list_index .)
+    GT_EQ           reduce using rule 374 (while_var_call -> IDENT while_list_index .)
+    LT_EQ           reduce using rule 374 (while_var_call -> IDENT while_list_index .)
+    NOT_EQ          reduce using rule 374 (while_var_call -> IDENT while_list_index .)
+    AND             reduce using rule 374 (while_var_call -> IDENT while_list_index .)
+    OR              reduce using rule 374 (while_var_call -> IDENT while_list_index .)
+    RPAREN          reduce using rule 374 (while_var_call -> IDENT while_list_index .)
 
 
 state 799
 
-    (379) until_list_index -> LBRACKET . until_index RBRACKET until_list_index2
-    (383) until_index -> . INT_LIT
-    (384) until_index -> . IDENT
+    (379) while_list_index -> LBRACKET . while_index RBRACKET while_list_index2
+    (383) while_index -> . INT_LIT
+    (384) while_index -> . IDENT
 
     INT_LIT         shift and go to state 961
     IDENT           shift and go to state 962
 
-    until_index                    shift and go to state 960
+    while_index                    shift and go to state 960
 
 state 800
 
-    (380) until_list_index -> empty .
+    (380) while_list_index -> empty .
 
-    PLUS_PLUS       reduce using rule 380 (until_list_index -> empty .)
-    MINUS_MINUS     reduce using rule 380 (until_list_index -> empty .)
-    PLUS            reduce using rule 380 (until_list_index -> empty .)
-    MINUS           reduce using rule 380 (until_list_index -> empty .)
-    MULTIPLY        reduce using rule 380 (until_list_index -> empty .)
-    DIVISION        reduce using rule 380 (until_list_index -> empty .)
-    MODULO          reduce using rule 380 (until_list_index -> empty .)
-    EXPONENT        reduce using rule 380 (until_list_index -> empty .)
-    GT              reduce using rule 380 (until_list_index -> empty .)
-    LT              reduce using rule 380 (until_list_index -> empty .)
-    EQ_EQ           reduce using rule 380 (until_list_index -> empty .)
-    GT_EQ           reduce using rule 380 (until_list_index -> empty .)
-    LT_EQ           reduce using rule 380 (until_list_index -> empty .)
-    NOT_EQ          reduce using rule 380 (until_list_index -> empty .)
-    AND             reduce using rule 380 (until_list_index -> empty .)
-    OR              reduce using rule 380 (until_list_index -> empty .)
-    RPAREN          reduce using rule 380 (until_list_index -> empty .)
+    PLUS_PLUS       reduce using rule 380 (while_list_index -> empty .)
+    MINUS_MINUS     reduce using rule 380 (while_list_index -> empty .)
+    PLUS            reduce using rule 380 (while_list_index -> empty .)
+    MINUS           reduce using rule 380 (while_list_index -> empty .)
+    MULTIPLY        reduce using rule 380 (while_list_index -> empty .)
+    DIVISION        reduce using rule 380 (while_list_index -> empty .)
+    MODULO          reduce using rule 380 (while_list_index -> empty .)
+    EXPONENT        reduce using rule 380 (while_list_index -> empty .)
+    GT              reduce using rule 380 (while_list_index -> empty .)
+    LT              reduce using rule 380 (while_list_index -> empty .)
+    EQ_EQ           reduce using rule 380 (while_list_index -> empty .)
+    GT_EQ           reduce using rule 380 (while_list_index -> empty .)
+    LT_EQ           reduce using rule 380 (while_list_index -> empty .)
+    NOT_EQ          reduce using rule 380 (while_list_index -> empty .)
+    AND             reduce using rule 380 (while_list_index -> empty .)
+    OR              reduce using rule 380 (while_list_index -> empty .)
+    RPAREN          reduce using rule 380 (while_list_index -> empty .)
 
 
 state 801
 
-    (405) repeat_until -> REPEAT LBRACE statements RBRACE . UNTIL LPAREN until_expression RPAREN SEMICOLON
+    (405) repeat_while -> REPEAT LBRACE statements RBRACE . WHILE LPAREN while_expression RPAREN SEMICOLON
 
-    UNTIL           shift and go to state 963
+    WHILE           shift and go to state 963
 
 
 state 802
@@ -19951,7 +19951,7 @@ state 890
     STOP            reduce using rule 414 (function_call_statement -> FUNCTION_NAME LPAREN arguments RPAREN SEMICOLON .)
     CONTINUE        reduce using rule 414 (function_call_statement -> FUNCTION_NAME LPAREN arguments RPAREN SEMICOLON .)
     FOR             reduce using rule 414 (function_call_statement -> FUNCTION_NAME LPAREN arguments RPAREN SEMICOLON .)
-    UNTIL           reduce using rule 414 (function_call_statement -> FUNCTION_NAME LPAREN arguments RPAREN SEMICOLON .)
+    WHILE           reduce using rule 414 (function_call_statement -> FUNCTION_NAME LPAREN arguments RPAREN SEMICOLON .)
     REPEAT          reduce using rule 414 (function_call_statement -> FUNCTION_NAME LPAREN arguments RPAREN SEMICOLON .)
     INPUT           reduce using rule 414 (function_call_statement -> FUNCTION_NAME LPAREN arguments RPAREN SEMICOLON .)
     RBRACE          reduce using rule 414 (function_call_statement -> FUNCTION_NAME LPAREN arguments RPAREN SEMICOLON .)
@@ -20206,7 +20206,7 @@ state 912
     STOP            reduce using rule 620 (empty -> .)
     CONTINUE        reduce using rule 620 (empty -> .)
     FOR             reduce using rule 620 (empty -> .)
-    UNTIL           reduce using rule 620 (empty -> .)
+    WHILE           reduce using rule 620 (empty -> .)
     REPEAT          reduce using rule 620 (empty -> .)
     INPUT           reduce using rule 620 (empty -> .)
     INT             shift and go to state 274
@@ -21115,28 +21115,28 @@ state 943
 
 state 944
 
-    (373) until_factor -> LPAREN until_expression RPAREN .
+    (373) while_factor -> LPAREN while_expression RPAREN .
 
-    PLUS            reduce using rule 373 (until_factor -> LPAREN until_expression RPAREN .)
-    MINUS           reduce using rule 373 (until_factor -> LPAREN until_expression RPAREN .)
-    MULTIPLY        reduce using rule 373 (until_factor -> LPAREN until_expression RPAREN .)
-    DIVISION        reduce using rule 373 (until_factor -> LPAREN until_expression RPAREN .)
-    MODULO          reduce using rule 373 (until_factor -> LPAREN until_expression RPAREN .)
-    EXPONENT        reduce using rule 373 (until_factor -> LPAREN until_expression RPAREN .)
-    GT              reduce using rule 373 (until_factor -> LPAREN until_expression RPAREN .)
-    LT              reduce using rule 373 (until_factor -> LPAREN until_expression RPAREN .)
-    EQ_EQ           reduce using rule 373 (until_factor -> LPAREN until_expression RPAREN .)
-    GT_EQ           reduce using rule 373 (until_factor -> LPAREN until_expression RPAREN .)
-    LT_EQ           reduce using rule 373 (until_factor -> LPAREN until_expression RPAREN .)
-    NOT_EQ          reduce using rule 373 (until_factor -> LPAREN until_expression RPAREN .)
-    AND             reduce using rule 373 (until_factor -> LPAREN until_expression RPAREN .)
-    OR              reduce using rule 373 (until_factor -> LPAREN until_expression RPAREN .)
-    RPAREN          reduce using rule 373 (until_factor -> LPAREN until_expression RPAREN .)
+    PLUS            reduce using rule 373 (while_factor -> LPAREN while_expression RPAREN .)
+    MINUS           reduce using rule 373 (while_factor -> LPAREN while_expression RPAREN .)
+    MULTIPLY        reduce using rule 373 (while_factor -> LPAREN while_expression RPAREN .)
+    DIVISION        reduce using rule 373 (while_factor -> LPAREN while_expression RPAREN .)
+    MODULO          reduce using rule 373 (while_factor -> LPAREN while_expression RPAREN .)
+    EXPONENT        reduce using rule 373 (while_factor -> LPAREN while_expression RPAREN .)
+    GT              reduce using rule 373 (while_factor -> LPAREN while_expression RPAREN .)
+    LT              reduce using rule 373 (while_factor -> LPAREN while_expression RPAREN .)
+    EQ_EQ           reduce using rule 373 (while_factor -> LPAREN while_expression RPAREN .)
+    GT_EQ           reduce using rule 373 (while_factor -> LPAREN while_expression RPAREN .)
+    LT_EQ           reduce using rule 373 (while_factor -> LPAREN while_expression RPAREN .)
+    NOT_EQ          reduce using rule 373 (while_factor -> LPAREN while_expression RPAREN .)
+    AND             reduce using rule 373 (while_factor -> LPAREN while_expression RPAREN .)
+    OR              reduce using rule 373 (while_factor -> LPAREN while_expression RPAREN .)
+    RPAREN          reduce using rule 373 (while_factor -> LPAREN while_expression RPAREN .)
 
 
 state 945
 
-    (367) until_loop -> UNTIL LPAREN until_expression RPAREN LBRACE . statements RBRACE
+    (367) while_loop -> WHILE LPAREN while_expression RPAREN LBRACE . statements RBRACE
     (162) statements -> . empty
     (163) statements -> . local_dec statements_tail
     (620) empty -> .
@@ -21163,7 +21163,7 @@ state 945
     STOP            reduce using rule 620 (empty -> .)
     CONTINUE        reduce using rule 620 (empty -> .)
     FOR             reduce using rule 620 (empty -> .)
-    UNTIL           reduce using rule 620 (empty -> .)
+    WHILE           reduce using rule 620 (empty -> .)
     REPEAT          reduce using rule 620 (empty -> .)
     INPUT           reduce using rule 620 (empty -> .)
     INT             shift and go to state 274
@@ -21186,22 +21186,22 @@ state 945
 
 state 946
 
-    (385) until_factor_tail -> PLUS until_factor . until_factor_tail
-    (385) until_factor_tail -> . PLUS until_factor until_factor_tail
-    (386) until_factor_tail -> . MINUS until_factor until_factor_tail
-    (387) until_factor_tail -> . MULTIPLY until_factor until_factor_tail
-    (388) until_factor_tail -> . DIVISION until_factor until_factor_tail
-    (389) until_factor_tail -> . MODULO until_factor until_factor_tail
-    (390) until_factor_tail -> . EXPONENT until_factor until_factor_tail
-    (391) until_factor_tail -> . GT until_factor until_factor_tail
-    (392) until_factor_tail -> . LT until_factor until_factor_tail
-    (393) until_factor_tail -> . EQ_EQ until_factor until_factor_tail
-    (394) until_factor_tail -> . GT_EQ until_factor until_factor_tail
-    (395) until_factor_tail -> . LT_EQ until_factor until_factor_tail
-    (396) until_factor_tail -> . NOT_EQ until_factor until_factor_tail
-    (397) until_factor_tail -> . AND until_factor until_factor_tail
-    (398) until_factor_tail -> . OR until_factor until_factor_tail
-    (399) until_factor_tail -> . empty
+    (385) while_factor_tail -> PLUS while_factor . while_factor_tail
+    (385) while_factor_tail -> . PLUS while_factor while_factor_tail
+    (386) while_factor_tail -> . MINUS while_factor while_factor_tail
+    (387) while_factor_tail -> . MULTIPLY while_factor while_factor_tail
+    (388) while_factor_tail -> . DIVISION while_factor while_factor_tail
+    (389) while_factor_tail -> . MODULO while_factor while_factor_tail
+    (390) while_factor_tail -> . EXPONENT while_factor while_factor_tail
+    (391) while_factor_tail -> . GT while_factor while_factor_tail
+    (392) while_factor_tail -> . LT while_factor while_factor_tail
+    (393) while_factor_tail -> . EQ_EQ while_factor while_factor_tail
+    (394) while_factor_tail -> . GT_EQ while_factor while_factor_tail
+    (395) while_factor_tail -> . LT_EQ while_factor while_factor_tail
+    (396) while_factor_tail -> . NOT_EQ while_factor while_factor_tail
+    (397) while_factor_tail -> . AND while_factor while_factor_tail
+    (398) while_factor_tail -> . OR while_factor while_factor_tail
+    (399) while_factor_tail -> . empty
     (620) empty -> .
 
     PLUS            shift and go to state 776
@@ -21220,27 +21220,27 @@ state 946
     OR              shift and go to state 789
     RPAREN          reduce using rule 620 (empty -> .)
 
-    until_factor_tail              shift and go to state 1081
+    while_factor_tail              shift and go to state 1081
     empty                          shift and go to state 790
 
 state 947
 
-    (386) until_factor_tail -> MINUS until_factor . until_factor_tail
-    (385) until_factor_tail -> . PLUS until_factor until_factor_tail
-    (386) until_factor_tail -> . MINUS until_factor until_factor_tail
-    (387) until_factor_tail -> . MULTIPLY until_factor until_factor_tail
-    (388) until_factor_tail -> . DIVISION until_factor until_factor_tail
-    (389) until_factor_tail -> . MODULO until_factor until_factor_tail
-    (390) until_factor_tail -> . EXPONENT until_factor until_factor_tail
-    (391) until_factor_tail -> . GT until_factor until_factor_tail
-    (392) until_factor_tail -> . LT until_factor until_factor_tail
-    (393) until_factor_tail -> . EQ_EQ until_factor until_factor_tail
-    (394) until_factor_tail -> . GT_EQ until_factor until_factor_tail
-    (395) until_factor_tail -> . LT_EQ until_factor until_factor_tail
-    (396) until_factor_tail -> . NOT_EQ until_factor until_factor_tail
-    (397) until_factor_tail -> . AND until_factor until_factor_tail
-    (398) until_factor_tail -> . OR until_factor until_factor_tail
-    (399) until_factor_tail -> . empty
+    (386) while_factor_tail -> MINUS while_factor . while_factor_tail
+    (385) while_factor_tail -> . PLUS while_factor while_factor_tail
+    (386) while_factor_tail -> . MINUS while_factor while_factor_tail
+    (387) while_factor_tail -> . MULTIPLY while_factor while_factor_tail
+    (388) while_factor_tail -> . DIVISION while_factor while_factor_tail
+    (389) while_factor_tail -> . MODULO while_factor while_factor_tail
+    (390) while_factor_tail -> . EXPONENT while_factor while_factor_tail
+    (391) while_factor_tail -> . GT while_factor while_factor_tail
+    (392) while_factor_tail -> . LT while_factor while_factor_tail
+    (393) while_factor_tail -> . EQ_EQ while_factor while_factor_tail
+    (394) while_factor_tail -> . GT_EQ while_factor while_factor_tail
+    (395) while_factor_tail -> . LT_EQ while_factor while_factor_tail
+    (396) while_factor_tail -> . NOT_EQ while_factor while_factor_tail
+    (397) while_factor_tail -> . AND while_factor while_factor_tail
+    (398) while_factor_tail -> . OR while_factor while_factor_tail
+    (399) while_factor_tail -> . empty
     (620) empty -> .
 
     PLUS            shift and go to state 776
@@ -21259,27 +21259,27 @@ state 947
     OR              shift and go to state 789
     RPAREN          reduce using rule 620 (empty -> .)
 
-    until_factor_tail              shift and go to state 1082
+    while_factor_tail              shift and go to state 1082
     empty                          shift and go to state 790
 
 state 948
 
-    (387) until_factor_tail -> MULTIPLY until_factor . until_factor_tail
-    (385) until_factor_tail -> . PLUS until_factor until_factor_tail
-    (386) until_factor_tail -> . MINUS until_factor until_factor_tail
-    (387) until_factor_tail -> . MULTIPLY until_factor until_factor_tail
-    (388) until_factor_tail -> . DIVISION until_factor until_factor_tail
-    (389) until_factor_tail -> . MODULO until_factor until_factor_tail
-    (390) until_factor_tail -> . EXPONENT until_factor until_factor_tail
-    (391) until_factor_tail -> . GT until_factor until_factor_tail
-    (392) until_factor_tail -> . LT until_factor until_factor_tail
-    (393) until_factor_tail -> . EQ_EQ until_factor until_factor_tail
-    (394) until_factor_tail -> . GT_EQ until_factor until_factor_tail
-    (395) until_factor_tail -> . LT_EQ until_factor until_factor_tail
-    (396) until_factor_tail -> . NOT_EQ until_factor until_factor_tail
-    (397) until_factor_tail -> . AND until_factor until_factor_tail
-    (398) until_factor_tail -> . OR until_factor until_factor_tail
-    (399) until_factor_tail -> . empty
+    (387) while_factor_tail -> MULTIPLY while_factor . while_factor_tail
+    (385) while_factor_tail -> . PLUS while_factor while_factor_tail
+    (386) while_factor_tail -> . MINUS while_factor while_factor_tail
+    (387) while_factor_tail -> . MULTIPLY while_factor while_factor_tail
+    (388) while_factor_tail -> . DIVISION while_factor while_factor_tail
+    (389) while_factor_tail -> . MODULO while_factor while_factor_tail
+    (390) while_factor_tail -> . EXPONENT while_factor while_factor_tail
+    (391) while_factor_tail -> . GT while_factor while_factor_tail
+    (392) while_factor_tail -> . LT while_factor while_factor_tail
+    (393) while_factor_tail -> . EQ_EQ while_factor while_factor_tail
+    (394) while_factor_tail -> . GT_EQ while_factor while_factor_tail
+    (395) while_factor_tail -> . LT_EQ while_factor while_factor_tail
+    (396) while_factor_tail -> . NOT_EQ while_factor while_factor_tail
+    (397) while_factor_tail -> . AND while_factor while_factor_tail
+    (398) while_factor_tail -> . OR while_factor while_factor_tail
+    (399) while_factor_tail -> . empty
     (620) empty -> .
 
     PLUS            shift and go to state 776
@@ -21298,27 +21298,27 @@ state 948
     OR              shift and go to state 789
     RPAREN          reduce using rule 620 (empty -> .)
 
-    until_factor_tail              shift and go to state 1083
+    while_factor_tail              shift and go to state 1083
     empty                          shift and go to state 790
 
 state 949
 
-    (388) until_factor_tail -> DIVISION until_factor . until_factor_tail
-    (385) until_factor_tail -> . PLUS until_factor until_factor_tail
-    (386) until_factor_tail -> . MINUS until_factor until_factor_tail
-    (387) until_factor_tail -> . MULTIPLY until_factor until_factor_tail
-    (388) until_factor_tail -> . DIVISION until_factor until_factor_tail
-    (389) until_factor_tail -> . MODULO until_factor until_factor_tail
-    (390) until_factor_tail -> . EXPONENT until_factor until_factor_tail
-    (391) until_factor_tail -> . GT until_factor until_factor_tail
-    (392) until_factor_tail -> . LT until_factor until_factor_tail
-    (393) until_factor_tail -> . EQ_EQ until_factor until_factor_tail
-    (394) until_factor_tail -> . GT_EQ until_factor until_factor_tail
-    (395) until_factor_tail -> . LT_EQ until_factor until_factor_tail
-    (396) until_factor_tail -> . NOT_EQ until_factor until_factor_tail
-    (397) until_factor_tail -> . AND until_factor until_factor_tail
-    (398) until_factor_tail -> . OR until_factor until_factor_tail
-    (399) until_factor_tail -> . empty
+    (388) while_factor_tail -> DIVISION while_factor . while_factor_tail
+    (385) while_factor_tail -> . PLUS while_factor while_factor_tail
+    (386) while_factor_tail -> . MINUS while_factor while_factor_tail
+    (387) while_factor_tail -> . MULTIPLY while_factor while_factor_tail
+    (388) while_factor_tail -> . DIVISION while_factor while_factor_tail
+    (389) while_factor_tail -> . MODULO while_factor while_factor_tail
+    (390) while_factor_tail -> . EXPONENT while_factor while_factor_tail
+    (391) while_factor_tail -> . GT while_factor while_factor_tail
+    (392) while_factor_tail -> . LT while_factor while_factor_tail
+    (393) while_factor_tail -> . EQ_EQ while_factor while_factor_tail
+    (394) while_factor_tail -> . GT_EQ while_factor while_factor_tail
+    (395) while_factor_tail -> . LT_EQ while_factor while_factor_tail
+    (396) while_factor_tail -> . NOT_EQ while_factor while_factor_tail
+    (397) while_factor_tail -> . AND while_factor while_factor_tail
+    (398) while_factor_tail -> . OR while_factor while_factor_tail
+    (399) while_factor_tail -> . empty
     (620) empty -> .
 
     PLUS            shift and go to state 776
@@ -21337,27 +21337,27 @@ state 949
     OR              shift and go to state 789
     RPAREN          reduce using rule 620 (empty -> .)
 
-    until_factor_tail              shift and go to state 1084
+    while_factor_tail              shift and go to state 1084
     empty                          shift and go to state 790
 
 state 950
 
-    (389) until_factor_tail -> MODULO until_factor . until_factor_tail
-    (385) until_factor_tail -> . PLUS until_factor until_factor_tail
-    (386) until_factor_tail -> . MINUS until_factor until_factor_tail
-    (387) until_factor_tail -> . MULTIPLY until_factor until_factor_tail
-    (388) until_factor_tail -> . DIVISION until_factor until_factor_tail
-    (389) until_factor_tail -> . MODULO until_factor until_factor_tail
-    (390) until_factor_tail -> . EXPONENT until_factor until_factor_tail
-    (391) until_factor_tail -> . GT until_factor until_factor_tail
-    (392) until_factor_tail -> . LT until_factor until_factor_tail
-    (393) until_factor_tail -> . EQ_EQ until_factor until_factor_tail
-    (394) until_factor_tail -> . GT_EQ until_factor until_factor_tail
-    (395) until_factor_tail -> . LT_EQ until_factor until_factor_tail
-    (396) until_factor_tail -> . NOT_EQ until_factor until_factor_tail
-    (397) until_factor_tail -> . AND until_factor until_factor_tail
-    (398) until_factor_tail -> . OR until_factor until_factor_tail
-    (399) until_factor_tail -> . empty
+    (389) while_factor_tail -> MODULO while_factor . while_factor_tail
+    (385) while_factor_tail -> . PLUS while_factor while_factor_tail
+    (386) while_factor_tail -> . MINUS while_factor while_factor_tail
+    (387) while_factor_tail -> . MULTIPLY while_factor while_factor_tail
+    (388) while_factor_tail -> . DIVISION while_factor while_factor_tail
+    (389) while_factor_tail -> . MODULO while_factor while_factor_tail
+    (390) while_factor_tail -> . EXPONENT while_factor while_factor_tail
+    (391) while_factor_tail -> . GT while_factor while_factor_tail
+    (392) while_factor_tail -> . LT while_factor while_factor_tail
+    (393) while_factor_tail -> . EQ_EQ while_factor while_factor_tail
+    (394) while_factor_tail -> . GT_EQ while_factor while_factor_tail
+    (395) while_factor_tail -> . LT_EQ while_factor while_factor_tail
+    (396) while_factor_tail -> . NOT_EQ while_factor while_factor_tail
+    (397) while_factor_tail -> . AND while_factor while_factor_tail
+    (398) while_factor_tail -> . OR while_factor while_factor_tail
+    (399) while_factor_tail -> . empty
     (620) empty -> .
 
     PLUS            shift and go to state 776
@@ -21376,27 +21376,27 @@ state 950
     OR              shift and go to state 789
     RPAREN          reduce using rule 620 (empty -> .)
 
-    until_factor_tail              shift and go to state 1085
+    while_factor_tail              shift and go to state 1085
     empty                          shift and go to state 790
 
 state 951
 
-    (390) until_factor_tail -> EXPONENT until_factor . until_factor_tail
-    (385) until_factor_tail -> . PLUS until_factor until_factor_tail
-    (386) until_factor_tail -> . MINUS until_factor until_factor_tail
-    (387) until_factor_tail -> . MULTIPLY until_factor until_factor_tail
-    (388) until_factor_tail -> . DIVISION until_factor until_factor_tail
-    (389) until_factor_tail -> . MODULO until_factor until_factor_tail
-    (390) until_factor_tail -> . EXPONENT until_factor until_factor_tail
-    (391) until_factor_tail -> . GT until_factor until_factor_tail
-    (392) until_factor_tail -> . LT until_factor until_factor_tail
-    (393) until_factor_tail -> . EQ_EQ until_factor until_factor_tail
-    (394) until_factor_tail -> . GT_EQ until_factor until_factor_tail
-    (395) until_factor_tail -> . LT_EQ until_factor until_factor_tail
-    (396) until_factor_tail -> . NOT_EQ until_factor until_factor_tail
-    (397) until_factor_tail -> . AND until_factor until_factor_tail
-    (398) until_factor_tail -> . OR until_factor until_factor_tail
-    (399) until_factor_tail -> . empty
+    (390) while_factor_tail -> EXPONENT while_factor . while_factor_tail
+    (385) while_factor_tail -> . PLUS while_factor while_factor_tail
+    (386) while_factor_tail -> . MINUS while_factor while_factor_tail
+    (387) while_factor_tail -> . MULTIPLY while_factor while_factor_tail
+    (388) while_factor_tail -> . DIVISION while_factor while_factor_tail
+    (389) while_factor_tail -> . MODULO while_factor while_factor_tail
+    (390) while_factor_tail -> . EXPONENT while_factor while_factor_tail
+    (391) while_factor_tail -> . GT while_factor while_factor_tail
+    (392) while_factor_tail -> . LT while_factor while_factor_tail
+    (393) while_factor_tail -> . EQ_EQ while_factor while_factor_tail
+    (394) while_factor_tail -> . GT_EQ while_factor while_factor_tail
+    (395) while_factor_tail -> . LT_EQ while_factor while_factor_tail
+    (396) while_factor_tail -> . NOT_EQ while_factor while_factor_tail
+    (397) while_factor_tail -> . AND while_factor while_factor_tail
+    (398) while_factor_tail -> . OR while_factor while_factor_tail
+    (399) while_factor_tail -> . empty
     (620) empty -> .
 
     PLUS            shift and go to state 776
@@ -21415,27 +21415,27 @@ state 951
     OR              shift and go to state 789
     RPAREN          reduce using rule 620 (empty -> .)
 
-    until_factor_tail              shift and go to state 1086
+    while_factor_tail              shift and go to state 1086
     empty                          shift and go to state 790
 
 state 952
 
-    (391) until_factor_tail -> GT until_factor . until_factor_tail
-    (385) until_factor_tail -> . PLUS until_factor until_factor_tail
-    (386) until_factor_tail -> . MINUS until_factor until_factor_tail
-    (387) until_factor_tail -> . MULTIPLY until_factor until_factor_tail
-    (388) until_factor_tail -> . DIVISION until_factor until_factor_tail
-    (389) until_factor_tail -> . MODULO until_factor until_factor_tail
-    (390) until_factor_tail -> . EXPONENT until_factor until_factor_tail
-    (391) until_factor_tail -> . GT until_factor until_factor_tail
-    (392) until_factor_tail -> . LT until_factor until_factor_tail
-    (393) until_factor_tail -> . EQ_EQ until_factor until_factor_tail
-    (394) until_factor_tail -> . GT_EQ until_factor until_factor_tail
-    (395) until_factor_tail -> . LT_EQ until_factor until_factor_tail
-    (396) until_factor_tail -> . NOT_EQ until_factor until_factor_tail
-    (397) until_factor_tail -> . AND until_factor until_factor_tail
-    (398) until_factor_tail -> . OR until_factor until_factor_tail
-    (399) until_factor_tail -> . empty
+    (391) while_factor_tail -> GT while_factor . while_factor_tail
+    (385) while_factor_tail -> . PLUS while_factor while_factor_tail
+    (386) while_factor_tail -> . MINUS while_factor while_factor_tail
+    (387) while_factor_tail -> . MULTIPLY while_factor while_factor_tail
+    (388) while_factor_tail -> . DIVISION while_factor while_factor_tail
+    (389) while_factor_tail -> . MODULO while_factor while_factor_tail
+    (390) while_factor_tail -> . EXPONENT while_factor while_factor_tail
+    (391) while_factor_tail -> . GT while_factor while_factor_tail
+    (392) while_factor_tail -> . LT while_factor while_factor_tail
+    (393) while_factor_tail -> . EQ_EQ while_factor while_factor_tail
+    (394) while_factor_tail -> . GT_EQ while_factor while_factor_tail
+    (395) while_factor_tail -> . LT_EQ while_factor while_factor_tail
+    (396) while_factor_tail -> . NOT_EQ while_factor while_factor_tail
+    (397) while_factor_tail -> . AND while_factor while_factor_tail
+    (398) while_factor_tail -> . OR while_factor while_factor_tail
+    (399) while_factor_tail -> . empty
     (620) empty -> .
 
     PLUS            shift and go to state 776
@@ -21454,27 +21454,27 @@ state 952
     OR              shift and go to state 789
     RPAREN          reduce using rule 620 (empty -> .)
 
-    until_factor_tail              shift and go to state 1087
+    while_factor_tail              shift and go to state 1087
     empty                          shift and go to state 790
 
 state 953
 
-    (392) until_factor_tail -> LT until_factor . until_factor_tail
-    (385) until_factor_tail -> . PLUS until_factor until_factor_tail
-    (386) until_factor_tail -> . MINUS until_factor until_factor_tail
-    (387) until_factor_tail -> . MULTIPLY until_factor until_factor_tail
-    (388) until_factor_tail -> . DIVISION until_factor until_factor_tail
-    (389) until_factor_tail -> . MODULO until_factor until_factor_tail
-    (390) until_factor_tail -> . EXPONENT until_factor until_factor_tail
-    (391) until_factor_tail -> . GT until_factor until_factor_tail
-    (392) until_factor_tail -> . LT until_factor until_factor_tail
-    (393) until_factor_tail -> . EQ_EQ until_factor until_factor_tail
-    (394) until_factor_tail -> . GT_EQ until_factor until_factor_tail
-    (395) until_factor_tail -> . LT_EQ until_factor until_factor_tail
-    (396) until_factor_tail -> . NOT_EQ until_factor until_factor_tail
-    (397) until_factor_tail -> . AND until_factor until_factor_tail
-    (398) until_factor_tail -> . OR until_factor until_factor_tail
-    (399) until_factor_tail -> . empty
+    (392) while_factor_tail -> LT while_factor . while_factor_tail
+    (385) while_factor_tail -> . PLUS while_factor while_factor_tail
+    (386) while_factor_tail -> . MINUS while_factor while_factor_tail
+    (387) while_factor_tail -> . MULTIPLY while_factor while_factor_tail
+    (388) while_factor_tail -> . DIVISION while_factor while_factor_tail
+    (389) while_factor_tail -> . MODULO while_factor while_factor_tail
+    (390) while_factor_tail -> . EXPONENT while_factor while_factor_tail
+    (391) while_factor_tail -> . GT while_factor while_factor_tail
+    (392) while_factor_tail -> . LT while_factor while_factor_tail
+    (393) while_factor_tail -> . EQ_EQ while_factor while_factor_tail
+    (394) while_factor_tail -> . GT_EQ while_factor while_factor_tail
+    (395) while_factor_tail -> . LT_EQ while_factor while_factor_tail
+    (396) while_factor_tail -> . NOT_EQ while_factor while_factor_tail
+    (397) while_factor_tail -> . AND while_factor while_factor_tail
+    (398) while_factor_tail -> . OR while_factor while_factor_tail
+    (399) while_factor_tail -> . empty
     (620) empty -> .
 
     PLUS            shift and go to state 776
@@ -21493,27 +21493,27 @@ state 953
     OR              shift and go to state 789
     RPAREN          reduce using rule 620 (empty -> .)
 
-    until_factor_tail              shift and go to state 1088
+    while_factor_tail              shift and go to state 1088
     empty                          shift and go to state 790
 
 state 954
 
-    (393) until_factor_tail -> EQ_EQ until_factor . until_factor_tail
-    (385) until_factor_tail -> . PLUS until_factor until_factor_tail
-    (386) until_factor_tail -> . MINUS until_factor until_factor_tail
-    (387) until_factor_tail -> . MULTIPLY until_factor until_factor_tail
-    (388) until_factor_tail -> . DIVISION until_factor until_factor_tail
-    (389) until_factor_tail -> . MODULO until_factor until_factor_tail
-    (390) until_factor_tail -> . EXPONENT until_factor until_factor_tail
-    (391) until_factor_tail -> . GT until_factor until_factor_tail
-    (392) until_factor_tail -> . LT until_factor until_factor_tail
-    (393) until_factor_tail -> . EQ_EQ until_factor until_factor_tail
-    (394) until_factor_tail -> . GT_EQ until_factor until_factor_tail
-    (395) until_factor_tail -> . LT_EQ until_factor until_factor_tail
-    (396) until_factor_tail -> . NOT_EQ until_factor until_factor_tail
-    (397) until_factor_tail -> . AND until_factor until_factor_tail
-    (398) until_factor_tail -> . OR until_factor until_factor_tail
-    (399) until_factor_tail -> . empty
+    (393) while_factor_tail -> EQ_EQ while_factor . while_factor_tail
+    (385) while_factor_tail -> . PLUS while_factor while_factor_tail
+    (386) while_factor_tail -> . MINUS while_factor while_factor_tail
+    (387) while_factor_tail -> . MULTIPLY while_factor while_factor_tail
+    (388) while_factor_tail -> . DIVISION while_factor while_factor_tail
+    (389) while_factor_tail -> . MODULO while_factor while_factor_tail
+    (390) while_factor_tail -> . EXPONENT while_factor while_factor_tail
+    (391) while_factor_tail -> . GT while_factor while_factor_tail
+    (392) while_factor_tail -> . LT while_factor while_factor_tail
+    (393) while_factor_tail -> . EQ_EQ while_factor while_factor_tail
+    (394) while_factor_tail -> . GT_EQ while_factor while_factor_tail
+    (395) while_factor_tail -> . LT_EQ while_factor while_factor_tail
+    (396) while_factor_tail -> . NOT_EQ while_factor while_factor_tail
+    (397) while_factor_tail -> . AND while_factor while_factor_tail
+    (398) while_factor_tail -> . OR while_factor while_factor_tail
+    (399) while_factor_tail -> . empty
     (620) empty -> .
 
     PLUS            shift and go to state 776
@@ -21532,27 +21532,27 @@ state 954
     OR              shift and go to state 789
     RPAREN          reduce using rule 620 (empty -> .)
 
-    until_factor_tail              shift and go to state 1089
+    while_factor_tail              shift and go to state 1089
     empty                          shift and go to state 790
 
 state 955
 
-    (394) until_factor_tail -> GT_EQ until_factor . until_factor_tail
-    (385) until_factor_tail -> . PLUS until_factor until_factor_tail
-    (386) until_factor_tail -> . MINUS until_factor until_factor_tail
-    (387) until_factor_tail -> . MULTIPLY until_factor until_factor_tail
-    (388) until_factor_tail -> . DIVISION until_factor until_factor_tail
-    (389) until_factor_tail -> . MODULO until_factor until_factor_tail
-    (390) until_factor_tail -> . EXPONENT until_factor until_factor_tail
-    (391) until_factor_tail -> . GT until_factor until_factor_tail
-    (392) until_factor_tail -> . LT until_factor until_factor_tail
-    (393) until_factor_tail -> . EQ_EQ until_factor until_factor_tail
-    (394) until_factor_tail -> . GT_EQ until_factor until_factor_tail
-    (395) until_factor_tail -> . LT_EQ until_factor until_factor_tail
-    (396) until_factor_tail -> . NOT_EQ until_factor until_factor_tail
-    (397) until_factor_tail -> . AND until_factor until_factor_tail
-    (398) until_factor_tail -> . OR until_factor until_factor_tail
-    (399) until_factor_tail -> . empty
+    (394) while_factor_tail -> GT_EQ while_factor . while_factor_tail
+    (385) while_factor_tail -> . PLUS while_factor while_factor_tail
+    (386) while_factor_tail -> . MINUS while_factor while_factor_tail
+    (387) while_factor_tail -> . MULTIPLY while_factor while_factor_tail
+    (388) while_factor_tail -> . DIVISION while_factor while_factor_tail
+    (389) while_factor_tail -> . MODULO while_factor while_factor_tail
+    (390) while_factor_tail -> . EXPONENT while_factor while_factor_tail
+    (391) while_factor_tail -> . GT while_factor while_factor_tail
+    (392) while_factor_tail -> . LT while_factor while_factor_tail
+    (393) while_factor_tail -> . EQ_EQ while_factor while_factor_tail
+    (394) while_factor_tail -> . GT_EQ while_factor while_factor_tail
+    (395) while_factor_tail -> . LT_EQ while_factor while_factor_tail
+    (396) while_factor_tail -> . NOT_EQ while_factor while_factor_tail
+    (397) while_factor_tail -> . AND while_factor while_factor_tail
+    (398) while_factor_tail -> . OR while_factor while_factor_tail
+    (399) while_factor_tail -> . empty
     (620) empty -> .
 
     PLUS            shift and go to state 776
@@ -21571,27 +21571,27 @@ state 955
     OR              shift and go to state 789
     RPAREN          reduce using rule 620 (empty -> .)
 
-    until_factor_tail              shift and go to state 1090
+    while_factor_tail              shift and go to state 1090
     empty                          shift and go to state 790
 
 state 956
 
-    (395) until_factor_tail -> LT_EQ until_factor . until_factor_tail
-    (385) until_factor_tail -> . PLUS until_factor until_factor_tail
-    (386) until_factor_tail -> . MINUS until_factor until_factor_tail
-    (387) until_factor_tail -> . MULTIPLY until_factor until_factor_tail
-    (388) until_factor_tail -> . DIVISION until_factor until_factor_tail
-    (389) until_factor_tail -> . MODULO until_factor until_factor_tail
-    (390) until_factor_tail -> . EXPONENT until_factor until_factor_tail
-    (391) until_factor_tail -> . GT until_factor until_factor_tail
-    (392) until_factor_tail -> . LT until_factor until_factor_tail
-    (393) until_factor_tail -> . EQ_EQ until_factor until_factor_tail
-    (394) until_factor_tail -> . GT_EQ until_factor until_factor_tail
-    (395) until_factor_tail -> . LT_EQ until_factor until_factor_tail
-    (396) until_factor_tail -> . NOT_EQ until_factor until_factor_tail
-    (397) until_factor_tail -> . AND until_factor until_factor_tail
-    (398) until_factor_tail -> . OR until_factor until_factor_tail
-    (399) until_factor_tail -> . empty
+    (395) while_factor_tail -> LT_EQ while_factor . while_factor_tail
+    (385) while_factor_tail -> . PLUS while_factor while_factor_tail
+    (386) while_factor_tail -> . MINUS while_factor while_factor_tail
+    (387) while_factor_tail -> . MULTIPLY while_factor while_factor_tail
+    (388) while_factor_tail -> . DIVISION while_factor while_factor_tail
+    (389) while_factor_tail -> . MODULO while_factor while_factor_tail
+    (390) while_factor_tail -> . EXPONENT while_factor while_factor_tail
+    (391) while_factor_tail -> . GT while_factor while_factor_tail
+    (392) while_factor_tail -> . LT while_factor while_factor_tail
+    (393) while_factor_tail -> . EQ_EQ while_factor while_factor_tail
+    (394) while_factor_tail -> . GT_EQ while_factor while_factor_tail
+    (395) while_factor_tail -> . LT_EQ while_factor while_factor_tail
+    (396) while_factor_tail -> . NOT_EQ while_factor while_factor_tail
+    (397) while_factor_tail -> . AND while_factor while_factor_tail
+    (398) while_factor_tail -> . OR while_factor while_factor_tail
+    (399) while_factor_tail -> . empty
     (620) empty -> .
 
     PLUS            shift and go to state 776
@@ -21610,27 +21610,27 @@ state 956
     OR              shift and go to state 789
     RPAREN          reduce using rule 620 (empty -> .)
 
-    until_factor_tail              shift and go to state 1091
+    while_factor_tail              shift and go to state 1091
     empty                          shift and go to state 790
 
 state 957
 
-    (396) until_factor_tail -> NOT_EQ until_factor . until_factor_tail
-    (385) until_factor_tail -> . PLUS until_factor until_factor_tail
-    (386) until_factor_tail -> . MINUS until_factor until_factor_tail
-    (387) until_factor_tail -> . MULTIPLY until_factor until_factor_tail
-    (388) until_factor_tail -> . DIVISION until_factor until_factor_tail
-    (389) until_factor_tail -> . MODULO until_factor until_factor_tail
-    (390) until_factor_tail -> . EXPONENT until_factor until_factor_tail
-    (391) until_factor_tail -> . GT until_factor until_factor_tail
-    (392) until_factor_tail -> . LT until_factor until_factor_tail
-    (393) until_factor_tail -> . EQ_EQ until_factor until_factor_tail
-    (394) until_factor_tail -> . GT_EQ until_factor until_factor_tail
-    (395) until_factor_tail -> . LT_EQ until_factor until_factor_tail
-    (396) until_factor_tail -> . NOT_EQ until_factor until_factor_tail
-    (397) until_factor_tail -> . AND until_factor until_factor_tail
-    (398) until_factor_tail -> . OR until_factor until_factor_tail
-    (399) until_factor_tail -> . empty
+    (396) while_factor_tail -> NOT_EQ while_factor . while_factor_tail
+    (385) while_factor_tail -> . PLUS while_factor while_factor_tail
+    (386) while_factor_tail -> . MINUS while_factor while_factor_tail
+    (387) while_factor_tail -> . MULTIPLY while_factor while_factor_tail
+    (388) while_factor_tail -> . DIVISION while_factor while_factor_tail
+    (389) while_factor_tail -> . MODULO while_factor while_factor_tail
+    (390) while_factor_tail -> . EXPONENT while_factor while_factor_tail
+    (391) while_factor_tail -> . GT while_factor while_factor_tail
+    (392) while_factor_tail -> . LT while_factor while_factor_tail
+    (393) while_factor_tail -> . EQ_EQ while_factor while_factor_tail
+    (394) while_factor_tail -> . GT_EQ while_factor while_factor_tail
+    (395) while_factor_tail -> . LT_EQ while_factor while_factor_tail
+    (396) while_factor_tail -> . NOT_EQ while_factor while_factor_tail
+    (397) while_factor_tail -> . AND while_factor while_factor_tail
+    (398) while_factor_tail -> . OR while_factor while_factor_tail
+    (399) while_factor_tail -> . empty
     (620) empty -> .
 
     PLUS            shift and go to state 776
@@ -21649,27 +21649,27 @@ state 957
     OR              shift and go to state 789
     RPAREN          reduce using rule 620 (empty -> .)
 
-    until_factor_tail              shift and go to state 1092
+    while_factor_tail              shift and go to state 1092
     empty                          shift and go to state 790
 
 state 958
 
-    (397) until_factor_tail -> AND until_factor . until_factor_tail
-    (385) until_factor_tail -> . PLUS until_factor until_factor_tail
-    (386) until_factor_tail -> . MINUS until_factor until_factor_tail
-    (387) until_factor_tail -> . MULTIPLY until_factor until_factor_tail
-    (388) until_factor_tail -> . DIVISION until_factor until_factor_tail
-    (389) until_factor_tail -> . MODULO until_factor until_factor_tail
-    (390) until_factor_tail -> . EXPONENT until_factor until_factor_tail
-    (391) until_factor_tail -> . GT until_factor until_factor_tail
-    (392) until_factor_tail -> . LT until_factor until_factor_tail
-    (393) until_factor_tail -> . EQ_EQ until_factor until_factor_tail
-    (394) until_factor_tail -> . GT_EQ until_factor until_factor_tail
-    (395) until_factor_tail -> . LT_EQ until_factor until_factor_tail
-    (396) until_factor_tail -> . NOT_EQ until_factor until_factor_tail
-    (397) until_factor_tail -> . AND until_factor until_factor_tail
-    (398) until_factor_tail -> . OR until_factor until_factor_tail
-    (399) until_factor_tail -> . empty
+    (397) while_factor_tail -> AND while_factor . while_factor_tail
+    (385) while_factor_tail -> . PLUS while_factor while_factor_tail
+    (386) while_factor_tail -> . MINUS while_factor while_factor_tail
+    (387) while_factor_tail -> . MULTIPLY while_factor while_factor_tail
+    (388) while_factor_tail -> . DIVISION while_factor while_factor_tail
+    (389) while_factor_tail -> . MODULO while_factor while_factor_tail
+    (390) while_factor_tail -> . EXPONENT while_factor while_factor_tail
+    (391) while_factor_tail -> . GT while_factor while_factor_tail
+    (392) while_factor_tail -> . LT while_factor while_factor_tail
+    (393) while_factor_tail -> . EQ_EQ while_factor while_factor_tail
+    (394) while_factor_tail -> . GT_EQ while_factor while_factor_tail
+    (395) while_factor_tail -> . LT_EQ while_factor while_factor_tail
+    (396) while_factor_tail -> . NOT_EQ while_factor while_factor_tail
+    (397) while_factor_tail -> . AND while_factor while_factor_tail
+    (398) while_factor_tail -> . OR while_factor while_factor_tail
+    (399) while_factor_tail -> . empty
     (620) empty -> .
 
     PLUS            shift and go to state 776
@@ -21688,27 +21688,27 @@ state 958
     OR              shift and go to state 789
     RPAREN          reduce using rule 620 (empty -> .)
 
-    until_factor_tail              shift and go to state 1093
+    while_factor_tail              shift and go to state 1093
     empty                          shift and go to state 790
 
 state 959
 
-    (398) until_factor_tail -> OR until_factor . until_factor_tail
-    (385) until_factor_tail -> . PLUS until_factor until_factor_tail
-    (386) until_factor_tail -> . MINUS until_factor until_factor_tail
-    (387) until_factor_tail -> . MULTIPLY until_factor until_factor_tail
-    (388) until_factor_tail -> . DIVISION until_factor until_factor_tail
-    (389) until_factor_tail -> . MODULO until_factor until_factor_tail
-    (390) until_factor_tail -> . EXPONENT until_factor until_factor_tail
-    (391) until_factor_tail -> . GT until_factor until_factor_tail
-    (392) until_factor_tail -> . LT until_factor until_factor_tail
-    (393) until_factor_tail -> . EQ_EQ until_factor until_factor_tail
-    (394) until_factor_tail -> . GT_EQ until_factor until_factor_tail
-    (395) until_factor_tail -> . LT_EQ until_factor until_factor_tail
-    (396) until_factor_tail -> . NOT_EQ until_factor until_factor_tail
-    (397) until_factor_tail -> . AND until_factor until_factor_tail
-    (398) until_factor_tail -> . OR until_factor until_factor_tail
-    (399) until_factor_tail -> . empty
+    (398) while_factor_tail -> OR while_factor . while_factor_tail
+    (385) while_factor_tail -> . PLUS while_factor while_factor_tail
+    (386) while_factor_tail -> . MINUS while_factor while_factor_tail
+    (387) while_factor_tail -> . MULTIPLY while_factor while_factor_tail
+    (388) while_factor_tail -> . DIVISION while_factor while_factor_tail
+    (389) while_factor_tail -> . MODULO while_factor while_factor_tail
+    (390) while_factor_tail -> . EXPONENT while_factor while_factor_tail
+    (391) while_factor_tail -> . GT while_factor while_factor_tail
+    (392) while_factor_tail -> . LT while_factor while_factor_tail
+    (393) while_factor_tail -> . EQ_EQ while_factor while_factor_tail
+    (394) while_factor_tail -> . GT_EQ while_factor while_factor_tail
+    (395) while_factor_tail -> . LT_EQ while_factor while_factor_tail
+    (396) while_factor_tail -> . NOT_EQ while_factor while_factor_tail
+    (397) while_factor_tail -> . AND while_factor while_factor_tail
+    (398) while_factor_tail -> . OR while_factor while_factor_tail
+    (399) while_factor_tail -> . empty
     (620) empty -> .
 
     PLUS            shift and go to state 776
@@ -21727,33 +21727,33 @@ state 959
     OR              shift and go to state 789
     RPAREN          reduce using rule 620 (empty -> .)
 
-    until_factor_tail              shift and go to state 1094
+    while_factor_tail              shift and go to state 1094
     empty                          shift and go to state 790
 
 state 960
 
-    (379) until_list_index -> LBRACKET until_index . RBRACKET until_list_index2
+    (379) while_list_index -> LBRACKET while_index . RBRACKET while_list_index2
 
     RBRACKET        shift and go to state 1095
 
 
 state 961
 
-    (383) until_index -> INT_LIT .
+    (383) while_index -> INT_LIT .
 
-    RBRACKET        reduce using rule 383 (until_index -> INT_LIT .)
+    RBRACKET        reduce using rule 383 (while_index -> INT_LIT .)
 
 
 state 962
 
-    (384) until_index -> IDENT .
+    (384) while_index -> IDENT .
 
-    RBRACKET        reduce using rule 384 (until_index -> IDENT .)
+    RBRACKET        reduce using rule 384 (while_index -> IDENT .)
 
 
 state 963
 
-    (405) repeat_until -> REPEAT LBRACE statements RBRACE UNTIL . LPAREN until_expression RPAREN SEMICOLON
+    (405) repeat_while -> REPEAT LBRACE statements RBRACE WHILE . LPAREN while_expression RPAREN SEMICOLON
 
     LPAREN          shift and go to state 1096
 
@@ -23754,114 +23754,114 @@ state 1079
 
 state 1080
 
-    (367) until_loop -> UNTIL LPAREN until_expression RPAREN LBRACE statements . RBRACE
+    (367) while_loop -> WHILE LPAREN while_expression RPAREN LBRACE statements . RBRACE
 
     RBRACE          shift and go to state 1170
 
 
 state 1081
 
-    (385) until_factor_tail -> PLUS until_factor until_factor_tail .
+    (385) while_factor_tail -> PLUS while_factor while_factor_tail .
 
-    RPAREN          reduce using rule 385 (until_factor_tail -> PLUS until_factor until_factor_tail .)
+    RPAREN          reduce using rule 385 (while_factor_tail -> PLUS while_factor while_factor_tail .)
 
 
 state 1082
 
-    (386) until_factor_tail -> MINUS until_factor until_factor_tail .
+    (386) while_factor_tail -> MINUS while_factor while_factor_tail .
 
-    RPAREN          reduce using rule 386 (until_factor_tail -> MINUS until_factor until_factor_tail .)
+    RPAREN          reduce using rule 386 (while_factor_tail -> MINUS while_factor while_factor_tail .)
 
 
 state 1083
 
-    (387) until_factor_tail -> MULTIPLY until_factor until_factor_tail .
+    (387) while_factor_tail -> MULTIPLY while_factor while_factor_tail .
 
-    RPAREN          reduce using rule 387 (until_factor_tail -> MULTIPLY until_factor until_factor_tail .)
+    RPAREN          reduce using rule 387 (while_factor_tail -> MULTIPLY while_factor while_factor_tail .)
 
 
 state 1084
 
-    (388) until_factor_tail -> DIVISION until_factor until_factor_tail .
+    (388) while_factor_tail -> DIVISION while_factor while_factor_tail .
 
-    RPAREN          reduce using rule 388 (until_factor_tail -> DIVISION until_factor until_factor_tail .)
+    RPAREN          reduce using rule 388 (while_factor_tail -> DIVISION while_factor while_factor_tail .)
 
 
 state 1085
 
-    (389) until_factor_tail -> MODULO until_factor until_factor_tail .
+    (389) while_factor_tail -> MODULO while_factor while_factor_tail .
 
-    RPAREN          reduce using rule 389 (until_factor_tail -> MODULO until_factor until_factor_tail .)
+    RPAREN          reduce using rule 389 (while_factor_tail -> MODULO while_factor while_factor_tail .)
 
 
 state 1086
 
-    (390) until_factor_tail -> EXPONENT until_factor until_factor_tail .
+    (390) while_factor_tail -> EXPONENT while_factor while_factor_tail .
 
-    RPAREN          reduce using rule 390 (until_factor_tail -> EXPONENT until_factor until_factor_tail .)
+    RPAREN          reduce using rule 390 (while_factor_tail -> EXPONENT while_factor while_factor_tail .)
 
 
 state 1087
 
-    (391) until_factor_tail -> GT until_factor until_factor_tail .
+    (391) while_factor_tail -> GT while_factor while_factor_tail .
 
-    RPAREN          reduce using rule 391 (until_factor_tail -> GT until_factor until_factor_tail .)
+    RPAREN          reduce using rule 391 (while_factor_tail -> GT while_factor while_factor_tail .)
 
 
 state 1088
 
-    (392) until_factor_tail -> LT until_factor until_factor_tail .
+    (392) while_factor_tail -> LT while_factor while_factor_tail .
 
-    RPAREN          reduce using rule 392 (until_factor_tail -> LT until_factor until_factor_tail .)
+    RPAREN          reduce using rule 392 (while_factor_tail -> LT while_factor while_factor_tail .)
 
 
 state 1089
 
-    (393) until_factor_tail -> EQ_EQ until_factor until_factor_tail .
+    (393) while_factor_tail -> EQ_EQ while_factor while_factor_tail .
 
-    RPAREN          reduce using rule 393 (until_factor_tail -> EQ_EQ until_factor until_factor_tail .)
+    RPAREN          reduce using rule 393 (while_factor_tail -> EQ_EQ while_factor while_factor_tail .)
 
 
 state 1090
 
-    (394) until_factor_tail -> GT_EQ until_factor until_factor_tail .
+    (394) while_factor_tail -> GT_EQ while_factor while_factor_tail .
 
-    RPAREN          reduce using rule 394 (until_factor_tail -> GT_EQ until_factor until_factor_tail .)
+    RPAREN          reduce using rule 394 (while_factor_tail -> GT_EQ while_factor while_factor_tail .)
 
 
 state 1091
 
-    (395) until_factor_tail -> LT_EQ until_factor until_factor_tail .
+    (395) while_factor_tail -> LT_EQ while_factor while_factor_tail .
 
-    RPAREN          reduce using rule 395 (until_factor_tail -> LT_EQ until_factor until_factor_tail .)
+    RPAREN          reduce using rule 395 (while_factor_tail -> LT_EQ while_factor while_factor_tail .)
 
 
 state 1092
 
-    (396) until_factor_tail -> NOT_EQ until_factor until_factor_tail .
+    (396) while_factor_tail -> NOT_EQ while_factor while_factor_tail .
 
-    RPAREN          reduce using rule 396 (until_factor_tail -> NOT_EQ until_factor until_factor_tail .)
+    RPAREN          reduce using rule 396 (while_factor_tail -> NOT_EQ while_factor while_factor_tail .)
 
 
 state 1093
 
-    (397) until_factor_tail -> AND until_factor until_factor_tail .
+    (397) while_factor_tail -> AND while_factor while_factor_tail .
 
-    RPAREN          reduce using rule 397 (until_factor_tail -> AND until_factor until_factor_tail .)
+    RPAREN          reduce using rule 397 (while_factor_tail -> AND while_factor while_factor_tail .)
 
 
 state 1094
 
-    (398) until_factor_tail -> OR until_factor until_factor_tail .
+    (398) while_factor_tail -> OR while_factor while_factor_tail .
 
-    RPAREN          reduce using rule 398 (until_factor_tail -> OR until_factor until_factor_tail .)
+    RPAREN          reduce using rule 398 (while_factor_tail -> OR while_factor while_factor_tail .)
 
 
 state 1095
 
-    (379) until_list_index -> LBRACKET until_index RBRACKET . until_list_index2
-    (381) until_list_index2 -> . LBRACKET until_index RBRACKET
-    (382) until_list_index2 -> . empty
+    (379) while_list_index -> LBRACKET while_index RBRACKET . while_list_index2
+    (381) while_list_index2 -> . LBRACKET while_index RBRACKET
+    (382) while_list_index2 -> . empty
     (620) empty -> .
 
     LBRACKET        shift and go to state 1171
@@ -23883,24 +23883,24 @@ state 1095
     OR              reduce using rule 620 (empty -> .)
     RPAREN          reduce using rule 620 (empty -> .)
 
-    until_list_index2              shift and go to state 1172
+    while_list_index2              shift and go to state 1172
     empty                          shift and go to state 1173
 
 state 1096
 
-    (405) repeat_until -> REPEAT LBRACE statements RBRACE UNTIL LPAREN . until_expression RPAREN SEMICOLON
-    (368) until_expression -> . until_factor until_factor_tail
-    (369) until_factor -> . until_var_call until_postfix
-    (370) until_factor -> . until_factor1
-    (371) until_factor -> . TILDE INT_LIT
-    (372) until_factor -> . TILDE FLT_LIT
-    (373) until_factor -> . LPAREN until_expression RPAREN
-    (374) until_var_call -> . IDENT until_list_index
-    (400) until_factor1 -> . INT_LIT
-    (401) until_factor1 -> . FLT_LIT
-    (402) until_factor1 -> . DAY
-    (403) until_factor1 -> . NIGHT
-    (404) until_factor1 -> . STR_LIT
+    (405) repeat_while -> REPEAT LBRACE statements RBRACE WHILE LPAREN . while_expression RPAREN SEMICOLON
+    (368) while_expression -> . while_factor while_factor_tail
+    (369) while_factor -> . while_var_call while_postfix
+    (370) while_factor -> . while_factor1
+    (371) while_factor -> . TILDE INT_LIT
+    (372) while_factor -> . TILDE FLT_LIT
+    (373) while_factor -> . LPAREN while_expression RPAREN
+    (374) while_var_call -> . IDENT while_list_index
+    (400) while_factor1 -> . INT_LIT
+    (401) while_factor1 -> . FLT_LIT
+    (402) while_factor1 -> . DAY
+    (403) while_factor1 -> . NIGHT
+    (404) while_factor1 -> . STR_LIT
 
     TILDE           shift and go to state 601
     LPAREN          shift and go to state 596
@@ -23911,10 +23911,10 @@ state 1096
     NIGHT           shift and go to state 606
     STR_LIT         shift and go to state 607
 
-    until_expression               shift and go to state 1174
-    until_factor                   shift and go to state 598
-    until_var_call                 shift and go to state 599
-    until_factor1                  shift and go to state 600
+    while_expression               shift and go to state 1174
+    while_factor                   shift and go to state 598
+    while_var_call                 shift and go to state 599
+    while_factor1                  shift and go to state 600
 
 state 1097
 
@@ -25277,90 +25277,90 @@ state 1169
 
 state 1170
 
-    (367) until_loop -> UNTIL LPAREN until_expression RPAREN LBRACE statements RBRACE .
+    (367) while_loop -> WHILE LPAREN while_expression RPAREN LBRACE statements RBRACE .
 
-    INT             reduce using rule 367 (until_loop -> UNTIL LPAREN until_expression RPAREN LBRACE statements RBRACE .)
-    FLT             reduce using rule 367 (until_loop -> UNTIL LPAREN until_expression RPAREN LBRACE statements RBRACE .)
-    BLN             reduce using rule 367 (until_loop -> UNTIL LPAREN until_expression RPAREN LBRACE statements RBRACE .)
-    CHR             reduce using rule 367 (until_loop -> UNTIL LPAREN until_expression RPAREN LBRACE statements RBRACE .)
-    STR             reduce using rule 367 (until_loop -> UNTIL LPAREN until_expression RPAREN LBRACE statements RBRACE .)
-    SWAP            reduce using rule 367 (until_loop -> UNTIL LPAREN until_expression RPAREN LBRACE statements RBRACE .)
-    FUNCTION_NAME   reduce using rule 367 (until_loop -> UNTIL LPAREN until_expression RPAREN LBRACE statements RBRACE .)
-    IDENT           reduce using rule 367 (until_loop -> UNTIL LPAREN until_expression RPAREN LBRACE statements RBRACE .)
-    DISPLAY         reduce using rule 367 (until_loop -> UNTIL LPAREN until_expression RPAREN LBRACE statements RBRACE .)
-    CHECK           reduce using rule 367 (until_loop -> UNTIL LPAREN until_expression RPAREN LBRACE statements RBRACE .)
-    STOP            reduce using rule 367 (until_loop -> UNTIL LPAREN until_expression RPAREN LBRACE statements RBRACE .)
-    CONTINUE        reduce using rule 367 (until_loop -> UNTIL LPAREN until_expression RPAREN LBRACE statements RBRACE .)
-    FOR             reduce using rule 367 (until_loop -> UNTIL LPAREN until_expression RPAREN LBRACE statements RBRACE .)
-    UNTIL           reduce using rule 367 (until_loop -> UNTIL LPAREN until_expression RPAREN LBRACE statements RBRACE .)
-    REPEAT          reduce using rule 367 (until_loop -> UNTIL LPAREN until_expression RPAREN LBRACE statements RBRACE .)
-    INPUT           reduce using rule 367 (until_loop -> UNTIL LPAREN until_expression RPAREN LBRACE statements RBRACE .)
-    RBRACE          reduce using rule 367 (until_loop -> UNTIL LPAREN until_expression RPAREN LBRACE statements RBRACE .)
-    REVIVE          reduce using rule 367 (until_loop -> UNTIL LPAREN until_expression RPAREN LBRACE statements RBRACE .)
-    SHIFT           reduce using rule 367 (until_loop -> UNTIL LPAREN until_expression RPAREN LBRACE statements RBRACE .)
-    OTHERWISE       reduce using rule 367 (until_loop -> UNTIL LPAREN until_expression RPAREN LBRACE statements RBRACE .)
+    INT             reduce using rule 367 (while_loop -> WHILE LPAREN while_expression RPAREN LBRACE statements RBRACE .)
+    FLT             reduce using rule 367 (while_loop -> WHILE LPAREN while_expression RPAREN LBRACE statements RBRACE .)
+    BLN             reduce using rule 367 (while_loop -> WHILE LPAREN while_expression RPAREN LBRACE statements RBRACE .)
+    CHR             reduce using rule 367 (while_loop -> WHILE LPAREN while_expression RPAREN LBRACE statements RBRACE .)
+    STR             reduce using rule 367 (while_loop -> WHILE LPAREN while_expression RPAREN LBRACE statements RBRACE .)
+    SWAP            reduce using rule 367 (while_loop -> WHILE LPAREN while_expression RPAREN LBRACE statements RBRACE .)
+    FUNCTION_NAME   reduce using rule 367 (while_loop -> WHILE LPAREN while_expression RPAREN LBRACE statements RBRACE .)
+    IDENT           reduce using rule 367 (while_loop -> WHILE LPAREN while_expression RPAREN LBRACE statements RBRACE .)
+    DISPLAY         reduce using rule 367 (while_loop -> WHILE LPAREN while_expression RPAREN LBRACE statements RBRACE .)
+    CHECK           reduce using rule 367 (while_loop -> WHILE LPAREN while_expression RPAREN LBRACE statements RBRACE .)
+    STOP            reduce using rule 367 (while_loop -> WHILE LPAREN while_expression RPAREN LBRACE statements RBRACE .)
+    CONTINUE        reduce using rule 367 (while_loop -> WHILE LPAREN while_expression RPAREN LBRACE statements RBRACE .)
+    FOR             reduce using rule 367 (while_loop -> WHILE LPAREN while_expression RPAREN LBRACE statements RBRACE .)
+    WHILE           reduce using rule 367 (while_loop -> WHILE LPAREN while_expression RPAREN LBRACE statements RBRACE .)
+    REPEAT          reduce using rule 367 (while_loop -> WHILE LPAREN while_expression RPAREN LBRACE statements RBRACE .)
+    INPUT           reduce using rule 367 (while_loop -> WHILE LPAREN while_expression RPAREN LBRACE statements RBRACE .)
+    RBRACE          reduce using rule 367 (while_loop -> WHILE LPAREN while_expression RPAREN LBRACE statements RBRACE .)
+    REVIVE          reduce using rule 367 (while_loop -> WHILE LPAREN while_expression RPAREN LBRACE statements RBRACE .)
+    SHIFT           reduce using rule 367 (while_loop -> WHILE LPAREN while_expression RPAREN LBRACE statements RBRACE .)
+    OTHERWISE       reduce using rule 367 (while_loop -> WHILE LPAREN while_expression RPAREN LBRACE statements RBRACE .)
 
 
 state 1171
 
-    (381) until_list_index2 -> LBRACKET . until_index RBRACKET
-    (383) until_index -> . INT_LIT
-    (384) until_index -> . IDENT
+    (381) while_list_index2 -> LBRACKET . while_index RBRACKET
+    (383) while_index -> . INT_LIT
+    (384) while_index -> . IDENT
 
     INT_LIT         shift and go to state 961
     IDENT           shift and go to state 962
 
-    until_index                    shift and go to state 1238
+    while_index                    shift and go to state 1238
 
 state 1172
 
-    (379) until_list_index -> LBRACKET until_index RBRACKET until_list_index2 .
+    (379) while_list_index -> LBRACKET while_index RBRACKET while_list_index2 .
 
-    PLUS_PLUS       reduce using rule 379 (until_list_index -> LBRACKET until_index RBRACKET until_list_index2 .)
-    MINUS_MINUS     reduce using rule 379 (until_list_index -> LBRACKET until_index RBRACKET until_list_index2 .)
-    PLUS            reduce using rule 379 (until_list_index -> LBRACKET until_index RBRACKET until_list_index2 .)
-    MINUS           reduce using rule 379 (until_list_index -> LBRACKET until_index RBRACKET until_list_index2 .)
-    MULTIPLY        reduce using rule 379 (until_list_index -> LBRACKET until_index RBRACKET until_list_index2 .)
-    DIVISION        reduce using rule 379 (until_list_index -> LBRACKET until_index RBRACKET until_list_index2 .)
-    MODULO          reduce using rule 379 (until_list_index -> LBRACKET until_index RBRACKET until_list_index2 .)
-    EXPONENT        reduce using rule 379 (until_list_index -> LBRACKET until_index RBRACKET until_list_index2 .)
-    GT              reduce using rule 379 (until_list_index -> LBRACKET until_index RBRACKET until_list_index2 .)
-    LT              reduce using rule 379 (until_list_index -> LBRACKET until_index RBRACKET until_list_index2 .)
-    EQ_EQ           reduce using rule 379 (until_list_index -> LBRACKET until_index RBRACKET until_list_index2 .)
-    GT_EQ           reduce using rule 379 (until_list_index -> LBRACKET until_index RBRACKET until_list_index2 .)
-    LT_EQ           reduce using rule 379 (until_list_index -> LBRACKET until_index RBRACKET until_list_index2 .)
-    NOT_EQ          reduce using rule 379 (until_list_index -> LBRACKET until_index RBRACKET until_list_index2 .)
-    AND             reduce using rule 379 (until_list_index -> LBRACKET until_index RBRACKET until_list_index2 .)
-    OR              reduce using rule 379 (until_list_index -> LBRACKET until_index RBRACKET until_list_index2 .)
-    RPAREN          reduce using rule 379 (until_list_index -> LBRACKET until_index RBRACKET until_list_index2 .)
+    PLUS_PLUS       reduce using rule 379 (while_list_index -> LBRACKET while_index RBRACKET while_list_index2 .)
+    MINUS_MINUS     reduce using rule 379 (while_list_index -> LBRACKET while_index RBRACKET while_list_index2 .)
+    PLUS            reduce using rule 379 (while_list_index -> LBRACKET while_index RBRACKET while_list_index2 .)
+    MINUS           reduce using rule 379 (while_list_index -> LBRACKET while_index RBRACKET while_list_index2 .)
+    MULTIPLY        reduce using rule 379 (while_list_index -> LBRACKET while_index RBRACKET while_list_index2 .)
+    DIVISION        reduce using rule 379 (while_list_index -> LBRACKET while_index RBRACKET while_list_index2 .)
+    MODULO          reduce using rule 379 (while_list_index -> LBRACKET while_index RBRACKET while_list_index2 .)
+    EXPONENT        reduce using rule 379 (while_list_index -> LBRACKET while_index RBRACKET while_list_index2 .)
+    GT              reduce using rule 379 (while_list_index -> LBRACKET while_index RBRACKET while_list_index2 .)
+    LT              reduce using rule 379 (while_list_index -> LBRACKET while_index RBRACKET while_list_index2 .)
+    EQ_EQ           reduce using rule 379 (while_list_index -> LBRACKET while_index RBRACKET while_list_index2 .)
+    GT_EQ           reduce using rule 379 (while_list_index -> LBRACKET while_index RBRACKET while_list_index2 .)
+    LT_EQ           reduce using rule 379 (while_list_index -> LBRACKET while_index RBRACKET while_list_index2 .)
+    NOT_EQ          reduce using rule 379 (while_list_index -> LBRACKET while_index RBRACKET while_list_index2 .)
+    AND             reduce using rule 379 (while_list_index -> LBRACKET while_index RBRACKET while_list_index2 .)
+    OR              reduce using rule 379 (while_list_index -> LBRACKET while_index RBRACKET while_list_index2 .)
+    RPAREN          reduce using rule 379 (while_list_index -> LBRACKET while_index RBRACKET while_list_index2 .)
 
 
 state 1173
 
-    (382) until_list_index2 -> empty .
+    (382) while_list_index2 -> empty .
 
-    PLUS_PLUS       reduce using rule 382 (until_list_index2 -> empty .)
-    MINUS_MINUS     reduce using rule 382 (until_list_index2 -> empty .)
-    PLUS            reduce using rule 382 (until_list_index2 -> empty .)
-    MINUS           reduce using rule 382 (until_list_index2 -> empty .)
-    MULTIPLY        reduce using rule 382 (until_list_index2 -> empty .)
-    DIVISION        reduce using rule 382 (until_list_index2 -> empty .)
-    MODULO          reduce using rule 382 (until_list_index2 -> empty .)
-    EXPONENT        reduce using rule 382 (until_list_index2 -> empty .)
-    GT              reduce using rule 382 (until_list_index2 -> empty .)
-    LT              reduce using rule 382 (until_list_index2 -> empty .)
-    EQ_EQ           reduce using rule 382 (until_list_index2 -> empty .)
-    GT_EQ           reduce using rule 382 (until_list_index2 -> empty .)
-    LT_EQ           reduce using rule 382 (until_list_index2 -> empty .)
-    NOT_EQ          reduce using rule 382 (until_list_index2 -> empty .)
-    AND             reduce using rule 382 (until_list_index2 -> empty .)
-    OR              reduce using rule 382 (until_list_index2 -> empty .)
-    RPAREN          reduce using rule 382 (until_list_index2 -> empty .)
+    PLUS_PLUS       reduce using rule 382 (while_list_index2 -> empty .)
+    MINUS_MINUS     reduce using rule 382 (while_list_index2 -> empty .)
+    PLUS            reduce using rule 382 (while_list_index2 -> empty .)
+    MINUS           reduce using rule 382 (while_list_index2 -> empty .)
+    MULTIPLY        reduce using rule 382 (while_list_index2 -> empty .)
+    DIVISION        reduce using rule 382 (while_list_index2 -> empty .)
+    MODULO          reduce using rule 382 (while_list_index2 -> empty .)
+    EXPONENT        reduce using rule 382 (while_list_index2 -> empty .)
+    GT              reduce using rule 382 (while_list_index2 -> empty .)
+    LT              reduce using rule 382 (while_list_index2 -> empty .)
+    EQ_EQ           reduce using rule 382 (while_list_index2 -> empty .)
+    GT_EQ           reduce using rule 382 (while_list_index2 -> empty .)
+    LT_EQ           reduce using rule 382 (while_list_index2 -> empty .)
+    NOT_EQ          reduce using rule 382 (while_list_index2 -> empty .)
+    AND             reduce using rule 382 (while_list_index2 -> empty .)
+    OR              reduce using rule 382 (while_list_index2 -> empty .)
+    RPAREN          reduce using rule 382 (while_list_index2 -> empty .)
 
 
 state 1174
 
-    (405) repeat_until -> REPEAT LBRACE statements RBRACE UNTIL LPAREN until_expression . RPAREN SEMICOLON
+    (405) repeat_while -> REPEAT LBRACE statements RBRACE WHILE LPAREN while_expression . RPAREN SEMICOLON
 
     RPAREN          shift and go to state 1239
 
@@ -25460,7 +25460,7 @@ state 1179
     STOP            reduce using rule 620 (empty -> .)
     CONTINUE        reduce using rule 620 (empty -> .)
     FOR             reduce using rule 620 (empty -> .)
-    UNTIL           reduce using rule 620 (empty -> .)
+    WHILE           reduce using rule 620 (empty -> .)
     REPEAT          reduce using rule 620 (empty -> .)
     INPUT           reduce using rule 620 (empty -> .)
     INT             shift and go to state 274
@@ -25511,7 +25511,7 @@ state 1180
     STOP            reduce using rule 620 (empty -> .)
     CONTINUE        reduce using rule 620 (empty -> .)
     FOR             reduce using rule 620 (empty -> .)
-    UNTIL           reduce using rule 620 (empty -> .)
+    WHILE           reduce using rule 620 (empty -> .)
     REPEAT          reduce using rule 620 (empty -> .)
     INPUT           reduce using rule 620 (empty -> .)
     INT             shift and go to state 274
@@ -26626,14 +26626,14 @@ state 1237
 
 state 1238
 
-    (381) until_list_index2 -> LBRACKET until_index . RBRACKET
+    (381) while_list_index2 -> LBRACKET while_index . RBRACKET
 
     RBRACKET        shift and go to state 1278
 
 
 state 1239
 
-    (405) repeat_until -> REPEAT LBRACE statements RBRACE UNTIL LPAREN until_expression RPAREN . SEMICOLON
+    (405) repeat_while -> REPEAT LBRACE statements RBRACE WHILE LPAREN while_expression RPAREN . SEMICOLON
 
     SEMICOLON       shift and go to state 1279
 
@@ -27457,7 +27457,7 @@ state 1273
     STOP            reduce using rule 620 (empty -> .)
     CONTINUE        reduce using rule 620 (empty -> .)
     FOR             reduce using rule 620 (empty -> .)
-    UNTIL           reduce using rule 620 (empty -> .)
+    WHILE           reduce using rule 620 (empty -> .)
     REPEAT          reduce using rule 620 (empty -> .)
     INPUT           reduce using rule 620 (empty -> .)
     INT             shift and go to state 274
@@ -27546,51 +27546,51 @@ state 1277
 
 state 1278
 
-    (381) until_list_index2 -> LBRACKET until_index RBRACKET .
+    (381) while_list_index2 -> LBRACKET while_index RBRACKET .
 
-    PLUS_PLUS       reduce using rule 381 (until_list_index2 -> LBRACKET until_index RBRACKET .)
-    MINUS_MINUS     reduce using rule 381 (until_list_index2 -> LBRACKET until_index RBRACKET .)
-    PLUS            reduce using rule 381 (until_list_index2 -> LBRACKET until_index RBRACKET .)
-    MINUS           reduce using rule 381 (until_list_index2 -> LBRACKET until_index RBRACKET .)
-    MULTIPLY        reduce using rule 381 (until_list_index2 -> LBRACKET until_index RBRACKET .)
-    DIVISION        reduce using rule 381 (until_list_index2 -> LBRACKET until_index RBRACKET .)
-    MODULO          reduce using rule 381 (until_list_index2 -> LBRACKET until_index RBRACKET .)
-    EXPONENT        reduce using rule 381 (until_list_index2 -> LBRACKET until_index RBRACKET .)
-    GT              reduce using rule 381 (until_list_index2 -> LBRACKET until_index RBRACKET .)
-    LT              reduce using rule 381 (until_list_index2 -> LBRACKET until_index RBRACKET .)
-    EQ_EQ           reduce using rule 381 (until_list_index2 -> LBRACKET until_index RBRACKET .)
-    GT_EQ           reduce using rule 381 (until_list_index2 -> LBRACKET until_index RBRACKET .)
-    LT_EQ           reduce using rule 381 (until_list_index2 -> LBRACKET until_index RBRACKET .)
-    NOT_EQ          reduce using rule 381 (until_list_index2 -> LBRACKET until_index RBRACKET .)
-    AND             reduce using rule 381 (until_list_index2 -> LBRACKET until_index RBRACKET .)
-    OR              reduce using rule 381 (until_list_index2 -> LBRACKET until_index RBRACKET .)
-    RPAREN          reduce using rule 381 (until_list_index2 -> LBRACKET until_index RBRACKET .)
+    PLUS_PLUS       reduce using rule 381 (while_list_index2 -> LBRACKET while_index RBRACKET .)
+    MINUS_MINUS     reduce using rule 381 (while_list_index2 -> LBRACKET while_index RBRACKET .)
+    PLUS            reduce using rule 381 (while_list_index2 -> LBRACKET while_index RBRACKET .)
+    MINUS           reduce using rule 381 (while_list_index2 -> LBRACKET while_index RBRACKET .)
+    MULTIPLY        reduce using rule 381 (while_list_index2 -> LBRACKET while_index RBRACKET .)
+    DIVISION        reduce using rule 381 (while_list_index2 -> LBRACKET while_index RBRACKET .)
+    MODULO          reduce using rule 381 (while_list_index2 -> LBRACKET while_index RBRACKET .)
+    EXPONENT        reduce using rule 381 (while_list_index2 -> LBRACKET while_index RBRACKET .)
+    GT              reduce using rule 381 (while_list_index2 -> LBRACKET while_index RBRACKET .)
+    LT              reduce using rule 381 (while_list_index2 -> LBRACKET while_index RBRACKET .)
+    EQ_EQ           reduce using rule 381 (while_list_index2 -> LBRACKET while_index RBRACKET .)
+    GT_EQ           reduce using rule 381 (while_list_index2 -> LBRACKET while_index RBRACKET .)
+    LT_EQ           reduce using rule 381 (while_list_index2 -> LBRACKET while_index RBRACKET .)
+    NOT_EQ          reduce using rule 381 (while_list_index2 -> LBRACKET while_index RBRACKET .)
+    AND             reduce using rule 381 (while_list_index2 -> LBRACKET while_index RBRACKET .)
+    OR              reduce using rule 381 (while_list_index2 -> LBRACKET while_index RBRACKET .)
+    RPAREN          reduce using rule 381 (while_list_index2 -> LBRACKET while_index RBRACKET .)
 
 
 state 1279
 
-    (405) repeat_until -> REPEAT LBRACE statements RBRACE UNTIL LPAREN until_expression RPAREN SEMICOLON .
+    (405) repeat_while -> REPEAT LBRACE statements RBRACE WHILE LPAREN while_expression RPAREN SEMICOLON .
 
-    INT             reduce using rule 405 (repeat_until -> REPEAT LBRACE statements RBRACE UNTIL LPAREN until_expression RPAREN SEMICOLON .)
-    FLT             reduce using rule 405 (repeat_until -> REPEAT LBRACE statements RBRACE UNTIL LPAREN until_expression RPAREN SEMICOLON .)
-    BLN             reduce using rule 405 (repeat_until -> REPEAT LBRACE statements RBRACE UNTIL LPAREN until_expression RPAREN SEMICOLON .)
-    CHR             reduce using rule 405 (repeat_until -> REPEAT LBRACE statements RBRACE UNTIL LPAREN until_expression RPAREN SEMICOLON .)
-    STR             reduce using rule 405 (repeat_until -> REPEAT LBRACE statements RBRACE UNTIL LPAREN until_expression RPAREN SEMICOLON .)
-    SWAP            reduce using rule 405 (repeat_until -> REPEAT LBRACE statements RBRACE UNTIL LPAREN until_expression RPAREN SEMICOLON .)
-    FUNCTION_NAME   reduce using rule 405 (repeat_until -> REPEAT LBRACE statements RBRACE UNTIL LPAREN until_expression RPAREN SEMICOLON .)
-    IDENT           reduce using rule 405 (repeat_until -> REPEAT LBRACE statements RBRACE UNTIL LPAREN until_expression RPAREN SEMICOLON .)
-    DISPLAY         reduce using rule 405 (repeat_until -> REPEAT LBRACE statements RBRACE UNTIL LPAREN until_expression RPAREN SEMICOLON .)
-    CHECK           reduce using rule 405 (repeat_until -> REPEAT LBRACE statements RBRACE UNTIL LPAREN until_expression RPAREN SEMICOLON .)
-    STOP            reduce using rule 405 (repeat_until -> REPEAT LBRACE statements RBRACE UNTIL LPAREN until_expression RPAREN SEMICOLON .)
-    CONTINUE        reduce using rule 405 (repeat_until -> REPEAT LBRACE statements RBRACE UNTIL LPAREN until_expression RPAREN SEMICOLON .)
-    FOR             reduce using rule 405 (repeat_until -> REPEAT LBRACE statements RBRACE UNTIL LPAREN until_expression RPAREN SEMICOLON .)
-    UNTIL           reduce using rule 405 (repeat_until -> REPEAT LBRACE statements RBRACE UNTIL LPAREN until_expression RPAREN SEMICOLON .)
-    REPEAT          reduce using rule 405 (repeat_until -> REPEAT LBRACE statements RBRACE UNTIL LPAREN until_expression RPAREN SEMICOLON .)
-    INPUT           reduce using rule 405 (repeat_until -> REPEAT LBRACE statements RBRACE UNTIL LPAREN until_expression RPAREN SEMICOLON .)
-    RBRACE          reduce using rule 405 (repeat_until -> REPEAT LBRACE statements RBRACE UNTIL LPAREN until_expression RPAREN SEMICOLON .)
-    REVIVE          reduce using rule 405 (repeat_until -> REPEAT LBRACE statements RBRACE UNTIL LPAREN until_expression RPAREN SEMICOLON .)
-    SHIFT           reduce using rule 405 (repeat_until -> REPEAT LBRACE statements RBRACE UNTIL LPAREN until_expression RPAREN SEMICOLON .)
-    OTHERWISE       reduce using rule 405 (repeat_until -> REPEAT LBRACE statements RBRACE UNTIL LPAREN until_expression RPAREN SEMICOLON .)
+    INT             reduce using rule 405 (repeat_while -> REPEAT LBRACE statements RBRACE WHILE LPAREN while_expression RPAREN SEMICOLON .)
+    FLT             reduce using rule 405 (repeat_while -> REPEAT LBRACE statements RBRACE WHILE LPAREN while_expression RPAREN SEMICOLON .)
+    BLN             reduce using rule 405 (repeat_while -> REPEAT LBRACE statements RBRACE WHILE LPAREN while_expression RPAREN SEMICOLON .)
+    CHR             reduce using rule 405 (repeat_while -> REPEAT LBRACE statements RBRACE WHILE LPAREN while_expression RPAREN SEMICOLON .)
+    STR             reduce using rule 405 (repeat_while -> REPEAT LBRACE statements RBRACE WHILE LPAREN while_expression RPAREN SEMICOLON .)
+    SWAP            reduce using rule 405 (repeat_while -> REPEAT LBRACE statements RBRACE WHILE LPAREN while_expression RPAREN SEMICOLON .)
+    FUNCTION_NAME   reduce using rule 405 (repeat_while -> REPEAT LBRACE statements RBRACE WHILE LPAREN while_expression RPAREN SEMICOLON .)
+    IDENT           reduce using rule 405 (repeat_while -> REPEAT LBRACE statements RBRACE WHILE LPAREN while_expression RPAREN SEMICOLON .)
+    DISPLAY         reduce using rule 405 (repeat_while -> REPEAT LBRACE statements RBRACE WHILE LPAREN while_expression RPAREN SEMICOLON .)
+    CHECK           reduce using rule 405 (repeat_while -> REPEAT LBRACE statements RBRACE WHILE LPAREN while_expression RPAREN SEMICOLON .)
+    STOP            reduce using rule 405 (repeat_while -> REPEAT LBRACE statements RBRACE WHILE LPAREN while_expression RPAREN SEMICOLON .)
+    CONTINUE        reduce using rule 405 (repeat_while -> REPEAT LBRACE statements RBRACE WHILE LPAREN while_expression RPAREN SEMICOLON .)
+    FOR             reduce using rule 405 (repeat_while -> REPEAT LBRACE statements RBRACE WHILE LPAREN while_expression RPAREN SEMICOLON .)
+    WHILE           reduce using rule 405 (repeat_while -> REPEAT LBRACE statements RBRACE WHILE LPAREN while_expression RPAREN SEMICOLON .)
+    REPEAT          reduce using rule 405 (repeat_while -> REPEAT LBRACE statements RBRACE WHILE LPAREN while_expression RPAREN SEMICOLON .)
+    INPUT           reduce using rule 405 (repeat_while -> REPEAT LBRACE statements RBRACE WHILE LPAREN while_expression RPAREN SEMICOLON .)
+    RBRACE          reduce using rule 405 (repeat_while -> REPEAT LBRACE statements RBRACE WHILE LPAREN while_expression RPAREN SEMICOLON .)
+    REVIVE          reduce using rule 405 (repeat_while -> REPEAT LBRACE statements RBRACE WHILE LPAREN while_expression RPAREN SEMICOLON .)
+    SHIFT           reduce using rule 405 (repeat_while -> REPEAT LBRACE statements RBRACE WHILE LPAREN while_expression RPAREN SEMICOLON .)
+    OTHERWISE       reduce using rule 405 (repeat_while -> REPEAT LBRACE statements RBRACE WHILE LPAREN while_expression RPAREN SEMICOLON .)
 
 
 state 1280
@@ -27851,7 +27851,7 @@ state 1305
     STOP            reduce using rule 620 (empty -> .)
     CONTINUE        reduce using rule 620 (empty -> .)
     FOR             reduce using rule 620 (empty -> .)
-    UNTIL           reduce using rule 620 (empty -> .)
+    WHILE           reduce using rule 620 (empty -> .)
     REPEAT          reduce using rule 620 (empty -> .)
     INPUT           reduce using rule 620 (empty -> .)
     INT             shift and go to state 274
@@ -27910,7 +27910,7 @@ state 1309
     STOP            reduce using rule 277 (switch_statement -> SWAP LPAREN IDENT RPAREN LBRACE switch_condition OTHERWISE LBRACE statements RBRACE RBRACE .)
     CONTINUE        reduce using rule 277 (switch_statement -> SWAP LPAREN IDENT RPAREN LBRACE switch_condition OTHERWISE LBRACE statements RBRACE RBRACE .)
     FOR             reduce using rule 277 (switch_statement -> SWAP LPAREN IDENT RPAREN LBRACE switch_condition OTHERWISE LBRACE statements RBRACE RBRACE .)
-    UNTIL           reduce using rule 277 (switch_statement -> SWAP LPAREN IDENT RPAREN LBRACE switch_condition OTHERWISE LBRACE statements RBRACE RBRACE .)
+    WHILE           reduce using rule 277 (switch_statement -> SWAP LPAREN IDENT RPAREN LBRACE switch_condition OTHERWISE LBRACE statements RBRACE RBRACE .)
     REPEAT          reduce using rule 277 (switch_statement -> SWAP LPAREN IDENT RPAREN LBRACE switch_condition OTHERWISE LBRACE statements RBRACE RBRACE .)
     INPUT           reduce using rule 277 (switch_statement -> SWAP LPAREN IDENT RPAREN LBRACE switch_condition OTHERWISE LBRACE statements RBRACE RBRACE .)
     RBRACE          reduce using rule 277 (switch_statement -> SWAP LPAREN IDENT RPAREN LBRACE switch_condition OTHERWISE LBRACE statements RBRACE RBRACE .)
@@ -28009,7 +28009,7 @@ state 1315
     STOP            reduce using rule 328 (for_loop -> FOR LPAREN control_variable SEMICOLON for_expression SEMICOLON update RPAREN LBRACE statements RBRACE .)
     CONTINUE        reduce using rule 328 (for_loop -> FOR LPAREN control_variable SEMICOLON for_expression SEMICOLON update RPAREN LBRACE statements RBRACE .)
     FOR             reduce using rule 328 (for_loop -> FOR LPAREN control_variable SEMICOLON for_expression SEMICOLON update RPAREN LBRACE statements RBRACE .)
-    UNTIL           reduce using rule 328 (for_loop -> FOR LPAREN control_variable SEMICOLON for_expression SEMICOLON update RPAREN LBRACE statements RBRACE .)
+    WHILE           reduce using rule 328 (for_loop -> FOR LPAREN control_variable SEMICOLON for_expression SEMICOLON update RPAREN LBRACE statements RBRACE .)
     REPEAT          reduce using rule 328 (for_loop -> FOR LPAREN control_variable SEMICOLON for_expression SEMICOLON update RPAREN LBRACE statements RBRACE .)
     INPUT           reduce using rule 328 (for_loop -> FOR LPAREN control_variable SEMICOLON for_expression SEMICOLON update RPAREN LBRACE statements RBRACE .)
     RBRACE          reduce using rule 328 (for_loop -> FOR LPAREN control_variable SEMICOLON for_expression SEMICOLON update RPAREN LBRACE statements RBRACE .)
@@ -28066,7 +28066,7 @@ state 1318
     STOP            reduce using rule 237 (conditional_statement -> CHECK LPAREN condition RPAREN LBRACE statements RBRACE conditional_tail OTHERWISE LBRACE statements RBRACE .)
     CONTINUE        reduce using rule 237 (conditional_statement -> CHECK LPAREN condition RPAREN LBRACE statements RBRACE conditional_tail OTHERWISE LBRACE statements RBRACE .)
     FOR             reduce using rule 237 (conditional_statement -> CHECK LPAREN condition RPAREN LBRACE statements RBRACE conditional_tail OTHERWISE LBRACE statements RBRACE .)
-    UNTIL           reduce using rule 237 (conditional_statement -> CHECK LPAREN condition RPAREN LBRACE statements RBRACE conditional_tail OTHERWISE LBRACE statements RBRACE .)
+    WHILE           reduce using rule 237 (conditional_statement -> CHECK LPAREN condition RPAREN LBRACE statements RBRACE conditional_tail OTHERWISE LBRACE statements RBRACE .)
     REPEAT          reduce using rule 237 (conditional_statement -> CHECK LPAREN condition RPAREN LBRACE statements RBRACE conditional_tail OTHERWISE LBRACE statements RBRACE .)
     INPUT           reduce using rule 237 (conditional_statement -> CHECK LPAREN condition RPAREN LBRACE statements RBRACE conditional_tail OTHERWISE LBRACE statements RBRACE .)
     RBRACE          reduce using rule 237 (conditional_statement -> CHECK LPAREN condition RPAREN LBRACE statements RBRACE conditional_tail OTHERWISE LBRACE statements RBRACE .)
@@ -28104,7 +28104,7 @@ state 1319
     STOP            reduce using rule 620 (empty -> .)
     CONTINUE        reduce using rule 620 (empty -> .)
     FOR             reduce using rule 620 (empty -> .)
-    UNTIL           reduce using rule 620 (empty -> .)
+    WHILE           reduce using rule 620 (empty -> .)
     REPEAT          reduce using rule 620 (empty -> .)
     INPUT           reduce using rule 620 (empty -> .)
     INT             shift and go to state 274
@@ -28191,7 +28191,7 @@ WARNING: shift/reduce conflict for CHECK in state 271 resolved as shift
 WARNING: shift/reduce conflict for STOP in state 271 resolved as shift
 WARNING: shift/reduce conflict for CONTINUE in state 271 resolved as shift
 WARNING: shift/reduce conflict for FOR in state 271 resolved as shift
-WARNING: shift/reduce conflict for UNTIL in state 271 resolved as shift
+WARNING: shift/reduce conflict for WHILE in state 271 resolved as shift
 WARNING: shift/reduce conflict for REPEAT in state 271 resolved as shift
 WARNING: shift/reduce conflict for INPUT in state 271 resolved as shift
 WARNING: shift/reduce conflict for INT in state 271 resolved as shift

@@ -281,6 +281,12 @@ class CodeGenerator:
         elif node.type == "unary_negation": # ADDED: Route unary negation
             self.log("UNARY NEG: Routing to execute_unary_negation")
             return self.execute_unary_negation(node)
+        elif node.type == "while_loop": # CHANGED from until_loop
+            self.log("LOOP: Routing to execute_while_loop")
+            return self.execute_while_loop(node)
+        elif node.type == "repeat_while": # CHANGED from repeat_until
+            self.log("LOOP: Routing to execute_repeat_while")
+            return self.execute_repeat_while(node)
         
         method_name = f"execute_{node.type}"
         executor = getattr(self, method_name, self.generic_execute)
@@ -2668,6 +2674,204 @@ class CodeGenerator:
             negated_value = int(negated_value)
 
         return negated_value
+
+    def execute_while_loop(self, node):
+        """Execute an 'while' loop statement - continues while the condition is true
+           Syntax: while (expression) { statements }"""
+        self.log("Executing while_loop")
+        
+        if len(node.children) < 2:
+            self.log("while_loop has insufficient children")
+            return None
+            
+        condition_node = node.children[0]
+        statement_nodes = node.children[1:]
+        
+        # Create a new scope for the loop variables
+        self.push_scope()
+        self.break_flag = False # Reset break flag before loop
+        
+        try:
+            loop_count = 0
+            while not self.stopped:
+                loop_count += 1
+                if loop_count > 1000:
+                    self.log("ERROR: Loop safety limit reached (1000 iterations)")
+                    print("Error: Infinite loop detected - exceeded 1000 iterations")
+                    self.stopped = True
+                    break
+                    
+                # Check the loop condition - we continue while the condition is true
+                condition_result = False # Default to false
+                try:
+                    # Evaluate the while condition
+                    if hasattr(condition_node, 'type') and condition_node.type == "condition":
+                        condition_result = self.execute_condition(condition_node)
+                    else:
+                        condition_result = bool(self.execute_node(condition_node))
+                except Exception as e:
+                    self.log(f"ERROR: Failed to evaluate while loop condition: {str(e)}")
+                    print(f"Error: Failed to evaluate while loop condition: {str(e)}")
+                    self.stopped = True
+                    break # Exit while loop on condition error
+                
+                if self.stopped: break # Exit while if stopped during condition eval
+                self.log(f"While loop condition result: {condition_result}")
+                
+                # In while loops, we exit when the condition becomes false
+                if not condition_result:
+                    self.log("While loop condition is false - exiting loop")
+                    break
+                    
+                # Execute statements in the loop body
+                try:
+                    for stmt_node in statement_nodes:
+                        if self.stopped: break # Check if stopped before statement
+                        self.log(f"Executing statement of type: {getattr(stmt_node, 'type', 'Unknown')}") # Use getattr for safety
+                        self.execute_node(stmt_node)
+                        
+                        if self.waiting_for_input: # Handle pausing for input
+                            self.log("While loop paused waiting for input")
+                            self.paused_node = node 
+                            self.pop_scope() # Pop scope before pausing
+                            return None # Exit execution to wait
+                            
+                        if self.break_flag: # Check break flag AFTER executing statement
+                            self.log("STOP detected in while loop body.")
+                            break # Exit inner statement loop
+                            
+                    if self.break_flag: # Check flag again to exit outer loop
+                        break # Exit outer while loop
+                        
+                except Exception as e:
+                    self.log(f"ERROR: Exception in while loop body: {str(e)}")
+                    print(f"Error: Exception in while loop body: {str(e)}")
+                    self.stopped = True
+                    break # Exit while loop on body error
+                
+                if self.stopped: break # Check if stopped after body execution
+                
+        except Exception as e: # Catch errors during loop setup/execution
+             self.log(f"ERROR: Unhandled exception during while loop execution: {str(e)}")
+             # Don't print here if already printed in inner blocks
+             self.stopped = True
+             # Fall through to finally block
+             
+        finally:
+            # Clean up the loop scope and reset break flag
+            self.pop_scope()
+            self.break_flag = False # Ensure flag is reset
+        
+        return None
+        
+    def execute_repeat_while(self, node):
+        """Execute a 'repeat-while' loop statement - executes once, then continues while condition is true
+           Syntax: repeat { statements } while(expression);"""
+        self.log("Executing repeat_while")
+        # print("DEBUG: --- Entering execute_repeat_while ---") # REMOVED
+        
+        if len(node.children) < 2:
+            self.log("repeat_while has insufficient children")
+            return None
+            
+        statement_nodes = node.children[0:-1] # Corrected: Statements are all but the last child
+        condition_node = node.children[-1]    # Corrected: Condition is the last child
+        # print(f"DEBUG: Found {len(statement_nodes)} statement nodes and 1 condition node.") # REMOVED
+
+        # Create a new scope for the loop variables
+        self.push_scope()
+        self.break_flag = False # Reset break flag before loop
+        
+        try:
+            loop_count = 0
+            do_continue = True
+            
+            while do_continue and not self.stopped:
+                loop_count += 1
+                # print(f"DEBUG: Repeat_while iteration {loop_count}") # REMOVED
+                if loop_count > 1000:
+                    self.log("ERROR: Loop safety limit reached (1000 iterations)")
+                    print("Error: Infinite loop detected - exceeded 1000 iterations")
+                    self.stopped = True
+                    break
+                    
+                # Execute statements in the loop body
+                # print("DEBUG: Executing repeat_while body...") # REMOVED
+                try:
+                    for stmt_node in statement_nodes:
+                        if self.stopped: break # Check if stopped before statement
+                        self.log(f"Executing statement of type: {getattr(stmt_node, 'type', 'Unknown')}") # Use getattr for safety
+                        # print(f"DEBUG: Executing node type: {getattr(stmt_node, 'type', 'Unknown')}") # REMOVED
+                        self.execute_node(stmt_node)
+                        
+                        if self.waiting_for_input: # Handle pausing for input
+                            self.log("Repeat-while loop paused waiting for input")
+                            self.paused_node = node 
+                            self.pop_scope() # Pop scope before pausing
+                            return None # Exit execution to wait
+                            
+                        if self.break_flag: # Check break flag AFTER executing statement
+                            self.log("STOP detected in repeat-while loop body.")
+                            # print("DEBUG: STOP detected, breaking inner loop.") # REMOVED
+                            break # Exit inner statement loop
+                            
+                    if self.break_flag: # Check flag again to exit outer loop
+                         # print("DEBUG: STOP detected, breaking outer loop.") # REMOVED
+                         break # Exit outer while loop
+                        
+                except Exception as e:
+                    self.log(f"ERROR: Exception in repeat-while loop body: {str(e)}")
+                    print(f"Error: Exception in repeat-while loop body: {str(e)}")
+                    self.stopped = True
+                    break # Exit while loop on body error
+                
+                # print("DEBUG: Finished executing repeat_while body.") # REMOVED
+                if self.stopped: break # Check if stopped after body execution
+                
+                # Check the condition after executing the loop body
+                # print("DEBUG: Evaluating repeat_while condition...") # REMOVED
+                condition_result = False # Default to false
+                try:
+                    # Evaluate the while condition
+                    if hasattr(condition_node, 'type') and condition_node.type == "condition":
+                        # print("DEBUG: Evaluating condition node directly.") # REMOVED
+                        condition_result = self.execute_condition(condition_node)
+                    else:
+                        # print("DEBUG: Evaluating condition node via execute_node.") # REMOVED
+                        condition_result = bool(self.execute_node(condition_node))
+                except Exception as e:
+                    self.log(f"ERROR: Failed to evaluate repeat-while loop condition: {str(e)}")
+                    print(f"Error: Failed to evaluate repeat-while loop condition: {str(e)}")
+                    self.stopped = True
+                    break # Exit while loop on condition error
+                
+                if self.stopped: break # Exit while if stopped during condition eval
+                self.log(f"Repeat-while loop condition result: {condition_result}")
+                # print(f"DEBUG: Condition result: {condition_result}") # REMOVED
+                
+                # In repeat-while loops, we exit when the condition becomes false
+                if not condition_result:
+                    self.log("Repeat-while loop condition is false - exiting loop")
+                    # print("DEBUG: Condition FALSE, exiting loop.") # REMOVED
+                    do_continue = False
+                    # REMOVED erroneous break statement here
+                else:
+                     # print("DEBUG: Condition TRUE, continuing loop.") # REMOVED
+                     pass # Added pass to avoid empty else block
+                
+        except Exception as e: # Catch errors during loop setup/execution
+             self.log(f"ERROR: Unhandled exception during repeat-while loop execution: {str(e)}")
+             # Don't print here if already printed in inner blocks
+             self.stopped = True
+             # Fall through to finally block
+             
+        finally:
+            # Clean up the loop scope and reset break flag
+            # print("DEBUG: --- Exiting execute_repeat_while ---") # REMOVED
+            self.pop_scope()
+            self.break_flag = False # Ensure flag is reset
+        
+        return None
 
 def run_code_generation(ast):
     """Create a CodeGenerator and run code generation on the given AST."""

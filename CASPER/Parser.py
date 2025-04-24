@@ -1463,14 +1463,14 @@ def p_switchcond_tail(p):
 
 # -----------------------------------------------------------------------------
 # (103) <loop_statement> → <for_loop>
-# (104) <loop_statement> → <until_loop>
-# (105) <loop_statement> → <repeat_until>
+# (104) <loop_statement> → <while_loop>
+# (105) <loop_statement> → <repeat_while>
 # -----------------------------------------------------------------------------
 def p_loop_statement(p):
     """
     loop_statement : for_loop    
-                   | until_loop  
-                   | repeat_until
+                   | while_loop  
+                   | repeat_while
     """
     p[0] = p[1]
 
@@ -1614,18 +1614,18 @@ def p_for_factor1 (p):
     else:
         p[0] = p[1]
 # -----------------------------------------------------------------------------
-# (107) <until_loop> → until ( <expression> ) { <statements> }
+# (107) <while_loop> → while ( <expression> ) { <statements> }
 # -----------------------------------------------------------------------------
-def p_until_loop(p):
+def p_while_loop(p):
     """
-    until_loop : UNTIL LPAREN until_expression RPAREN LBRACE statements RBRACE  
+    while_loop : WHILE LPAREN while_expression RPAREN LBRACE statements RBRACE  
     """
-    p[0] = ASTNode("until_loop", children=[p[3], p[6]])
+    p[0] = ASTNode("while_loop", children=[p[3], p[6]])
 
 
-def p_until_expression(p):
+def p_while_expression(p):
     """
-    until_expression : until_factor until_factor_tail
+    while_expression : while_factor while_factor_tail
     """
     if p[2] is None:
         p[0] = ASTNode("expression", [p[1]])
@@ -1633,13 +1633,13 @@ def p_until_expression(p):
         p[0] = ASTNode("expression", [p[1], p[2]])
 
 
-def p_until_factor(p):
+def p_while_factor(p):
     """
-    until_factor : until_var_call until_postfix           
-           | until_factor1                    
+    while_factor : while_var_call while_postfix           
+           | while_factor1                    
            | TILDE INT_LIT               
            | TILDE FLT_LIT                
-           | LPAREN until_expression RPAREN    
+           | LPAREN while_expression RPAREN    
     """
     # We must handle each case by length of p
     if len(p) == 3 and p[2] in ("++", "--", None):  # var_call postfix
@@ -1657,28 +1657,28 @@ def p_until_factor(p):
         # ( expression )
         p[0] = ASTNode("paren", [p[2]])
 
-def p_until_var_call(p):
+def p_while_var_call(p):
     """
-    until_var_call : IDENT until_list_index  
+    while_var_call : IDENT while_list_index  
     """
     p[0] = ASTNode("var_call", children=[ASTNode("IDENT", value=p[1]), p[2]])
 
-def p_until_postfix_op(p):
+def p_while_postfix_op(p):
     """
-    until_postfix_op : PLUS_PLUS   
+    while_postfix_op : PLUS_PLUS   
                | MINUS_MINUS 
     """
     p[0] = p[1]
-def p_until_postfix(p):
+def p_while_postfix(p):
     """
-    until_postfix : empty        
-            | until_postfix_op  
+    while_postfix : empty        
+            | while_postfix_op  
     """
     p[0] = p[1]
 
-def p_until_list_index(p):
+def p_while_list_index(p):
     """
-    until_list_index : LBRACKET until_index RBRACKET until_list_index2  
+    while_list_index : LBRACKET while_index RBRACKET while_list_index2  
                | empty                                
     """
     if len(p) == 2:
@@ -1687,9 +1687,9 @@ def p_until_list_index(p):
         p[0] = [p[2]] + p[4]
 
 
-def p_until_list_index2(p):
+def p_while_list_index2(p):
     """
-    until_list_index2 : LBRACKET until_index RBRACKET 
+    while_list_index2 : LBRACKET while_index RBRACKET 
                 | empty                   
     """
     if len(p) == 2:
@@ -1698,32 +1698,31 @@ def p_until_list_index2(p):
         p[0] = [p[2]]
 
 
-
-def p_until_int_lit(p):
-    """until_index : INT_LIT"""
+def p_while_int_lit(p):
+    """while_index : INT_LIT"""
     # Instead of returning the bare int, build a literal node
     p[0] = ASTNode("literal", value=p[1])
 
-def p_until_index_ident(p):
-    """until_index : IDENT"""
+def p_while_index_ident(p):
+    """while_index : IDENT"""
     p[0] = ASTNode("IDENT", value=p[1])
 
-def p_until_factor_tail(p):
+def p_while_factor_tail(p):
     """
-    until_factor_tail : PLUS until_factor until_factor_tail
-                | MINUS until_factor until_factor_tail
-                | MULTIPLY until_factor until_factor_tail
-                | DIVISION until_factor until_factor_tail
-                | MODULO until_factor until_factor_tail
-                | EXPONENT until_factor until_factor_tail
-                | GT until_factor until_factor_tail
-                | LT until_factor until_factor_tail
-                | EQ_EQ until_factor until_factor_tail
-                | GT_EQ until_factor until_factor_tail
-                | LT_EQ until_factor until_factor_tail
-                | NOT_EQ until_factor until_factor_tail
-                | AND until_factor until_factor_tail
-                | OR until_factor until_factor_tail
+    while_factor_tail : PLUS while_factor while_factor_tail
+                | MINUS while_factor while_factor_tail
+                | MULTIPLY while_factor while_factor_tail
+                | DIVISION while_factor while_factor_tail
+                | MODULO while_factor while_factor_tail
+                | EXPONENT while_factor while_factor_tail
+                | GT while_factor while_factor_tail
+                | LT while_factor while_factor_tail
+                | EQ_EQ while_factor while_factor_tail
+                | GT_EQ while_factor while_factor_tail
+                | LT_EQ while_factor while_factor_tail
+                | NOT_EQ while_factor while_factor_tail
+                | AND while_factor while_factor_tail
+                | OR while_factor while_factor_tail
                 | empty
     """
     if len(p) == 2:
@@ -1736,9 +1735,9 @@ def p_until_factor_tail(p):
 ])
 
 
-def p_until_factor1 (p):
+def p_while_factor1 (p):
     """
-    until_factor1  : INT_LIT
+    while_factor1  : INT_LIT
              | FLT_LIT
              | DAY
              | NIGHT
@@ -1752,13 +1751,13 @@ def p_until_factor1 (p):
     else:
         p[0] = p[1]
 # -----------------------------------------------------------------------------
-# (108) <repeat_until> → repeat { <statements> } until(<expression>)
+# (108) <repeat_while> → repeat { <statements> } while(<expression>);
 # -----------------------------------------------------------------------------
-def p_repeat_until(p):
+def p_repeat_while(p):
     """
-    repeat_until : REPEAT LBRACE statements RBRACE UNTIL LPAREN until_expression RPAREN SEMICOLON
+    repeat_while : REPEAT LBRACE statements RBRACE WHILE LPAREN while_expression RPAREN SEMICOLON
     """
-    p[0] = ASTNode("repeat_until", children=[p[3], p[7]])
+    p[0] = ASTNode("repeat_while", children=[p[3], p[7]])
 
 # -----------------------------------------------------------------------------
 # (109) <control_variable> → int IDENTIFIER = <control_var_tail>
@@ -2765,7 +2764,7 @@ def p_error(p):
         "OTHERWISE_CHECK": "otherwise_check",
         "FOR": "for",
         "REPEAT": "repeat",
-        "UNTIL": "until",
+        "WHILE": "while",
         "STOP": "stop",
         "SKIP": "skip",
         "SWAP": "swap",

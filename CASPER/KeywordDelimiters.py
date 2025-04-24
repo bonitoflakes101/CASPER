@@ -42,7 +42,7 @@ KEYWORD_DELIMITERS = {
 
     # Loop constructs
     "FOR": Delimiters.DEL2,
-    "UNTIL": Delimiters.DEL2,
+    "WHILE": Delimiters.DEL2,
     "REPEAT": Delimiters.DEL1,
     "STOP": Delimiters.DEL21,
     "SKIP": Delimiters.DEL21,
