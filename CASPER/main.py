@@ -52,11 +52,17 @@ def home():
 
     # 1. LEXICAL ANALYSIS
     lexer = Lexer(source=code)
+    all_tokens = []  # Changed from lexer_results
+    illegal_tokens = []
     while lexer.current_char is not None:
         token = lexer.next_token()
+        all_tokens.append(token) # Store all tokens
         token_type = str(token.type).split(".")[-1]
         if token_type == "ILLEGAL":
             illegal_tokens.append(str(token))
+            
+    # Prepare lexer results for display, perhaps just the token type and literal
+    lexer_display_results = [(str(t.type).split(".")[-1], t.literal) for t in all_tokens]
 
     if illegal_tokens:
         error_count += len(illegal_tokens)
@@ -118,7 +124,7 @@ def home():
     return render_template(
         "index.html",
         code=code,
-        lexer_results=[(t, "") for t in illegal_tokens],
+        lexer_results=lexer_display_results, # Pass all tokens info
         output=output,               # This shows in the "Output Terminal"
         errors=errors,
         generated_code=generated_code,
