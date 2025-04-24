@@ -2145,6 +2145,189 @@ class CodeGenerator:
             self.break_flag = False # Ensure flag is reset
         
         return None
+    
+    def execute_until_loop(self, node):
+        """Execute an 'until' loop statement - continues until the condition becomes true
+           Syntax: until (expression) { statements }"""
+        self.log("Executing until_loop")
+        
+        if len(node.children) < 2:
+            self.log("until_loop has insufficient children")
+            return None
+            
+        condition_node = node.children[0]
+        statement_nodes = node.children[1:]
+        
+        # Create a new scope for the loop variables
+        self.push_scope()
+        self.break_flag = False # Reset break flag before loop
+        
+        try:
+            loop_count = 0
+            while not self.stopped:
+                loop_count += 1
+                if loop_count > 1000:
+                    self.log("ERROR: Loop safety limit reached (1000 iterations)")
+                    print("Error: Infinite loop detected - exceeded 1000 iterations")
+                    self.stopped = True
+                    break
+                    
+                # Check the loop condition - we continue until the condition becomes true
+                condition_result = False # Default to false
+                try:
+                    # Evaluate the until condition
+                    if hasattr(condition_node, 'type') and condition_node.type == "condition":
+                        condition_result = self.execute_condition(condition_node)
+                    else:
+                        condition_result = bool(self.execute_node(condition_node))
+                except Exception as e:
+                    self.log(f"ERROR: Failed to evaluate until loop condition: {str(e)}")
+                    print(f"Error: Failed to evaluate until loop condition: {str(e)}")
+                    self.stopped = True
+                    break # Exit while loop on condition error
+                
+                if self.stopped: break # Exit while if stopped during condition eval
+                self.log(f"Until loop condition result: {condition_result}")
+                
+                # In until loops, we exit when the condition becomes true
+                if condition_result:
+                    self.log("Until loop condition is true - exiting loop")
+                    break
+                    
+                # Execute statements in the loop body
+                try:
+                    for stmt_node in statement_nodes:
+                        if self.stopped: break # Check if stopped before statement
+                        self.log(f"Executing statement of type: {getattr(stmt_node, 'type', 'Unknown')}") # Use getattr for safety
+                        self.execute_node(stmt_node)
+                        
+                        if self.waiting_for_input: # Handle pausing for input
+                            self.log("Until loop paused waiting for input")
+                            self.paused_node = node 
+                            self.pop_scope() # Pop scope before pausing
+                            return None # Exit execution to wait
+                            
+                        if self.break_flag: # Check break flag AFTER executing statement
+                            self.log("STOP detected in until loop body.")
+                            break # Exit inner statement loop
+                            
+                    if self.break_flag: # Check flag again to exit outer loop
+                        break # Exit outer while loop
+                        
+                except Exception as e:
+                    self.log(f"ERROR: Exception in until loop body: {str(e)}")
+                    print(f"Error: Exception in until loop body: {str(e)}")
+                    self.stopped = True
+                    break # Exit while loop on body error
+                
+                if self.stopped: break # Check if stopped after body execution
+                
+        except Exception as e: # Catch errors during loop setup/execution
+             self.log(f"ERROR: Unhandled exception during until loop execution: {str(e)}")
+             # Don't print here if already printed in inner blocks
+             self.stopped = True
+             # Fall through to finally block
+             
+        finally:
+            # Clean up the loop scope and reset break flag
+            self.pop_scope()
+            self.break_flag = False # Ensure flag is reset
+        
+        return None
+        
+    def execute_repeat_until(self, node):
+        """Execute a 'repeat-until' loop statement - executes once, then continues until condition becomes true
+           Syntax: repeat { statements } until(expression);"""
+        self.log("Executing repeat_until")
+        
+        if len(node.children) < 2:
+            self.log("repeat_until has insufficient children")
+            return None
+            
+        statement_nodes = node.children[0:]
+        condition_node = node.children[1]
+        
+        # Create a new scope for the loop variables
+        self.push_scope()
+        self.break_flag = False # Reset break flag before loop
+        
+        try:
+            loop_count = 0
+            
+            # Execute at least once before checking condition
+            do_continue = True
+            
+            while do_continue and not self.stopped:
+                loop_count += 1
+                if loop_count > 1000:
+                    self.log("ERROR: Loop safety limit reached (1000 iterations)")
+                    print("Error: Infinite loop detected - exceeded 1000 iterations")
+                    self.stopped = True
+                    break
+                    
+                # Execute statements in the loop body
+                try:
+                    for stmt_node in statement_nodes:
+                        if self.stopped: break # Check if stopped before statement
+                        self.log(f"Executing statement of type: {getattr(stmt_node, 'type', 'Unknown')}") # Use getattr for safety
+                        self.execute_node(stmt_node)
+                        
+                        if self.waiting_for_input: # Handle pausing for input
+                            self.log("Repeat-until loop paused waiting for input")
+                            self.paused_node = node 
+                            self.pop_scope() # Pop scope before pausing
+                            return None # Exit execution to wait
+                            
+                        if self.break_flag: # Check break flag AFTER executing statement
+                            self.log("STOP detected in repeat-until loop body.")
+                            break # Exit inner statement loop
+                            
+                    if self.break_flag: # Check flag again to exit outer loop
+                        break # Exit outer while loop
+                        
+                except Exception as e:
+                    self.log(f"ERROR: Exception in repeat-until loop body: {str(e)}")
+                    print(f"Error: Exception in repeat-until loop body: {str(e)}")
+                    self.stopped = True
+                    break # Exit while loop on body error
+                
+                if self.stopped: break # Check if stopped after body execution
+                
+                # Check the condition after executing the loop body
+                condition_result = False # Default to false
+                try:
+                    # Evaluate the until condition
+                    if hasattr(condition_node, 'type') and condition_node.type == "condition":
+                        condition_result = self.execute_condition(condition_node)
+                    else:
+                        condition_result = bool(self.execute_node(condition_node))
+                except Exception as e:
+                    self.log(f"ERROR: Failed to evaluate repeat-until loop condition: {str(e)}")
+                    print(f"Error: Failed to evaluate repeat-until loop condition: {str(e)}")
+                    self.stopped = True
+                    break # Exit while loop on condition error
+                
+                if self.stopped: break # Exit while if stopped during condition eval
+                self.log(f"Repeat-until loop condition result: {condition_result}")
+                
+                # In repeat-until loops, we exit when the condition becomes true
+                if condition_result:
+                    self.log("Repeat-until loop condition is true - exiting loop")
+                    do_continue = False
+                    break
+                
+        except Exception as e: # Catch errors during loop setup/execution
+             self.log(f"ERROR: Unhandled exception during repeat-until loop execution: {str(e)}")
+             # Don't print here if already printed in inner blocks
+             self.stopped = True
+             # Fall through to finally block
+             
+        finally:
+            # Clean up the loop scope and reset break flag
+            self.pop_scope()
+            self.break_flag = False # Ensure flag is reset
+        
+        return None
         
     def execute_control_variable(self, node):
         """Execute a control variable initialization"""
@@ -2176,7 +2359,7 @@ class CodeGenerator:
         self.log(f"Initialized loop control variable '{var_name}' = {initial_value}")
         
         return initial_value
-        
+
     def execute_update(self, node):
         """Execute an update statement"""
         self.log("Executing update")
