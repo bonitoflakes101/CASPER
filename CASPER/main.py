@@ -178,33 +178,26 @@ def program_status():
     """Check if the program is waiting for input."""
     global current_generator, program_output
     
-    # Default empty output if nothing to show
-    if not program_output:
-        return jsonify({
-            "status": "idle",
-            "output": ""
-        })
-    
-    filtered_output = '\n'.join([line for line in program_output.split('\n') 
-                             if not line.startswith('DEBUG:') and 
-                                not 'EXECUTE_INPUT_STATEMENT CALLED' in line and
-                                not 'Waiting for input...' in line and
-                                not 'is_waiting_for_input called' in line])
-    
-    # If no generator, it's definitely idle
+    # Default response for idle program
     if not current_generator:
+        print("DEBUG: /program_status - No current generator")
         return jsonify({
             "status": "idle",
-            "output": filtered_output
+            "output": program_output
         })
     
-    # If program is stopped or completed, return appropriate status
+    # Filter out debug messages
+    filtered_output = '\n'.join([line for line in program_output.split('\n') 
+                              if not line.startswith('DEBUG:') and 
+                                 not 'EXECUTE_INPUT_STATEMENT CALLED' in line and
+                                 not 'is_waiting_for_input called' in line])
+    
+    # If program is stopped or completed
     if current_generator.stopped or current_generator.completed:
-        # Determine if program was stopped due to validation error or completed normally
-        is_validation_error = current_generator.stopped and not current_generator.waiting_for_input
-        status = "program_finished" if is_validation_error else "idle"
+        status = "program_finished" if current_generator.stopped else "idle"
+        print(f"DEBUG: /program_status - Program stopped={current_generator.stopped} or completed={current_generator.completed}, status={status}")
         
-        # If program completed normally, reset the generator
+        # Reset generator if program completed normally
         if current_generator.completed and not current_generator.waiting_for_input:
             current_generator = None
         
@@ -213,39 +206,46 @@ def program_status():
             "output": filtered_output
         })
     
-    # Now we know we have a current_generator that isn't stopped or completed
+    # Check if waiting for input
     if current_generator.is_waiting_for_input():
         prompt = current_generator.get_input_prompt()
+        print(f"DEBUG: /program_status - Waiting for input, prompt='{prompt}'")
         
-        # Make sure any display output before the input statement is preserved
-        # by not filtering it out from the output
         return jsonify({
             "status": "waiting_for_input",
             "prompt": prompt,
-            "output": filtered_output  
+            "output": filtered_output
         })
-    else:
-        return jsonify({
-            "status": "running",
-            "output": filtered_output  
-        })
+    
+    # Program is running but not waiting for input
+    print("DEBUG: /program_status - Program running but not waiting for input")
+    return jsonify({
+        "status": "running",
+        "output": filtered_output
+    })
 
 @app.route('/provide_input', methods=['POST'])
 def provide_input():
     """Handle user input for a running program."""
     global current_generator, program_output
     
-    if not current_generator or not current_generator.is_waiting_for_input() or current_generator.stopped:
-        return jsonify({"error": "Program is not waiting for input or has been stopped"}), 400
+    if not current_generator:
+        
+        return jsonify({"error": "No program running"}), 400
+        
+    if not current_generator.is_waiting_for_input():
+      
+        return jsonify({"error": "Program is not waiting for input"}), 400
+        
+    if current_generator.stopped:
+      
+        return jsonify({"error": "Program has been stopped"}), 400
     
     user_input = request.json.get('input', '')
-    
-    # Keep all existing output, including any display statement results
-    # Don't filter out any output at this point
-    existing_output = program_output
+  
     
     # Add the user input to the output
-    program_output = existing_output + f"\n> {user_input}"
+    program_output += f"\n> {user_input}"
     
     # Capture standard output during execution
     backup_stdout = sys.stdout
@@ -253,14 +253,24 @@ def provide_input():
     sys.stdout = output_buffer
     
     try:
-        # Process the input using the generator's built-in method
+        # Process the input and continue execution
         current_generator.provide_input(user_input)
         
-        # Continue execution from where it was paused
-        current_generator.generate(None)  # Pass None to continue from paused node
+        # Instead of just one generate call, ensure execution continues until either:
+        # 1. We hit another input request, or
+        # 2. The program completes
+        execution_count = 0
+        while not current_generator.waiting_for_input and not current_generator.stopped and not current_generator.completed:
+          
+            current_generator.generate(None)
+            execution_count += 1
+            if execution_count > 100:  # Safety limit
+               
+                break
         
     except Exception as e:
         import traceback
+ 
         traceback.print_exc()
     finally:
         sys.stdout = backup_stdout
@@ -272,18 +282,22 @@ def provide_input():
     
     # Filter debug messages from the final output
     final_output = '\n'.join([line for line in program_output.split('\n') 
-                            if not line.startswith('DEBUG:') and 
-                               not 'EXECUTE_INPUT_STATEMENT CALLED' in line and
-                               not 'Waiting for input...' in line and
-                               not 'is_waiting_for_input called' in line])
+                          if not line.startswith('DEBUG:') and 
+                           not 'EXECUTE_INPUT_STATEMENT CALLED' in line and
+                           not 'Waiting for input...' in line and
+                           not 'is_waiting_for_input called' in line])
     
-    # Check if validation failed, which would be indicated by program being stopped
+    # Determine the current program status
     is_validation_failed = current_generator.stopped and not current_generator.waiting_for_input
+    is_waiting_for_more = current_generator.is_waiting_for_input()
+    
+    
     
     status_info = {
         "status": "program_finished" if is_validation_failed else "input_processed",
-        "waiting_for_more": current_generator.is_waiting_for_input(),
-        "output": final_output
+        "waiting_for_more": is_waiting_for_more,
+        "output": final_output,
+        "prompt": current_generator.get_input_prompt() if is_waiting_for_more else ""
     }
     
     return jsonify(status_info)

@@ -191,15 +191,19 @@ document.addEventListener("DOMContentLoaded", function () {
 
   // Function to check if the program is waiting for input
   function checkProgramStatus() {
+    console.log("Checking program status...");
     fetch('/program_status')
       .then(response => response.json())
       .then(data => {
+        console.log("Program status response:", data);
+
         // Find last non-empty line in the output
         const lines = data.output.trim().split('\n');
         const lastLine = lines[lines.length - 1] || '';
 
         // Only consider it a prompt if it matches exactly
         const promptInOutput = lastLine === data.prompt;
+        console.log(`Last line: "${lastLine}", prompt: "${data.prompt}", matches: ${promptInOutput}`);
 
         // Update the output display with clean content
         outputElement.textContent = data.output;
@@ -218,6 +222,8 @@ document.addEventListener("DOMContentLoaded", function () {
           }
 
           if (data.status === 'waiting_for_input') {
+            console.log("Input mode detected - enabling input field");
+
             // Only append prompt if it's not exactly the last line
             if (data.prompt && !promptInOutput) {
               // Remove any partial prompt from the end of output
@@ -225,6 +231,7 @@ document.addEventListener("DOMContentLoaded", function () {
               if (cleanOutput.endsWith(data.prompt)) {
                 cleanOutput = cleanOutput.slice(0, -data.prompt.length).trim();
               }
+              console.log(`Appending prompt: "${data.prompt}"`);
               outputElement.textContent = cleanOutput + '\n' + data.prompt;
               outputElement.scrollTop = outputElement.scrollHeight;
             }
@@ -282,6 +289,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
   // Function to submit user input to the backend
   function submitUserInput(input) {
+    console.log(`Submitting input: "${input}"`);
     fetch('/provide_input', {
       method: 'POST',
       headers: {
@@ -289,8 +297,13 @@ document.addEventListener("DOMContentLoaded", function () {
       },
       body: JSON.stringify({ input: input })
     })
-      .then(response => response.json())
+      .then(response => {
+        console.log("Input submission response status:", response.status);
+        return response.json();
+      })
       .then(data => {
+        console.log("Input submission response data:", data);
+
         // Update the output terminal
         outputElement.textContent = data.output;
         // Scroll to the bottom
@@ -304,6 +317,22 @@ document.addEventListener("DOMContentLoaded", function () {
         }
         // If still waiting for input, focus the input field
         else if (data.waiting_for_more) {
+          console.log("Program is waiting for more input - focusing input field");
+
+          // If we have a new prompt, display it
+          if (data.prompt) {
+            console.log(`New prompt detected: "${data.prompt}"`);
+            const lines = outputElement.textContent.trim().split('\n');
+            const lastLine = lines[lines.length - 1] || '';
+
+            // Only append if not already there
+            if (lastLine !== data.prompt) {
+              outputElement.textContent += '\n' + data.prompt;
+              outputElement.scrollTop = outputElement.scrollHeight;
+            }
+          }
+
+          terminalInput.disabled = false;
           terminalInput.focus();
         }
       })
