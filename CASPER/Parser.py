@@ -296,7 +296,7 @@ def p_factor(p):
     if len(p) == 2 and hasattr(p[1], 'type') and p[1].type == 'measure_call': # ADDED check
          p[0] = p[1] # Pass the measure_call node
     elif len(p) == 3 and p[2] in ("++", "--", None):  # var_call postfix
-        p[0] = ASTNode("factor_var_postfix", [p[1], p[2]])
+        p[0] = ASTNode("postfix", [p[1], p[2]])
     elif len(p) == 2:
         # literal1
         p[0] = ASTNode("literal", value=p[1])
@@ -334,7 +334,8 @@ def p_factor_expression_factor(p):
     """
     # We must handle each case by length of p
     if len(p) == 3 and p[2] in ("++", "--", None):  # var_call postfix
-        p[0] = ASTNode("var_postfix", [p[1], p[2]])
+        # Standardize to 'postfix'
+        p[0] = ASTNode("postfix", [p[1], p[2]])
     elif len(p) == 2:
         # literal1
         p[0] = ASTNode("literal", value=p[1])
@@ -717,7 +718,8 @@ def p_revive_factor(p):
     """
     # We must handle each case by length of p
     if len(p) == 3 and p[2] in ("++", "--", None):  # var_call postfix
-        p[0] = ASTNode("var_postfix", [p[1], p[2]])
+        # Standardize to 'postfix'
+        p[0] = ASTNode("postfix", [p[1], p[2]])
     elif len(p) == 2:
         # literal1
         p[0] = ASTNode("literal", value=p[1])
@@ -1007,7 +1009,8 @@ def p_local_factor(p):
     if len(p) == 2 and hasattr(p[1], 'type') and p[1].type == 'measure_call': # ADDED check
          p[0] = p[1] # Pass the measure_call node
     elif len(p) == 3 and p[2] in ("++", "--", None):  # var_call postfix
-        p[0] = ASTNode("var_postfix", [p[1], p[2]])
+        # Standardize to 'postfix'
+        p[0] = ASTNode("postfix", [p[1], p[2]])
     elif len(p) == 2:
         # literal1
         p[0] = ASTNode("literal", value=p[1])
@@ -1173,7 +1176,8 @@ def p_condition_factor(p):
     """
     # We must handle each case by length of p
     if len(p) == 3 and p[2] in ("++", "--", None):  # var_call postfix
-        p[0] = ASTNode("var_postfix", [p[1], p[2]])
+        # Standardize to 'postfix'
+        p[0] = ASTNode("postfix", [p[1], p[2]])
     elif len(p) == 2:
         # literal1
         p[0] = ASTNode("literal", value=p[1])
@@ -1333,7 +1337,8 @@ def p_switch_factor(p):
     """
     # We must handle each case by length of p
     if len(p) == 3 and p[2] in ("++", "--", None):  # var_call postfix
-        p[0] = ASTNode("factor_var_postfix", [p[1], p[2]])
+        # Standardize to 'postfix'
+        p[0] = ASTNode("postfix", [p[1], p[2]])
     elif len(p) == 2:
         # literal1
         p[0] = ASTNode("literal", value=p[1])
@@ -1504,7 +1509,8 @@ def p_for_factor(p):
     if len(p) == 2 and hasattr(p[1], 'type') and p[1].type == 'measure_call': # ADDED check
          p[0] = p[1] 
     elif len(p) == 3 and p[2] in ("++", "--", None):  
-        p[0] = ASTNode("var_postfix", [p[1], p[2]])
+        # Standardize to 'postfix'
+        p[0] = ASTNode("postfix", [p[1], p[2]])
     elif len(p) == 2:
         # literal1
         p[0] = ASTNode("literal", value=p[1])
@@ -1643,7 +1649,8 @@ def p_while_factor(p):
     """
     # We must handle each case by length of p
     if len(p) == 3 and p[2] in ("++", "--", None):  # var_call postfix
-        p[0] = ASTNode("var_postfix", [p[1], p[2]])
+        # Standardize to 'postfix'
+        p[0] = ASTNode("postfix", [p[1], p[2]])
     elif len(p) == 2:
         # literal1
         p[0] = ASTNode("literal", value=p[1])
@@ -1927,7 +1934,8 @@ def p_output_factor(p):
     """
     # We must handle each case by length of p
     if len(p) == 3 and p[2] in ("++", "--", None):  # var_call postfix
-        p[0] = ASTNode("var_postfix", [p[1], p[2]])
+        # Standardize to 'postfix'
+        p[0] = ASTNode("postfix", [p[1], p[2]])
     elif len(p) == 2:
         # literal1
         p[0] = ASTNode("literal", value=p[1])
@@ -2132,7 +2140,7 @@ def p_assign_factor(p):
     """
     # We must handle each case by length of p
     if len(p) == 3 and p[2] in ("++", "--", None):  # var_call postfix
-        p[0] = ASTNode("var_postfix", [p[1], p[2]])
+        p[0] = ASTNode("postfix", [p[1], p[2]])
     elif len(p) == 2:
         # literal1
         p[0] = ASTNode("literal", value=p[1])
@@ -2417,7 +2425,7 @@ def p_value_factor(p):
     if len(p) == 2 and hasattr(p[1], 'type') and p[1].type == 'measure_call': # ADDED check
          p[0] = p[1] # Pass the measure_call node
     elif len(p) == 3 and p[2] in ("++", "--", None):  # var_call postfix
-        p[0] = ASTNode("var_postfix", [p[1], p[2]])
+        p[0] = ASTNode("postfix", [p[1], p[2]])
     elif len(p) == 2:
         # literal1
         p[0] = ASTNode("literal", value=p[1])
@@ -2585,6 +2593,7 @@ def p_typecast_factor(p):
     """
     # We must handle each case by length of p
     if len(p) == 3 and p[2] in ("++", "--", None):  # var_call postfix
+        # Already generates 'postfix', no change needed
         p[0] = ASTNode("postfix", [p[1], p[2]])
     elif len(p) == 2:
         # literal1

@@ -130,7 +130,7 @@ class SemanticAnalyzer:
         # If there is an assignment (e.g. "= [ ... ]")
         if assignment_node is not None:
             if assignment_node.type == "list_value":
-                # If it’s a 2D array
+                # If it's a 2D array
                 if declared_type.endswith("[][]"):
                     # Store total row count
                     row_count = self.get_list_literal_length(assignment_node)
@@ -143,7 +143,7 @@ class SemanticAnalyzer:
                     # Now do your normal type checks
                     self.check_global_assignment(assignment_node, symtable, declared_type, ident_node.value)
 
-                # If it’s a 1D array
+                # If it's a 1D array
                 elif declared_type.endswith("[]"):
                     length = self.get_list_literal_length(assignment_node)
                     self.array_lengths[ident_node.value] = length
@@ -223,7 +223,7 @@ class SemanticAnalyzer:
                     assignment_node = possible_list
                     break
 
-        # 5) If it’s a 2D array, store both row count & row-by-row column counts
+        # 5) If it's a 2D array, store both row count & row-by-row column counts
         if declared_type.endswith("[][]") and assignment_node is not None:
             # total rows
             row_count = self.get_list_literal_length(assignment_node)
@@ -233,7 +233,7 @@ class SemanticAnalyzer:
             row_lengths = self.get_2d_row_lengths(assignment_node)
             self.array_2d_lengths[var_name] = row_lengths
 
-        # 6) If it’s a 1D array, store a single length
+        # 6) If it's a 1D array, store a single length
         elif declared_type.endswith("[]") and assignment_node is not None:
             length = self.get_list_literal_length(assignment_node)
             self.array_lengths[var_name] = length
@@ -342,7 +342,7 @@ class SemanticAnalyzer:
             if declared_base == rhs_base:
                 return
 
-            # 5) Otherwise, apply your “C‐style” numeric/boolean conversions:
+            # 5) Otherwise, apply your "C-style" numeric/boolean conversions:
             #    int -> float => add .0
             #    float -> int => truncate
             #    bln -> float => 1.0 or 0.0
@@ -570,8 +570,16 @@ class SemanticAnalyzer:
         self.generic_visit(node, symtable)
         return None
 
-
-
+    # ADDED: Method to visit type casting nodes
+    def visit_type_cast(self, node, symtable):
+        """Visits the expression inside a type cast operation."""
+        if node.children and len(node.children) > 0:
+            # Visit the expression being cast
+            self.visit(node.children[0], symtable)
+        else:
+            self.errors.append(
+                f"Semantic Error: Type cast function '{node.value}' is missing an argument."
+            )
 
     def visit_for_loop(self, node, symtable):
 

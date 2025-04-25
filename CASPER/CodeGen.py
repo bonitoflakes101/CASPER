@@ -43,7 +43,9 @@ class CodeGenerator:
             scope_name = "local" if i == 0 else f"parent {i}"
             if var_name in env:
                 value = env[var_name]
+                # print(f"LOOKUP: Found variable '{var_name}' = {repr(value)} in {scope_name} scope") # Changed to print
                 return value
+        # print(f"LOOKUP: Variable '{var_name}' not found in any scope.") # Changed to print
         return None
 
     def assign_variable(self, var_name, value):
@@ -52,19 +54,19 @@ class CodeGenerator:
         # First try to find and update the variable in an existing scope
         for env in reversed(self.env_stack):
             if var_name in env:
-                # Make sure we're assigning a clean value to prevent memory corruption
-                if isinstance(value, int):
-                    env[var_name] = int(value)  # Ensure it's a clean int
+                # Make sure we're assigning a clean value, but preserve booleans
+                if isinstance(value, int) and not isinstance(value, bool):
+                    env[var_name] = int(value)  # Ensure it's a clean int, not a bool subclass
                 else:
-                    env[var_name] = value
+                    env[var_name] = value # Assign other types (including bool) directly
                 self.log(f"Updated existing variable '{var_name}' = {value} in scope")
                 return
         
         # If not found, add to current scope
-        if isinstance(value, int):
-            self.get_current_env()[var_name] = int(value)  # Ensure it's a clean int
+        if isinstance(value, int) and not isinstance(value, bool):
+             self.get_current_env()[var_name] = int(value) # Ensure it's a clean int, not a bool subclass
         else:
-            self.get_current_env()[var_name] = value
+            self.get_current_env()[var_name] = value # Assign other types (including bool) directly
         self.log(f"Created new variable '{var_name}' = {value} in current scope")
 
     def flatten_nodes(self, nodes):
@@ -288,6 +290,11 @@ class CodeGenerator:
             self.log("LOOP: Routing to execute_repeat_while")
             return self.execute_repeat_while(node)
         
+        # ADDED: Route type_cast nodes
+        elif node.type == "type_cast":
+            self.log("TYPECAST: Routing to execute_type_cast")
+            return self.execute_type_cast(node)
+
         method_name = f"execute_{node.type}"
         executor = getattr(self, method_name, self.generic_execute)
         result = executor(node)
@@ -785,8 +792,10 @@ class CodeGenerator:
             
             result = self.evaluate_expression_chain(left_value, binop_node)
             
+            # print(f"EXEC_EXPR (binop): Returning {repr(result)}") # Added print
             return result
         
+        # print(f"EXEC_EXPR (no binop): Returning {repr(left_value)}") # Added print
         return left_value
         
     def evaluate_expression_chain(self, left_value, binop_node):
@@ -850,22 +859,29 @@ class CodeGenerator:
                 return value
         
         # Standard processing for other types of output children
-        for child in node.children:
+        for i, child in enumerate(node.children): # Added index 'i' for clarity
+         
             result = self.execute_node(child)
             self.log(f"Output result: {result}")
-            
+        
+
             # Handle string literals containing formatting instructions
             if isinstance(result, str) and result.startswith('"') and result.endswith('"'):
-                # Remove the quotes and handle escape sequences
                 result = result[1:-1].replace('\\n', '\n').replace('\\t', '\t')
+                
             # Format boolean values as Day/Night ONLY IF they are specifically boolean, not int
             elif isinstance(result, bool) and not (isinstance(result, int) and not isinstance(result, bool)):
+                original_bool = result # Keep original for logging
                 result = "Day" if result else "Night"
-            
-            # Make sure we display the result properly, even if it's a number
+                
+
+       
             if result is not None:
-                print(result, end="")  # Changed to not add newline
-        
+            
+                print(result, end="")
+            else:
+                continue;
+
         return None  # The output statement doesn't return a value
         
     def execute_display_statement(self, node):
@@ -914,7 +930,18 @@ class CodeGenerator:
         
         try:
             if operator == "+":
-                return left + right
+                # --- MODIFIED: Prioritize String Concatenation ---
+                if isinstance(left, str) or isinstance(right, str):
+                    # Ensure both operands are strings, converting bools to Day/Night
+                    str_left = self.convert_type(left, "string") if not isinstance(left, str) else left
+                    str_right = self.convert_type(right, "string") if not isinstance(right, str) else right
+                    self.log(f"Performing string concatenation: '{str_left}' + '{str_right}'")
+                    return str_left + str_right
+                else:
+                    # Perform numeric addition if neither is a string
+                    self.log(f"Performing numeric addition: {left} + {right}")
+                    return left + right
+                # --- END MODIFICATION ---
             elif operator == "-":
                 return left - right
             elif operator == "*":
@@ -1030,72 +1057,129 @@ class CodeGenerator:
 
     
     def convert_type(self, value, target_type):
-        """Convert a value to the specified target type using the conversion rules from the table."""
-        self.log(f"Converting {value} ({type(value).__name__}) to {target_type}")
-        
-        # No conversion needed if types match
-        if type(value).__name__.lower() == target_type:
+        """Convert a value to the specified target type using CASPER conversion rules."""
+        self.log(f"Attempting conversion: {value} ({type(value).__name__}) to {target_type}")
+
+        # --- Normalize target type aliases ---
+        if target_type == "flt":
+            target_type = "float"
+        elif target_type == "bln":
+            target_type = "bool"
+        elif target_type == "str":
+            target_type = "string"
+
+        # --- Get source type ---
+        source_type = type(value).__name__.lower()
+        if source_type == "str": # Normalize Python's 'str' to 'string' for consistency
+            source_type = "string"
+
+        # --- Handle No Conversion Needed ---
+        if source_type == target_type:
+            self.log(f"No conversion needed for {source_type}.")
             return value
-            
-        # Handle specific conversions based on the table from the image
-        
-        # int → flt: Add .0
-        if isinstance(value, int) and target_type in ["float", "flt"]:
-            return float(value)
-            
-        # flt → int: Truncate decimal
-        elif isinstance(value, float) and target_type == "int":
-            return int(value)  # Python's int() truncates toward zero
-            
-        # bln → flt: Day → 1.0, Night → 0.0
-        elif isinstance(value, bool) and target_type in ["float", "flt"]:
-            result = 1.0 if value else 0.0
-            return result
-            
-        # flt → bln: 0.0 → Night, else Day
-        elif isinstance(value, float) and target_type in ["bool", "bln"]:
-            result = False if value == 0.0 else True
-            return result
-            
-        # int → bln: 0 → Night, else Day
-        elif isinstance(value, int) and target_type in ["bool", "bln"]:
-            result = False if value == 0 else True
-            return result
-            
-        # bln → int: Day → 1, Night → 0
-        elif isinstance(value, bool) and target_type == "int":
-            result = 1 if value else 0
-            return result
-            
-        # str conversions (handling string type)
-        elif target_type in ["string", "str"]:
-            # For boolean values to string, convert to "Day"/"Night" instead of "True"/"False"
-            if isinstance(value, bool):
-                result = "Day" if value else "Night"
+
+        self.log(f"Normalized conversion: {value} ({source_type}) to {target_type}")
+
+        # --- Specific CASPER Conversions ---
+        try:
+            # int -> float
+            if source_type == "int" and target_type == "float":
+                result = float(value)
+                self.log(f"Converted int -> float: {value} -> {result}")
                 return result
-            return str(value)
-            
-        # If no rule is defined, try a standard Python conversion
-        else:
-            try:
-                if target_type == "int":
-                    result = int(value)
+
+            # float -> int (Truncate)
+            elif source_type == "float" and target_type == "int":
+                result = int(value)
+                self.log(f"Converted float -> int (truncate): {value} -> {result}")
+                return result
+
+            # bool -> float (Day -> 1.0, Night -> 0.0)
+            elif source_type == "bool" and target_type == "float":
+                result = 1.0 if value else 0.0
+                self.log(f"Converted bool -> float: {value} -> {result}")
+                return result
+
+            # float -> bool (0.0 -> Night, else Day)
+            elif source_type == "float" and target_type == "bool":
+                result = False if value == 0.0 else True
+                self.log(f"Converted float -> bool: {value} -> {result}")
+                return result
+
+            # int -> bool (0 -> Night, else Day)
+            elif source_type == "int" and target_type == "bool":
+                result = False if value == 0 else True
+                self.log(f"Converted int -> bool: {value} -> {result}")
+                return result
+
+            # bool -> int (Day -> 1, Night -> 0)
+            elif source_type == "bool" and target_type == "int":
+                result = 1 if value else 0
+                self.log(f"Converted bool -> int: {value} -> {result}")
+                return result
+
+            # string -> int (Truncate float-like strings, error otherwise)
+            elif source_type == "string" and target_type == "int":
+                try:
+                    # First, try converting to float to handle "123.45" cases
+                    float_val = float(value)
+                    result = int(float_val) # Truncate
+                    self.log(f"Converted string -> int (via float truncate): '{value}' -> {result}")
                     return result
-                elif target_type in ["float", "flt"]:
+                except ValueError:
+                    self.log(f"ERROR: Cannot convert string '{value}' to int.")
+                    raise ValueError(f"Cannot convert string '{value}' to int.")
+
+            # string -> float
+            elif source_type == "string" and target_type == "float":
+                try:
                     result = float(value)
+                    self.log(f"Converted string -> float: '{value}' -> {result}")
                     return result
-                elif target_type in ["bool", "bln"]:
-                    result = bool(value)
-                    return result
-                elif target_type in ["string", "str"]:
-                    result = str(value)
+                except ValueError:
+                    self.log(f"ERROR: Cannot convert string '{value}' to float.")
+                    raise ValueError(f"Cannot convert string '{value}' to float.")
+
+            # string -> bool (Day/Night or numeric 0 -> Night, else Day)
+            elif source_type == "string" and target_type == "bool":
+                if value == "Day":
+                    self.log(f"Converted string 'Day' -> bool: True")
+                    return True
+                elif value == "Night":
+                    self.log(f"Converted string 'Night' -> bool: False")
+                    return False
+                else:
+                    # Try numeric conversion
+                    try:
+                        num_val = float(value)
+                        result = False if num_val == 0.0 else True
+                        self.log(f"Converted numeric string -> bool: '{value}' -> {result}")
+                        return result
+                    except ValueError:
+                        self.log(f"ERROR: Cannot convert non-Day/Night/numeric string '{value}' to bool.")
+                        raise ValueError(f"Cannot convert string '{value}' to bool.")
+
+            # Any -> string
+            elif target_type == "string":
+                if isinstance(value, bool):
+                    result = "Day" if value else "Night"
+                    self.log(f"Converted bool -> string: {value} -> '{result}'")
                     return result
                 else:
-                    self.log(f"No conversion rule for {type(value).__name__} to {target_type}")
-                    return value
-            except:
-                self.log(f"Failed to convert {value} to {target_type}")
-                return value
+                    result = str(value)
+                    self.log(f"Converted {source_type} -> string: {value} -> '{result}'")
+                    return result
+
+            # Fallback for unhandled conversions
+            else:
+                self.log(f"ERROR: No explicit conversion rule from {source_type} to {target_type} for value {value}")
+                raise TypeError(f"Cannot convert from {source_type} to {target_type}")
+
+        except Exception as e:
+            self.log(f"Conversion failed: {str(e)}")
+            print(f"Error during type conversion: {str(e)}") # Make error visible to user
+            self.stopped = True # Stop execution on conversion failure
+            return None # Return None on failure
 
     def execute_literal(self, node):
         self.log(f"Executing literal: {node}, value={node.value}")
@@ -1124,23 +1208,24 @@ class CodeGenerator:
     #    VARIABLE CALLS
     # ==========================
 
-    def execute_var_postfix(self, node):
-        self.log(f"Executing var_postfix: {node}")
-        # var_postfix -> var_call
-        # Then sometimes there's an extra child "None" or more
+    def execute_postfix(self, node):
+        self.log(f"Executing postfix: {node}")
+        # Handles nodes like: postfix -> var_call -> IDENT
+        # May also have a trailing None child from the parser.
         if not node.children:
-            self.log("var_postfix has no children")
+            self.log("postfix has no children")
             return None
-            
+
         # Filter out None children, if any
         valid_children = [child for child in node.children if child is not None]
         if not valid_children:
-            self.log("var_postfix has no valid children")
+            self.log("postfix has no valid children")
             return None
-            
-        # Execute first valid child (should be var_call)
+
+        # Execute first valid child (should be var_call or similar)
         result = self.execute_node(valid_children[0])
-        self.log(f"var_postfix result: {result}")
+        self.log(f"postfix result: {result}")
+        # print(f"EXEC_POSTFIX: Returning {repr(result)}") # Changed print prefix
         return result
 
     def execute_var_call(self, node):
@@ -1224,6 +1309,7 @@ class CodeGenerator:
                 self.stopped = True
                 return None
         
+      
         return value
 
     # ==========================
@@ -2872,6 +2958,61 @@ class CodeGenerator:
             self.break_flag = False # Ensure flag is reset
         
         return None
+
+    # ==========================
+    #    TYPE CASTING
+    # ==========================
+    def execute_type_cast(self, node):
+        """Executes an explicit type cast operation."""
+        self.log(f"Executing type_cast: {node.value}")
+
+        if not node.children or len(node.children) != 1:
+            self.log("ERROR: Type cast node has incorrect number of children")
+            print(f"Error: Invalid type cast operation '{node.value}' - missing argument.")
+            self.stopped = True
+            return None
+
+        # Get the function name (e.g., "to_int")
+        cast_function = node.value.lower()
+        target_type = None
+
+        # Determine the target type based on the function name
+        if cast_function in ("to_int", "convert_to_int"):
+            target_type = "int"
+        elif cast_function in ("to_flt", "convert_to_flt"):
+            target_type = "float" # Use 'float' internally
+        elif cast_function in ("to_bln", "convert_to_bln"):
+            target_type = "bool"  # Use 'bool' internally
+        elif cast_function in ("to_str", "convert_to_str"):
+            target_type = "string" # Use 'string' internally
+        else:
+            self.log(f"ERROR: Unknown type cast function: {cast_function}")
+            print(f"Error: Unknown type cast function: {cast_function}")
+            self.stopped = True
+            return None
+
+        # Execute the child node to get the value to cast
+        value_to_cast = self.execute_node(node.children[0])
+        # print(f"TYPECAST: Value to cast for {cast_function}: {repr(value_to_cast)} (type: {type(value_to_cast).__name__})") # Changed to print
+
+        if self.stopped: # Check if operand evaluation failed
+            return None
+
+        # Use the existing convert_type logic
+        try:
+            converted_value = self.convert_type(value_to_cast, target_type)
+            self.log(f"Type cast {cast_function}({value_to_cast}) resulted in: {converted_value}")
+            return converted_value
+        except Exception as e:
+            self.log(f"ERROR: Type casting failed for {cast_function}({value_to_cast}): {str(e)}")
+            print(f"Error: Type casting failed: {str(e)}")
+            self.stopped = True
+            return None
+
+
+    # ==========================
+    #    LIST HANDLING
+    # ==========================
 
 def run_code_generation(ast):
     """Create a CodeGenerator and run code generation on the given AST."""
