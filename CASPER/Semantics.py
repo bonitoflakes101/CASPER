@@ -166,7 +166,9 @@ class SemanticAnalyzer:
         # In the new AST, the variable name is in the first child (type "IDENT")
         var_name = node.children[0].value
         try:
-            symtable.lookup(var_name)
+            var_type = symtable.lookup(var_name)
+            print(f"GET_EXPR_TYPE (var_call): Lookup for '{var_name}' returned type: {var_type}") # DEBUG PRINT
+            return var_type
         except SemanticError as e:
             if var_name not in self.reported_undeclared_vars:
                 self.errors.append(str(e))
@@ -522,7 +524,9 @@ class SemanticAnalyzer:
         elif node.type == "var_call":
             var_name = node.children[0].value
             try:
-                return symtable.lookup(var_name)
+                var_type = symtable.lookup(var_name)
+                print(f"GET_EXPR_TYPE (var_call): Lookup for '{var_name}' returned type: {var_type}") # DEBUG PRINT
+                return var_type
             except SemanticError as e:
                 if var_name not in self.reported_undeclared_vars:
                     self.errors.append(str(e))
@@ -565,6 +569,13 @@ class SemanticAnalyzer:
                 return right_type or tail_type
 
             return right_type
+
+        # ADDED: Handle postfix nodes (like var_call++) by getting the type of the base variable call
+        elif node.type == "postfix":
+            if node.children:
+                # The first child is the node whose type we care about (e.g., var_call)
+                return self.get_expression_type(node.children[0], symtable)
+            return None
 
         # ### REORDER: Now we do a fallback "visit" last, in case we missed anything
         self.generic_visit(node, symtable)
