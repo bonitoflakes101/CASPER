@@ -222,14 +222,26 @@ def p_list_element(p):
     """
     list_element : literal element_tail
                  | list_value element_tail
+                 | var_call element_tail   
     """
-
+    # Determine the first part (literal, list_value, or var_call)
     if isinstance(p[1], ASTNode) and p[1].type == "list_value":
-        node = p[1]
+        node = p[1] # It's a nested list
+    elif isinstance(p[1], ASTNode) and p[1].type == "var_call":
+        node = p[1] # It's a variable call
     else:
-        node = ASTNode("literal_element", [p[1]])
+        # Assume it's a literal (or literal_element wrapper)
+        # Ensure we pass the actual literal node if p[1] is ASTNode("literal", ...)
+        # or the raw value if p[1] is just the value (e.g., from p_literal1)
+        if isinstance(p[1], ASTNode) and p[1].type == "literal":
+             node = p[1]
+        elif isinstance(p[1], ASTNode) and p[1].type == "chr_lit": # Handle char literals specifically
+             node = p[1]
+        else: # Wrap other raw literals
+             node = ASTNode("literal", value=p[1])
 
-    if p[2]:
+    # Build the list_element node with the tail
+    if p[2]: # If element_tail exists
         p[0] = ASTNode("list_element", [node, p[2]])
     else:
         p[0] = ASTNode("list_element", [node])

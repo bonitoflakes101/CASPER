@@ -1925,15 +1925,26 @@ class CodeGenerator:
                     self.stopped = True
                     return None
 
-                # Execute the node for the element to be pushed
+                # -- Start Fix --
+                # Get the list_element node itself
                 if not assign_node.children:
-                    self.log("ERROR: .push() is missing an element to push.")
-                    print("Error: .push() requires an element.")
+                    self.log("ERROR: .push() has no child node (list_element expected).")
+                    print("Error: .push() requires an argument.")
                     self.stopped = True
                     return None
-                    
-                element_node = assign_node.children[0]
-                value_to_push = self.execute_node(element_node)
+                list_element_node = assign_node.children[0]
+                
+                # Get the ACTUAL argument node INSIDE the list_element node
+                if not hasattr(list_element_node, 'children') or not list_element_node.children:
+                    self.log(f"ERROR: list_element node inside push for '{var_name}' is empty.")
+                    print("Error: .push() argument is empty or invalid.")
+                    self.stopped = True
+                    return None
+                actual_argument_node = list_element_node.children[0]
+                
+                # Execute the actual argument node (literal, var_call, list_value)
+                value_to_push = self.execute_node(actual_argument_node)
+                # -- End Fix --
                 
                 if self.stopped:
                      return None # Error occurred during element evaluation
