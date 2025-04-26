@@ -53,6 +53,7 @@ class Delimiters:
     DEL20 = NULL | {'p','s'}
     DEL21 = NULL | {';'} 
     DEL22 = NULL | {'{'} | SPACE
+    DEL23 = NULL | {'['} | SPACE
 
 
     # Check if a character is a valid delimiter

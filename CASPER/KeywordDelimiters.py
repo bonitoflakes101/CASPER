@@ -21,11 +21,11 @@ KEYWORD_DELIMITERS = {
     "GLOBAL": Delimiters.SPACE,
 
     # Data types
-    "INT": Delimiters.SPACE,
-    "FLT": Delimiters.SPACE,
-    "BLN": Delimiters.SPACE,
-    "CHR": Delimiters.SPACE,
-    "STR": Delimiters.SPACE,
+    "INT": Delimiters.DEL23,
+    "FLT": Delimiters.DEL23,
+    "BLN": Delimiters.DEL23,
+    "CHR": Delimiters.DEL23,
+    "STR": Delimiters.DEL23,
 
     # Boolean literals
     "DAY": Delimiters.DEL17,

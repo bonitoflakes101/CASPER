@@ -33,7 +33,7 @@ birth {
 ghost
 
 
-!!!!!!!!!!!!! SUM OF A NUMBER TEST !!!!!!!!!!!!!!!!!!!!!!!!!
+!!!!!!!!!!!!! 2.) SUM OF A NUMBER TEST !!!!!!!!!!!!!!!!!!!!!!!!!
 
 birth {
 
@@ -65,3 +65,53 @@ birth {
 }
 ghost
 
+!!!!!!!!!!!!!!!!!!! 3.) REVERSE FIBONACCI !!!!!!!!!!!!!!!!!!!!!!!!
+
+birth {
+
+@main_casper() {
+    display "Enter the number of Fibonacci numbers to generate: ", "\n";
+    int $n = input(); 
+
+    check ($n <= 0) {
+        display "Please enter a positive number.", "\n"; 
+    } otherwise {
+        int $fib_sequence[]; 
+
+        check ($n == 1) {
+            $fib_sequence.push(0);
+        } otherwise_check ($n >= 2) {
+            $fib_sequence.push(0);
+            $fib_sequence.push(1);
+
+            int $a = 0; 
+            int $b = 1;
+            int $i = 2; 
+
+            while ($i < $n) {
+                int $next_fib = $a + $b;
+                $fib_sequence.push($next_fib);
+
+                $a = $b;        
+                $b = $next_fib; 
+
+                $i = $i + 1;
+            }
+       
+        } otherwise {
+
+        }
+
+        display "Fibonacci sequence generated. Displaying in reverse order:", "\n";
+        int $j = $n - 1; 
+        while ($j >= 0) {
+            display $fib_sequence[$j], " ";
+            $j = $j - 1;
+        }
+        display "\n";
+    }
+}
+
+}
+ghost
+!!!!!!!!!!!!!!! PERMUTATION OF A GIVEN STRING !!!!!!!!!!!!!!!!!!!!

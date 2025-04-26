@@ -658,33 +658,66 @@ def p_function_dtype(p):
     p[0] = p[1]
 
 # -----------------------------------------------------------------------------
+# NEW RULE: parameter_type -> data_type [list_dec]
+# -----------------------------------------------------------------------------
+def p_parameter_type(p):
+    """parameter_type : data_type list_dec"""
+    # Combine data_type and list_dec into a single type representation
+    base_type_node = p[1]
+    list_dec_node = p[2]
+    
+    declared_type = base_type_node.value
+    is_list = False
+    is_2d = False
+    
+    if list_dec_node is not None:
+        is_list = True
+        if list_dec_node.children and list_dec_node.children[0] is not None and hasattr(list_dec_node.children[0], 'type') and list_dec_node.children[0].type == "2d_list":
+             is_2d = True
+             declared_type += "[][]"
+        else:
+             declared_type += "[]"
+             
+    # Store the full type string (e.g., "int", "chr[]", "flt[][]") in the node's value
+    # The children can retain the original structure if needed for later analysis
+    p[0] = ASTNode("parameter_type", children=[base_type_node, list_dec_node], value=declared_type)
+
+
+# -----------------------------------------------------------------------------
 # (71) <parameters> → <data_type> IDENTIFIER <parameters_tail>
 # (72) <parameters> → null
+# -- MODIFIED to use parameter_type --
 # -----------------------------------------------------------------------------
 def p_parameters(p):
     """
-    parameters : data_type IDENT parameters_tail  
+    parameters : parameter_type IDENT parameters_tail  
                | empty                            
     """
     if len(p) == 2:
         p[0] = ASTNode("parameters", [])  
     else:
-        param_list = [ASTNode("param_decl", children=[p[1], ASTNode("IDENT", value=p[2])])] + p[3]
+        # p[1] is the parameter_type node, p[2] is IDENT
+        param_decl_node = ASTNode("param_decl", children=[p[1], ASTNode("IDENT", value=p[2])])
+        param_list = [param_decl_node] + p[3] # p[3] is parameters_tail
         p[0] = ASTNode("parameters", param_list)
 
 # -----------------------------------------------------------------------------
 # (73) <parameters_tail> → , <data_type> IDENTIFIER <parameters_tail>
 # (74) <parameters_tail> → null
+# -- MODIFIED to use parameter_type --
 # -----------------------------------------------------------------------------
 def p_parameters_tail(p):
     """
-    parameters_tail : COMMA data_type IDENT parameters_tail 
+    parameters_tail : COMMA parameter_type IDENT parameters_tail 
                     | empty                                 
     """
     if len(p) == 2:
         p[0] = []
     else:
-        p[0] = [ASTNode("param_decl", children=[p[2], ASTNode("IDENT", value=p[3])])] + (p[4] if p[4] is not None else [])
+        # p[2] is parameter_type, p[3] is IDENT
+        param_decl_node = ASTNode("param_decl", children=[p[2], ASTNode("IDENT", value=p[3])])
+        p[0] = [param_decl_node] + (p[4] if p[4] is not None else [])
+
 # -----------------------------------------------------------------------------
 # (75) <revive> → revive <value>
 # (76) <revive> → null
