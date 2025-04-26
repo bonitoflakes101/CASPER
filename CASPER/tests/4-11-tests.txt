@@ -86,8 +86,96 @@ ghost
 4.) Lists/String Manipulation/While loop
 
 
+birth {
+    << No global variables needed
 
 
+<< Converts a binary string to its decimal integer equivalent
+function @binaryToDecimal(str $binaryString) {
+    int $decimalValue = 0;
+    int $power = 1;
+    int $length = measure($binaryString);
+    int $i = $length - 1;
+
+    while ($i >= 0) {
+        << Access character at index i (assuming $string[$index] syntax)
+        str $digitChar = $binaryString[$i]; 
+        << Convert '0' or '1' character to integer 0 or 1
+        int $digit = to_int($digitChar); 
+
+        check ($digit == 1) {
+            $decimalValue = $decimalValue + $power;
+        } otherwise {
+            << Do nothing if digit is 0
+        }
+
+        << Increase power of 2 for the next position
+        $power = $power * 2;
+        << Move to the next digit (leftwards)
+        $i = $i - 1;
+    }
+
+    display "Decimal equivalent: ", $decimalValue;
+    << No revive statement needed as we just display
+}
+
+<< Converts a decimal integer to its binary string equivalent
+function @decimalToBinary(int $decimalValue) {
+    str $binaryString = "";
+
+    << Handle the edge case of input 0
+    check ($decimalValue == 0) {
+        $binaryString = "0";
+    } otherwise {
+        << Loop while the decimal value is greater than 0
+        while ($decimalValue > 0) {
+            << Get the remainder (0 or 1)
+            int $remainder = $decimalValue % 2;
+            << Convert remainder to string
+            str $remainderStr = to_str($remainder);
+            << Prepend the remainder string to the binary string
+            $binaryString = $remainderStr + $binaryString; 
+            
+            << Perform integer division by 2
+            << Using temp variable and to_int() to ensure integer result
+            int $temp = $decimalValue / 2; 
+            $decimalValue = to_int($temp); 
+        }
+    }
+
+    display "Binary equivalent: ", $binaryString;
+    << No revive statement needed
+}
+
+<< Main program execution starts here
+@main_casper() {
+    display "Choose conversion type:", "\n";
+    display "1: Binary to Decimal", "\n";
+    display "2: Decimal to Binary", "\n";
+    display "Enter choice: ", "\n";
+
+    << Read user's choice
+    str $choice= input();
+
+
+    << Perform action based on choice
+    display $choice;
+    
+    check ($choice == "1") {
+        display "Enter binary string: ", "\n";
+        str $binInput = input();
+        @binaryToDecimal($binInput); << Call binary to decimal function
+    } otherwise_check ($choice == "2") {
+        display "Enter decimal number: ", "\n";
+        str $decInputStr = input();
+        int $decInput = to_int($decInputStr);
+        @decimalToBinary($decInput); << Call decimal to binary function
+    } otherwise {
+        display "Invalid choice."; << Handle incorrect input
+    }
+}
+}
+ghost
 
 
 5.) Sum of squares

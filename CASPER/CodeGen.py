@@ -166,48 +166,346 @@ class CodeGenerator:
                 if hasattr(self, 'parent_nodes') and len(self.parent_nodes) > 0:
                     parent = self.parent_nodes[-1]  # Don't pop, just look at the current parent
                     
-                    if hasattr(parent, 'type') and parent.type == "main_function":
-                        # Get the main statements list (first child)
-                        if parent.children and len(parent.children) > 0:
-                            statements_list = parent.children[0]
-                            
-                            # Find the parent list that contains our input statement
-                            if isinstance(statements_list, list):
-                                found_index = -1
-                                for i, stmt_group in enumerate(statements_list):
-                                    # Each statement may be wrapped in a list
-                                    if isinstance(stmt_group, list) and len(stmt_group) > 0:
-                                        inner_stmt = stmt_group[0]
-                                        
-                                        # Direct input statement
-                                        if inner_stmt == temp_node:
-                                            found_index = i
-                                            break
-                                        
-                                        # Check for input inside variable statements
-                                        if hasattr(inner_stmt, 'type') and inner_stmt.type == "var_statement" and inner_stmt.children:
-                                            for child in inner_stmt.children:
-                                                if hasattr(child, 'type') and child.type == "local_var_assign" and child.children:
-                                                    value_node = child.children[0]
-                                                    if hasattr(value_node, 'type') and value_node.type == "value" and value_node.children:
-                                                        if hasattr(value_node.children[0], 'type') and value_node.children[0].type == "input_statement":
-                                                            if value_node.children[0] == temp_node:
-                                                                found_index = i
-                                                                break
-                            
-                            # Execute all statements after the input statement
-                            if found_index >= 0:
+                    if hasattr(parent, 'type'):
+                        # Handle regular statements inside main function
+                        if parent.type == "main_function":
+                            # Get the main statements list (first child)
+                            if parent.children and len(parent.children) > 0:
+                                statements_list = parent.children[0]
                                 
-                                self.log(f"Found input at index {found_index}, continuing execution")
-                                # Execute all remaining statements
-                                for i in range(found_index + 1, len(statements_list)):
-                                    next_stmt = statements_list[i]
-                                    result = self.execute_node(next_stmt)
-                                    # If we hit another input request, pause execution
-                                    if self.waiting_for_input:
-                                    
-                                        self.log(f"Hit another input request, pausing execution")
+                                # Find the parent list that contains our input statement
+                                if isinstance(statements_list, list):
+                                    found_index = -1
+                                    for i, stmt_group in enumerate(statements_list):
+                                        # Each statement may be wrapped in a list
+                                        if isinstance(stmt_group, list) and len(stmt_group) > 0:
+                                            inner_stmt = stmt_group[0]
+                                            
+                                            # Direct input statement
+                                            if inner_stmt == temp_node:
+                                                found_index = i
+                                                break
+                                            
+                                            # Check for input inside variable statements
+                                            if hasattr(inner_stmt, 'type') and inner_stmt.type == "var_statement" and inner_stmt.children:
+                                                for child in inner_stmt.children:
+                                                    if hasattr(child, 'type') and child.type == "local_var_assign" and child.children:
+                                                        value_node = child.children[0]
+                                                        if hasattr(value_node, 'type') and value_node.type == "value" and value_node.children:
+                                                            if hasattr(value_node.children[0], 'type') and value_node.children[0].type == "input_statement":
+                                                                if value_node.children[0] == temp_node:
+                                                                    found_index = i
+                                                                    break
+                                
+                                    # Execute all statements after the input statement
+                                    if found_index >= 0:
+                                        
+                                        self.log(f"Found input at index {found_index}, continuing execution")
+                                        # Execute all remaining statements
+                                        for i in range(found_index + 1, len(statements_list)):
+                                            next_stmt = statements_list[i]
+                                            result = self.execute_node(next_stmt)
+                                            # If we hit another input request, pause execution
+                                            if self.waiting_for_input:
+                                            
+                                                self.log(f"Hit another input request, pausing execution")
+                                                break
+                        
+                        # Handle statements inside conditional blocks
+                        elif parent.type in ["check_block", "otherwise_block", "otherwise_check", "conditional_statement"]:
+                            self.log(f"Found input in conditional block: {parent.type}")
+                            
+                            # Continue execution of current parent after input is processed
+                            if parent.children:
+                                # Find which child contained our input statement
+                                found_index = -1
+                                for i, child in enumerate(parent.children):
+                                    # Check if this child is our input statement
+                                    if child == temp_node:
+                                        found_index = i
                                         break
+                                    
+                                    # Check inside var_statement for input
+                                    if hasattr(child, 'type') and child.type == "var_statement" and child.children:
+                                        for var_child in child.children:
+                                            if hasattr(var_child, 'type') and var_child.type == "local_var_assign" and var_child.children:
+                                                value_node = var_child.children[0]
+                                                if hasattr(value_node, 'type') and value_node.type == "value" and value_node.children:
+                                                    if hasattr(value_node.children[0], 'type') and value_node.children[0].type == "input_statement":
+                                                        if value_node.children[0] == temp_node:
+                                                            found_index = i
+                                                            break
+                                
+                                # If found, continue execution from the next child
+                                if found_index >= 0 and found_index < len(parent.children) - 1:
+                                    self.log(f"Continuing execution from child {found_index + 1} in {parent.type}")
+                                    for i in range(found_index + 1, len(parent.children)):
+                                        next_stmt = parent.children[i]
+                                        result = self.execute_node(next_stmt)
+                                        # If we hit another input request, pause execution
+                                        if self.waiting_for_input:
+                                            self.log(f"Hit another input request during continuation, pausing execution")
+                                            break
+                                else:
+                                    self.log("Either no match found or it was the last child")
+                            else:
+                                self.log("Parent has no children")
+                
+                # Return the input result
+                return input_result
+            
+from Parser import ASTNode
+
+class CodeGenerator:
+    def __init__(self):
+        self.global_vars = {}
+        self.env_stack = [self.global_vars]
+        self.functions = {}
+        self.return_values = []
+        self.debug = False 
+        
+        # Input handling
+        self.waiting_for_input = False
+        self.input_value = None
+        self.input_prompt = ""
+        self.current_assignment_target = None
+        self.expected_type = None
+        
+        # Execution state
+        self.ast = None
+        self.paused_node = None
+        self.parent_nodes = []
+        self.stopped = False
+        self.completed = False
+        self.break_flag = False
+        
+        # New variables for tracking multiple inputs
+        self.input_target_queue = []  # Queue to hold pending input targets
+
+    def log(self, message):
+        if self.debug:
+            pass
+
+    def get_current_env(self):
+        return self.env_stack[-1]
+
+    def push_scope(self):
+        self.env_stack.append({})
+
+    def pop_scope(self):
+        if len(self.env_stack) > 1:
+            self.env_stack.pop()
+        else:
+            pass
+
+    def lookup_variable(self, var_name):
+        # Search through the environment stack, starting with the most local scope
+        for i, env in enumerate(reversed(self.env_stack)):
+            scope_name = "local" if i == 0 else f"parent {i}"
+            if var_name in env:
+                value = env[var_name]
+                # print(f"LOOKUP: Found variable '{var_name}' = {repr(value)} in {scope_name} scope") # Changed to print
+                return value
+        # print(f"LOOKUP: Variable '{var_name}' not found in any scope.") # Changed to print
+        return None
+
+    def assign_variable(self, var_name, value):
+        self.log(f"Assigning '{var_name}' = {value}")
+        
+        # First try to find and update the variable in an existing scope
+        for env in reversed(self.env_stack):
+            if var_name in env:
+                # Make sure we're assigning a clean value, but preserve booleans
+                if isinstance(value, int) and not isinstance(value, bool):
+                    env[var_name] = int(value)  # Ensure it's a clean int, not a bool subclass
+                else:
+                    env[var_name] = value # Assign other types (including bool) directly
+                self.log(f"Updated existing variable '{var_name}' = {value} in scope")
+                return
+        
+        # If not found, add to current scope
+        if isinstance(value, int) and not isinstance(value, bool):
+             self.get_current_env()[var_name] = int(value) # Ensure it's a clean int, not a bool subclass
+        else:
+            self.get_current_env()[var_name] = value # Assign other types (including bool) directly
+        self.log(f"Created new variable '{var_name}' = {value} in current scope")
+
+    def flatten_nodes(self, nodes):
+        if not isinstance(nodes, list):
+            return [nodes]
+        flat = []
+        for item in nodes:
+            if isinstance(item, list):
+                flat.extend(self.flatten_nodes(item))
+            else:
+                flat.append(item)
+        return flat
+
+    def generate(self, ast):
+        """
+        Main entry point for code generation.
+        If ast is None, it means we're resuming execution after input.
+        """
+        
+        if self.stopped:
+            self.completed = True
+            return None
+            
+        if ast is not None:
+            self.ast = ast
+            
+        # If we have a paused node and just received input, process it
+        if ast is None and self.paused_node and not self.waiting_for_input:
+            result = self.execute_node(None)  # This will trigger the paused node execution
+            
+            # Only mark as completed if not waiting for more input AND not in the middle of
+            # processing statements (e.g., when we have more inputs to process)
+            if not self.waiting_for_input and not self.paused_node:
+                self.completed = True
+                
+            return result
+            
+        # Return early if we have nothing to execute
+        if ast is None and not self.waiting_for_input and self.paused_node is None:
+            return None
+        
+        # Execute the AST
+        result = self.execute_node(ast)
+        
+        # Mark program as completed when done executing
+        # ONLY if we're not waiting for input and don't have a paused node
+        if not self.waiting_for_input and not self.paused_node:
+            self.completed = True
+            
+        return result
+
+    def execute_node(self, node):
+        # Check if execution is stopped
+        if self.stopped:
+            return None
+            
+        # If we are currently waiting for input, don't execute any more nodes
+        if self.waiting_for_input and node != self.paused_node:
+           
+            return None
+            
+        # Handle resuming from paused input node
+        if node is None and self.paused_node and not self.waiting_for_input:
+            temp_node = self.paused_node
+            self.paused_node = None
+            
+            # If this is an input statement that just received input, execute it and continue with next node
+            if hasattr(temp_node, 'type') and temp_node.type == "input_statement":
+               
+                self.log("Resuming execution of paused input node")
+                input_result = self.execute_input_statement(temp_node)
+                
+                # Find the variable to update with the input value if we have a tracked assignment target
+                if self.current_assignment_target:
+                    var_name = self.current_assignment_target
+                
+                    self.log(f"Updating tracked variable {var_name} with input value: {input_result}")
+                    
+                    # Apply type conversion based on expected type if available
+                    if self.expected_type and input_result is not None:
+                        input_result = self.convert_type(input_result, self.expected_type)
+                        self.log(f"Converted input to expected type {self.expected_type}: {input_result}")
+                    
+                    # Update the variable with the input result
+                    self.assign_variable(var_name, input_result)
+                    
+                    # Reset tracking variables
+                    self.current_assignment_target = None
+                    self.expected_type = None
+                
+                # Find parent structure to continue execution from the right point
+                if hasattr(self, 'parent_nodes') and len(self.parent_nodes) > 0:
+                    parent = self.parent_nodes[-1]  # Don't pop, just look at the current parent
+                    
+                    if hasattr(parent, 'type'):
+                        # Handle regular statements inside main function
+                        if parent.type == "main_function":
+                            # Get the main statements list (first child)
+                            if parent.children and len(parent.children) > 0:
+                                statements_list = parent.children[0]
+                                
+                                # Find the parent list that contains our input statement
+                                if isinstance(statements_list, list):
+                                    found_index = -1
+                                    for i, stmt_group in enumerate(statements_list):
+                                        # Each statement may be wrapped in a list
+                                        if isinstance(stmt_group, list) and len(stmt_group) > 0:
+                                            inner_stmt = stmt_group[0]
+                                            
+                                            # Direct input statement
+                                            if inner_stmt == temp_node:
+                                                found_index = i
+                                                break
+                                            
+                                            # Check for input inside variable statements
+                                            if hasattr(inner_stmt, 'type') and inner_stmt.type == "var_statement" and inner_stmt.children:
+                                                for child in inner_stmt.children:
+                                                    if hasattr(child, 'type') and child.type == "local_var_assign" and child.children:
+                                                        value_node = child.children[0]
+                                                        if hasattr(value_node, 'type') and value_node.type == "value" and value_node.children:
+                                                            if hasattr(value_node.children[0], 'type') and value_node.children[0].type == "input_statement":
+                                                                if value_node.children[0] == temp_node:
+                                                                    found_index = i
+                                                                    break
+                                
+                                    # Execute all statements after the input statement
+                                    if found_index >= 0:
+                                        
+                                        self.log(f"Found input at index {found_index}, continuing execution")
+                                        # Execute all remaining statements
+                                        for i in range(found_index + 1, len(statements_list)):
+                                            next_stmt = statements_list[i]
+                                            result = self.execute_node(next_stmt)
+                                            # If we hit another input request, pause execution
+                                            if self.waiting_for_input:
+                                            
+                                                self.log(f"Hit another input request, pausing execution")
+                                                break
+                        
+                        # Handle statements inside conditional blocks
+                        elif parent.type in ["check_block", "otherwise_block", "otherwise_check", "conditional_statement"]:
+                            self.log(f"Found input in conditional block: {parent.type}")
+                            
+                            # Continue execution of current parent after input is processed
+                            if parent.children:
+                                # Find which child contained our input statement
+                                found_index = -1
+                                for i, child in enumerate(parent.children):
+                                    # Check if this child is our input statement
+                                    if child == temp_node:
+                                        found_index = i
+                                        break
+                                    
+                                    # Check inside var_statement for input
+                                    if hasattr(child, 'type') and child.type == "var_statement" and child.children:
+                                        for var_child in child.children:
+                                            if hasattr(var_child, 'type') and var_child.type == "local_var_assign" and var_child.children:
+                                                value_node = var_child.children[0]
+                                                if hasattr(value_node, 'type') and value_node.type == "value" and value_node.children:
+                                                    if hasattr(value_node.children[0], 'type') and value_node.children[0].type == "input_statement":
+                                                        if value_node.children[0] == temp_node:
+                                                            found_index = i
+                                                            break
+                                
+                                # If found, continue execution from the next child
+                                if found_index >= 0 and found_index < len(parent.children) - 1:
+                                    self.log(f"Continuing execution from child {found_index + 1} in {parent.type}")
+                                    for i in range(found_index + 1, len(parent.children)):
+                                        next_stmt = parent.children[i]
+                                        result = self.execute_node(next_stmt)
+                                        # If we hit another input request, pause execution
+                                        if self.waiting_for_input:
+                                            self.log(f"Hit another input request during continuation, pausing execution")
+                                            break
+                                else:
+                                    print(f"DEBUG INPUT RESUME: Either no match found or last child. found_index={found_index}, children={len(parent.children)}")
+                            else:
+                                print("DEBUG INPUT RESUME: Parent has no children")
                 
                 # Return the input result
                 return input_result
@@ -1429,6 +1727,10 @@ class CodeGenerator:
             self.log("CONDITIONAL DEBUG: Invalid conditional statement structure")
             return None
         
+        # Add this conditional statement as a parent for the execution context
+        if hasattr(self, 'parent_nodes'):
+            self.parent_nodes.append(node)
+            
         # First child should be the condition
         # Execute the condition properly using execute_condition instead of execute_node
         if hasattr(node.children[0], 'type') and node.children[0].type == "condition":
@@ -1438,9 +1740,19 @@ class CodeGenerator:
             
         self.log(f"CONDITIONAL DEBUG: Main condition result: {condition_result}")
         
+        # If we're waiting for input after condition evaluation, stop and return
+        if self.waiting_for_input:
+            return None
+            
         if condition_result:
             self.log("CONDITIONAL DEBUG: Main condition is TRUE, executing check block")
-            return self.execute_node(node.children[1])
+            result = self.execute_node(node.children[1])
+            
+            # If not waiting for input, pop the parent node
+            if not self.waiting_for_input and hasattr(self, 'parent_nodes') and len(self.parent_nodes) > 0:
+                self.parent_nodes.pop()
+                
+            return result
             
         # Check for otherwise blocks
         for i in range(2, len(node.children)):
@@ -1456,18 +1768,34 @@ class CodeGenerator:
                     else:
                         cond_result = self.execute_node(child.children[0])
                         
+                    # If we're waiting for input after condition evaluation, stop and return
+                    if self.waiting_for_input:
+                        return None
+                        
                     self.log(f"CONDITIONAL DEBUG: Otherwise_check condition result: {cond_result}")
                     
                     if cond_result:
-                        results = []
-                        for j in range(1, len(child.children)):
-                            result = self.execute_node(child.children[j])
-                            results.append(result)
-                        return results[-1] if results else None
+                        result = self.execute_node(child)
+                        
+                        # If not waiting for input, pop the parent node
+                        if not self.waiting_for_input and hasattr(self, 'parent_nodes') and len(self.parent_nodes) > 0:
+                            self.parent_nodes.pop()
+                            
+                        return result
                 elif child.type == "otherwise_block":
                     self.log("CONDITIONAL DEBUG: Executing otherwise block")
-                    return self.execute_otherwise_block(child)
+                    result = self.execute_otherwise_block(child)
+                    
+                    # If not waiting for input, pop the parent node
+                    if not self.waiting_for_input and hasattr(self, 'parent_nodes') and len(self.parent_nodes) > 0:
+                        self.parent_nodes.pop()
+                        
+                    return result
         
+        # If not waiting for input, pop the parent node
+        if not self.waiting_for_input and hasattr(self, 'parent_nodes') and len(self.parent_nodes) > 0:
+            self.parent_nodes.pop()
+            
         return None
     
     def execute_conditional_tail(self, node):
@@ -1515,9 +1843,23 @@ class CodeGenerator:
         
         if condition_result:
             results = []
+            
+            # Store parent-child relationship for resuming from input
+            if hasattr(self, 'parent_nodes'):
+                self.parent_nodes.append(node)
+                
             for i in range(1, len(node.children)):
                 result = self.execute_node(node.children[i])
                 results.append(result)
+                
+                # If we're waiting for input, stop execution and return
+                if self.waiting_for_input:
+                    return None
+                    
+            # Pop parent node if we just added it and didn't pause
+            if hasattr(self, 'parent_nodes') and len(self.parent_nodes) > 0 and not self.waiting_for_input:
+                self.parent_nodes.pop()
+                
             return results[-1] if results else None
         
         return None
@@ -1527,11 +1869,24 @@ class CodeGenerator:
         self.log("Executing check_block")
         
         results = []
-        for child in node.children:
+        
+        # Store parent-child relationship for resuming from input
+        if hasattr(self, 'parent_nodes'):
+            self.parent_nodes.append(node)
+            
+        for i, child in enumerate(node.children):
             if child is not None:
                 result = self.execute_node(child)
                 results.append(result)
+                
+                # If we're waiting for input, stop execution and return
+                if self.waiting_for_input:
+                    return None
         
+        # Pop parent node if we added it and aren't waiting for input
+        if hasattr(self, 'parent_nodes') and len(self.parent_nodes) > 0 and not self.waiting_for_input:
+            self.parent_nodes.pop()
+            
         return results[-1] if results else None
 
     def execute_otherwise_block(self, node):
@@ -1539,11 +1894,24 @@ class CodeGenerator:
         self.log("Executing otherwise_block")
         
         results = []
-        for child in node.children:
+        
+        # Store parent-child relationship for resuming from input
+        if hasattr(self, 'parent_nodes'):
+            self.parent_nodes.append(node)
+            
+        for i, child in enumerate(node.children):
             if child is not None:
                 result = self.execute_node(child)
                 results.append(result)
+                
+                # If we're waiting for input, stop execution and return
+                if self.waiting_for_input:
+                    return None
         
+        # Pop parent node if we added it and aren't waiting for input
+        if hasattr(self, 'parent_nodes') and len(self.parent_nodes) > 0 and not self.waiting_for_input:
+            self.parent_nodes.pop()
+            
         return results[-1] if results else None
     
     
@@ -1955,52 +2323,11 @@ class CodeGenerator:
         
         # If we already have an input value and aren't waiting anymore, process it
         if self.input_value is not None and not self.waiting_for_input:
-          
             input_val = self.input_value
-            self.input_value = None  # Clear for next input
-            self.paused_node = None
-            
-            # Handle basic conversions from string inputs
-            if isinstance(input_val, str):
-                # Handle Day/Night values
-                if input_val == "Day":
-                    input_val = True
-                elif input_val == "Night":
-                    input_val = False
-                # Try numeric conversion for numeric strings
-                elif input_val.replace('.', '', 1).isdigit():
-                    try:
-                        if '.' in input_val:
-                            input_val = float(input_val)
-                        else:
-                            input_val = int(input_val)
-                    except ValueError:
-                        pass
-            
-            # Convert input value based on expected type if available
-            if self.expected_type:
-                try:
-                    input_val = self.convert_type(input_val, self.expected_type)
-                    self.log(f"Converted input to expected type {self.expected_type}: {input_val}")
-                except Exception as e:
-                    self.log(f"Error during input conversion: {str(e)}")
-                    print(f"Error: Invalid input '{input_val}'. Expected type: {self.expected_type}")
-                    self.stopped = True
-                    return None
-            
-            # Track current value for assignment if needed
-            if self.current_assignment_target:
-                var_name = self.current_assignment_target
-                self.assign_variable(var_name, input_val)
-                self.log(f"Assigned input value to {var_name}: {input_val}")
-            
-            # Reset state
-            self.expected_type = None
-            self.current_assignment_target = None
-            
+           
+            self.input_value = None
             return input_val
         
-       
         self.paused_node = node
         self.waiting_for_input = True
         
@@ -2011,13 +2338,11 @@ class CodeGenerator:
             if prompt_node:
                 prompt = self.execute_node(prompt_node) or ""
                 
-        
         # Store the prompt for the frontend to display
         self.input_prompt = prompt
         
         # Make sure we're still paused
         self.waiting_for_input = True
-       
         
         # Flush stdout to ensure any previous output is visible
         import sys
