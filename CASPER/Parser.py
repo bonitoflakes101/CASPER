@@ -290,26 +290,24 @@ def p_factor(p):
            | literal1                    
            | TILDE INT_LIT               
            | TILDE FLT_LIT                
+           | TILDE var_call 
            | LPAREN factor_expression RPAREN    
            | measure_call 
     """
-    if len(p) == 2 and hasattr(p[1], 'type') and p[1].type == 'measure_call': # ADDED check
-         p[0] = p[1] # Pass the measure_call node
+    if len(p) == 2 and hasattr(p[1], 'type') and p[1].type == 'measure_call': # Existing check
+         p[0] = p[1]
     elif len(p) == 3 and p[2] in ("++", "--", None):  # var_call postfix
         p[0] = ASTNode("postfix", [p[1], p[2]])
-    elif len(p) == 2:
-        # literal1
+    elif len(p) == 2: # literal1
         p[0] = ASTNode("literal", value=p[1])
-    elif len(p) == 3 and p[1] == '~' and isinstance(p[2], int):
-        # TILDE INT_LIT
-        # FIX: Create unary_negation node with literal child
+    elif len(p) == 3 and p[1] == '~' and isinstance(p[2], int): # TILDE INT_LIT
         p[0] = ASTNode("unary_negation", children=[ASTNode("literal", value=p[2])])
-    elif len(p) == 3 and p[1] == '~' and isinstance(p[2], float):
-        # TILDE FLT_LIT
-        # FIX: Create unary_negation node with literal child
+    elif len(p) == 3 and p[1] == '~' and isinstance(p[2], float): # TILDE FLT_LIT
         p[0] = ASTNode("unary_negation", children=[ASTNode("literal", value=p[2])])
-    else: # Should be LPAREN factor_expression RPAREN (len 4)
-        # ( expression )
+    elif len(p) == 3 and p[1] == '~': # TILDE var_call <-- ADDED CASE
+        # p[2] should be the var_call node
+        p[0] = ASTNode("unary_negation", children=[p[2]])
+    else: # LPAREN factor_expression RPAREN
         p[0] = ASTNode("factor_paren", [p[2]])
 
 
@@ -714,6 +712,7 @@ def p_revive_factor(p):
            | revive_factor1                    
            | TILDE INT_LIT               
            | TILDE FLT_LIT                
+           | TILDE revive_var_call
            | LPAREN revive_expression RPAREN    
     """
     # We must handle each case by length of p
@@ -729,8 +728,9 @@ def p_revive_factor(p):
     elif len(p) == 3 and p[1] == '~' and isinstance(p[2], float):
         # TILDE FLT_LIT
         p[0] = ASTNode("neg_flt", value=p[2])
-    else:
-        # ( expression )
+    elif len(p) == 3 and p[1] == '~': # TILDE revive_var_call <-- ADDED CASE
+        p[0] = ASTNode("unary_negation", children=[p[2]])
+    else: # LPAREN revive_expression RPAREN
         p[0] = ASTNode("paren", [p[2]])
 
 def p_revive_var_call(p):
@@ -1003,6 +1003,7 @@ def p_local_factor(p):
            | local_factor1                    
            | TILDE INT_LIT               
            | TILDE FLT_LIT                
+           | TILDE local_var_call
            | LPAREN local_expression RPAREN    
            | measure_call 
     """
@@ -1016,12 +1017,12 @@ def p_local_factor(p):
         p[0] = ASTNode("literal", value=p[1])
     elif len(p) == 3 and p[1] == '~' and isinstance(p[2], int):
         # TILDE INT_LIT
-        # FIX: Create unary_negation node with literal child
         p[0] = ASTNode("unary_negation", children=[ASTNode("literal", value=p[2])])
     elif len(p) == 3 and p[1] == '~' and isinstance(p[2], float):
         # TILDE FLT_LIT
-        # FIX: Create unary_negation node with literal child
         p[0] = ASTNode("unary_negation", children=[ASTNode("literal", value=p[2])])
+    elif len(p) == 3 and p[1] == '~': # TILDE local_var_call <-- ADDED CASE
+        p[0] = ASTNode("unary_negation", children=[p[2]])
     else: # Should be LPAREN local_expression RPAREN (len 4)
         # ( expression )
         p[0] = ASTNode("paren", [p[2]])
@@ -1172,6 +1173,7 @@ def p_condition_factor(p):
            | condition1                    
            | TILDE INT_LIT               
            | TILDE FLT_LIT                
+           | TILDE condition_var_call 
            | LPAREN condition RPAREN    
     """
     # We must handle each case by length of p
@@ -1187,6 +1189,8 @@ def p_condition_factor(p):
     elif len(p) == 3 and p[1] == '~' and isinstance(p[2], float):
         # TILDE FLT_LIT
         p[0] = ASTNode("neg_flt", value=p[2])
+    elif len(p) == 3 and p[1] == '~': # TILDE condition_var_call <-- ADDED CASE
+        p[0] = ASTNode("unary_negation", children=[p[2]])
     else:
         # ( expression )
         p[0] = ASTNode("paren", [p[2]])
@@ -1333,6 +1337,7 @@ def p_switch_factor(p):
            | switch_factor1                    
            | TILDE INT_LIT               
            | TILDE FLT_LIT                
+           | TILDE switch_var_call 
            | LPAREN switch_expression RPAREN    
     """
     # We must handle each case by length of p
@@ -1348,6 +1353,8 @@ def p_switch_factor(p):
     elif len(p) == 3 and p[1] == '~' and isinstance(p[2], float):
         # TILDE FLT_LIT
         p[0] = ASTNode("factor_neg_flt", value=p[2])
+    elif len(p) == 3 and p[1] == '~': # TILDE switch_var_call <-- ADDED CASE
+        p[0] = ASTNode("unary_negation", children=[p[2]])
     else:
         # ( expression )
         p[0] = ASTNode("factor_paren", [p[2]])
@@ -1502,6 +1509,7 @@ def p_for_factor(p):
            | for_factor1
            | TILDE INT_LIT
            | TILDE FLT_LIT
+           | TILDE for_var_call
            | LPAREN for_expression RPAREN
            | measure_call 
     """
@@ -1520,6 +1528,8 @@ def p_for_factor(p):
     elif len(p) == 3 and p[1] == '~' and isinstance(p[2], float):
         # TILDE FLT_LIT
         p[0] = ASTNode("neg_flt", value=p[2])
+    elif len(p) == 3 and p[1] == '~': # TILDE for_var_call <-- ADDED CASE
+        p[0] = ASTNode("unary_negation", children=[p[2]])
     else: # Should be LPAREN for_expression RPAREN (len 4)
         # ( expression )
         p[0] = ASTNode("paren", [p[2]])
@@ -1645,6 +1655,7 @@ def p_while_factor(p):
            | while_factor1                    
            | TILDE INT_LIT               
            | TILDE FLT_LIT                
+           | TILDE while_var_call 
            | LPAREN while_expression RPAREN    
     """
     # We must handle each case by length of p
@@ -1660,6 +1671,8 @@ def p_while_factor(p):
     elif len(p) == 3 and p[1] == '~' and isinstance(p[2], float):
         # TILDE FLT_LIT
         p[0] = ASTNode("neg_flt", value=p[2])
+    elif len(p) == 3 and p[1] == '~': # TILDE while_var_call <-- ADDED CASE
+        p[0] = ASTNode("unary_negation", children=[p[2]])
     else:
         # ( expression )
         p[0] = ASTNode("paren", [p[2]])
@@ -1930,6 +1943,7 @@ def p_output_factor(p):
            | output_factor1                    
            | TILDE INT_LIT               
            | TILDE FLT_LIT                
+           | TILDE output_var_call 
            | LPAREN output_expression RPAREN    
     """
     # We must handle each case by length of p
@@ -1945,6 +1959,8 @@ def p_output_factor(p):
     elif len(p) == 3 and p[1] == '~' and isinstance(p[2], float):
         # TILDE FLT_LIT
         p[0] = ASTNode("neg_flt", value=p[2])
+    elif len(p) == 3 and p[1] == '~': # TILDE output_var_call <-- ADDED CASE
+        p[0] = ASTNode("unary_negation", children=[p[2]])
     else:
         # ( expression )
         p[0] = ASTNode("paren", [p[2]])
@@ -2136,6 +2152,7 @@ def p_assign_factor(p):
            | assign_factor1                    
            | TILDE INT_LIT               
            | TILDE FLT_LIT                
+           | TILDE assign_var_call 
            | LPAREN assign_expression RPAREN  
     """
     # We must handle each case by length of p
@@ -2150,6 +2167,8 @@ def p_assign_factor(p):
     elif len(p) == 3 and p[1] == '~' and isinstance(p[2], float):
         # TILDE FLT_LIT
         p[0] = ASTNode("neg_flt", value=p[2])
+    elif len(p) == 3 and p[1] == '~': # TILDE assign_var_call <-- ADDED CASE
+        p[0] = ASTNode("unary_negation", children=[p[2]])
     else:
         # ( expression )
         p[0] = ASTNode("paren", [p[2]])
@@ -2419,6 +2438,7 @@ def p_value_factor(p):
            | value_factor1                    
            | TILDE INT_LIT               
            | TILDE FLT_LIT                
+           | TILDE value_var_call
            | LPAREN value_expression RPAREN    
            | measure_call 
     """
@@ -2435,6 +2455,8 @@ def p_value_factor(p):
     elif len(p) == 3 and p[1] == '~' and isinstance(p[2], float):
         # TILDE FLT_LIT
         p[0] = ASTNode("neg_flt", value=p[2])
+    elif len(p) == 3 and p[1] == '~': # TILDE value_var_call <-- ADDED CASE
+        p[0] = ASTNode("unary_negation", children=[p[2]])
     else: # Should be LPAREN value_expression RPAREN (len 4)
         # ( expression )
         p[0] = ASTNode("paren", [p[2]])
@@ -2589,6 +2611,7 @@ def p_typecast_factor(p):
            | typecast_factor1                    
            | TILDE INT_LIT               
            | TILDE FLT_LIT                
+           | TILDE var_call 
            | LPAREN typecast_expression RPAREN    
     """
     # We must handle each case by length of p
@@ -2604,6 +2627,8 @@ def p_typecast_factor(p):
     elif len(p) == 3 and p[1] == '~' and isinstance(p[2], float):
         # TILDE FLT_LIT
         p[0] = ASTNode("neg_flt", value=p[2])
+    elif len(p) == 3 and p[1] == '~': # TILDE var_call <-- ADDED CASE
+        p[0] = ASTNode("unary_negation", children=[p[2]])
     else:
         # ( expression )
         p[0] = ASTNode("paren", [p[2]])

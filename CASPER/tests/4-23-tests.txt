@@ -1,0 +1,67 @@
+!!!!!!!!!!!!!!!! 1.) PRIME NUMBER !!!!!!!!!!!!!!
+
+birth {
+
+@main_casper() {
+    display "Enter a number to check if it's prime: ", "\n";
+    int $num = input();
+    
+    bln $isPrime = Day;
+    
+    check ($num < 2) {
+        $isPrime = Night;
+    } otherwise {
+        int $i = 2;
+        
+        while ($i * $i <= $num) {
+            check ($num % $i == 0) {
+                $isPrime = Night;
+                stop;
+            }
+            $i = $i + 1;
+        }
+    }
+    
+    check ($isPrime == Day) {
+        display $num, " is a prime number.";
+    } otherwise {
+        display $num, " is not a prime number.";
+    }
+}
+
+}
+ghost
+
+
+!!!!!!!!!!!!! SUM OF A NUMBER TEST !!!!!!!!!!!!!!!!!!!!!!!!!
+
+birth {
+
+@main_casper() {
+    display "Enter a number to sum its digits: ", "\n";
+    int $num = input(); 
+
+    int $originalNum = $num; 
+    int $sum = 0;
+    
+    check ($num < 0) {
+      
+        $num = ~$num;
+    } otherwise{
+
+    }
+
+    
+    while ($num > 0) {
+        int $digit = $num % 10;
+        $sum = $sum + $digit;
+       
+        $num = $num / 10; 
+    }
+    
+    display "The sum of the digits of ", $originalNum, " is: ", $sum;
+}
+
+}
+ghost
+
