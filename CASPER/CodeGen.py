@@ -169,7 +169,7 @@ class CodeGenerator:
                     if hasattr(parent, 'type'):
                         # Handle regular statements inside main function
                         if parent.type == "main_function":
-                            # Get the main statements list (first child)
+                        # Get the main statements list (first child)
                             if parent.children and len(parent.children) > 0:
                                 statements_list = parent.children[0]
                                 
@@ -196,20 +196,20 @@ class CodeGenerator:
                                                                 if value_node.children[0] == temp_node:
                                                                     found_index = i
                                                                     break
+                            
+                            # Execute all statements after the input statement
+                            if found_index >= 0:
                                 
-                                    # Execute all statements after the input statement
-                                    if found_index >= 0:
-                                        
-                                        self.log(f"Found input at index {found_index}, continuing execution")
-                                        # Execute all remaining statements
-                                        for i in range(found_index + 1, len(statements_list)):
-                                            next_stmt = statements_list[i]
-                                            result = self.execute_node(next_stmt)
-                                            # If we hit another input request, pause execution
-                                            if self.waiting_for_input:
-                                            
-                                                self.log(f"Hit another input request, pausing execution")
-                                                break
+                                self.log(f"Found input at index {found_index}, continuing execution")
+                                # Execute all remaining statements
+                                for i in range(found_index + 1, len(statements_list)):
+                                    next_stmt = statements_list[i]
+                                    result = self.execute_node(next_stmt)
+                                    # If we hit another input request, pause execution
+                                    if self.waiting_for_input:
+                                    
+                                        self.log(f"Hit another input request, pausing execution")
+                                        break
                         
                         # Handle statements inside conditional blocks
                         elif parent.type in ["check_block", "otherwise_block", "otherwise_check", "conditional_statement"]:
@@ -253,265 +253,6 @@ class CodeGenerator:
                 
                 # Return the input result
                 return input_result
-            
-from Parser import ASTNode
-
-class CodeGenerator:
-    def __init__(self):
-        self.global_vars = {}
-        self.env_stack = [self.global_vars]
-        self.functions = {}
-        self.return_values = []
-        self.debug = False 
-        
-        # Input handling
-        self.waiting_for_input = False
-        self.input_value = None
-        self.input_prompt = ""
-        self.current_assignment_target = None
-        self.expected_type = None
-        
-        # Execution state
-        self.ast = None
-        self.paused_node = None
-        self.parent_nodes = []
-        self.stopped = False
-        self.completed = False
-        self.break_flag = False
-        
-        # New variables for tracking multiple inputs
-        self.input_target_queue = []  # Queue to hold pending input targets
-
-    def log(self, message):
-        if self.debug:
-            pass
-
-    def get_current_env(self):
-        return self.env_stack[-1]
-
-    def push_scope(self):
-        self.env_stack.append({})
-
-    def pop_scope(self):
-        if len(self.env_stack) > 1:
-            self.env_stack.pop()
-        else:
-            pass
-
-    def lookup_variable(self, var_name):
-        # Search through the environment stack, starting with the most local scope
-        for i, env in enumerate(reversed(self.env_stack)):
-            scope_name = "local" if i == 0 else f"parent {i}"
-            if var_name in env:
-                value = env[var_name]
-                # print(f"LOOKUP: Found variable '{var_name}' = {repr(value)} in {scope_name} scope") # Changed to print
-                return value
-        # print(f"LOOKUP: Variable '{var_name}' not found in any scope.") # Changed to print
-        return None
-
-    def assign_variable(self, var_name, value):
-        self.log(f"Assigning '{var_name}' = {value}")
-        
-        # First try to find and update the variable in an existing scope
-        for env in reversed(self.env_stack):
-            if var_name in env:
-                # Make sure we're assigning a clean value, but preserve booleans
-                if isinstance(value, int) and not isinstance(value, bool):
-                    env[var_name] = int(value)  # Ensure it's a clean int, not a bool subclass
-                else:
-                    env[var_name] = value # Assign other types (including bool) directly
-                self.log(f"Updated existing variable '{var_name}' = {value} in scope")
-                return
-        
-        # If not found, add to current scope
-        if isinstance(value, int) and not isinstance(value, bool):
-             self.get_current_env()[var_name] = int(value) # Ensure it's a clean int, not a bool subclass
-        else:
-            self.get_current_env()[var_name] = value # Assign other types (including bool) directly
-        self.log(f"Created new variable '{var_name}' = {value} in current scope")
-
-    def flatten_nodes(self, nodes):
-        if not isinstance(nodes, list):
-            return [nodes]
-        flat = []
-        for item in nodes:
-            if isinstance(item, list):
-                flat.extend(self.flatten_nodes(item))
-            else:
-                flat.append(item)
-        return flat
-
-    def generate(self, ast):
-        """
-        Main entry point for code generation.
-        If ast is None, it means we're resuming execution after input.
-        """
-        
-        if self.stopped:
-            self.completed = True
-            return None
-            
-        if ast is not None:
-            self.ast = ast
-            
-        # If we have a paused node and just received input, process it
-        if ast is None and self.paused_node and not self.waiting_for_input:
-            result = self.execute_node(None)  # This will trigger the paused node execution
-            
-            # Only mark as completed if not waiting for more input AND not in the middle of
-            # processing statements (e.g., when we have more inputs to process)
-            if not self.waiting_for_input and not self.paused_node:
-                self.completed = True
-                
-            return result
-            
-        # Return early if we have nothing to execute
-        if ast is None and not self.waiting_for_input and self.paused_node is None:
-            return None
-        
-        # Execute the AST
-        result = self.execute_node(ast)
-        
-        # Mark program as completed when done executing
-        # ONLY if we're not waiting for input and don't have a paused node
-        if not self.waiting_for_input and not self.paused_node:
-            self.completed = True
-            
-        return result
-
-    def execute_node(self, node):
-        # Check if execution is stopped
-        if self.stopped:
-            return None
-            
-        # If we are currently waiting for input, don't execute any more nodes
-        if self.waiting_for_input and node != self.paused_node:
-           
-            return None
-            
-        # Handle resuming from paused input node
-        if node is None and self.paused_node and not self.waiting_for_input:
-            temp_node = self.paused_node
-            self.paused_node = None
-            
-            # If this is an input statement that just received input, execute it and continue with next node
-            if hasattr(temp_node, 'type') and temp_node.type == "input_statement":
-               
-                self.log("Resuming execution of paused input node")
-                input_result = self.execute_input_statement(temp_node)
-                
-                # Find the variable to update with the input value if we have a tracked assignment target
-                if self.current_assignment_target:
-                    var_name = self.current_assignment_target
-                
-                    self.log(f"Updating tracked variable {var_name} with input value: {input_result}")
-                    
-                    # Apply type conversion based on expected type if available
-                    if self.expected_type and input_result is not None:
-                        input_result = self.convert_type(input_result, self.expected_type)
-                        self.log(f"Converted input to expected type {self.expected_type}: {input_result}")
-                    
-                    # Update the variable with the input result
-                    self.assign_variable(var_name, input_result)
-                    
-                    # Reset tracking variables
-                    self.current_assignment_target = None
-                    self.expected_type = None
-                
-                # Find parent structure to continue execution from the right point
-                if hasattr(self, 'parent_nodes') and len(self.parent_nodes) > 0:
-                    parent = self.parent_nodes[-1]  # Don't pop, just look at the current parent
-                    
-                    if hasattr(parent, 'type'):
-                        # Handle regular statements inside main function
-                        if parent.type == "main_function":
-                            # Get the main statements list (first child)
-                            if parent.children and len(parent.children) > 0:
-                                statements_list = parent.children[0]
-                                
-                                # Find the parent list that contains our input statement
-                                if isinstance(statements_list, list):
-                                    found_index = -1
-                                    for i, stmt_group in enumerate(statements_list):
-                                        # Each statement may be wrapped in a list
-                                        if isinstance(stmt_group, list) and len(stmt_group) > 0:
-                                            inner_stmt = stmt_group[0]
-                                            
-                                            # Direct input statement
-                                            if inner_stmt == temp_node:
-                                                found_index = i
-                                                break
-                                            
-                                            # Check for input inside variable statements
-                                            if hasattr(inner_stmt, 'type') and inner_stmt.type == "var_statement" and inner_stmt.children:
-                                                for child in inner_stmt.children:
-                                                    if hasattr(child, 'type') and child.type == "local_var_assign" and child.children:
-                                                        value_node = child.children[0]
-                                                        if hasattr(value_node, 'type') and value_node.type == "value" and value_node.children:
-                                                            if hasattr(value_node.children[0], 'type') and value_node.children[0].type == "input_statement":
-                                                                if value_node.children[0] == temp_node:
-                                                                    found_index = i
-                                                                    break
-                                
-                                    # Execute all statements after the input statement
-                                    if found_index >= 0:
-                                        
-                                        self.log(f"Found input at index {found_index}, continuing execution")
-                                        # Execute all remaining statements
-                                        for i in range(found_index + 1, len(statements_list)):
-                                            next_stmt = statements_list[i]
-                                            result = self.execute_node(next_stmt)
-                                            # If we hit another input request, pause execution
-                                            if self.waiting_for_input:
-                                            
-                                                self.log(f"Hit another input request, pausing execution")
-                                                break
-                        
-                        # Handle statements inside conditional blocks
-                        elif parent.type in ["check_block", "otherwise_block", "otherwise_check", "conditional_statement"]:
-                            self.log(f"Found input in conditional block: {parent.type}")
-                            
-                            # Continue execution of current parent after input is processed
-                            if parent.children:
-                                # Find which child contained our input statement
-                                found_index = -1
-                                for i, child in enumerate(parent.children):
-                                    # Check if this child is our input statement
-                                    if child == temp_node:
-                                        found_index = i
-                                        break
-                                    
-                                    # Check inside var_statement for input
-                                    if hasattr(child, 'type') and child.type == "var_statement" and child.children:
-                                        for var_child in child.children:
-                                            if hasattr(var_child, 'type') and var_child.type == "local_var_assign" and var_child.children:
-                                                value_node = var_child.children[0]
-                                                if hasattr(value_node, 'type') and value_node.type == "value" and value_node.children:
-                                                    if hasattr(value_node.children[0], 'type') and value_node.children[0].type == "input_statement":
-                                                        if value_node.children[0] == temp_node:
-                                                            found_index = i
-                                                            break
-                                
-                                # If found, continue execution from the next child
-                                if found_index >= 0 and found_index < len(parent.children) - 1:
-                                    self.log(f"Continuing execution from child {found_index + 1} in {parent.type}")
-                                    for i in range(found_index + 1, len(parent.children)):
-                                        next_stmt = parent.children[i]
-                                        result = self.execute_node(next_stmt)
-                                        # If we hit another input request, pause execution
-                                        if self.waiting_for_input:
-                                            self.log(f"Hit another input request during continuation, pausing execution")
-                                            break
-                                else:
-                                    print(f"DEBUG INPUT RESUME: Either no match found or last child. found_index={found_index}, children={len(parent.children)}")
-                            else:
-                                print("DEBUG INPUT RESUME: Parent has no children")
-                
-                # Return the input result
-                return input_result
-            
-            # Otherwise just continue with the paused node
-            return self.execute_node(temp_node)
             
         if node is None:
             return None
@@ -1027,9 +768,16 @@ class CodeGenerator:
                 self.assign_variable(var_name, assign_value)
                 return assign_value
         else:
+            # --- MODIFIED: Check for list declaration node explicitly --- 
+            list_dec_node = node.children[2] if len(node.children) > 2 else None
+            is_list_declaration = list_dec_node is not None and hasattr(list_dec_node, 'type') and list_dec_node.type == "list_dec"
+            
             # Initialize with default value based on type
             default_value = None
-            if data_type == "int":
+            if is_list_declaration:
+                default_value = [] # Default for any list is empty list
+                self.log(f"Detected list declaration for '{var_name}', defaulting to []")
+            elif data_type == "int":
                 default_value = 0
             elif data_type == "flt":
                 default_value = 0.0
@@ -1039,8 +787,7 @@ class CodeGenerator:
                 default_value = ""
             elif data_type == "str":
                 default_value = ""
-            elif data_type.startswith("list_"):
-                default_value = []
+            # Removed the check for data_type.startswith("list_") as it was unreliable
                 
        
             self.log(f"Initializing {var_name} with default: {default_value}")
@@ -1730,7 +1477,7 @@ class CodeGenerator:
         # Add this conditional statement as a parent for the execution context
         if hasattr(self, 'parent_nodes'):
             self.parent_nodes.append(node)
-            
+        
         # First child should be the condition
         # Execute the condition properly using execute_condition instead of execute_node
         if hasattr(node.children[0], 'type') and node.children[0].type == "condition":
@@ -1743,7 +1490,7 @@ class CodeGenerator:
         # If we're waiting for input after condition evaluation, stop and return
         if self.waiting_for_input:
             return None
-            
+        
         if condition_result:
             self.log("CONDITIONAL DEBUG: Main condition is TRUE, executing check block")
             result = self.execute_node(node.children[1])
@@ -1795,7 +1542,7 @@ class CodeGenerator:
         # If not waiting for input, pop the parent node
         if not self.waiting_for_input and hasattr(self, 'parent_nodes') and len(self.parent_nodes) > 0:
             self.parent_nodes.pop()
-            
+        
         return None
     
     def execute_conditional_tail(self, node):
@@ -1886,7 +1633,7 @@ class CodeGenerator:
         # Pop parent node if we added it and aren't waiting for input
         if hasattr(self, 'parent_nodes') and len(self.parent_nodes) > 0 and not self.waiting_for_input:
             self.parent_nodes.pop()
-            
+        
         return results[-1] if results else None
 
     def execute_otherwise_block(self, node):
@@ -1911,7 +1658,7 @@ class CodeGenerator:
         # Pop parent node if we added it and aren't waiting for input
         if hasattr(self, 'parent_nodes') and len(self.parent_nodes) > 0 and not self.waiting_for_input:
             self.parent_nodes.pop()
-            
+        
         return results[-1] if results else None
     
     
@@ -2133,21 +1880,90 @@ class CodeGenerator:
                 return None
       
             var_node = node.children[0]
-            if not hasattr(var_node, 'type') or var_node.type != "IDENT":
-                self.log(f"ERROR: Expected IDENT, got {var_node.type if hasattr(var_node, 'type') else 'unknown'}")
+            assign_node = node.children[1]
+            
+            # Handle different assignment targets (direct IDENT vs var_call for indexed)
+            var_name = None
+            target_is_list_element = False
+            indices = []
+            
+            if hasattr(var_node, 'type') and var_node.type == "IDENT":
+                var_name = var_node.value.lstrip('$')
+            elif hasattr(var_node, 'type') and var_node.type == "var_call":
+                if var_node.children and hasattr(var_node.children[0], 'type') and var_node.children[0].type == "IDENT":
+                    var_name = var_node.children[0].value.lstrip('$')
+                if len(var_node.children) > 1 and var_node.children[1]: # Check if there are indices
+                    target_is_list_element = True
+                    # Execute index expressions to get integer values
+                    for index_expr_node in var_node.children[1]:
+                         index_val = self.execute_node(index_expr_node)
+                         if not isinstance(index_val, int):
+                             self.log(f"ERROR: List index must evaluate to an integer, got {type(index_val).__name__}")
+                             print(f"Error: List index must evaluate to an integer.")
+                             self.stopped = True
+                             return None
+                         indices.append(index_val)
+            else:
+                self.log(f"ERROR: Invalid assignment target type: {getattr(var_node, 'type', 'unknown')}")
                 print("Error: Invalid assignment target")
                 self.stopped = True
                 return None
             
-            var_name = var_node.value.lstrip('$')
             if not var_name:
-                self.log("ERROR: Empty variable name in assignment")
-                print("Error: Empty variable name in assignment")
+                self.log("ERROR: Empty or invalid variable name in assignment")
+                print("Error: Empty or invalid variable name in assignment")
                 self.stopped = True
                 return None
 
-            assign_node = node.children[1]
-            if not hasattr(assign_node, 'type'):
+            # --- PUSH Implementation Start --- 
+            if hasattr(assign_node, 'type') and assign_node.type == "assign_tail_push":
+                self.log(f"Executing push operation for variable '{var_name}'")
+                
+                if target_is_list_element:
+                    self.log("ERROR: Cannot use .push() on an indexed list element.")
+                    print("Error: Cannot use .push() on an indexed list element.")
+                    self.stopped = True
+                    return None
+
+                # Execute the node for the element to be pushed
+                if not assign_node.children:
+                    self.log("ERROR: .push() is missing an element to push.")
+                    print("Error: .push() requires an element.")
+                    self.stopped = True
+                    return None
+                    
+                element_node = assign_node.children[0]
+                value_to_push = self.execute_node(element_node)
+                
+                if self.stopped:
+                     return None # Error occurred during element evaluation
+                
+                # Look up the variable
+                list_var = self.lookup_variable(var_name)
+                
+                # Check if the variable exists and is a list
+                if list_var is None:
+                    self.log(f"ERROR: Variable '{var_name}' not found for .push().")
+                    print(f"Error: Variable '{var_name}' not found.")
+                    self.stopped = True
+                    return None
+                if not isinstance(list_var, list):
+                    self.log(f"ERROR: Variable '{var_name}' is not a list, cannot use .push(). Type is {type(list_var).__name__}")
+                    print(f"Error: Cannot use .push() on non-list variable '{var_name}'.")
+                    self.stopped = True
+                    return None
+                    
+                # Perform the push (append)
+                list_var.append(value_to_push)
+                self.log(f"Pushed {value_to_push} onto '{var_name}'. New list: {list_var}")
+                
+                # Since lookup_variable returns a copy for lists, we need to update the variable in the environment
+                self.assign_variable(var_name, list_var)
+                return None # .push() doesn't return a value itself
+            # --- PUSH Implementation End --- 
+            
+            # --- Existing Assignment Logic (assign_op, splice) --- 
+            elif not hasattr(assign_node, 'type'):
                 self.log(f"ERROR: Invalid assign_node without type")
                 print("Error: Invalid assignment operation")
                 self.stopped = True
@@ -2158,122 +1974,124 @@ class CodeGenerator:
                 self.current_assignment_target = var_name
                 self.log(f"Setting current assignment target to: {var_name}")
                 
-                # Look up the variable to get its type
+                # Look up the variable to get its type for input validation
                 var_type = None
-                existing_value = self.lookup_variable(var_name)
-                if existing_value is not None:
-                    if isinstance(existing_value, int):
-                        var_type = "int"
-                    elif isinstance(existing_value, float):
-                        var_type = "float"
-                    elif isinstance(existing_value, bool):
-                        var_type = "bool"
-                    elif isinstance(existing_value, str):
-                        var_type = "string"
-                    
-                if var_type:
-                    self.expected_type = var_type
-                    self.log(f"Setting expected input type to: {var_type}")
+                # existing_value = self.lookup_variable(var_name) # Look up might be complex for indexed assignment, TBD if needed
+                # ... logic to determine expected type ...
+                # if var_type:
+                #     self.expected_type = var_type
+                #     self.log(f"Setting expected input type to: {var_type}")
 
-            # Execute the assign_tail_op to get the value (or value and operator for compound assignments)
+            # Execute the assign_tail_op or other assignment types to get the value/operation details
             assign_result = self.execute_node(assign_node)
             if self.stopped:
                 return None
                 
             self.log(f"Assignment result: {assign_result}")
             
-            # Handle compound operators (+=, -=, *=, /=, %=)
-            if isinstance(assign_result, dict) and "value" in assign_result and "operator" in assign_result:
-                # Get the current value of the variable
-                current_value = self.lookup_variable(var_name)
-                self.log(f"Current value of '{var_name}': {current_value}")
-                
-                if current_value is None:
-                    self.log(f"ERROR: Variable '{var_name}' not found for compound assignment")
-                    print(f"Error: Variable '{var_name}' not found for compound assignment")
-                    self.stopped = True
-                    return None
-                    
-                # Get the operator and the right-side value
-                operator = assign_result["operator"]
-                right_value = assign_result["value"]
-                
-                self.log(f"Compound assignment: {var_name} {operator} {right_value}, current value: {current_value}")
-                
-                # Apply the compound operation
-                if operator == "+=":
-                    value = current_value + right_value
-                    self.log(f"Addition operation: {current_value} + {right_value} = {value}")
-                elif operator == "-=":
-                    value = current_value - right_value
-                    self.log(f"Subtraction operation: {current_value} - {right_value} = {value}")
-                elif operator == "*=":
-                    value = current_value * right_value
-                    self.log(f"Multiplication operation: {current_value} * {right_value} = {value}")
-                elif operator == "/=":
-                    if right_value == 0:
-                        self.log("ERROR: Division by zero in compound assignment")
-                        print(f"Error: Division by zero in assignment to {var_name}")
-                        self.stopped = True
-                        return None
-                    value = current_value / right_value
-                    self.log(f"Division operation: {current_value} / {right_value} = {value}")
-                elif operator == "%=":
-                    if right_value == 0:
-                        self.log("ERROR: Modulo by zero in compound assignment")
-                        print(f"Error: Modulo by zero in assignment to {var_name}")
-                        self.stopped = True
-                        return None
-                    value = current_value % right_value
-                    self.log(f"Modulo operation: {current_value} % {right_value} = {value}")
-                else:
-                    self.log(f"ERROR: Unknown compound operator: {operator}")
-                    print(f"Error: Unknown compound operator: {operator}")
-                    self.stopped = True
-                    return None
-                    
-                # Maintain type consistency for integer operations
-                if isinstance(current_value, int) and not isinstance(current_value, bool):
-                    value = int(value)
-                    self.log(f"Converted result to int: {value}")
-                    
-                self.log(f"Compound assignment result: {var_name} = {value}")
-            else:
-                # Regular assignment
-                value = assign_result
-                self.log(f"Regular assignment value for {var_name}: {value}")
-            
-            # Apply implicit type conversion based on the existing variable's type
-            # Look up the existing variable to get its current type
-            existing_value = self.lookup_variable(var_name)
-            if existing_value is not None:
-                # Only convert if the types differ
-                if type(existing_value) != type(value) and value is not None:
-                    try:
-                        original_value = value
-                        target_type = type(existing_value).__name__.lower()
-                        value = self.convert_type(value, target_type)
-                        self.log(f"Applied implicit conversion for assignment: {type(original_value).__name__} -> {target_type}: {original_value} -> {value}")
-                    except Exception as e:
-                        self.log(f"ERROR: Type conversion failed in assignment: {str(e)}")
-                        print(f"Error: Type conversion failed in assignment to {var_name}")
-                        self.stopped = True
-                        return None
+            value = None
+            operator = '=' # Default operator
+            contains_input = False # Flag if the value came from input
 
-            self.assign_variable(var_name, value)
-            self.log(f"Final value assigned to {var_name}: {value}")
+            # If the assignment involves an operation (e.g., =, +=, -=)
+            if isinstance(assign_result, dict) and 'value' in assign_result and 'operator' in assign_result:
+                value = assign_result['value']
+                operator = assign_result['operator']
+                self.log(f"Compound assignment detected: operator={operator}, value={value}")
+            # If it's a direct assignment result
+            elif assign_result is not None:
+                value = assign_result
             
-            # If this was an input assignment, clear the current assignment target
-            if 'contains_input' in locals() and contains_input:
-                self.log(f"Keeping assignment target {var_name} for input tracking")
+            # Check if the value came from an input statement that just completed
+            if self.input_value is not None and self.paused_node is None and hasattr(assign_node, 'type') and assign_node.type == 'assign_tail_op' and assign_node.children and hasattr(assign_node.children[1], 'type') and assign_node.children[1].type == 'value' and assign_node.children[1].children and hasattr(assign_node.children[1].children[0], 'type') and assign_node.children[1].children[0].type == 'input_statement':
+                  self.log("Detected completed input within assignment")
+                  value = self.input_value # Use the processed input value
+                  self.input_value = None # Clear the flag
+                  contains_input = True
+                  
+            # If we are still waiting for input, return None
+            if self.waiting_for_input:
+                 self.log("Assignment waiting for input")
+                 return None
+
+            # Perform the assignment or compound assignment
+            if target_is_list_element:
+                # Assignment to a list element, e.g., $arr[0] = 5 or $arr[0] += 1
+                current_list = self.lookup_variable(var_name)
+                if not isinstance(current_list, list):
+                     self.log(f"ERROR: Variable '{var_name}' is not a list for indexed assignment.")
+                     print(f"Error: Cannot assign to index of non-list variable '{var_name}'.")
+                     self.stopped = True # Corrected indentation
+                     return None         # Corrected indentation
+                
+                # --- Navigate nested lists based on indices --- 
+                target_container = current_list
+                for k in range(len(indices) - 1):
+                    idx = indices[k]
+                    if not isinstance(target_container, list) or idx >= len(target_container):
+                        self.log(f"ERROR: Invalid index {idx} for dimension {k} of '{var_name}'.")
+                        print(f"Error: Index out of bounds during assignment to '{var_name}'.")
+                        self.stopped = True
+                        return None
+                    target_container = target_container[idx]
+                
+                final_index = indices[-1]
+                # Check if the index is out of bounds
+                if not isinstance(target_container, list) or final_index > len(target_container):
+                     self.log(f"ERROR: Index {final_index} out of bounds for '{var_name}'. Size: {len(target_container)}")
+                     print(f"Error: Index out of bounds during assignment to '{var_name}'.")
+                     self.stopped = True
+                     return None
+                # Allow assignment if index is exactly the current size (like append)
+                elif final_index == len(target_container):
+                    if operator != '=': # Only allow direct assignment for append-like behavior
+                        self.log(f"ERROR: Cannot use compound assignment ('{operator}') to extend list '{var_name}'.")
+                        print(f"Error: Cannot use compound assignment ('{operator}') to extend list.")
+                        self.stopped = True
+                        return None
+                    self.log(f"Extending list '{var_name}' at index {final_index}")
+                    target_container.append(value)
+                # Regular indexed assignment or compound assignment
+                else:
+                    if operator == '=':
+                        target_container[final_index] = value
+                    else:
+                        # Compound assignment on element
+                        current_element_value = target_container[final_index]
+                        new_value = self.apply_operator(operator.replace('=',''), current_element_value, value)
+                        if self.stopped: return None
+                        target_container[final_index] = new_value
+                
+                # Update the original list in the environment since lookup returned a copy
+                self.assign_variable(var_name, current_list) 
+                self.log(f"Assigned value to {var_name} indices {indices}: {value}")
+                
             else:
-                self.log(f"Clearing current assignment target since no input detected")
+                # Regular variable assignment (or compound)
+                if operator == '=':
+                    self.assign_variable(var_name, value)
+                    self.log(f"Assigned value to {var_name}: {value}")
+                else:
+                    # Compound assignment
+                    current_val = self.lookup_variable(var_name)
+                    new_value = self.apply_operator(operator.replace('=',''), current_val, value)
+                    if self.stopped: return None
+                    self.assign_variable(var_name, new_value)
+                    self.log(f"Compound assigned to {var_name}. New value: {new_value}")
+            
+            # If this was an input assignment, clear the target tracking
+            if not contains_input:
+                self.log(f"Clearing current assignment target since no input detected or processed")
                 self.current_assignment_target = None
+            else:
+                 self.log(f"Keeping assignment target {var_name} due to recent input processing") # Keep target if input was just handled
             
             return value
         except Exception as e:
             self.log(f"ERROR: Exception in assignment statement: {str(e)}")
-            print(f"Error: Exception in assignment: {str(e)}")
+            import traceback
+            traceback.print_exc() # Print full traceback for debugging
+            print(f"Error: Exception during assignment: {str(e)}")
             self.stopped = True
             return None
 
@@ -2283,22 +2101,26 @@ class CodeGenerator:
         
         # Check for compound assignment operators in the node
         compound_op = None
+        op_node = None 
+        value_node = None
         
         # Get the operator node (first child)
         if node.children and len(node.children) > 0:
             op_node = node.children[0]
-            
             # Check if this is a compound operator
-            if hasattr(op_node, 'type'):
-                if op_node.type == "operator" and hasattr(op_node, 'value'):
+            if hasattr(op_node, 'type') and op_node.type == "operator" and hasattr(op_node, 'value'):
                     op_value = op_node.value
-                    # Check if op_value is a compound operator
                     if op_value in ["+=", "-=", "*=", "/=", "%="]:
                         compound_op = op_value
                         self.log(f"Found compound operator: {compound_op}")
+            elif hasattr(op_node, 'type') and op_node.type == "assign_op": # Handle simple '='
+                 if op_node.value == '=':
+                      self.log("Found simple assignment operator: =")
+                 else: # Should be compound op wrapped in assign_op
+                     compound_op = op_node.value # e.g. '+='
+                     self.log(f"Found compound operator from assign_op: {compound_op}")
             
         # Get the value node (second child)
-        value_node = None
         if len(node.children) > 1:
             value_node = node.children[1]
         
@@ -2311,6 +2133,8 @@ class CodeGenerator:
                 self.log(f"Returning compound op data: {compound_op}, value: {value}")
                 return {"value": value, "operator": compound_op}
             
+            # For simple assignment, just return the value
+            self.log(f"Returning simple assignment value: {value}")
             return value
         else:
             self.log("No value node found in assign_tail_op")
@@ -2327,7 +2151,7 @@ class CodeGenerator:
            
             self.input_value = None
             return input_val
-        
+       
         self.paused_node = node
         self.waiting_for_input = True
         
@@ -2337,7 +2161,7 @@ class CodeGenerator:
             prompt_node = node.children[0]
             if prompt_node:
                 prompt = self.execute_node(prompt_node) or ""
-                
+        
         # Store the prompt for the frontend to display
         self.input_prompt = prompt
         

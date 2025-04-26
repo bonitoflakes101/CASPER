@@ -957,6 +957,8 @@ class SemanticAnalyzer:
         node.children = [ IDENT("$foo"), assign_tailNode(...) ]
         """
         left_node = node.children[0]
+        left_type = None
+        var_name = None
         # This might be either a var_call or an IDENT, depending on the rule matched.
 
         # 1) Figure out the left variable's type
@@ -1088,8 +1090,28 @@ class SemanticAnalyzer:
             pushed_item = right_node.children[0]
 
             if left_type is not None:
-                self.check_push_operation(var_name, pushed_item, left_type, symtable)
+                # --- Ensure var_name is set before calling check_push_operation ---
+                if var_name is None: # Should have been set above if left_type is not None
+                    if left_node.type == "IDENT":
+                        var_name = left_node.value
+                    elif left_node.type == "var_call" and left_node.children:
+                        var_name = left_node.children[0].value
+
+                if var_name: # Proceed only if var_name could be determined
+                    self.check_push_operation(var_name, pushed_item, left_type, symtable)
+                else:
+                    # This case should ideally not happen if left_type was found
+                    self.errors.append(f"Semantic Error: Could not determine variable name for '.push' operation.")
             else:
+                # --- Ensure var_name is set before reporting error ---
+                if var_name is None: # Try to get it again for the error message
+                    if left_node.type == "IDENT":
+                        var_name = left_node.value
+                    elif left_node.type == "var_call" and left_node.children:
+                        var_name = left_node.children[0].value
+                    else:
+                        var_name = "[unknown]" # Fallback
+
                 self.errors.append(
                     f"Semantic Error: Variable '{var_name}' type not found for '.push' operation."
                 )
