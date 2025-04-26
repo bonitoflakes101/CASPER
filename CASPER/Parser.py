@@ -2154,9 +2154,14 @@ def p_assign_factor(p):
            | TILDE FLT_LIT                
            | TILDE assign_var_call 
            | LPAREN assign_expression RPAREN  
+           | measure_call 
     """
+    # --- ADDED: Check for measure_call --- 
+    if len(p) == 2 and hasattr(p[1], 'type') and p[1].type == 'measure_call':
+         p[0] = p[1] # Pass the measure_call node
+    # --- End Added Check ---
     # We must handle each case by length of p
-    if len(p) == 3 and p[2] in ("++", "--", None):  # var_call postfix
+    elif len(p) == 3 and p[2] in ("++", "--", None):  # var_call postfix
         p[0] = ASTNode("postfix", [p[1], p[2]])
     elif len(p) == 2:
         # literal1
