@@ -21,11 +21,11 @@ KEYWORD_DELIMITERS = {
     "GLOBAL": Delimiters.SPACE,
 
     # Data types
-    "INT": Delimiters.SPACE,
-    "FLT": Delimiters.SPACE,
-    "BLN": Delimiters.SPACE,
-    "CHR": Delimiters.SPACE,
-    "STR": Delimiters.SPACE,
+    "INT": Delimiters.DEL23,
+    "FLT": Delimiters.DEL23,
+    "BLN": Delimiters.DEL23,
+    "CHR": Delimiters.DEL23,
+    "STR": Delimiters.DEL23,
 
     # Boolean literals
     "DAY": Delimiters.DEL17,
@@ -42,10 +42,16 @@ KEYWORD_DELIMITERS = {
 
     # Loop constructs
     "FOR": Delimiters.DEL2,
-    "UNTIL": Delimiters.DEL2,
+    "WHILE": Delimiters.DEL2,
     "REPEAT": Delimiters.DEL1,
+<<<<<<< HEAD
     "STOP": Delimiters.NEWLINE,
     "SKIP": Delimiters.NEWLINE,
+=======
+    "STOP": Delimiters.DEL21,
+    "SKIP": Delimiters.DEL21,
+    "CONTINUE": Delimiters.DEL21,
+>>>>>>> semicolon-terminal-branch
     "SWAP": Delimiters.DEL2,
     "SHIFT": Delimiters.SPACE,
 

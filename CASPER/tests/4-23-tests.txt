@@ -1,0 +1,346 @@
+!!!!!!!!!!!!!!!! 1.) PRIME NUMBER !!!!!!!!!!!!!!
+
+birth {
+
+@main_casper() {
+    display "Enter a number to check if it's prime: ", "\n";
+    int $num = input();
+    
+    bln $isPrime = Day;
+    
+    check ($num < 2) {
+        $isPrime = Night;
+    } otherwise {
+        int $i = 2;
+        
+        while ($i * $i <= $num) {
+            check ($num % $i == 0) {
+                $isPrime = Night;
+                stop;
+            }
+            $i = $i + 1;
+        }
+    }
+    
+    check ($isPrime == Day) {
+        display $num, " is a prime number.";
+    } otherwise {
+        display $num, " is not a prime number.";
+    }
+}
+
+}
+ghost
+
+
+!!!!!!!!!!!!! 2.) SUM OF A NUMBER TEST !!!!!!!!!!!!!!!!!!!!!!!!!
+
+birth {
+
+@main_casper() {
+    display "Enter a number to sum its digits: ", "\n";
+    int $num = input(); 
+
+    int $originalNum = $num; 
+    int $sum = 0;
+    
+    check ($num < 0) {
+      
+        $num = ~$num;
+    } otherwise{
+
+    }
+
+    
+    while ($num > 0) {
+        int $digit = $num % 10;
+        $sum = $sum + $digit;
+       
+        $num = $num / 10; 
+    }
+    
+    display "The sum of the digits of ", $originalNum, " is: ", $sum;
+}
+
+}
+ghost
+
+!!!!!!!!!!!!!!!!!!! 3.) REVERSE FIBONACCI !!!!!!!!!!!!!!!!!!!!!!!!
+
+birth {
+
+@main_casper() {
+    display "Enter the number of Fibonacci numbers to generate: ", "\n";
+    int $n = input(); 
+
+    check ($n <= 0) {
+        display "Please enter a positive number.", "\n"; 
+    } otherwise {
+        int $fib_sequence[]; 
+
+        check ($n == 1) {
+            $fib_sequence.push(0);
+        } otherwise_check ($n >= 2) {
+            $fib_sequence.push(0);
+            $fib_sequence.push(1);
+
+            int $a = 0; 
+            int $b = 1;
+            int $i = 2; 
+
+            while ($i < $n) {
+                int $next_fib = $a + $b;
+                $fib_sequence.push($next_fib);
+
+                $a = $b;        
+                $b = $next_fib; 
+
+                $i = $i + 1;
+            }
+       
+        } otherwise {
+
+        }
+
+        display "Fibonacci sequence generated. Displaying in reverse order:", "\n";
+        int $j = $n - 1; 
+        while ($j >= 0) {
+            display $fib_sequence[$j], " ";
+            $j = $j - 1;
+        }
+        display "\n";
+    }
+}
+
+}
+ghost
+!!!!!!!!!!!!!!! 4.) PERMUTATION OF A GIVEN STRING !!!!!!!!!!!!!!!!!!!!
+
+
+
+
+
+!!!!!!!!!!!!!! 5.) GEOMETRIC SERIES SUM !!!!!!!!!!!!!!!!!!!!
+
+birth {
+
+@main_casper() {
+    display "Geometric Series Sum Calculator for 1 + 1/3 + 1/9 + ...", "\n";
+
+    display "Enter the number of terms (n): ", "\n";
+    str $input = input();
+    int $n = to_int($input);
+
+    flt $sum = 0.0;
+    flt $term = 1.0; 
+    flt $ratio = 1.0 / 3.0; 
+
+    check ($n <= 0) {
+        display "Number of terms must be positive.", "\n";
+    } otherwise {
+        for (int $i = 0; $i < $n; $i++) {
+            $sum = $sum + $term;
+            $term = $term * $ratio; 
+        }
+        display "The sum of the first ", $n, " terms is: ", $sum, "\n";
+    }
+}
+
+}
+ghost
+
+!!!!!!!!!!!!!! 6.) VOWEL OR CONSONANT CHECK !!!!!!!!!!!!!!!!!!!!
+
+birth { 
+
+
+@main_casper() {
+  
+
+    display "Enter a letter:  ";
+    str $ch = input();
+
+   
+    check ($ch == "a" ) {
+           display $ch, " is a vowel.";
+} otherwise_check($ch == "e") {
+           display $ch, " is a vowel.";
+} otherwise_check($ch == "i") {
+           display $ch, " is a vowel.";
+} otherwise_check($ch == "o") {
+           display $ch, " is a vowel.";
+} otherwise_check($ch == "u") {
+           display $ch, " is a vowel.";
+} otherwise_check ($ch == "A" ) {
+           display $ch, " is a vowel.";
+} otherwise_check($ch == "E") {
+           display $ch, " is a vowel.";
+} otherwise_check($ch == "I") {
+           display $ch, " is a vowel.";
+} otherwise_check($ch == "O") {
+           display $ch, " is a vowel.";
+} otherwise_check($ch == "U") {
+           display $ch, " is a vowel.";
+} otherwise {
+        display $ch, " is not a vowel ";
+    }
+}
+}
+ghost
+
+
+!!!!!!!!!!!!!!!! 7.) FACTORIAL OF A NUMBER !!!!!!!!!!!!!!!!
+
+birth {
+
+@main_casper() {
+
+    int $fact = 1; 
+    int $counter = 1;
+    display "Enter a number: ";
+    int $num = input();
+
+    for (int $i = 1; $i <= $num; $i++) {
+        $fact = $fact * $counter;
+        $counter = $counter + 1;
+    }
+
+    display "Factorial is: ", $fact;
+}
+}
+ghost
+
+!!!!!!!!!!!!!!!!!!!!!! 8.) REVERSE OF A DIGIT !!!!!!!!!!!!!!!!
+
+birth{
+
+@main_casper() {
+    display "Enter an integer to reverse: ", "\n";
+    str $input_str = input();
+    int $num = to_int($input_str);
+
+    int $reversed = 0;
+    int $digit = 0;
+
+    while ($num > 0) {
+        $digit = $num % 10;
+        $reversed = $reversed * 10 + $digit;
+        
+        $num = to_int($num / 10);
+    }
+
+    display "Reversed number: ", $reversed, "\n";
+}
+}
+ghost
+
+!!!!!!!!!!!!!!!!!!!!!! 9.) PALINDROME CHECK !!!!!!!!!!!!!!!!
+
+birth{
+
+@main_casper() {
+    display "Palindrome Checker", "\n";
+    display "Enter a string: ", "\n";
+    str $input_str = input();
+    int $length = measure($input_str);
+
+    bln $isPalindrome = Day;
+    int $left = 0;
+    int $right = $length - 1;
+    bln $continueCheck = Day; 
+
+    check ($length <= 1) {
+        $isPalindrome = Day;
+        $continueCheck = Night; 
+    } otherwise {
+    }
+
+    while ($left < $right && $continueCheck == Day) {
+        str $leftChar = $input_str[$left];
+        str $rightChar = $input_str[$right];
+
+        check ($leftChar != $rightChar) {
+            $isPalindrome = Night; 
+            $continueCheck = Night; 
+        } otherwise {
+            $left = $left + 1;
+            $right = $right - 1;
+        }
+    }
+
+    check ($isPalindrome == Day) {
+        display "'", $input_str, "' is a palindrome.", "\n";
+    } otherwise {
+        display "'", $input_str, "' is not a palindrome.", "\n";
+    }
+}
+
+}
+ghost
+
+!!!!!!!!!!!!!!!!!!!!!! 10.) SORT 5 NUMBERS (Inlined) !!!!!!!!!!!!!!!!
+
+
+
+birth{
+
+@main_casper() {
+    display "Enter 5 numbers to sort:", "\n";
+
+    int $n1;
+    int $n2;
+    int $n3;
+    int $n4;
+    int $n5;
+    int $temp;      
+    int $temp_num;  
+
+    display "Enter number 1: ", "\n";
+        str $input_str = input();
+        $temp_num = to_int($input_str);
+        $n1 = $temp_num;
+
+    display "Enter number 2: ", "\n";
+        str $input_str1 = input();
+        $temp_num = to_int($input_str1);
+        $n2 = $temp_num;
+
+    display "Enter number 3: ", "\n";
+        str $input_str2 = input();
+        $temp_num = to_int($input_str2);
+        $n3 = $temp_num;
+
+    display "Enter number 4: ", "\n";
+        str $input_str3 = input();
+        $temp_num = to_int($input_str3);
+        $n4 = $temp_num;
+
+    display "Enter number 5: ", "\n";
+        str $input_str4 = input();
+        $temp_num = to_int($input_str4);
+        $n5 = $temp_num;
+
+    check ($n1 > $n2) { $temp = $n1; $n1 = $n2; $n2 = $temp; } otherwise { }
+    check ($n2 > $n3) { $temp = $n2; $n2 = $n3; $n3 = $temp; } otherwise { }
+    check ($n3 > $n4) { $temp = $n3; $n3 = $n4; $n4 = $temp; } otherwise { }
+    check ($n4 > $n5) { $temp = $n4; $n4 = $n5; $n5 = $temp; } otherwise { }
+
+    check ($n1 > $n2) { $temp = $n1; $n1 = $n2; $n2 = $temp; } otherwise { }
+    check ($n2 > $n3) { $temp = $n2; $n2 = $n3; $n3 = $temp; } otherwise { }
+    check ($n3 > $n4) { $temp = $n3; $n3 = $n4; $n4 = $temp; } otherwise { }
+
+    check ($n1 > $n2) { $temp = $n1; $n1 = $n2; $n2 = $temp; } otherwise { }
+    check ($n2 > $n3) { $temp = $n2; $n2 = $n3; $n3 = $temp; } otherwise { }
+
+    check ($n1 > $n2) { $temp = $n1; $n1 = $n2; $n2 = $temp; } otherwise { }
+
+    display "Numbers in Ascending Order:", "\n";
+    display $n1, " ", $n2, " ", $n3, " ", $n4, " ", $n5, "\n";
+
+    display "Numbers in Descending Order:", "\n";
+    display $n5, " ", $n4, " ", $n3, " ", $n2, " ", $n1, "\n";
+
+}
+
+}
+ghost

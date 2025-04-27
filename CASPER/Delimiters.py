@@ -34,13 +34,18 @@ class Delimiters:
     DEL2 = SPACE | {'('}  | NEWLINE
     DEL3 = SPACE | NUM | BOOLEAN | {'(', '$', '|'} # logical ops
     DEL4 = SPACE | NUM | {'(', '$', '\'', '"', None,'', '\r'} # plus delim
-    DEL5 = SPACE | ALPHANUM |{'$', '(', '@','',None,'\r', ''}  # minus, multiply, divide, modulo delims, all assignment ops
+    DEL5 = SPACE | ALPHANUM |{'$', '(', '@','',None,'\r', '', '~'}  # minus, multiply, divide, modulo delims, all assignment ops
     DEL6 = NUM | {'$', '(', '\''} #prefix | **
     DEL7 =  SPACE | ALPHANUM | NEWLINE | {'$', '@', '"', '(', '{', '\'', ')','['} # open LPAREN (
     DEL8 = SPACE | NEWLINE | ALPHANUM | NULL | {'+', '-', '*', '/', '{', '(', ')', ']', '}', ',','$', '@','|','&', ';'} # closing RPAREN )
     DEL9 = SPACE | NEWLINE | {'(', '{', '$', '@', '"'} # opening LBRACE {
+<<<<<<< HEAD
     DEL10 = SPACE | NEWLINE | NULL | OPERATORS | COMPARATOR | LOGEXP | {'"', '(', '{', '[',']',')', ',', ':' ,';','='} # closing RBRACE }
     DEL11 = SPACE | NEWLINE | NULL | {',', '(', '{', '[', '+', ')',']'}
+=======
+    DEL10 = SPACE | NEWLINE | NULL | OPERATORS | COMPARATOR | LOGEXP | {'"', '(', '{', '[',']',')', ',', ':' ,';','=','g',';'} # closing RBRACE }
+    DEL11 = SPACE | NEWLINE | NULL | {',', '(', '{', '[', '+', ')',']',';'}
+>>>>>>> semicolon-terminal-branch
     DEL12 = SPACE | NEWLINE | NULL | {'\r', '$'}
     DEL13 = SPACE | NULL | {')', '\'', None,'','\r', ''} # postfix
     DEL14 = SPACE | ALPHA
@@ -51,6 +56,12 @@ class Delimiters:
     DEL19 = {'['}
     identifier_del = OPERATORS | SPACE | NEWLINE | CARRIAGE_RETURN | NULL | {'<', '-', '+', '*', '/', '%', '=', '<', '>', '!', '(', ')', '[', ']', ',' , '{', '}','&','|',';', '.'} 
     DEL20 = NULL | {'p','s'}
+<<<<<<< HEAD
+=======
+    DEL21 = NULL | {';'} 
+    DEL22 = NULL | {'{'} | SPACE
+    DEL23 = NULL | {'['} | SPACE
+>>>>>>> semicolon-terminal-branch
 
 
     # Check if a character is a valid delimiter

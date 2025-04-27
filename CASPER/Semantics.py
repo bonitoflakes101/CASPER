@@ -130,7 +130,7 @@ class SemanticAnalyzer:
         # If there is an assignment (e.g. "= [ ... ]")
         if assignment_node is not None:
             if assignment_node.type == "list_value":
-                # If it’s a 2D array
+                # If it's a 2D array
                 if declared_type.endswith("[][]"):
                     # Store total row count
                     row_count = self.get_list_literal_length(assignment_node)
@@ -143,7 +143,7 @@ class SemanticAnalyzer:
                     # Now do your normal type checks
                     self.check_global_assignment(assignment_node, symtable, declared_type, ident_node.value)
 
-                # If it’s a 1D array
+                # If it's a 1D array
                 elif declared_type.endswith("[]"):
                     length = self.get_list_literal_length(assignment_node)
                     self.array_lengths[ident_node.value] = length
@@ -166,7 +166,27 @@ class SemanticAnalyzer:
         # In the new AST, the variable name is in the first child (type "IDENT")
         var_name = node.children[0].value
         try:
-            symtable.lookup(var_name)
+            var_type = symtable.lookup(var_name)
+            print(f"GET_EXPR_TYPE (var_call): Lookup for '{var_name}' returned type: {var_type}") # DEBUG PRINT
+            
+            # Check if this is an array element access (has index nodes)
+            if len(node.children) > 1 and node.children[1]:
+                # This is an indexed variable access like $array[0]
+                index_nodes = node.children[1]
+                if isinstance(index_nodes, list) and len(index_nodes) > 0:
+                    # If it's a 1D or 2D array, indexed access returns the base type
+                    if var_type.endswith("[][]"):
+                        # 2D array with one index: returns a 1D array
+                        if len(index_nodes) == 1:
+                            return var_type[:-2]  # Remove one set of []
+                        # 2D array with two indices: returns the base type
+                        elif len(index_nodes) == 2:
+                            return var_type.replace("[][]", "")
+                    elif var_type.endswith("[]"):
+                        # 1D array access returns the base type
+                        return var_type[:-2]  # Remove []
+            
+            return var_type
         except SemanticError as e:
             if var_name not in self.reported_undeclared_vars:
                 self.errors.append(str(e))
@@ -223,7 +243,7 @@ class SemanticAnalyzer:
                     assignment_node = possible_list
                     break
 
-        # 5) If it’s a 2D array, store both row count & row-by-row column counts
+        # 5) If it's a 2D array, store both row count & row-by-row column counts
         if declared_type.endswith("[][]") and assignment_node is not None:
             # total rows
             row_count = self.get_list_literal_length(assignment_node)
@@ -233,7 +253,7 @@ class SemanticAnalyzer:
             row_lengths = self.get_2d_row_lengths(assignment_node)
             self.array_2d_lengths[var_name] = row_lengths
 
-        # 6) If it’s a 1D array, store a single length
+        # 6) If it's a 1D array, store a single length
         elif declared_type.endswith("[]") and assignment_node is not None:
             length = self.get_list_literal_length(assignment_node)
             self.array_lengths[var_name] = length
@@ -342,7 +362,7 @@ class SemanticAnalyzer:
             if declared_base == rhs_base:
                 return
 
-            # 5) Otherwise, apply your “C‐style” numeric/boolean conversions:
+            # 5) Otherwise, apply your "C-style" numeric/boolean conversions:
             #    int -> float => add .0
             #    float -> int => truncate
             #    bln -> float => 1.0 or 0.0
@@ -522,7 +542,27 @@ class SemanticAnalyzer:
         elif node.type == "var_call":
             var_name = node.children[0].value
             try:
-                return symtable.lookup(var_name)
+                var_type = symtable.lookup(var_name)
+                print(f"GET_EXPR_TYPE (var_call): Lookup for '{var_name}' returned type: {var_type}") # DEBUG PRINT
+                
+                # Check if this is an array element access (has index nodes)
+                if len(node.children) > 1 and node.children[1]:
+                    # This is an indexed variable access like $array[0]
+                    index_nodes = node.children[1]
+                    if isinstance(index_nodes, list) and len(index_nodes) > 0:
+                        # If it's a 1D or 2D array, indexed access returns the base type
+                        if var_type.endswith("[][]"):
+                            # 2D array with one index: returns a 1D array
+                            if len(index_nodes) == 1:
+                                return var_type[:-2]  # Remove one set of []
+                            # 2D array with two indices: returns the base type
+                            elif len(index_nodes) == 2:
+                                return var_type.replace("[][]", "")
+                        elif var_type.endswith("[]"):
+                            # 1D array access returns the base type
+                            return var_type[:-2]  # Remove []
+                
+                return var_type
             except SemanticError as e:
                 if var_name not in self.reported_undeclared_vars:
                     self.errors.append(str(e))
@@ -566,12 +606,27 @@ class SemanticAnalyzer:
 
             return right_type
 
+        # ADDED: Handle postfix nodes (like var_call++) by getting the type of the base variable call
+        elif node.type == "postfix":
+            if node.children:
+                # The first child is the node whose type we care about (e.g., var_call)
+                return self.get_expression_type(node.children[0], symtable)
+            return None
+
         # ### REORDER: Now we do a fallback "visit" last, in case we missed anything
         self.generic_visit(node, symtable)
         return None
 
-
-
+    # ADDED: Method to visit type casting nodes
+    def visit_type_cast(self, node, symtable):
+        """Visits the expression inside a type cast operation."""
+        if node.children and len(node.children) > 0:
+            # Visit the expression being cast
+            self.visit(node.children[0], symtable)
+        else:
+            self.errors.append(
+                f"Semantic Error: Type cast function '{node.value}' is missing an argument."
+            )
 
     def visit_for_loop(self, node, symtable):
 
@@ -938,6 +993,8 @@ class SemanticAnalyzer:
         node.children = [ IDENT("$foo"), assign_tailNode(...) ]
         """
         left_node = node.children[0]
+        left_type = None
+        var_name = None
         # This might be either a var_call or an IDENT, depending on the rule matched.
 
         # 1) Figure out the left variable's type
@@ -1069,8 +1126,28 @@ class SemanticAnalyzer:
             pushed_item = right_node.children[0]
 
             if left_type is not None:
-                self.check_push_operation(var_name, pushed_item, left_type, symtable)
+                # --- Ensure var_name is set before calling check_push_operation ---
+                if var_name is None: # Should have been set above if left_type is not None
+                    if left_node.type == "IDENT":
+                        var_name = left_node.value
+                    elif left_node.type == "var_call" and left_node.children:
+                        var_name = left_node.children[0].value
+
+                if var_name: # Proceed only if var_name could be determined
+                    self.check_push_operation(var_name, pushed_item, left_type, symtable)
+                else:
+                    # This case should ideally not happen if left_type was found
+                    self.errors.append(f"Semantic Error: Could not determine variable name for '.push' operation.")
             else:
+                # --- Ensure var_name is set before reporting error ---
+                if var_name is None: # Try to get it again for the error message
+                    if left_node.type == "IDENT":
+                        var_name = left_node.value
+                    elif left_node.type == "var_call" and left_node.children:
+                        var_name = left_node.children[0].value
+                    else:
+                        var_name = "[unknown]" # Fallback
+
                 self.errors.append(
                     f"Semantic Error: Variable '{var_name}' type not found for '.push' operation."
                 )
@@ -1081,6 +1158,9 @@ class SemanticAnalyzer:
 
     def check_assignment_types(self, left_node, value_node, symtable, op):
         left_type = None
+        var_name = None
+        
+        # Identify the variable name and its type
         if left_node.type == "var_call":
             var_name = left_node.children[0].value
             try:
@@ -1096,27 +1176,31 @@ class SemanticAnalyzer:
         else:
             return
 
+        # Get the right-hand side type
         right_type = self.get_expression_type(value_node, symtable)
         if left_type is None or right_type is None:
             return
 
-        # If the left-hand side is an array access (var_call with indices), compare base types.
+        # Check if this is an array element access (var_call with indices)
+        is_array_element_access = False
         if left_node.type == "var_call" and len(left_node.children) > 1 and left_node.children[1]:
+            is_array_element_access = True
+            # Extract the base type from the array type (e.g., get 'int' from 'int[]')
             base_type = left_type.replace("[]", "")
-
+            
+            # When accessing array elements, we compare the right-hand type with the element type (base type)
             if base_type == right_type:
-                return
+                return  # Types match, no error
             elif (right_type, base_type) in allowed_implicit_conversions:
-                # E.g. (bln -> int), (int -> flt), etc. => allowed
-                return
+                return  # Allowed implicit conversion
             else:
                 self.errors.append(
                     f"Type Error: Cannot assign '{right_type}' to element of variable "
                     f"'{var_name}' with base type '{base_type}'."
                 )
-            return
+            return  # Early return after handling array element assignment
 
-        # Otherwise, if both sides are arrays or both are scalars, continue with the existing checks.
+        # Standard type checking for non-array-element assignments
         left_is_list = '[' in left_type
         right_is_list = '[' in right_type
         if left_is_list != right_is_list:
@@ -1125,6 +1209,7 @@ class SemanticAnalyzer:
             )
             return
 
+        # Handle basic type conversions for scalars
         if left_type == "bln" and right_type in ("int", "flt"):
             return
         if left_type == "int" and right_type in ("bln", "flt"):

@@ -1,0 +1,474 @@
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+1-4
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+birth{
+
+
+
+@main_casper(){
+
+int $add = 3+3;
+int $sub= 3-3;
+int $multiply = 3*3;
+int $div = 3/3;
+
+display $add, "\n";
+display $sub, "\n";
+display $multiply, "\n";
+display $div, "\n";
+}
+
+}
+ghost
+
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+5
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+
+birth{
+
+function_int @add(int $a, int $b){
+
+int $add_value = $a + $b;
+revive $add_value;
+}
+
+function_int @sub(int $a, int $b){
+
+int $sub_value = $a - $b;
+revive $sub_value;
+}
+
+function_int @multiply(int $a, int $b){
+
+int $multiply_value = $a * $b;
+revive $multiply_value;
+}
+
+function_flt @div(int $a, int $b){
+
+flt $div_value = $a / $b;
+revive $div_value;
+}
+
+
+@main_casper(){
+
+int $num1 = 6;
+int $num2 = 9;
+
+int $add = @add($num1,$num2);
+int $sub = @sub($num1,$num2);
+int $multiply = @multiply($num1,$num2);
+flt $div = @div($num1,$num2); 
+
+display $add, "\n";
+display $sub, "\n";
+display $multiply, "\n";
+display $div, "\n";
+}
+
+}
+ghost
+
+
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+6-10
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+birth{
+
+@main_casper(){
+
+<< 6
+
+display "\n";
+display "*\n";
+display "**\n";
+display "***\n";
+display "****\n";
+display "*****\n";
+
+<< 7
+
+display "\n";
+display "    *\n";
+display "   **\n";
+display "  ***\n";
+display " ****\n";
+display "*****\n";
+
+
+<< 8
+
+display "\n";
+display "    *\n";
+display "   ***\n";
+display "  *****\n";
+display " *******\n";
+display "*********\n";
+
+<< 9
+
+display "\n";
+display "*****\n";
+display "*****\n";
+display "*****\n";
+display "*****\n";
+
+<< 10
+
+display "\n";
+display "**********\n";
+display "**********\n";
+display "**********\n";
+display "**********\n";
+}
+
+}
+ghost
+
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+11-15
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+birth{
+
+function @left_triangle(){
+
+display "\n";
+display "*\n";
+display "**\n";
+display "***\n";
+display "****\n";
+display "*****\n";
+
+}
+
+function @right_triangle(){
+
+display "\n";
+display "    *\n";
+display "   **\n";
+display "  ***\n";
+display " ****\n";
+display "*****\n";
+
+}
+
+function @triangle(){
+
+
+display "\n";
+display "    *\n";
+display "   ***\n";
+display "  *****\n";
+display " *******\n";
+display "*********\n";
+}
+function @square(){
+
+
+display "\n";
+display "*****\n";
+display "*****\n";
+display "*****\n";
+display "*****\n";
+
+}
+function @rectangle(){
+
+display "\n";
+display "**********\n";
+display "**********\n";
+display "**********\n";
+display "**********\n";
+
+
+}
+@main_casper(){
+
+@left_triangle();
+@right_triangle();
+@triangle();
+@square();
+@rectangle();
+
+}
+
+}
+ghost
+
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+16
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+birth {
+
+<< Function to draw a right triangle with n rows >>
+function @drawRightTriangle(int $rows) {
+    for(int $i = 1; $i <= $rows; $i++) {
+        for(int $j = 1; $j <= $i; $j++) {
+            display "*";
+        }
+        display "\n";
+    }
+}
+
+<< Function to draw an isosceles triangle with n rows >>
+function @drawIsoscelesTriangle(int $rows) {
+    for(int $i = 1; $i <= $rows; $i++) {
+        << Print spaces first >>
+        for(int $j = 1; $j <= $rows - $i; $j++) {
+            display " ";
+        }
+        << Then print stars >>
+        for(int $x = 1; $x <= 2 * $i - 1; $x++) {
+            display "*";
+        }
+        display "\n";
+    }
+}
+
+<< Function to draw a square with side length n >>
+function @drawSquare(int $size) {
+    for(int $i = 1; $i <= $size; $i++) {
+        for(int $j = 1; $j <= $size; $j++) {
+            display "*";
+        }
+        display "\n";
+    }
+}
+
+<< Function to draw a rectangle with height n and width n*2 >>
+function @drawRectangle(int $height) {
+    int $width = $height * 2;
+    for(int $i = 1; $i <= $height; $i++) {
+        for(int $j = 1; $j <= $width; $j++) {
+            display "*";
+        }
+        display "\n";
+    }
+}
+
+<< Main function that takes user input and calls the appropriate shape function >>
+@main_casper() {
+    display "Shape Drawing Program\n";
+    display "1 - Right Triangle\n";
+    display "2 - Isosceles Triangle\n";
+    display "3 - Square\n";
+    display "4 - Rectangle\n";
+    
+    display "Enter shape number (1-4): \n";
+    int $choice = 1;
+    
+    display "Enter number of rows/size: ";
+    int $rows = input();
+    
+    display "\n";
+    
+    check($choice == 1) {
+        display "Drawing Right Triangle with ";
+        display $rows;
+        display " rows:\n";
+        @drawRightTriangle($rows);
+    } 
+    otherwise_check($choice == 2) {
+        display "Drawing Isosceles Triangle with ";
+        display $rows;
+        display " rows:\n";
+        @drawIsoscelesTriangle($rows);
+    }
+    otherwise_check($choice == 3) {
+        display "Drawing Square with side length ";
+        display $rows;
+        display ":\n";
+        @drawSquare($rows);
+    }
+    otherwise_check($choice == 4) {
+        display "Drawing Rectangle with height ";
+        display $rows;
+        display ":\n";
+        @drawRectangle($rows);
+    }
+    otherwise {
+        display "Invalid choice! Please enter a number from 1 to 4.\n";
+    }
+}
+
+}
+ghost
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+COMPUTE AREA - FIX CONDITIONAL
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+birth {
+
+    function_flt @area_triangle(flt $b, flt $h) {
+        flt $a = ($b * $h) / 2.0;
+        revive $a;
+    }
+
+    function_flt @area_rectangle(flt $l, flt $w) {
+        flt $area_result= $l * $w;
+        revive $area_result;
+    }
+
+    function_flt @area_circle(flt $r) {
+        flt $pi = 3.1416;
+        flt $area_result = $pi * $r * $r;
+        revive $area_result;
+    }
+
+     @main_casper() {
+        display "Choose a shape (1-3): ";
+        int $shape = input();  << 1 = Triangle, 2 = Rectangle, 3 = Circle
+        flt $area = 0.0;
+
+        check ($shape == 1) {    
+            flt $base = 5.0;
+            flt $height = 10.0;
+            $area = @area_triangle($base, $height);
+            display "Triangle Area: ", $area;
+        }
+        otherwise_check ($shape == 2) {
+            flt $length = 4.0;
+            flt $width = 6.0;
+            $area = @area_rectangle($length, $width);
+            display "Rectangle Area: ", $area;
+        }
+        otherwise_check ($shape == 3) {
+            flt $radius = 3.0;
+            $area = @area_circle($radius);
+            display "Circle Area: ", $area;
+        }
+        otherwise{
+            display "Invalid choice!";
+
+        }
+
+
+    }
+
+}
+ 
+ghost
+
+
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+COMPUTE PERIMETER
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+birth {
+
+
+@main_casper(){
+
+int $length = 5;
+int $width = 3;
+int $perimeter;
+
+$perimeter = 2 * ($length + $width);
+
+display($perimeter);
+
+}
+    
+
+} ghost
+
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+19 
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+birth {
+
+
+@main_casper(){
+
+display "Input a number: ";
+int $num = input();
+
+    check ($num % 2 == 0) {
+        display("The number is even");
+    } otherwise {
+        display("The number is odd");
+    }
+
+
+}
+
+} ghost
+
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+20 
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+birth {
+
+
+@main_casper(){
+
+display "Enter a year: ";
+int $year = input();
+
+check (($year % 4 == 0) && ($year % 100 != 0) || ($year % 400 == 0)) {
+    display("Leap year");
+} otherwise {
+    display("Not a leap year");
+}
+
+}
+
+} ghost
+
+!!!!!!!!
+
+birth {
+    @main_casper() {
+      
+
+        display "Simple Day Selector\n";
+        display "--------------------\n";
+        display "Enter a number (1-7) to see the day of the week:\n";
+        display "1. Monday\n";
+        display "2. Tuesday\n";
+        display "3. Wednesday\n";
+        display "4. Thursday\n";
+        display "5. Friday\n";
+        display "6. Saturday\n";
+        display "7. Sunday\n";
+        display "Your choice: ";
+
+        int $dayNumber = input();
+
+        display "You chose: ";
+        swap ($dayNumber) {
+            shift 1: 
+                display "Monday\n";
+            
+            shift 2: 
+                display "Tuesday\n";
+            
+            shift 3: 
+                display "Wednesday\n";
+            
+            shift 4: 
+                display "Thursday\n";
+            
+            shift 5: 
+                display "Friday\n";
+            
+            shift 6: 
+                display "Saturday\n";
+        
+            shift 7: 
+                display "Sunday\n";
+            
+            otherwise {
+        
+                display "an invalid day number!\n";
+            }
+        }
+
+        display "End of program.\n";
+    }
+} ghost
