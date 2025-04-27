@@ -1336,6 +1336,59 @@ class SemanticAnalyzer:
             f"Type Error: Cannot push '{pushed_type}' to array '{var_name}' of type '{left_type}'."
         )
 
+    def visit_conditional_statement(self, node, symtable):
+        if len(node.children) < 4:
+            self.generic_visit(node, symtable)
+            return
+
+        condition_node = node.children[0]
+        check_block_node = node.children[1]
+        conditional_tail_node = node.children[2]
+        otherwise_block_node = node.children[3]
+
+        # 1. Analyze the main condition
+        self.visit(condition_node, symtable)
+        condition_type = self.get_expression_type(condition_node, symtable)
+        if condition_type not in ["bln", "int", "flt"] and condition_type is not None:
+            self.errors.append(f"Type Error: Condition must evaluate to a boolean or number, got '{condition_type}'.")
+
+        # 2. Analyze the check block in a NEW scope
+        check_scope = SymbolTable(parent=symtable)
+        check_scope.expected_return_type = symtable.expected_return_type # Inherit expected return type
+        self.visit(check_block_node, check_scope)
+
+        # 3. Analyze the conditional tail (using the original symtable)
+        self.visit(conditional_tail_node, symtable)
+
+        # 4. Analyze the otherwise block in a NEW scope
+        otherwise_scope = SymbolTable(parent=symtable)
+        otherwise_scope.expected_return_type = symtable.expected_return_type # Inherit expected return type
+        self.visit(otherwise_block_node, otherwise_scope)
+
+
+    def visit_otherwise_check(self, node, symtable):
+        if len(node.children) < 3:
+             self.generic_visit(node, symtable)
+             return
+
+        condition_node = node.children[0]
+        statements_node = node.children[1]
+        tail_node = node.children[2]
+
+        # 1. Analyze the condition (using the original symtable)
+        self.visit(condition_node, symtable)
+        condition_type = self.get_expression_type(condition_node, symtable)
+        if condition_type not in ["bln", "int", "flt"] and condition_type is not None:
+            self.errors.append(f"Type Error: otherwise_check condition must evaluate to a boolean or number, got '{condition_type}'.")
+
+        # 2. Analyze the statements block in a NEW scope
+        elseif_scope = SymbolTable(parent=symtable)
+        elseif_scope.expected_return_type = symtable.expected_return_type # Inherit expected return type
+        self.visit(statements_node, elseif_scope)
+
+        # 3. Analyze the rest of the tail (using the original symtable)
+        self.visit(tail_node, symtable)
+
 
 
 def debug_print_ast(node, indent=0):

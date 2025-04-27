@@ -17,6 +17,8 @@ birth {
             check ($num % $i == 0) {
                 $isPrime = Night;
                 stop;
+            } otherwise {
+
             }
             $i = $i + 1;
         }
@@ -80,30 +82,39 @@ birth {
 
         check ($n == 1) {
             $fib_sequence.push(0);
-        } otherwise_check ($n >= 2) {
-            $fib_sequence.push(0);
-            $fib_sequence.push(1);
-
-            int $a = 0; 
-            int $b = 1;
-            int $i = 2; 
-
-            while ($i < $n) {
-                int $next_fib = $a + $b;
-                $fib_sequence.push($next_fib);
-
-                $a = $b;        
-                $b = $next_fib; 
-
-                $i = $i + 1;
-            }
-       
         } otherwise {
+            // Start with first Fibonacci number
+            $fib_sequence.push(0);
+            
+            // For n > 1, add second Fibonacci number
+            check ($n >= 2) {
+                $fib_sequence.push(1);
+                
+                int $a = 0; 
+                int $b = 1;
+                int $i = 2; 
 
+                // Generate remaining Fibonacci numbers
+                while ($i < $n) {
+                    int $next_fib = $a + $b;
+                    $fib_sequence.push($next_fib);
+
+                    $a = $b;        
+                    $b = $next_fib; 
+
+                    $i = $i + 1;
+                }
+            } otherwise {
+                // This case is logically unreachable (n > 1 but n < 2),
+                // but kept to maintain structure
+            }
         }
 
         display "Fibonacci sequence generated. Displaying in reverse order:", "\n";
-        int $j = $n - 1; 
+        // Calculate the actual size of fib_sequence for proper indexing
+        int $size = measure($fib_sequence);
+        int $j = $size - 1;
+        
         while ($j >= 0) {
             display $fib_sequence[$j], " ";
             $j = $j - 1;
@@ -117,7 +128,84 @@ ghost
 !!!!!!!!!!!!!!! 4.) PERMUTATION OF A GIVEN STRING !!!!!!!!!!!!!!!!!!!!
 
 
+birth {
 
+@main_casper() {
+    display "Enter a 3 or 4 character string: ";
+    str $input = input();
+    
+    int $length = measure($input);
+    
+    << Declare variables once before the checks
+    str $c1 = "";
+    str $c2 = "";
+    str $c3 = "";
+    str $c4 = ""; << Declare c4 as well, even if only used for length 4
+    
+    check ($length == 3) {
+        display "All permutations for 3 characters:", "\n";
+        
+        << Assign values, don't re-declare
+        $c1 = $input[0];
+        $c2 = $input[1];
+        $c3 = $input[2];
+        
+        display $c1, $c2, $c3, "\n"; << abc
+        display $c1, $c3, $c2, "\n"; << acb
+        display $c2, $c1, $c3, "\n"; << bac
+        display $c2, $c3, $c1, "\n"; << bca
+        display $c3, $c1, $c2, "\n"; << cab
+        display $c3, $c2, $c1, "\n"; << cba
+
+    } otherwise_check ($length == 4) {
+        display "All permutations for 4 characters:", "\n";
+        
+        << Assign values, don't re-declare
+        $c1 = $input[0];
+        $c2 = $input[1];
+        $c3 = $input[2];
+        $c4 = $input[3];
+        
+        << Manually listing all 24 permutations...
+        
+        << Permutations starting with c1 (fixing c1, permuting c2,c3,c4 -> 3! = 6)
+        display $c1, $c2, $c3, $c4, "\n"; << abcd
+        display $c1, $c2, $c4, $c3, "\n"; << abdc
+        display $c1, $c3, $c2, $c4, "\n"; << acbd
+        display $c1, $c3, $c4, $c2, "\n"; << acdb
+        display $c1, $c4, $c2, $c3, "\n"; << adbc
+        display $c1, $c4, $c3, $c2, "\n"; << adcb
+        
+        << Permutations starting with c2 (fixing c2, permuting c1,c3,c4 -> 3! = 6)
+        display $c2, $c1, $c3, $c4, "\n"; << bacd
+        display $c2, $c1, $c4, $c3, "\n"; << badc
+        display $c2, $c3, $c1, $c4, "\n"; << bcad
+        display $c2, $c3, $c4, $c1, "\n"; << bcda
+        display $c2, $c4, $c1, $c3, "\n"; << bdac
+        display $c2, $c4, $c3, $c1, "\n"; << bdca
+        
+        << Permutations starting with c3 (fixing c3, permuting c1,c2,c4 -> 3! = 6)
+        display $c3, $c1, $c2, $c4, "\n"; << cabd
+        display $c3, $c1, $c4, $c2, "\n"; << cadb
+        display $c3, $c2, $c1, $c4, "\n"; << cbad
+        display $c3, $c2, $c4, $c1, "\n"; << cbda
+        display $c3, $c4, $c1, $c2, "\n"; << cdab
+        display $c3, $c4, $c2, $c1, "\n"; << cdba
+        
+        << Permutations starting with c4 (fixing c4, permuting c1,c2,c3 -> 3! = 6)
+        display $c4, $c1, $c2, $c3, "\n"; << dabc
+        display $c4, $c1, $c3, $c2, "\n"; << dacb
+        display $c4, $c2, $c1, $c3, "\n"; << dbac
+        display $c4, $c2, $c3, $c1, "\n"; << dbca
+        display $c4, $c3, $c1, $c2, "\n"; << dcab
+        display $c4, $c3, $c2, $c1, "\n"; << dcba
+    } otherwise {
+        display "Please enter exactly 3 or 4 characters.";
+    }
+}
+
+}
+ghost
 
 
 !!!!!!!!!!!!!! 5.) GEOMETRIC SERIES SUM !!!!!!!!!!!!!!!!!!!!
