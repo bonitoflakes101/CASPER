@@ -45,19 +45,8 @@ class SemanticAnalyzer:
         self.found_revive_in_current_function = False
 
     def analyze(self, ast):
-        print("=== DEBUG: AST Structure ===")
-        debug_print_ast(ast)
-        print("=== END DEBUG ===\n")
         self.visit(ast, self.global_symbols)
 
-        # Example debug note for 'str $num = 3' usage
-        if "str $num" in str(ast) and not any("Cannot assign" in e for e in self.errors):
-            self.errors.append(
-                "[DEBUG NOTE] The analyzer did NOT detect a type mismatch for 'str $num = 3'."
-            )
-            self.errors.append(
-                "Check your var_tail logic or expand get_expression_type if you still expect an error."
-            )
         return self.errors
 
     def visit(self, node, symtable):
@@ -168,7 +157,6 @@ class SemanticAnalyzer:
         var_name = node.children[0].value
         try:
             var_type = symtable.lookup(var_name)
-            print(f"GET_EXPR_TYPE (var_call): Lookup for '{var_name}' returned type: {var_type}") # DEBUG PRINT
             
             # Check if this is an array element access (has index nodes)
             if len(node.children) > 1 and node.children[1]:
@@ -213,8 +201,6 @@ class SemanticAnalyzer:
             declared_type = f"{base_type}[]"
         else:
             declared_type = base_type
-
-        print(f"DEBUG: Declaring variable {var_name} with type {declared_type}")
 
         # 3) Add to symbol table
         if var_name in self.global_symbols.symbols:
@@ -336,7 +322,6 @@ class SemanticAnalyzer:
         # If the variable is declared as a list (e.g. "int[]", "int[][]", "flt[]", "bln[][]", etc.)
         if '[' in declared_type:
             rhs_type = self.get_expression_type(var_tail_node, symtable)
-            print(f"DEBUG: {var_name} declared as {declared_type}, initializer type = {rhs_type}")
 
             # 1) If the initializer has no type, or is not recognized as a list, mismatch
             if rhs_type is None or '[' not in rhs_type:
@@ -510,7 +495,6 @@ class SemanticAnalyzer:
 
 
         elif node.type == "literal":
-            print("DEBUG in literal:", node.value, type(node.value))
             val = node.value
             if isinstance(val, int):
                 return "int"
@@ -544,7 +528,6 @@ class SemanticAnalyzer:
             var_name = node.children[0].value
             try:
                 var_type = symtable.lookup(var_name)
-                print(f"GET_EXPR_TYPE (var_call): Lookup for '{var_name}' returned type: {var_type}") # DEBUG PRINT
                 
                 # Check if this is an array element access (has index nodes)
                 if len(node.children) > 1 and node.children[1]:
@@ -947,8 +930,6 @@ class SemanticAnalyzer:
         else:
             base_type = self.get_expression_type(first_item, symtable)
 
-        print(f"DEBUG: list literal dimension={dim}, base_type={base_type}")
-
         if base_type is None:
             return None
 
@@ -1032,8 +1013,6 @@ class SemanticAnalyzer:
         # 1) Figure out the left variable's type
         if left_node.type == "var_call":
             var_name = left_node.children[0].value
-            print("NEW DEBUG: array_lengths =", self.array_lengths)
-            print("NEW DEBUG: Checking var_name =", var_name)
 
             # ---------------------------------------------------------
             # Handle up to 2D indexing: e.g. $fruits[1], $fruits[1][9]
@@ -1361,19 +1340,17 @@ class SemanticAnalyzer:
 
 def debug_print_ast(node, indent=0):
     if node is None:
-        print(" " * indent + "None")
         return
     if isinstance(node, list):
         for item in node:
             debug_print_ast(item, indent)
         return
     if not hasattr(node, "type"):
-        print(" " * indent + f"Non-AST node: {node}")
         return
     line = f"{node.type}"
     if node.value is not None:
         line += f" (value={node.value})"
-    print(" " * indent + line)
+    # print(" " * indent + line)
     if hasattr(node, "children") and node.children:
         for child in node.children:
             debug_print_ast(child, indent + 2)
