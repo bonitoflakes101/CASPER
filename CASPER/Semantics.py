@@ -168,6 +168,24 @@ class SemanticAnalyzer:
         try:
             var_type = symtable.lookup(var_name)
             print(f"GET_EXPR_TYPE (var_call): Lookup for '{var_name}' returned type: {var_type}") # DEBUG PRINT
+            
+            # Check if this is an array element access (has index nodes)
+            if len(node.children) > 1 and node.children[1]:
+                # This is an indexed variable access like $array[0]
+                index_nodes = node.children[1]
+                if isinstance(index_nodes, list) and len(index_nodes) > 0:
+                    # If it's a 1D or 2D array, indexed access returns the base type
+                    if var_type.endswith("[][]"):
+                        # 2D array with one index: returns a 1D array
+                        if len(index_nodes) == 1:
+                            return var_type[:-2]  # Remove one set of []
+                        # 2D array with two indices: returns the base type
+                        elif len(index_nodes) == 2:
+                            return var_type.replace("[][]", "")
+                    elif var_type.endswith("[]"):
+                        # 1D array access returns the base type
+                        return var_type[:-2]  # Remove []
+            
             return var_type
         except SemanticError as e:
             if var_name not in self.reported_undeclared_vars:
@@ -526,6 +544,24 @@ class SemanticAnalyzer:
             try:
                 var_type = symtable.lookup(var_name)
                 print(f"GET_EXPR_TYPE (var_call): Lookup for '{var_name}' returned type: {var_type}") # DEBUG PRINT
+                
+                # Check if this is an array element access (has index nodes)
+                if len(node.children) > 1 and node.children[1]:
+                    # This is an indexed variable access like $array[0]
+                    index_nodes = node.children[1]
+                    if isinstance(index_nodes, list) and len(index_nodes) > 0:
+                        # If it's a 1D or 2D array, indexed access returns the base type
+                        if var_type.endswith("[][]"):
+                            # 2D array with one index: returns a 1D array
+                            if len(index_nodes) == 1:
+                                return var_type[:-2]  # Remove one set of []
+                            # 2D array with two indices: returns the base type
+                            elif len(index_nodes) == 2:
+                                return var_type.replace("[][]", "")
+                        elif var_type.endswith("[]"):
+                            # 1D array access returns the base type
+                            return var_type[:-2]  # Remove []
+                
                 return var_type
             except SemanticError as e:
                 if var_name not in self.reported_undeclared_vars:
@@ -1122,6 +1158,9 @@ class SemanticAnalyzer:
 
     def check_assignment_types(self, left_node, value_node, symtable, op):
         left_type = None
+        var_name = None
+        
+        # Identify the variable name and its type
         if left_node.type == "var_call":
             var_name = left_node.children[0].value
             try:
@@ -1137,27 +1176,31 @@ class SemanticAnalyzer:
         else:
             return
 
+        # Get the right-hand side type
         right_type = self.get_expression_type(value_node, symtable)
         if left_type is None or right_type is None:
             return
 
-        # If the left-hand side is an array access (var_call with indices), compare base types.
+        # Check if this is an array element access (var_call with indices)
+        is_array_element_access = False
         if left_node.type == "var_call" and len(left_node.children) > 1 and left_node.children[1]:
+            is_array_element_access = True
+            # Extract the base type from the array type (e.g., get 'int' from 'int[]')
             base_type = left_type.replace("[]", "")
-
+            
+            # When accessing array elements, we compare the right-hand type with the element type (base type)
             if base_type == right_type:
-                return
+                return  # Types match, no error
             elif (right_type, base_type) in allowed_implicit_conversions:
-                # E.g. (bln -> int), (int -> flt), etc. => allowed
-                return
+                return  # Allowed implicit conversion
             else:
                 self.errors.append(
                     f"Type Error: Cannot assign '{right_type}' to element of variable "
                     f"'{var_name}' with base type '{base_type}'."
                 )
-            return
+            return  # Early return after handling array element assignment
 
-        # Otherwise, if both sides are arrays or both are scalars, continue with the existing checks.
+        # Standard type checking for non-array-element assignments
         left_is_list = '[' in left_type
         right_is_list = '[' in right_type
         if left_is_list != right_is_list:
@@ -1166,6 +1209,7 @@ class SemanticAnalyzer:
             )
             return
 
+        # Handle basic type conversions for scalars
         if left_type == "bln" and right_type in ("int", "flt"):
             return
         if left_type == "int" and right_type in ("bln", "flt"):
