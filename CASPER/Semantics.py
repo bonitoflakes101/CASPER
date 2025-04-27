@@ -42,6 +42,7 @@ class SemanticAnalyzer:
         self.declared_functions = {} 
         self.array_lengths = {}   
         self.array_2d_lengths = {}  
+        self.found_revive_in_current_function = False
 
     def analyze(self, ast):
         print("=== DEBUG: AST Structure ===")
@@ -669,8 +670,15 @@ class SemanticAnalyzer:
         func_name_node = node.children[1]
         func_name = func_name_node.value
 
+        # Store previous state of the flag (for potential nested functions)
+        previous_revive_flag_state = self.found_revive_in_current_function
+        self.found_revive_in_current_function = False # Reset for this function
+
+        declared_return_type = "void" # Default
         if func_name in self.declared_functions:
             self.errors.append(f"Semantic Error: Function '{func_name}' is already declared.")
+            # Even if declared, we might need its expected type for scope
+            declared_return_type = self.declared_functions[func_name][0]
         else:
             ret_type_info = node.children[0]
             if isinstance(ret_type_info, tuple):
@@ -687,41 +695,65 @@ class SemanticAnalyzer:
                 ret_type = ret_type[len("function_"):]
             if ret_type == "function":
                 ret_type = "void"
+            declared_return_type = ret_type # Store the calculated return type
 
             if isinstance(node.children[2], list):
-                node.children[2] = ASTNode("parameters", node.children[2])
-            params_info = self.extract_parameters_info(node.children[2])
-            param_types = []
-            for (param_name, param_type) in params_info:
-                param_types.append(param_type)
-            self.declared_functions[func_name] = (ret_type, param_types)
+                 # Ensure parameters node exists
+                params_node = ASTNode("parameters", node.children[2])
+                node.children[2] = params_node # Update the AST if needed
+            else:
+                 params_node = node.children[2]
+
+            # Use params_node safely now
+            params_info = self.extract_parameters_info(params_node)
+            param_types = [ptype for _, ptype in params_info]
+            self.declared_functions[func_name] = (declared_return_type, param_types)
+
 
         func_scope = SymbolTable(parent=symtable)
-        func_scope.expected_return_type = self.declared_functions[func_name][0]
+        # Use the determined declared_return_type
+        func_scope.expected_return_type = declared_return_type
 
-        for (param_name, param_type) in self.extract_parameters_info(node.children[2]):
-            try:
-                func_scope.add(param_name, param_type)
-            except SemanticError as e:
-                self.errors.append(f"Semantic Error in function '{func_name}': {str(e)}")
+        params_node = node.children[2] # Get parameters node again
+        if params_node: # Check if parameters node exists
+            for (param_name, param_type) in self.extract_parameters_info(params_node):
+                try:
+                    func_scope.add(param_name, param_type)
+                except SemanticError as e:
+                    self.errors.append(f"Semantic Error in function '{func_name}': {str(e)}")
 
         statements_node = node.children[3]
+        # Ensure statements_node is an ASTNode for visit
         if isinstance(statements_node, list):
-            statements_node = ASTNode("statements", statements_node)
-            node.children[3] = statements_node
+             statements_node = ASTNode("statements", statements_node)
+             if len(node.children) > 3:
+                 node.children[3] = statements_node
+             else: # Should not happen based on parser rule change, but safe
+                 node.children.append(statements_node)
+        elif statements_node is None: # Handle case of empty function body
+             statements_node = ASTNode("statements", [])
+             if len(node.children) > 3:
+                 node.children[3] = statements_node
+             else:
+                 node.children.append(statements_node)
+
+        # Visit the function body. This will call visit_revive_statement if one exists.
         self.visit(statements_node, func_scope)
 
-        revive_node = node.children[4] if len(node.children) > 4 else None
-        has_expected_return = func_scope.expected_return_type != "void"
-        if revive_node:
-            self.visit_revive(revive_node, func_scope)
-        elif has_expected_return:
-            self.errors.append(
-                f"Return Type Error: Function '{func_name}' expects a return value of type '{func_scope.expected_return_type}', but no 'revive' statement was found."
-            )
+        # --- ADDED NEW CHECK --- 
+        # Check if a revive statement was found *anywhere* inside
+        if func_scope.expected_return_type != "void" and not self.found_revive_in_current_function:
+             self.errors.append(
+                 f"Return Type Error: Function '{func_name}' expects a return value of type '{func_scope.expected_return_type}', but no 'revive' statement was found."
+             )
+        # --- END ADDED NEW CHECK ---
 
-        if len(node.children) > 5:
-            for child in node.children[5:]:
+        # Restore the flag state for the outer scope
+        self.found_revive_in_current_function = previous_revive_flag_state
+
+        # Visit any remaining children (shouldn't be any based on new parser rule)
+        if len(node.children) > 4:
+            for child in node.children[4:]:
                 self.visit(child, func_scope)
 
 
@@ -840,36 +872,36 @@ class SemanticAnalyzer:
                 arg_types.extend(self.extract_arg_tail(node.children[1], symtable))
         return arg_types
 
-    def visit_revive(self, node, symtable):
+    def visit_revive_statement(self, node, symtable):
+        self.found_revive_in_current_function = True # Set the flag
+
         expected = getattr(symtable, "expected_return_type", None)
         if expected == "void":
-            if node.children:
+            # Check if revive has a value (node.children[0] is the revive_value node)
+            if node.children and node.children[0].children: # Check if revive_value has children
                 self.errors.append("Return Type Error: Void function should not return a value.")
         else:
-            if node.children:
-                self.visit(node.children[0], symtable)
-                expr_type = self.get_expression_type(node.children[0], symtable)
+             # Check if revive has a value
+            if node.children and node.children[0].children: # revive_value -> value -> expression/call etc.
+                value_node = node.children[0].children[0] # Get the actual value node
+                self.visit(value_node, symtable)
+                expr_type = self.get_expression_type(value_node, symtable)
                 if expr_type is None:
-                    self.errors.append(f"Return Type Error: Function expects return type '{expected}', but got 'None'.")
+                    self.errors.append(f"Return Type Error: Function expects return type '{expected}', but cannot determine type of return expression.")
                     return
-                allowed_implicit_conversions = {
-                    ("int", "flt"),
-                    ("flt", "int"),
-                    ("bln", "flt"),
-                    ("flt", "bln"),
-                    ("int", "bln"),
-                    ("bln", "int"),
-                }
+
+                # Use the global allowed conversions
                 if expr_type == expected:
-                    return
+                    return # Exact match
                 elif (expr_type, expected) in allowed_implicit_conversions:
-                    return
+                    return # Implicit conversion allowed
                 else:
                     self.errors.append(
                         f"Return Type Error: Function expects return type '{expected}', but got '{expr_type}'."
                     )
             else:
-                self.errors.append("Return Type Error: No return expression provided.")
+                self.errors.append(f"Return Type Error: Function expects return type '{expected}' but revive statement has no value.")
+
     def get_list_dimension(self, node):
         if node.type != "list_value":
             return 0

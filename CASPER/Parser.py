@@ -551,50 +551,48 @@ def p_literal2(p):
     p[0] = ASTNode("chr_lit", value=p[1])
 
 # -----------------------------------------------------------------------------
-# (55) <function_statements> → <ret_type> FUNCTION_NAME ( <parameters> ) { <statements> <revive> } <function_statements_tail>
+# (55) <function_statements> → <ret_type> FUNCTION_NAME ( <parameters> ) { <statements> } <function_statements_tail> # Removed optional revive
 # (56) <function_statements> → null
 # -----------------------------------------------------------------------------
 
 def p_function_statements(p):
     """
-    function_statements : ret_type FUNCTION_NAME LPAREN parameters RPAREN LBRACE statements revive RBRACE function_statements_tail  
-                        | empty                                                          
+    function_statements : ret_type FUNCTION_NAME LPAREN parameters RPAREN LBRACE statements RBRACE function_statements_tail 
+                        | empty
     """
     if len(p) == 2:
         p[0] = []
     else:
+        # Adjust logic assuming 'revive' is now part of 'statements'
         if isinstance(p[1], tuple) and p[1][0] == "ret_type_void":
             ret_node = ASTNode("ret_type", value="void")
         elif isinstance(p[1], tuple) and p[1][0] == "ret_type":
             ret_node = ASTNode("ret_type", value=p[1][1])
         else:
-            ret_node = p[1]
+            ret_node = p[1] # Should be an ASTNode if p[1] is function_dtype
 
-
-        statements_node = p[7]
+        statements_node = p[7] # Statements are now at index 7
         if isinstance(statements_node, list):
             statements_node = ASTNode("statements", statements_node)
         elif statements_node is None:
             statements_node = ASTNode("statements", [])
 
-        revive_node = p[8]
-        if isinstance(revive_node, list):
-            revive_node = revive_node[0] if revive_node else None
+        # 'revive' is no longer a separate node at index 8 in this rule.
+        # It will be handled within the 'statements_node' if present.
 
         func_decl = ASTNode(
             "function_declaration",
             children=[
                 ret_node,
                 ASTNode("FUNCTION_NAME", value=p[2]),
-                p[4],             
-                statements_node,   
-                revive_node        
+                p[4], # parameters
+                statements_node # statements (may include revive)
+                # Removed revive_node from here
             ]
         )
-    
-        tail = p[10] if isinstance(p[10], list) else []
-        p[0] = [func_decl] + tail
 
+        tail = p[9] if len(p) > 9 and isinstance(p[9], list) else [] # Tail is now at index 9
+        p[0] = [func_decl] + tail
 
 
 # def p_revive_opt(p):
@@ -719,18 +717,15 @@ def p_parameters_tail(p):
         p[0] = [param_decl_node] + (p[4] if p[4] is not None else [])
 
 # -----------------------------------------------------------------------------
-# (75) <revive> → revive <value>
-# (76) <revive> → null
+# (75) <revive_statement> → revive <value> ;  <-- Changed rule name and added semicolon
+# (76) <revive_statement> → null              <-- This might be unnecessary if revive is just a statement
 # -----------------------------------------------------------------------------
-def p_revive(p):
+def p_revive_statement(p): # Renamed from p_revive
     """
-    revive : REVIVE revive_value SEMICOLON
-           | empty        
+    revive_statement : REVIVE revive_value SEMICOLON
     """
-    if len(p) == 2:
-        p[0] = None
-    else:
-        p[0] = ASTNode("revive_statement", children=[p[2]])
+    # Removed the 'empty' alternative as 'revive' is now a statement, not an optional block end
+    p[0] = ASTNode("revive_statement", children=[p[2]])
 
 
 
@@ -905,13 +900,16 @@ def p_statements_tail(p):
                     | conditional_statement statements
                     | stop_statement statements  
                     | continue_statement statements 
+                    | revive_statement statements
                     | statements
     """
     if len(p) == 3:
       
         p[0] = [p[1]] + p[2]
+    elif len(p) == 2 and p[1] is not None: # Handle the recursive 'statements' case
+        p[0] = p[1] if isinstance(p[1], list) else [p[1]] # Ensure result is a list
     else:
-        p[0] = p[1]
+        p[0] = []
             
             
             
@@ -1310,11 +1308,37 @@ def p_condition_tail(p):
     if len(p) == 2:
         p[0] = None
     else:
-        p[0] = ASTNode("factor_tail_binop", [
-    ASTNode("operator", value=p[1]),
-    p[2],
-    p[3]
-])
+        operator = p[1]
+        right_operand = p[2]
+        rest_of_expr = p[3]
+
+        # For logical operators (AND, OR), check if the right operand is a full condition
+        if operator in ['&&', '||']:
+            # Create the logical operator node
+            if rest_of_expr is None:
+                # Simple binary operation
+                p[0] = ASTNode("factor_tail_binop", [
+                    ASTNode("operator", value=operator),
+                    right_operand,
+                    None
+                ])
+            else:
+                # Create a special logical node that ensures proper binding of the right side
+                # This preserves operator precedence for expressions like "$n == 0 || $n == 1"
+                p[0] = ASTNode("factor_tail_binop", [
+                    ASTNode("operator", value=operator),
+                    # Create a complete condition from the right operand and its tail
+                    # This ensures that "$n == 1" is evaluated as a complete expression
+                    ASTNode("condition", [right_operand, rest_of_expr]),
+                    None  # No more operations after this
+                ])
+        else:
+            # For non-logical operators, use the original AST structure
+            p[0] = ASTNode("factor_tail_binop", [
+                ASTNode("operator", value=operator),
+                right_operand,
+                rest_of_expr
+            ])
 
 
 def p_condition1(p):

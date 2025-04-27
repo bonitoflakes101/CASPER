@@ -457,23 +457,32 @@ class CodeGenerator:
         return None  
         
     def execute_function_call(self, node):
-        self.log("Executing function_call")
-        
+        # Add a flag to control debug prints specifically for factorial
+        is_factorial_call = False
         try:
             func_name = None
             for child in node.children:
                 if hasattr(child, 'type') and child.type == "FUNCTION_NAME":
                     func_name = child.value
+                    # Check if it's the factorial function
+                    if func_name == "@factorial":
+                        is_factorial_call = True
                     break
                     
+            # ... (rest of the existing function name check) ...
             if not func_name:
                 self.log("ERROR: Function call missing function name")
                 print("Error: Invalid function call - missing function name")
                 self.stopped = True
                 return None
                 
-            self.log(f"Calling function: {func_name}")
+            # Print entry only if it's factorial
+            if is_factorial_call:
+                print(f"DEBUG Factorial: Entering @factorial call with name '{func_name}'") 
+            else:
+                 self.log(f"Calling function: {func_name}")
             
+            # ... (rest of the existing function existence check) ...
             if func_name not in self.functions:
                 self.log(f"ERROR: Undefined function: {func_name}")
                 print(f"Error: Undefined function: {func_name}")
@@ -481,14 +490,20 @@ class CodeGenerator:
                 return None
                 
             args = []
+            arg_debug_values = [] # Store values for debug print
             for child in node.children:
                 if hasattr(child, 'type') and child.type == "arguments":
                     for arg in child.children:
                         arg_value = self.execute_node(arg)
                         args.append(arg_value)
+                        arg_debug_values.append(repr(arg_value)) # Use repr for clarity
                         self.log(f"Argument value: {arg_value}")
             
-            # Check argument count against parameter count
+            # Print arguments only if it's factorial
+            if is_factorial_call:
+                print(f"DEBUG Factorial: Arguments passed: [{', '.join(arg_debug_values)}]", flush=True)
+            
+            # ... (rest of the existing argument count check) ...
             expected_params = len(self.functions[func_name]['params'])
             actual_args = len(args)
             if actual_args != expected_params:
@@ -498,54 +513,112 @@ class CodeGenerator:
                 return None
        
             self.push_scope()
+            scope_pushed = True # Track scope for exception handling
             
+            # Print parameter binding only if it's factorial
+            if is_factorial_call:
+                bound_params = []
+                for i, param in enumerate(self.functions[func_name]['params']):
+                     if i < len(args):
+                         param_name = param["name"]
+                         arg_value = args[i]
+                         # Perform the binding
+                         self.get_current_env()[param_name] = arg_value
+                         bound_params.append(f'${param_name}={repr(arg_value)}')
+                         # No type checking/conversion here, just binding for the debug print
+                print(f"DEBUG Factorial: Bound parameters: [{', '.join(bound_params)}]", flush=True)
+                # Actual binding with type checking happens below, duplicating slightly for debug clarity
+
+            # Re-iterate for actual binding with type checks (original logic)
             for i, param in enumerate(self.functions[func_name]['params']):
                 if i < len(args):
                     param_name = param["name"]
                     param_type = param.get("type")
                     arg_value = args[i]
                     
-                    # Type check and conversion
+                    # Type check and conversion (original logic)
                     if param_type and arg_value is not None:
-                        if self.casper_to_python_type(param_type) != type(arg_value).__name__.lower():
-                            try:
-                                # Apply conversion if types don't match
-                                converted_value = self.convert_type(arg_value, param_type)
-                                self.log(f"Converted argument from {type(arg_value).__name__} to {param_type}: {arg_value} → {converted_value}")
-                                arg_value = converted_value
-                            except Exception as e:
-                                self.log(f"ERROR: Failed to convert argument to expected type for function {func_name}: {str(e)}")
-                                print(f"Error: Type mismatch in function {func_name} for parameter '{param_name}'. Expected {param_type}, got {type(arg_value).__name__}")
-                                self.stopped = True
-                                self.pop_scope()
-                                return None
+                         # Check if conversion is necessary
+                         target_py_type = self.casper_to_python_type(param_type)
+                         if target_py_type and type(arg_value).__name__.lower() != target_py_type:
+                              try:
+                                   converted_value = self.convert_type(arg_value, param_type)
+                                   # Print conversion only for factorial
+                                   if is_factorial_call:
+                                        print(f"DEBUG Factorial: Converting arg for ${param_name}: {repr(arg_value)} ({type(arg_value).__name__}) -> {repr(converted_value)} ({param_type})", flush=True)
+                                   arg_value = converted_value
+                              except Exception as e:
+                                   self.log(f"ERROR: Failed to convert argument for function {func_name}: {str(e)}")
+                                   print(f"Error: Type mismatch for param ${param_name} in {func_name}. Expected {param_type}, got {type(arg_value).__name__}.")
+                                   self.stopped = True
+                                   self.pop_scope()
+                                   return None
+                         else:
+                             # Types match, no conversion needed
+                             pass
                     
-                    self.get_current_env()[param_name] = arg_value
+                    # Actual assignment to the new scope's environment
+                    self.assign_variable(param_name, arg_value) # Use assign_variable to handle scope correctly
                     self.log(f"Bound parameter '{param_name}' to value {arg_value}")
      
+            # ... (rest of the function execution logic) ...
             func_node = self.functions[func_name]['node']
+            # Track if we entered the statements block for factorial debug
+            entered_statements = False
             for child in func_node.children:
                 if self.stopped:
                     break
                     
                 if hasattr(child, 'type') and child.type == "statements":
+                    entered_statements = True
+                    if is_factorial_call:
+                        print("DEBUG Factorial: Executing statements block...", flush=True)
                     for statement in child.children:
                         if self.stopped:
                             break
+                        # Execute statement and check for return value immediately
                         self.execute_node(statement)
-                else:
-                    self.execute_node(child)
+                        # Check if revive was called within this statement's execution
+                        if self.return_values:
+                             # For factorial, print the value just before it's officially returned
+                             if is_factorial_call:
+                                  peeked_return = self.return_values[-1] # Look at the last added value
+                                  print(f"DEBUG Factorial: Revive encountered, value to be returned: {repr(peeked_return)}", flush=True)
+                             break # Exit statement loop on revive
+                # else: # Removed unnecessary execution of non-statement children like FUNCTION_NAME etc.
+                #     self.execute_node(child) 
+                
+                # Break outer loop if revive was found in statements
+                if self.return_values and entered_statements:
+                    break
 
             return_value = None
             if self.return_values:
                 return_value = self.return_values.pop()
-                self.log(f"Function returned: {return_value}")
+                # Print final return value only for factorial
+                if is_factorial_call:
+                    print(f"DEBUG Factorial: Popped return value: {repr(return_value)}", flush=True)
+                else:
+                    self.log(f"Function returned: {return_value}")
+            elif is_factorial_call:
+                 # If factorial finishes without returning a value (shouldn't happen if logic is correct)
+                 print("DEBUG Factorial: Function finished without returning a value!", flush=True)
 
             self.pop_scope()
+            scope_pushed = False # Scope popped successfully
             
+            # Print exit only if it's factorial
+            if is_factorial_call:
+                 print(f"DEBUG Factorial: Exiting @factorial. Final returned value: {repr(return_value)}", flush=True)
+
             return return_value
         except Exception as e:
-            self.log(f"ERROR: Exception in function call {func_name if func_name else 'unknown'}: {str(e)}")
+            # ... (existing exception handling) ...
+            import traceback # Add this import
+            func_name_str = func_name if 'func_name' in locals() and func_name else 'unknown'
+            print(f"DEBUG: Exception during {func_name_str} call: {e}")
+            traceback.print_exc() # Print detailed traceback
+            self.log(f"ERROR: Exception in function call {func_name_str}: {str(e)}")
             print(f"Error: Exception in function call: {str(e)}")
             self.stopped = True
             if 'scope_pushed' in locals() and scope_pushed:
@@ -557,14 +630,29 @@ class CodeGenerator:
 
         if not node.children:
             self.log("revive_statement has no children")
+            # Even if no children, it signifies a return point for void or potentially error
+            self.return_values.append(None) 
             return None
 
-        value = self.execute_node(node.children[0])
+        value_node = node.children[0]
+        value = self.execute_node(value_node)
+        
+        # --- Add Debug Print for Factorial --- 
+        # We check the call stack implicitly; if the current scope's parent
+        # involved calling factorial, this revive is likely within it.
+        # A more robust way would involve passing the func_name down.
+        # For now, we just print the value being revived.
+        print(f"DEBUG CODEGEN: Reviving value: {repr(value)}", flush=True)
+        # --- End Debug Print --- 
+        
         self.log(f"Return value: {value}")
-
         self.return_values.append(value)
         
-        return value
+        # Stop executing further statements in the current block after revive
+        # This needs context from the caller (like execute_function_call)
+        # Setting a flag or relying on the caller's loop break is typical.
+        
+        return value # Return the value for potential use if revive was in an expression context (though unlikely)
 
     # ==========================
     #    STATEMENTS
@@ -835,64 +923,99 @@ class CodeGenerator:
         return result
         
     def execute_expression(self, node):
-        
+        # This function should handle the overall structure and delegate based on precedence
+        # For now, it seems to delegate to evaluate_expression_chain directly for binary ops
+        self.log(f"Executing expression: {node.type}")
         if not node.children or len(node.children) < 1:
             return None
         
         left_node = node.children[0]
-        
         left_value = self.execute_node(left_node)
         
-        # Check if there's an expression_chain (binary operation)
         if len(node.children) > 1 and node.children[1] is not None:
-            binop_node = node.children[1]
-            
-            # Check if we have a logical expression (&&, ||)
-            if isinstance(binop_node, list) or len(binop_node.children) > 1:
-                # Special handling for logical operations to ensure correct precedence
-                for child in binop_node.children:
-                    if hasattr(child, 'type') and hasattr(child, 'value') and child.value in ["&&", "||"]:
-                        self.log(f"EXPRESSION DEBUG: Handling logical operator: {child.value}")
-                        return self.evaluate_logical_expression(left_value, binop_node)
-            
-            result = self.evaluate_expression_chain(left_value, binop_node)
-            
-            # print(f"EXEC_EXPR (binop): Returning {repr(result)}") # Added print
-            return result
+            binop_node = node.children[1] # This is factor_tail_binop
+            # Check the FIRST operator in the chain to decide evaluation strategy
+            if binop_node.children:
+                 op_node = binop_node.children[0]
+                 operator = op_node.value if hasattr(op_node, 'value') else None
+                 
+                 # --- Delegate to logical evaluation if top-level is || or && --- 
+                 if operator in ['||', '&&']:
+                      print(f"DEBUG Factorial Condition (execute_expression): Detected logical operator '{operator}', delegating to evaluate_logical_expression", flush=True)
+                      # Pass the initial left value and the *entire* binop chain
+                      return self.evaluate_logical_expression(left_value, binop_node)
+                 else:
+                      # Handle arithmetic/comparison chains
+                      print(f"DEBUG Factorial Condition (execute_expression): Detected non-logical operator '{operator}', delegating to evaluate_expression_chain", flush=True)
+                      return self.evaluate_expression_chain(left_value, binop_node)
+            else:
+                 # Should not happen if binop_node exists
+                 return left_value
         
-        # print(f"EXEC_EXPR (no binop): Returning {repr(left_value)}") # Added print
         return left_value
-        
-    def evaluate_expression_chain(self, left_value, binop_node):
-        
+
+    def evaluate_expression_chain(self, left_value, binop_node, context="Chain"):
+        # This should primarily handle non-logical chains (arithmetic, comparison)
+        # or parts of logical chains delegated from evaluate_logical_expression
+        print(f"DEBUG Factorial Condition ({context}): Entering evaluate_expression_chain - Left: {repr(left_value)}, Binop: {getattr(binop_node, 'type', 'N/A')}", flush=True)
+
         if not binop_node or not binop_node.children:
+            print(f"DEBUG Factorial Condition ({context}): Chain end, returning {repr(left_value)}", flush=True)
             return left_value
         
-        # Get operator, right value, and possible tail
         operator_node = binop_node.children[0]
         right_node = binop_node.children[1]
         tail_node = binop_node.children[2] if len(binop_node.children) > 2 else None
         
-        # Get the operator value
         operator = operator_node.value if hasattr(operator_node, 'value') else operator_node
         
-        # Evaluate the right side
-        right_value = self.execute_node(right_node)
+        # --- Important: Special handling for logical operators with condition nodes ---
+        # Handle the new AST structure for logical operators that contain a complete condition on the right side
+        if operator in ['&&', '||'] and hasattr(right_node, 'type') and right_node.type == "condition":
+            print(f"DEBUG Factorial Condition ({context}): Found logical operator '{operator}' with complete condition on right side", flush=True)
+            
+            # For logical operators, evaluate the right side completely as a condition
+            print(f"DEBUG Factorial Condition ({context}): Evaluating complete condition on right side", flush=True)
+            right_value = self.execute_condition(right_node, context=f"{context}:RightSide")
+            
+            if self.stopped:
+                return None
+                
+            # Apply the logical operator
+            print(f"DEBUG Factorial Condition ({context}): Applying logical operator '{operator}': Left={repr(left_value)}, Right={repr(right_value)}", flush=True)
+            current_result = self.apply_operator(operator, left_value, right_value)
+            print(f"DEBUG Factorial Condition ({context}): Logical operator '{operator}' result: {repr(current_result)}", flush=True)
+            
+            return current_result
         
-        # Apply the operator with appropriate error handling
-        try:
-            result = self.apply_operator(operator, left_value, right_value)
-            
-            # If there's a tail, recursively evaluate it
-            if tail_node is not None and not self.stopped:
-                result = self.evaluate_expression_chain(result, tail_node)
-            
-            return result
-        except Exception as e:
-            self.log(f"ERROR: Expression evaluation failed: {left_value} {operator} {right_value} - {str(e)}")
-            print(f"Error: Expression evaluation failed: {str(e)}")
-            self.stopped = True
-            return 0
+        # --- Standard case: Normal right operand ---
+        # If the right_node itself starts another chain (e.g. in a + b * c), 
+        # execute_node should handle it, but be aware of potential precedence issues 
+        # stemming from the parser if it doesn't group correctly.
+        print(f"DEBUG Factorial Condition ({context}): Evaluating right operand for '{operator}' - Node type: {getattr(right_node, 'type', 'N/A')}", flush=True)
+        right_value = self.execute_node(right_node)
+        print(f"DEBUG Factorial Condition ({context}): Right operand for '{operator}' evaluated to: {repr(right_value)}", flush=True)
+
+        if self.stopped:
+             return None
+             
+        # Apply the current operator
+        print(f"DEBUG Factorial Condition ({context}): Applying operator '{operator}': Left={repr(left_value)}, Right={repr(right_value)}", flush=True)
+        current_result = self.apply_operator(operator, left_value, right_value)
+        print(f"DEBUG Factorial Condition ({context}): Operator '{operator}' result: {repr(current_result)}", flush=True)
+
+        if self.stopped:
+             return None
+
+        # Recursively evaluate the rest of the chain with the current result
+        if tail_node is not None:
+            print(f"DEBUG Factorial Condition ({context}): Evaluating tail expression starting with {repr(current_result)}", flush=True)
+            # Pass context down
+            return self.evaluate_expression_chain(current_result, tail_node, context=context)
+        else:
+             # No more operators in the chain
+             print(f"DEBUG Factorial Condition ({context}): Chain evaluation complete, final result: {repr(current_result)}", flush=True)
+             return current_result
 
     def execute_output_statement(self, node):
         self.log("Executing output_statement")
@@ -991,7 +1114,12 @@ class CodeGenerator:
         self.log(f"Applying operator: {left} {operator} {right}")
         
         # Apply implicit type conversion based on the operation type
+        # --- ADD DEBUG for comparison conversion --- 
+        original_left, original_right = left, right
         left, right = self.apply_implicit_conversion(left, right, operator)
+        if (left, right) != (original_left, original_right) and operator == '==':
+            print(f"DEBUG Factorial Condition (apply_operator): Implicit conversion for '==': {repr(original_left)}->{repr(left)}, {repr(original_right)}->{repr(right)}", flush=True)
+        # --- END DEBUG --- 
         
         try:
             if operator == "+":
@@ -1017,7 +1145,7 @@ class CodeGenerator:
                     print("Error: Division by zero")
                     self.stopped = True
                     return 0
-                return left / right
+                return left / right # Keep as float division
             elif operator == "%":
                 if right == 0:
                     self.log("ERROR: Modulo by zero detected")
@@ -1026,10 +1154,21 @@ class CodeGenerator:
                     return 0
                 return left % right
             elif operator == "||":
-                return bool(left) or bool(right)
+                # --- ADDED DEBUG --- 
+                bool_left = bool(left)
+                bool_right = bool(right)
+                print(f"DEBUG Factorial Condition (apply_operator): Evaluating ||: bool({repr(left)}) || bool({repr(right)}) -> {bool_left} || {bool_right}", flush=True)
+                # --- END DEBUG --- 
+                return bool_left or bool_right
             elif operator == "&&":
-                return bool(left) and bool(right)
+                 # --- ADDED DEBUG --- 
+                bool_left = bool(left)
+                bool_right = bool(right)
+                print(f"DEBUG Factorial Condition (apply_operator): Evaluating &&: bool({repr(left)}) && bool({repr(right)}) -> {bool_left} && {bool_right}", flush=True)
+                # --- END DEBUG --- 
+                return bool_left and bool_right
             elif operator == "==":
+                # Comparison already uses converted values
                 return left == right
             elif operator == "!=":
                 return left != right
@@ -1481,11 +1620,16 @@ class CodeGenerator:
         # First child should be the condition
         # Execute the condition properly using execute_condition instead of execute_node
         if hasattr(node.children[0], 'type') and node.children[0].type == "condition":
-            condition_result = self.execute_condition(node.children[0])
+            # Pass context for debugging
+            condition_result = self.execute_condition(node.children[0], context="Main Check") 
         else:
+            # This path shouldn't ideally be taken if parser creates condition nodes
+            self.log("CONDITIONAL DEBUG: Warning - executing condition node directly.")
             condition_result = self.execute_node(node.children[0])
             
-        self.log(f"CONDITIONAL DEBUG: Main condition result: {condition_result}")
+        # --- ADDED DEBUG PRINT --- 
+        print(f"DEBUG Factorial Condition: Main check condition result: {repr(condition_result)}", flush=True)
+        # --- END DEBUG PRINT --- 
         
         # If we're waiting for input after condition evaluation, stop and return
         if self.waiting_for_input:
@@ -1663,90 +1807,48 @@ class CodeGenerator:
     
     
     
-    def execute_condition(self, node):
+    def execute_condition(self, node, context="Unknown"):
         """Execute a condition expression"""
-        self.log("CONDITIONAL DEBUG: Starting execute_condition")
+        # --- ADDED DEBUG PRINT --- 
+        print(f"DEBUG Factorial Condition: Evaluating condition ({context}) - Node: {node.type}", flush=True)
+        # --- END DEBUG PRINT --- 
         
         if not node.children:
-            self.log("CONDITIONAL DEBUG: Condition has no children, returning False")
+            self.log(f"CONDITIONAL DEBUG ({context}): Condition has no children, returning False")
             return False
-   
-        left_val = self.execute_node(node.children[0])
-        self.log(f"CONDITIONAL DEBUG: Left value: {left_val}")
+        
+        # Evaluate the first part (left operand or potentially a full expression itself)
+        first_part_node = node.children[0]
+        left_val = self.execute_node(first_part_node)
+        
+        # --- ADDED DEBUG PRINT --- 
+        # Try to identify if the left_val came from $n
+        var_name_involved = "unknown"
+        if hasattr(first_part_node, 'type') and first_part_node.type == 'var_call' and first_part_node.children:
+            if hasattr(first_part_node.children[0], 'type') and first_part_node.children[0].type == 'IDENT':
+                 var_name_involved = first_part_node.children[0].value
+        print(f"DEBUG Factorial Condition ({context}): Left value ({var_name_involved}): {repr(left_val)} (type: {type(left_val).__name__})", flush=True)
+        # --- END DEBUG PRINT --- 
  
+        # Check if there is a binary operation tail
         if len(node.children) > 1 and hasattr(node.children[1], 'type') and node.children[1].type == "factor_tail_binop":
-            binop = node.children[1]
-            op_node = binop.children[0]
-            operator = op_node.value
-            right_val = self.execute_node(binop.children[1])
-            
-            self.log(f"CONDITIONAL DEBUG: Operator: {operator}, Right value: {right_val}")
-            
-            # Handle modulo operation with comparison
-            if operator == "%":
-                result = left_val % right_val
-                self.log(f"CONDITIONAL DEBUG: Modulo operation: {left_val} % {right_val} = {result}")
-                
-                if len(binop.children) > 2 and binop.children[2] is not None:
-                    next_binop = binop.children[2]
-                    if hasattr(next_binop, 'type') and next_binop.type == "factor_tail_binop":
-                        next_op = next_binop.children[0].value
-                        next_val = self.execute_node(next_binop.children[1])
-                        self.log(f"CONDITIONAL DEBUG: Next operation: {result} {next_op} {next_val}")
-                        
-                        if next_op == "==":
-                            return result == next_val
-                        elif next_op == "!=":
-                            return result != next_val
-                        elif next_op == ">":
-                            return result > next_val
-                        elif next_op == "<":
-                            return result < next_val
-                        elif next_op == ">=":
-                            return result >= next_val
-                        elif next_op == "<=":
-                            return result <= next_val
-                
-                return bool(result)
-            
-            # Handle comparison operations
-            elif operator == "==":
-                result = left_val == right_val
-            elif operator == "!=":
-                result = left_val != right_val
-            elif operator == ">":
-                result = left_val > right_val
-            elif operator == "<":
-                result = left_val < right_val
-            elif operator == ">=":
-                result = left_val >= right_val
-            elif operator == "<=":
-                result = left_val <= right_val
-            # Handle logical operations
-            elif operator == "&&":
-                result = bool(left_val) and bool(right_val)
-            elif operator == "||":
-                result = bool(left_val) or bool(right_val)
-            else:
-                # For other operators, use apply_operator method
-                result = self.apply_operator(operator, left_val, right_val)
-                
-            self.log(f"CONDITIONAL DEBUG: Operation result: {left_val} {operator} {right_val} = {result}")
-            
-            # Check for additional operations in the chain (for complex conditions)
-            if len(binop.children) > 2 and binop.children[2] is not None:
-                next_binop = binop.children[2]
-                if hasattr(next_binop, 'type') and next_binop.type == "factor_tail_binop":
-                    next_op = next_binop.children[0].value
-                    next_val = self.execute_node(next_binop.children[1])
-                    self.log(f"CONDITIONAL DEBUG: Additional operation: {result} {next_op} {next_val}")
-                    
-                    # Recursively apply the next operation
-                    return self.apply_operator(next_op, result, next_val)
-            
-            return result
+            binop_node = node.children[1] # This is the factor_tail_binop node
 
-        return bool(left_val)
+            # --- Use evaluate_expression_chain for proper evaluation --- 
+            # Pass the context down for debugging
+            print(f"DEBUG Factorial Condition ({context}): Evaluating expression chain starting with {repr(left_val)}", flush=True)
+            result = self.evaluate_expression_chain(left_val, binop_node, context=context)
+            # --- End Use evaluate_expression_chain --- 
+
+            # --- ADDED DEBUG PRINT --- 
+            print(f"DEBUG Factorial Condition ({context}): Final chain evaluation result: {repr(result)}", flush=True)
+            # --- END DEBUG PRINT --- 
+            return bool(result) # Ensure the final result is boolean
+
+        # If no binary operation, the truthiness depends only on the left value
+        final_bool = bool(left_val)
+        print(f"DEBUG Factorial Condition ({context}): No binary operator, final boolean result: {repr(final_bool)}", flush=True)
+        return final_bool
 
     def execute_otherwise(self, node):
         """Execute an otherwise statement (else block)"""
@@ -2657,40 +2759,78 @@ class CodeGenerator:
             print(f"  {i}: {node_type}")
 
     def evaluate_logical_expression(self, left_value, binop_node):
-        """Special handler for logical expressions with AND/OR to ensure correct precedence"""
-        self.log(f"LOGICAL DEBUG: Evaluating logical expression with left value: {left_value}")
+        """Handles logical expressions (||, &&) respecting short-circuiting."""
+        print(f"DEBUG Factorial Condition (evaluate_logical_expression): Start - Left: {repr(left_value)}", flush=True)
         
         if not binop_node or not binop_node.children:
-            return bool(left_value)
+             final_bool = bool(left_value)
+             print(f"DEBUG Factorial Condition (evaluate_logical_expression): No binop, returning bool({repr(left_value)}) -> {final_bool}", flush=True)
+             return final_bool
         
         operator_node = binop_node.children[0]
         right_node = binop_node.children[1]
         tail_node = binop_node.children[2] if len(binop_node.children) > 2 else None
         
-        # Get the operator value
         operator = operator_node.value if hasattr(operator_node, 'value') else operator_node
         
-        # Evaluate the right side 
-        right_value = self.execute_node(right_node)
+        print(f"DEBUG Factorial Condition (evaluate_logical_expression): Op: '{operator}'", flush=True)
+
+        # --- Short-circuiting logic --- 
+        if operator == "||":
+            bool_left = bool(left_value)
+            print(f"DEBUG Factorial Condition (evaluate_logical_expression): || - bool(left) is {bool_left}", flush=True)
+            if bool_left:
+                print(f"DEBUG Factorial Condition (evaluate_logical_expression): || - Short-circuiting, result is True", flush=True)
+                # If there's a tail, we still need to evaluate it with True as left operand
+                # e.g., (True || ...) && C -> we need to evaluate True && C
+                current_result = True 
+            else:
+                # Need to evaluate the right side
+                print(f"DEBUG Factorial Condition (evaluate_logical_expression): || - Evaluating right operand - Node type: {getattr(right_node, 'type', 'N/A')}", flush=True)
+                right_value = self.execute_node(right_node)
+                print(f"DEBUG Factorial Condition (evaluate_logical_expression): || - Right operand evaluated to: {repr(right_value)}", flush=True)
+                if self.stopped: return None
+                current_result = bool(right_value)
+                print(f"DEBUG Factorial Condition (evaluate_logical_expression): || - bool(right) is {current_result}", flush=True)
         
-        self.log(f"LOGICAL DEBUG: Operator: {operator}, Right value: {right_value}")
+        elif operator == "&&":
+            bool_left = bool(left_value)
+            print(f"DEBUG Factorial Condition (evaluate_logical_expression): && - bool(left) is {bool_left}", flush=True)
+            if not bool_left:
+                 print(f"DEBUG Factorial Condition (evaluate_logical_expression): && - Short-circuiting, result is False", flush=True)
+                 # Short-circuit applies to the whole chain if it starts with False && ...
+                 current_result = False
+            else:
+                 # Need to evaluate the right side
+                 print(f"DEBUG Factorial Condition (evaluate_logical_expression): && - Evaluating right operand - Node type: {getattr(right_node, 'type', 'N/A')}", flush=True)
+                 right_value = self.execute_node(right_node)
+                 print(f"DEBUG Factorial Condition (evaluate_logical_expression): && - Right operand evaluated to: {repr(right_value)}", flush=True)
+                 if self.stopped: return None
+                 current_result = bool(right_value)
+                 print(f"DEBUG Factorial Condition (evaluate_logical_expression): && - bool(right) is {current_result}", flush=True)
         
-        # Apply the operator with proper type conversions
-        if operator == "&&":
-            result = bool(left_value) and bool(right_value)
-        elif operator == "||":
-            result = bool(left_value) or bool(right_value)
         else:
-            # For other operators, use regular apply_operator
-            result = self.apply_operator(operator, left_value, right_value)
-        
-        self.log(f"LOGICAL DEBUG: Operation result: {left_value} {operator} {right_value} = {result}")
-        
-        # If there's a tail with more operations, evaluate it with the current result as the left value
+            # If a non-logical operator is encountered, evaluate it normally first
+            # This assumes the parser gives || and && higher precedence in the chain structure
+            print(f"DEBUG Factorial Condition (evaluate_logical_expression): Non-logical op '{operator}', evaluating using evaluate_expression_chain", flush=True)
+            # Evaluate this step using the normal chain evaluation
+            current_result = self.evaluate_expression_chain(left_value, binop_node, context="Logical Inner")
+            if self.stopped: return None
+            # After evaluating this part, we might need to handle the tail logically
+            # Fall through to tail handling below
+
+        print(f"DEBUG Factorial Condition (evaluate_logical_expression): Intermediate result after '{operator}': {repr(current_result)}", flush=True)
+
+        # Recursively evaluate the rest of the logical chain
         if tail_node is not None:
-            result = self.evaluate_logical_expression(result, tail_node)
-        
-        return result
+            print(f"DEBUG Factorial Condition (evaluate_logical_expression): Evaluating tail expression starting with {repr(current_result)}", flush=True)
+            # IMPORTANT: Pass the *result* of the current operation as the left value for the rest of the chain
+            return self.evaluate_logical_expression(current_result, tail_node)
+        else:
+            # No more operators in the logical chain
+            final_bool = bool(current_result)
+            print(f"DEBUG Factorial Condition (evaluate_logical_expression): Logical chain complete, final boolean result: {final_bool}", flush=True)
+            return final_bool
 
     # ==========================
     #    LIST HANDLING
