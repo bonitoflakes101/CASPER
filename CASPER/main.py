@@ -180,7 +180,6 @@ def program_status():
     
     # Default response for idle program
     if not current_generator:
-        print("DEBUG: /program_status - No current generator")
         return jsonify({
             "status": "idle",
             "output": program_output
