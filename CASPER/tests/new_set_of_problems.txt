@@ -307,6 +307,7 @@ ghost
 
 
 !!!!!!!!!!!!!!!! 10.) Collatz Conjecture Steps !!!!!!!!!!!!!!
+<< Finds the prime factors of a given positive integer. >>
 
 birth {
 
@@ -335,4 +336,251 @@ birth {
 }
 
 }
-ghost 
+ghost
+
+
+!!!!!!!!!!!!!!!! 11.) Prime Factorization !!!!!!!!!!!!!!
+<< Finds the prime factors of a given positive integer. >>
+
+birth {
+
+@main_casper() {
+    display "Enter a positive integer to find its prime factors: ", "\n";
+    str $n_str = input();
+    int $n = to_int($n_str);
+
+    check ($n <= 1) {
+        display "Please enter an integer greater than 1.", "\n";
+    } otherwise {
+        display "Prime factors of ", $n, ": ";
+        int $divisor = 2;
+        int $temp_n = $n;
+
+        while ($divisor * $divisor <= $temp_n) {
+            check ($temp_n % $divisor == 0) {
+                display $divisor, " ";
+                $temp_n = to_int($temp_n / $divisor); 
+            } otherwise {
+                $divisor = $divisor + 1;
+            }
+        }
+
+        check ($temp_n > 1) {
+            display $temp_n;
+        } otherwise {
+        }
+        display "\n";
+    }
+}
+
+}
+ghost
+
+
+!!!!!!!!!!!!!!!! 12.) Binary Search (Sorted List) !!!!!!!!!!!!!!
+<< Searches for a target value in a pre-sorted list of integers. >>
+
+birth {
+
+@main_casper() {
+    << Define a pre-sorted list >>
+    int $sorted_list[] = [2, 5, 8, 12, 16, 23, 38, 56, 72, 91];
+    int $size = measure($sorted_list);
+
+    display "Sorted List: [2, 5, 8, 12, 16, 23, 38, 56, 72, 91]", "\n";
+    display "Enter the number to search for: ", "\n";
+    str $target_str = input();
+    int $target = to_int($target_str);
+
+    int $low = 0;
+    int $high = $size - 1;
+    bln $found = Night;
+    int $mid = 0;
+    int $mid_val = 0;
+
+    while ($low <= $high) {
+        int $range = $high - $low;
+        int $range_int = to_int($range / 2);
+        $mid = $low + $range_int;
+        $mid_val = $sorted_list[$mid];
+
+        check ($mid_val == $target) {
+            $found = Day;
+            stop; << Exit loop, target found >>
+        } otherwise_check ($mid_val < $target) {
+            $low = $mid + 1; 
+        } otherwise {
+            $high = $mid - 1; 
+        }
+    }
+
+    check ($found == Day) {
+        display $target, " was found in the list at index ", $mid, ".", "\n";
+    } otherwise {
+        display $target, " was not found in the list.", "\n";
+    }
+}
+
+}
+ghost
+
+
+
+
+!!!!!!!!!!!!!!!! 14.) Find Mode in a List (Simple Integer List) !!!!!!!!!!!!!!
+<< Finds the number that appears most frequently in a hardcoded list. >>
+<< Assumes there is one unique mode for simplicity. >>
+
+birth {
+
+@main_casper() {
+    int $numbers[] = [2, 3, 5, 3, 7, 8, 5, 3, 9, 3];
+    int $size = measure($numbers);
+
+    display "List: [2, 3, 5, 3, 7, 8, 5, 3, 9, 3]", "\n";
+
+    check ($size == 0) {
+        display "Cannot find mode of an empty list.", "\n";
+    } otherwise {
+        int $mode = $numbers[0];
+        int $max_count = 0;
+        int $i = 0;
+
+        << Iterate through each unique potential mode >>
+        while ($i < $size) {
+            int $current_number = $numbers[$i];
+            int $current_count = 0;
+            int $j = 0;
+
+            << Count occurrences of current_number >>
+            while ($j < $size) {
+                check ($numbers[$j] == $current_number) {
+                    $current_count = $current_count + 1;
+                } otherwise { }
+                $j = $j + 1;
+            }
+
+            << Check if this number is more frequent than the current mode >>
+            check ($current_count > $max_count) {
+                $max_count = $current_count;
+                $mode = $current_number;
+            } otherwise { }
+
+            $i = $i + 1;
+        }
+
+        display "The mode of the list is: ", $mode, " (appeared ", $max_count, " times)", "\\";
+    }
+}
+
+}
+ghost
+
+
+!!!!!!!!!!!!!!!! 15.) Sum of Even/Odd Numbers in a List !!!!!!!!!!!!!!
+<< Calculates the sum of even and odd numbers separately in a list. >>
+
+birth {
+
+@main_casper() {
+    int $numbers[] = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+    int $size = measure($numbers);
+    int $sum_even = 0;
+    int $sum_odd = 0;
+
+    display "List: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]", "\n";
+
+    int $i = 0;
+    while ($i < $size) {
+        int $current_num = $numbers[$i];
+        check ($current_num % 2 == 0) {
+            << Even number >>
+            $sum_even = $sum_even + $current_num;
+        } otherwise {
+            << Odd number >>
+            $sum_odd = $sum_odd + $current_num;
+        }
+        $i = $i + 1;
+    }
+
+    display "Sum of even numbers: ", $sum_even, "\n";
+    display "Sum of odd numbers: ", $sum_odd, "\n";
+}
+
+}
+ghost
+
+
+!!!!!!!!!!!!!!!! 16.) Caesar Cipher (Simple Shift +3, Uppercase) !!!!!!!!!!!!!!
+<< Encrypts a hardcoded uppercase string using a Caesar cipher with a shift of 3. >>
+
+birth {
+
+@main_casper() {
+    str $plaintext = "HELLO";
+    str $alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+    int $shift = 3;
+    int $alphabet_len = measure($alphabet);
+    str $ciphertext = "";
+    int $text_len = measure($plaintext);
+
+    display "Plaintext: ", $plaintext, "\n";
+    display "Shift: ", $shift, "\n";
+
+    int $i = 0;
+    while ($i < $text_len) {
+        str $char_to_encrypt = $plaintext[$i];
+        str $encrypted_char = "?"; << Default if not found >>
+        int $found_index = -1;
+
+        << Find the index of the character in the alphabet >>
+        int $j = 0;
+        while ($j < $alphabet_len) {
+            check ($alphabet[$j] == $char_to_encrypt) {
+                $found_index = $j;
+                stop;
+            } otherwise {}
+            $j = $j + 1;
+        }
+
+        << If found, calculate the shifted index and get the new char >>
+        check ($found_index != -1) {
+            int $shifted_index = ($found_index + $shift) % $alphabet_len;
+            $encrypted_char = $alphabet[$shifted_index];
+        } otherwise {
+           << Character not in alphabet, keep default '?' >>
+        }
+
+        $ciphertext = $ciphertext + $encrypted_char;
+        $i = $i + 1;
+    }
+
+    display "Ciphertext: ", $ciphertext, "\n";
+}
+
+}
+ghost
+
+
+!!!!!!!!!!!!!!!! 17.) Generate Multiplication Table !!!!!!!!!!!!!!
+<< Generates and displays the multiplication table for a given number up to 10. >>
+
+birth {
+
+@main_casper() {
+    display "Enter a number for its multiplication table: ", "\n";
+    str $n_str = input();
+    int $n = to_int($n_str);
+
+    display "Multiplication Table for ", $n, ":", "\n";
+
+    int $i = 1;
+    while ($i <= 10) {
+        int $result = $n * $i;
+        display $n, " x ", $i, " = ", $result, "\n";
+        $i = $i + 1;
+    }
+}
+
+}
+ghost
