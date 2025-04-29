@@ -1,0 +1,338 @@
+\
+!!!!!!!!!!!!!!!! 1.) Matrix Addition (2x2) !!!!!!!!!!!!!!
+
+birth {
+
+@main_casper() {
+    << Define two 2x2 matrices (lists of lists)
+    int $matrix1[][] = [[1, 2], [3, 4]];
+    int $matrix2[][] = [[5, 6], [7, 8]];
+    int $result_matrix[][];
+
+    display "Matrix 1: [[1, 2], [3, 4]]", "\\n";
+    display "Matrix 2: [[5, 6], [7, 8]]", "\\n";
+
+    << Check dimensions implicitly (assuming 2x2)
+    int $rows = 2;
+    int $cols = 2;
+
+    << Initialize result matrix with zeros (or calculate directly)
+    << CASPER list initialization is tricky, let's build row by row
+    int $row1[];
+    int $row2[];
+    int $temp_sum;
+
+    << Calculate first row
+    $temp_sum = $matrix1[0][0] + $matrix2[0][0];
+    $row1.push($temp_sum);
+    $temp_sum = $matrix1[0][1] + $matrix2[0][1];
+    $row1.push($temp_sum);
+    $result_matrix.push($row1);
+
+    << Calculate second row
+    $temp_sum = $matrix1[1][0] + $matrix2[1][0];
+    $row2.push($temp_sum);
+    $temp_sum = $matrix1[1][1] + $matrix2[1][1];
+    $row2.push($temp_sum);
+    $result_matrix.push($row2);
+
+
+    display "Result Matrix (Sum):", "\\n";
+    display "[", $result_matrix[0][0], ", ", $result_matrix[0][1], "]", "\\n";
+    display "[", $result_matrix[1][0], ", ", $result_matrix[1][1], "]", "\\n";
+}
+
+}
+ghost
+
+
+!!!!!!!!!!!!!!!! 2.) Average of List Elements !!!!!!!!!!!!!!
+
+birth {
+
+@main_casper() {
+    << Define a sample list directly
+    flt $numbers[] = [10.0, 20.5, 5.0, 15.5, 30.0];
+    flt $sum = 0.0;
+    int $size = measure($numbers);
+
+    display "List: [10.0, 20.5, 5.0, 15.5, 30.0]", "\n";
+
+    check ($size == 0) {
+        display "Cannot calculate average of an empty list.", "\n";
+    } otherwise {
+        int $i = 0;
+        while ($i < $size) {
+            $sum = $sum + $numbers[$i];
+            $i = $i + 1;
+        }
+        flt $flt_size = to_flt($size);
+        flt $average = $sum / $flt_size; 
+
+        display "The average of the list elements is: ", $average, "\n";
+    }
+}
+
+}
+ghost
+
+
+!!!!!!!!!!!!!!!! 3.) Check if List is Sorted (Ascending) !!!!!!!!!!!!!!
+
+birth {
+
+@main_casper() {
+    << Define a sample list
+    int $numbers[] = [2, 5, 8, 12, 15];
+    << Test case 2 (unsorted): int $numbers[] = [2, 8, 5, 12, 15];
+
+    display "List: [2, 5, 8, 12, 15]", "\\n"; << Adjust if changing list
+
+    int $size = measure($numbers);
+    bln $isSorted = Day;
+
+    check ($size > 1) {
+        int $i = 0;
+        while ($i < $size - 1) {
+            check ($numbers[$i] > $numbers[$i+1]) {
+                $isSorted = Night;
+                stop; << Exit loop early if unsorted element found
+            } otherwise {
+                << Elements are in order so far
+            }
+            $i = $i + 1;
+        }
+    } otherwise {
+        << A list with 0 or 1 element is considered sorted
+        $isSorted = Day;
+    }
+
+    check ($isSorted == Day) {
+        display "The list is sorted in ascending order.", "\\n";
+    } otherwise {
+        display "The list is NOT sorted in ascending order.", "\\n";
+    }
+}
+
+}
+ghost
+
+
+!!!!!!!!!!!!!!!! 4.) Temperature Conversion (Celsius to Fahrenheit) !!!!!!!!!!!!!!
+
+birth {
+
+@main_casper() {
+    display "Enter temperature in Celsius: ", "\n";
+    str $input = input();
+    flt $celsius = to_flt($input);
+
+    flt $fahrenheit = ($celsius * 9.0 / 5.0) + 32.0;
+
+    display $celsius, " degrees Celsius is equal to ", $fahrenheit, " degrees Fahrenheit.", "\n";
+}
+
+}
+ghost
+
+
+!!!!!!!!!!!!!!!! 5.) Simple Interest Calculation !!!!!!!!!!!!!!
+
+birth {
+
+@main_casper() {
+    display "Simple Interest Calculator", "\n";
+    display "Enter Principal amount: ", "\n";
+    str $p_str = input();
+    flt $principal = to_flt($p_str);
+
+    display "Enter annual interest rate (%): ", "\n";
+    str $r_str = input();
+    flt $rate_percent = to_flt($r_str);
+
+    display "Enter time period (in years): ", "\n";
+    str $t_str = input();
+    flt $time = to_flt($t_str);
+
+    flt $rate_decimal = $rate_percent / 100.0;
+    flt $simple_interest = $principal * $rate_decimal * $time;
+
+    display "Principal: ", $principal, "\n";
+    display "Rate: ", $rate_percent, "%", "\n";
+    display "Time: ", $time, " years", "\n";
+    display "Simple Interest: ", $simple_interest, "\n";
+}
+
+}
+ghost
+
+
+!!!!!!!!!!!!!!!! 6.) Area of a Rectangle !!!!!!!!!!!!!!
+
+birth {
+
+@main_casper() {
+    display "Area of Rectangle Calculator", "\\n";
+    display "Enter length: ", "\\n";
+    str $l_str = input();
+    flt $length = to_flt($l_str);
+
+    display "Enter width: ", "\\n";
+    str $w_str = input();
+    flt $width = to_flt($w_str);
+
+    check ($length >= 0.0 && $width >= 0.0) {
+         flt $area = $length * $width;
+         display "Length: ", $length, "\\n";
+         display "Width: ", $width, "\\n";
+         display "Area: ", $area, "\\n";
+    } otherwise {
+         display "Length and width must be non-negative.", "\\n";
+    }
+}
+
+}
+ghost
+
+
+!!!!!!!!!!!!!!!! 7.) Exponentiation (Base^Exponent) using Loop !!!!!!!!!!!!!!
+
+birth {
+
+@main_casper() {
+    display "Exponentiation Calculator (base^exponent)", "\\n";
+    display "Enter base: ", "\\n";
+    str $base_str = input();
+    int $base = to_int($base_str);
+
+    display "Enter non-negative integer exponent: ", "\\n";
+    str $exp_str = input();
+    int $exponent = to_int($exp_str);
+
+    int $result = 1;
+
+    check ($exponent < 0) {
+        display "Exponent must be non-negative for this simple calculator.", "\\n";
+    } otherwise_check ($exponent == 0) {
+        $result = 1; << Any base to power 0 is 1
+        display $base, " ^ ", $exponent, " = ", $result, "\\n";
+    } otherwise {
+        int $i = 0;
+        while ($i < $exponent) {
+            $result = $result * $base;
+            $i = $i + 1;
+        }
+        display $base, " ^ ", $exponent, " = ", $result, "\\n";
+    }
+}
+
+}
+ghost
+
+
+!!!!!!!!!!!!!!!! 8.) Triangle Type (Equilateral, Isosceles, Scalene) !!!!!!!!!!!!!!
+
+birth {
+
+@main_casper() {
+    display "Triangle Type Identifier", "\\n";
+    display "Enter length of side 1: ", "\\n";
+    str $s1_str = input();
+    flt $s1 = to_flt($s1_str);
+
+    display "Enter length of side 2: ", "\\n";
+    str $s2_str = input();
+    flt $s2 = to_flt($s2_str);
+
+    display "Enter length of side 3: ", "\\n";
+    str $s3_str = input();
+    flt $s3 = to_flt($s3_str);
+
+    << Basic check for valid triangle (sum of two sides > third side)
+    bln $valid_triangle = Day;
+    check ($s1 + $s2 <= $s3 || $s1 + $s3 <= $s2 || $s2 + $s3 <= $s1 || $s1 <= 0 || $s2 <= 0 || $s3 <= 0) {
+        $valid_triangle = Night;
+    } otherwise {}
+
+    check ($valid_triangle == Day) {
+        check ($s1 == $s2 && $s2 == $s3) {
+            display "The triangle is Equilateral.", "\\n";
+        } otherwise_check ($s1 == $s2 || $s1 == $s3 || $s2 == $s3) {
+            display "The triangle is Isosceles.", "\\n";
+        } otherwise {
+            display "The triangle is Scalene.", "\\n";
+        }
+    } otherwise {
+        display "The given side lengths do not form a valid triangle.", "\\n";
+    }
+}
+
+}
+ghost
+
+
+!!!!!!!!!!!!!!!! 9.) Greatest of Three Numbers !!!!!!!!!!!!!!
+
+birth {
+
+@main_casper() {
+    display "Exponentiation Calculator (base^exponent)", "\n";
+    display "Enter base: ", "\n";
+    str $base_str = input();
+    int $base = to_int($base_str);
+
+    display "Enter non-negative integer exponent: ", "\n";
+    str $exp_str = input();
+    int $exponent = to_int($exp_str);
+
+    int $result = 1;
+
+    check ($exponent < 0) {
+        display "Exponent must be non-negative for this simple calculator.", "\n";
+    } otherwise_check ($exponent == 0) {
+        $result = 1; << Any base to power 0 is 1
+        display $base, " ^ ", $exponent, " = ", $result, "\n";
+    } otherwise {
+        int $i = 0;
+        while ($i < $exponent) {
+            $result = $result * $base;
+            $i = $i + 1;
+        }
+        display $base, " ^ ", $exponent, " = ", $result, "\n";
+    }
+}
+
+}
+ghost
+
+
+!!!!!!!!!!!!!!!! 10.) Collatz Conjecture Steps !!!!!!!!!!!!!!
+
+birth {
+
+@main_casper() {
+    display "Collatz Conjecture Sequence Generator", "\\n";
+    display "Enter a positive integer greater than 1: ", "\\n";
+    str $n_str = input();
+    int $n = to_int($n_str);
+
+    check ($n <= 1) {
+        display "Please enter an integer greater than 1.", "\\n";
+    } otherwise {
+        display "Sequence: ", $n;
+        while ($n != 1) {
+            check ($n % 2 == 0) {
+                << Even number
+                $n = to_int($n / 2);
+            } otherwise {
+                << Odd number
+                $n = 3 * $n + 1;
+            }
+            display ", ", $n;
+        }
+        display "\\nFinished.", "\\n";
+    }
+}
+
+}
+ghost 

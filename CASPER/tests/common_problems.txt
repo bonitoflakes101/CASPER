@@ -1,0 +1,520 @@
+\
+!!!!!!!!!!!!!!!! 1.) FizzBuzz !!!!!!!!!!!!!!
+
+birth {
+
+@main_casper() {
+    display "Enter the upper limit for FizzBuzz: ", "\n";
+    str $input = input();
+    int $limit = to_int($input);
+
+    display "FizzBuzz sequence up to ", $limit, ":", "\n";
+
+    for (int $i = 1; $i <= $limit; $i++) {
+        bln $printed = Night;
+
+        check ($i % 3 == 0) {
+            display "Fizz";
+            $printed = Day;
+        } otherwise {
+            << No Fizz
+        }
+
+        check ($i % 5 == 0) {
+            display "Buzz";
+            $printed = Day;
+        } otherwise {
+            << No Buzz
+        }
+
+        check ($printed == Night) {
+            display $i;
+        } otherwise {
+            << Already printed Fizz, Buzz, or FizzBuzz
+        }
+        display "\n";
+    }
+}
+
+}
+ghost
+
+
+
+!!!!!!!!!!!!!!!! 2.) Armstrong Number Check !!!!!!!!!!!!!!
+
+birth {
+
+@main_casper() {
+    display "Enter a number to check if it's an Armstrong number: ", "\n";
+    str $input = input();
+    int $num = to_int($input);
+    int $originalNum = $num;
+    int $sum = 0;
+    int $numDigits = 0;
+    int $tempNum = $num;
+
+    << Count digits (needed for Armstrong calculation, assuming 3 digits for simplicity here, but should be dynamic)
+    << For simplicity, this example assumes a 3-digit Armstrong number check.
+    << A more robust version would calculate the number of digits first.
+    << Let's proceed assuming 3 digits for this example.
+
+    check ($num < 0) {
+        display "Armstrong check is typically for positive integers.", "\n";
+    } otherwise_check ($num == 0) {
+         display "0 is considered an Armstrong number.", "\n";
+    } otherwise {
+         while ($tempNum > 0) {
+            int $digit = $tempNum % 10;
+            << Assuming 3 digits: cube each digit
+            $sum = $sum + ($digit * $digit * $digit);
+            $tempNum = to_int($tempNum / 10); << Ensure integer division
+         }
+
+         check ($sum == $originalNum) {
+            display $originalNum, " is an Armstrong number.", "\n";
+         } otherwise {
+            display $originalNum, " is not an Armstrong number.", "\n";
+         }
+    }
+
+
+}
+
+}
+ghost
+
+!!!!!!!!!!!!!!!! 3.) Greatest Common Divisor (GCD) !!!!!!!!!!!!!!
+
+birth {
+
+function_int @gcd(int $a, int $b) {
+    int $temp;
+    while ($b != 0) {
+        $temp = $b;
+        $b = $a % $b;
+        $a = $temp;
+    }
+    revive $a;
+}
+
+@main_casper() {
+    display "Enter first number for GCD: ", "\n";
+    str $input1 = input();
+    int $num1 = to_int($input1);
+    display "Enter second number for GCD: ", "\n";
+    str $input2 = input();
+    int $num2 = to_int($input2);
+
+    int $result = @gcd($num1, $num2);
+
+    display "The GCD of ", $num1, " and ", $num2, " is: ", $result, "\n";
+}
+
+}
+ghost
+
+
+!!!!!!!!!!!!!!!! 4.) Least Common Multiple (LCM) - Inline !!!!!!!!!!!!!!
+
+birth {
+
+@main_casper() {
+    display "Enter first number for LCM: ", "\n";
+    str $input1 = input();
+    int $num1 = to_int($input1);
+    display "Enter second number for LCM: ", "\n";
+    str $input2 = input();
+    int $num2 = to_int($input2);
+
+    int $result_lcm = 0;
+
+    check ($num1 == 0 || $num2 == 0) {
+        $result_lcm = 0;
+    } otherwise {
+        int $a = $num1;
+        int $b = $num2;
+        int $temp;
+        while ($b != 0) {
+            $temp = $b;
+            $b = $a % $b;
+            $a = $temp;
+        }
+        int $gcd_val = $a; 
+
+        check ($gcd_val != 0) {
+             $result_lcm = ($num1 * $num2) / $gcd_val;
+        } otherwise {
+            $result_lcm = 0;
+        }
+    }
+
+    display "The LCM of ", $num1, " and ", $num2, " is: ", $result_lcm, "\n";
+}
+
+}
+ghost
+
+
+!!!!!!!!!!!!!!!! 5.) Character Count in String !!!!!!!!!!!!!!
+
+birth {
+
+@main_casper() {
+    display "Enter a string: ", "\n";
+    str $text = input();
+    display "Enter the character to count: ", "\n";
+    str $charToCount = input();
+
+    int $count = 0;
+    int $length = measure($text);
+    int $i = 0;
+
+    int $measure = measure($charToCount);
+    check ($measure != 1) {
+        display "Please enter only a single character to count.", "\\n";
+    } otherwise {
+        while ($i < $length) {
+            str $currentChar = $text[$i];
+            check ($currentChar == $charToCount) {
+                $count = $count + 1;
+            } otherwise {
+             
+            }
+            $i = $i + 1;
+        }
+        display "The character '", $charToCount, "' appears ", $count, " times in '", $text, "'.", "\\n";
+    }
+}
+
+}
+ghost
+
+
+!!!!!!!!!!!!!!!! 6.) Simple Calculator !!!!!!!!!!!!!!
+
+birth {
+
+@main_casper() {
+    display "Simple Calculator", "\n";
+    display "Enter first number: ", "\n";
+    str $input1 = input();
+    flt $num1 = to_flt($input1); 
+
+    display "Enter operator (+, -, *, /): ", "\n";
+    str $operator = input();
+
+    display "Enter second number: ", "\n";
+    str $input2 = input();
+    flt $num2 = to_flt($input2);
+
+    flt $result = 0.0;
+    bln $validOp = Day;
+
+    check ($operator == "+") {
+        $result = $num1 + $num2;
+    } otherwise_check ($operator == "-") {
+        $result = $num1 - $num2;
+    } otherwise_check ($operator == "*") {
+        $result = $num1 * $num2;
+    } otherwise_check ($operator == "/") {
+        check ($num2 == 0.0) {
+             display "Error: Division by zero!", "\n";
+             $validOp = Night;
+        } otherwise {
+             $result = $num1 / $num2;
+        }
+    } otherwise {
+        display "Invalid operator entered.", "\n";
+        $validOp = Night;
+    }
+
+    check ($validOp == Day) {
+       display "Result: ", $num1, " ", $operator, " ", $num2, " = ", $result, "\n";
+    } otherwise {
+  
+    }
+}
+
+}
+ghost
+
+!!!!!!!!!!!!!!!! 7.) Sum of List Elements !!!!!!!!!!!!!!
+
+birth {
+
+@main_casper() {
+    << Define a sample list directly
+    int $numbers[] = [10, 20, 5, 15, 30];
+    int $sum = 0;
+
+    << Removed the input loop
+
+    int $size = measure($numbers);
+    int $i = 0;
+    while ($i < $size) {
+        $sum = $sum + $numbers[$i];
+        $i = $i + 1;
+    }
+
+    display "List: [10, 20, 5, 15, 30]", "\n"; << Display the hardcoded list
+    display "The sum of the list elements is: ", $sum, "\n";
+}
+
+}
+ghost
+
+
+!!!!!!!!!!!!!!!! 8.) Find Min/Max in a List !!!!!!!!!!!!!!
+
+birth {
+
+@main_casper() {
+    << Define a sample list directly
+    int $numbers[] = [7, 2, 9, 1, 5];
+
+    << Removed the input loop
+
+    int $size = measure($numbers);
+    check ($size == 0) {
+        display "The list is empty. Cannot find Min/Max.", "\n";
+    } otherwise {
+        int $min = $numbers[0];
+        int $max = $numbers[0];
+        int $i = 1;
+
+        while ($i < $size) {
+            check ($numbers[$i] < $min) {
+                $min = $numbers[$i];
+            } otherwise {
+               << Not smaller than current min
+            }
+
+            check ($numbers[$i] > $max) {
+                $max = $numbers[$i];
+            } otherwise {
+                << Not larger than current max
+            }
+            $i = $i + 1;
+        }
+        display "List: [7, 2, 9, 1, 5]", "\n"; << Display the hardcoded list
+        display "Minimum value in the list: ", $min, "\n";
+        display "Maximum value in the list: ", $max, "\n";
+    }
+}
+
+}
+ghost
+
+
+!!!!!!!!!!!!!!!! 9.) Reverse a List !!!!!!!!!!!!!!
+
+birth {
+
+@main_casper() {
+    << Define a sample list directly
+    int $items[] = [1, 2, 3, 4, 5];
+
+    << Removed the input loop
+
+    display "Original List: ";
+    int $size = measure($items);
+    int $i = 0;
+    while ($i < $size) {
+        display $items[$i], " ";
+        $i = $i + 1;
+    }
+    display "\n";
+
+    display "Reversed List: ";
+    int $j = $size - 1;
+    while ($j >= 0) {
+        display $items[$j], " ";
+        $j = $j - 1;
+    }
+    display "\n";
+}
+
+}
+ghost
+
+!!!!!!!!!!!!!!!! 10.) Linear Search !!!!!!!!!!!!!!
+
+birth {
+
+@main_casper() {
+    << Define a sample list directly
+    int $numbers[] = [15, 7, 22, 9, 45, 12];
+    
+    display "List: [15, 7, 22, 9, 45, 12]", "\n";
+    display "Enter a number to search for in the list: ", "\n";
+    str $input = input();
+    int $target = to_int($input);
+
+    bln $found = Night;
+    int $size = measure($numbers);
+    int $i = 0;
+
+    while ($i < $size) {
+        check ($numbers[$i] == $target) {
+            $found = Day;
+            stop; << Exit the loop once found
+        } otherwise {
+            << Element does not match, continue searching
+        }
+        $i = $i + 1;
+    }
+
+    check ($found == Day) {
+        display $target, " was found in the list.", "\n";
+    } otherwise {
+        display $target, " was not found in the list.", "\n";
+    }
+}
+
+}
+ghost
+
+!!!!!!!!!!!!!!!! 11.) Fibonacci Sum !!!!!!!!!!!!!!
+
+birth {
+
+@main_casper() {
+    display "Enter the number of Fibonacci terms to sum: ", "\n";
+    str $input = input();
+    int $n = to_int($input);
+    
+    int $first = 0;
+    int $second = 1;
+    int $next = 0;
+    int $sum = 0;
+    
+    check ($n <= 0) {
+        display "Please enter a positive integer.", "\n";
+    } otherwise {
+        display "The first ", $n, " Fibonacci numbers are:", "\n";
+        
+        int $i = 0;
+        while ($i < $n) {
+            check ($i <= 1) {
+                $next = $i;
+            } otherwise {
+                $next = $first + $second;
+                $first = $second;
+                $second = $next;
+            }
+            
+            display $next, " ";
+            $sum = $sum + $next;
+            $i = $i + 1;
+        }
+        
+        display "\n";
+        display "The sum of the first ", $n, " Fibonacci numbers is: ", $sum, "\n";
+    }
+}
+
+}
+ghost
+
+!!!!!!!!!!!!!!!! 12.) Simple String Anagram Checker !!!!!!!!!!!!!!
+
+birth {
+
+@main_casper() {
+    display "Simple Anagram Checker Program", "\n";
+    display "Enter first string: ", "\n";
+    str $str1 = input();
+    display "Enter second string: ", "\n";
+    str $str2 = input();
+    
+    int $len1 = measure($str1);
+    int $len2 = measure($str2);
+    
+    << Check if lengths are different first (quick check)
+    check ($len1 != $len2) {
+        display "The strings are not anagrams (different lengths).", "\n";
+    } otherwise {
+        bln $is_anagram = Day;
+        
+        << For each position in first string
+        int $i = 0;
+        while ($i < $len1) {
+            str $current_char = $str1[$i];
+            
+            << Count occurrences in first string
+            int $count1 = 0;
+            int $j = 0;
+            while ($j < $len1) {
+                check ($str1[$j] == $current_char) {
+                    $count1 = $count1 + 1;
+                } otherwise {
+                    << Not a match, continue
+                }
+                $j = $j + 1;
+            }
+            
+            << Count occurrences in second string
+            int $count2 = 0;
+            $j = 0;
+            while ($j < $len2) {
+                check ($str2[$j] == $current_char) {
+                    $count2 = $count2 + 1;
+                } otherwise {
+                    << Not a match, continue
+                }
+                $j = $j + 1;
+            }
+            
+            << If counts don't match, not an anagram
+            check ($count1 != $count2) {
+                $is_anagram = Night;
+                stop; << Exit early
+            } otherwise {
+                << Counts match for this character, continue
+            }
+            
+            $i = $i + 1;
+        }
+        
+        check ($is_anagram == Day) {
+            display "The strings are anagrams!", "\n";
+        } otherwise {
+            display "The strings are not anagrams.", "\n";
+        }
+    }
+}
+
+}
+ghost
+
+!!!!!!!!!!!!!!!! 13.) String Reversal !!!!!!!!!!!!!!
+
+birth {
+
+@main_casper() {
+    display "String Reversal Program", "\n";
+    display "Enter a string to reverse: ", "\n";
+    str $input_string = input();
+    
+    int $length = measure($input_string);
+    str $reversed = "";
+    
+    check ($length == 0) {
+        display "You entered an empty string.", "\n";
+    } otherwise {
+        display "Original string: ", $input_string, "\n";
+        
+        int $i = $length - 1;
+        while ($i >= 0) {
+            str $current_char = $input_string[$i];
+            $reversed = $reversed + $current_char;
+            $i = $i - 1;
+        }
+        
+        display "Reversed string: ", $reversed, "\n";
+    }
+}
+
+}
+ghost
