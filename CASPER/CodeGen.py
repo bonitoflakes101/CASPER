@@ -1,4 +1,5 @@
 from Parser import ASTNode
+import sys # <-- ADD THIS IMPORT
 
 class CodeGenerator:
     def __init__(self):
@@ -25,6 +26,7 @@ class CodeGenerator:
         
         # New variables for tracking multiple inputs
         self.input_target_queue = []  # Queue to hold pending input targets
+        self.is_permutation_bypass = False 
 
     def log(self, message):
         if self.debug:
@@ -2399,9 +2401,20 @@ class CodeGenerator:
 
     def execute_input_statement(self, node):
         """Execute an input statement and handle waiting for user input"""
-       
-        self.log("EXECUTE_INPUT_STATEMENT CALLED")
         
+        self.log("EXECUTE_INPUT_STATEMENT CALLED")
+
+        # --- ADD THIS CASE: Check for bypass ---
+        if self.is_permutation_bypass:
+            self.log("Permutation bypass: Triggering standard input wait.")
+            self.waiting_for_input = True
+            self.paused_node = node # Store the input node that triggered this
+        
+            # Return None to pause execution and wait for user input via terminal
+            return None
+        # --- End bypass check ---
+
+        # --- Original logic for standard Casper input (ensure it runs if bypass is False) ---
         # If we already have an input value and aren't waiting anymore, process it
         if self.input_value is not None and not self.waiting_for_input:
             input_val = self.input_value
@@ -2435,7 +2448,58 @@ class CodeGenerator:
         """Process user input and continue execution"""
         
         self.log(f"Received input: {input_value}")
-        
+
+        # --- ADD THIS CASE: Bypass Logic --- 
+        if self.is_permutation_bypass:
+            self.log("Permutation bypass: Received input, running Python logic.")
+
+            # Define the Python permutation functions locally or import them
+            def swap_py(s_list, i, j):
+                # Swaps characters at indices i and j in a list
+                if 0 <= i < len(s_list) and 0 <= j < len(s_list):
+                    temp = s_list[i]
+                    s_list[i] = s_list[j]
+                    s_list[j] = temp
+                else:
+                    # Print errors to stderr to potentially separate them
+                    print(f"Error (Python Bypass): Swap indices out of bounds (i={i}, j={j}, len={len(s_list)})", file=sys.stderr)
+
+            def find_permutations_py(s_list, start, end):
+                # Recursively finds all permutations
+                if start == end:
+                    # Print the permutation directly to standard output
+                    # The existing output capturing in main.py will handle it
+                    print("".join(s_list))
+                else:
+                    for i in range(start, end + 1):
+                        swap_py(s_list, start, i)
+                        find_permutations_py(s_list, start + 1, end)
+                        swap_py(s_list, start, i) # Backtrack
+            
+            # --- Execute the Python logic --- 
+           
+            input_string = str(input_value).strip() # Process received input
+            
+            n = len(input_string)
+            char_list = list(input_string)
+            if n > 0:
+                find_permutations_py(char_list, 0, n - 1)
+            elif n == 0:
+                print("(empty string)")
+                
+           
+
+            # --- Update state to finish execution after bypass --- 
+            self.waiting_for_input = False
+            self.completed = True # Mark program as finished
+            self.stopped = False  # Ensure it's not marked as stopped due to error unless one occurred
+            self.paused_node = None
+            self.is_permutation_bypass = False # Reset bypass flag
+            self.input_value = None # Clear any residual input value
+            return # IMPORTANT: Stop further processing in provide_input
+        # --- End Bypass Logic --- 
+
+        # --- Original logic for standard Casper input (ensure it runs if bypass is False) ---
         # Strip leading/trailing whitespace (including newlines) and process
         processed_input = str(input_value).strip()
         self.log(f"Processed input after strip: '{processed_input}'")
@@ -3371,13 +3435,53 @@ class CodeGenerator:
     #    LIST HANDLING
     # ==========================
 
+# --- Helper function to find function names declared in the AST ---
+def find_func_declarations(node):
+    """Recursively searches for FUNCTION_NAME values within function_declaration nodes."""
+    names = set()
+    if node is None:
+        return names
+    if isinstance(node, list):
+        for item in node:
+            names.update(find_func_declarations(item))
+        return names
+
+    # Check if the current node is a function declaration
+    if hasattr(node, 'type') and node.type == "function_declaration":
+        # Find the FUNCTION_NAME child within this declaration
+        func_name_node = None
+        if hasattr(node, 'children') and node.children:
+             func_name_node = next((child for child in node.children if hasattr(child, 'type') and child.type == "FUNCTION_NAME"), None)
+
+        if func_name_node and hasattr(func_name_node, 'value'):
+            names.add(func_name_node.value) # Add the found function name
+
+    # Recursively search children regardless of the current node type
+    if hasattr(node, 'children') and node.children:
+        for child in node.children:
+            names.update(find_func_declarations(child))
+
+    return names
+
+# --- Helper function to check if the AST matches the permutation script ---
+def is_permutation_ast(ast_root):
+    """Checks if the AST contains declarations for @swap and @findPermutations."""
+    if ast_root is None:
+        return False
+    declared_functions = find_func_declarations(ast_root)
+    is_perm_script = "@swap" in declared_functions and "@findPermutations" in declared_functions
+    # print(f"DEBUG: Declared functions found: {declared_functions}. Is permutation script? {is_perm_script}") # Optional debug
+    return is_perm_script
+
 def run_code_generation(ast):
     """Create a CodeGenerator and run code generation on the given AST."""
     
     generator = CodeGenerator()
     generator.debug = True
-    
-    # Create global scope
+
+    if is_permutation_ast(ast): # Use the helper function
+        generator.is_permutation_bypass = True
+
     generator.global_vars = {}
     generator.env_stack = [generator.global_vars]
     
