@@ -1154,151 +1154,110 @@ class CodeGenerator:
     def apply_operator(self, operator, left, right):
         self.log(f"Applying operator: {left} {operator} {right}")
         
+        # Debug print for string equality comparisons
+        if operator == '==' and (isinstance(left, str) or isinstance(right, str)):
+           
+            # Print character codes for debugging potential invisible chars
+            if isinstance(left, str) and isinstance(right, str):
+                left_codes = [ord(c) for c in left]
+                right_codes = [ord(c) for c in right]
+                print(f"DEBUG CHAR CODES: {left_codes} == {right_codes}", flush=True)
+        
         # Apply implicit type conversion based on the operation type
-        # --- ADD DEBUG for comparison conversion --- 
         original_left, original_right = left, right
         left, right = self.apply_implicit_conversion(left, right, operator)
-        if (left, right) != (original_left, original_right) and operator == '==':
-            # print(f"DEBUG Factorial Condition (apply_operator): Implicit conversion for '==': {repr(original_left)}->{repr(left)}, {repr(original_right)}->{repr(right)}", flush=True)
-            pass # Removed print
-        # --- END DEBUG --- 
         
-        try:
-            if operator == "+":
-                # --- MODIFIED: Prioritize String Concatenation ---
-                if isinstance(left, str) or isinstance(right, str):
-                    # Ensure both operands are strings, converting bools to Day/Night
-                    str_left = self.convert_type(left, "string") if not isinstance(left, str) else left
-                    str_right = self.convert_type(right, "string") if not isinstance(right, str) else right
-                    self.log(f"Performing string concatenation: '{str_left}' + '{str_right}'")
-                    return str_left + str_right
-                else:
-                    # Perform numeric addition if neither is a string
-                    self.log(f"Performing numeric addition: {left} + {right}")
-                    return left + right
-                # --- END MODIFICATION ---
-            elif operator == "-":
-                return left - right
-            elif operator == "*":
-                return left * right
-            elif operator == "/":
-                if right == 0:
-                    self.log("ERROR: Division by zero detected")
-                    print("Error: Division by zero")
-                    self.stopped = True
-                    return 0
-                return left / right # Keep as float division
-            elif operator == "%":
-                if right == 0:
-                    self.log("ERROR: Modulo by zero detected")
-                    print("Error: Modulo by zero")
-                    self.stopped = True
-                    return 0
-                return left % right
-            elif operator == "||":
-                # --- ADDED DEBUG --- 
-                bool_left = bool(left)
-                bool_right = bool(right)
-                # print(f"DEBUG Factorial Condition (apply_operator): Evaluating ||: bool({repr(left)}) || bool({repr(right)}) -> {bool_left} || {bool_right}", flush=True)
-                # --- END DEBUG --- 
-                return bool_left or bool_right
-            elif operator == "&&":
-                 # --- ADDED DEBUG --- 
-                bool_left = bool(left)
-                bool_right = bool(right)
-                # print(f"DEBUG Factorial Condition (apply_operator): Evaluating &&: bool({repr(left)}) && bool({repr(right)}) -> {bool_left} && {bool_right}", flush=True)
-                # --- END DEBUG --- 
-                return bool_left and bool_right
-            elif operator == "==":
-                # Comparison already uses converted values
-                return left == right
-            elif operator == "!=":
-                return left != right
-            elif operator == ">":
-                return left > right
-            elif operator == "<":
-                return left < right
-            elif operator == ">=":
-                return left >= right
-            elif operator == "<=":
-                return left <= right
-            else:
-                self.log(f"WARNING: Unknown operator '{operator}'")
-                return None
-        except OverflowError:
-            self.log(f"ERROR: Numeric overflow in operation {left} {operator} {right}")
-            print(f"Error: Numeric overflow in operation {left} {operator} {right}")
-            self.stopped = True
-            return 0
-        except Exception as e:
-            self.log(f"ERROR: Operation failed: {left} {operator} {right} - {str(e)}")
-            print(f"Error: Operation failed: {str(e)}")
-            self.stopped = True
-            return 0
+        # Debug print after conversion
+        
+        if operator == "+":
+            # Handle string concatenation
+            if isinstance(left, str) or isinstance(right, str):
+                return str(left) + str(right)
+            # Numeric addition
+            return left + right
+        elif operator == "-":
+            return left - right
+        elif operator == "*":
+            return left * right
+        elif operator == "/":
+            if right == 0:
+                self.log("ERROR: Division by zero detected")
+                print("Error: Division by zero")
+                self.stopped = True
+                return 0
+            return left / right # Keep as float division
+        elif operator == "%":
+            if right == 0:
+                self.log("ERROR: Modulo by zero detected")
+                print("Error: Modulo by zero")
+                self.stopped = True
+                return 0
+            return left % right
+        elif operator == "||":
+            # --- ADDED DEBUG --- 
+            bool_left = bool(left)
+            bool_right = bool(right)
+            # print(f"DEBUG Factorial Condition (apply_operator): Evaluating ||: bool({repr(left)}) || bool({repr(right)}) -> {bool_left} || {bool_right}", flush=True)
+            # --- END DEBUG --- 
+            return bool_left or bool_right
+        elif operator == "&&":
+             # --- ADDED DEBUG --- 
+            bool_left = bool(left)
+            bool_right = bool(right)
+            # print(f"DEBUG Factorial Condition (apply_operator): Evaluating &&: bool({repr(left)}) && bool({repr(right)}) -> {bool_left} && {bool_right}", flush=True)
+            # --- END DEBUG --- 
+            return bool_left and bool_right
+        elif operator == "==":
+            # Comparison already uses converted values
+            return left == right
+        elif operator == "!=":
+            return left != right
+        elif operator == ">":
+            return left > right
+        elif operator == "<":
+            return left < right
+        elif operator == ">=":
+            return left >= right
+        elif operator == "<=":
+            return left <= right
+        else:
+            self.log(f"WARNING: Unknown operator '{operator}'")
+            return None
 
     def apply_implicit_conversion(self, left, right, operator=None):
-        """Apply implicit type conversion based on the types of operands and the conversion table."""
-        self.log(f"Applying implicit conversion: {type(left).__name__} {operator} {type(right).__name__}")
+        """Apply implicit type conversion based on operation type"""
+        self.log(f"Applying implicit conversion for {left} {operator if operator else ''} {right}")
         
-        if operator in ["+", "-", "*", "/", "%"]:
-            if isinstance(left, int) and isinstance(right, float):
-                # int → flt: Add .0
-                left = float(left)
-                self.log(f"Converted left from int to float: {left}")
-            elif isinstance(left, float) and isinstance(right, int):
-                # flt → int not applied here, keep as float for math ops
-                right = float(right)
-                self.log(f"Converted right from int to float: {right}")
+        # Special case for string comparisons (== and !=)
+        if operator in ('==', '!=') and (isinstance(left, str) or isinstance(right, str)):
+            # If either is a string, convert both to strings for comparisons
+            if isinstance(left, str) and not isinstance(right, str):
+              
+                return left, str(right)
+            elif isinstance(right, str) and not isinstance(left, str):
+                
+                return str(left), right
+            # If both are already strings, no conversion needed
+            elif isinstance(left, str) and isinstance(right, str):
+                return left, right
+        
+        # For numeric operations or operations on mixed types:
+        
+        # If either operand is a float, convert the other to float for operations
+        if isinstance(left, float) and not isinstance(right, float):
+            if isinstance(right, (int, bool)):
+                return left, float(right)
+        elif isinstance(right, float) and not isinstance(left, float):
+            if isinstance(left, (int, bool)):
+                return float(left), right
+                
+        # Bool to number conversions
+        if isinstance(left, bool) and isinstance(right, (int, float)):
+            return int(left), right
+        elif isinstance(right, bool) and isinstance(left, (int, float)):
+            return left, int(right)
             
-            # Handle boolean conversions
-            if isinstance(left, bool):
-                if isinstance(right, float):
-                    # bln → flt: Day → 1.0, Night → 0.0
-                    left = 1.0 if left else 0.0
-                    self.log(f"Converted left from bool to float: {left}")
-                elif isinstance(right, int):
-                    # bln → int: Day → 1, Night → 0
-                    left = 1 if left else 0
-                    self.log(f"Converted left from bool to int: {left}")
-            
-            if isinstance(right, bool):
-                if isinstance(left, float):
-                    # bln → flt: Day → 1.0, Night → 0.0
-                    right = 1.0 if right else 0.0
-                    self.log(f"Converted right from bool to float: {right}")
-                elif isinstance(left, int):
-                    # bln → int: Day → 1, Night → 0
-                    right = 1 if left else 0
-                    self.log(f"Converted right from bool to int: {right}")
-        
-        # For comparison operations
-        elif operator in ["==", "!=", ">", "<", ">=", "<="]:
-            # Try to make types match based on conversion table
-            if isinstance(left, int) and isinstance(right, float):
-                # int → flt: Add .0
-                left = float(left)
-                self.log(f"Converted left from int to float for comparison: {left}")
-            elif isinstance(left, float) and isinstance(right, int):
-                # int → flt: Add .0 (converting right to match left)
-                right = float(right)
-                self.log(f"Converted right from int to float for comparison: {right}")
-            elif isinstance(left, bool) and isinstance(right, int):
-                # bln → int: Day → 1, Night → 0
-                left = 1 if left else 0
-                self.log(f"Converted left from bool to int for comparison: {left}")
-            elif isinstance(left, int) and isinstance(right, bool):
-                # bln → int: Day → 1, Night → 0 (converting right to match left)
-                right = 1 if right else 0
-                self.log(f"Converted right from bool to int for comparison: {right}")
-            elif isinstance(left, bool) and isinstance(right, float):
-                # bln → flt: Day → 1.0, Night → 0.0
-                left = 1.0 if left else 0.0
-                self.log(f"Converted left from bool to float for comparison: {left}")
-            elif isinstance(left, float) and isinstance(right, bool):
-                # bln → flt: Day → 1.0, Night → 0.0 (converting right to match left)
-                right = 1.0 if right else 0.0
-                self.log(f"Converted right from bool to float for comparison: {right}")
-        
+        # No conversion needed/applicable
         return left, right
 
     
@@ -2477,12 +2436,16 @@ class CodeGenerator:
         
         self.log(f"Received input: {input_value}")
         
-        # Store the raw input value
-        self.input_value = input_value
+        # Strip leading/trailing whitespace (including newlines) and process
+        processed_input = str(input_value).strip()
+        self.log(f"Processed input after strip: '{processed_input}'")
+        
+        # Store the processed input value, not the raw input
+        self.input_value = processed_input
      
         self.waiting_for_input = False
         
-        # Return the input value
+        # Return the processed input value
         return self.input_value
     
     def is_waiting_for_input(self):
