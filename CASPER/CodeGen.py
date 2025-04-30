@@ -1161,7 +1161,7 @@ class CodeGenerator:
             if isinstance(left, str) and isinstance(right, str):
                 left_codes = [ord(c) for c in left]
                 right_codes = [ord(c) for c in right]
-                print(f"DEBUG CHAR CODES: {left_codes} == {right_codes}", flush=True)
+             
         
         # Apply implicit type conversion based on the operation type
         original_left, original_right = left, right
