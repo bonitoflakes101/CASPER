@@ -83,10 +83,9 @@ birth {
         check ($n == 1) {
             $fib_sequence.push(0);
         } otherwise {
-            // Start with first Fibonacci number
+
             $fib_sequence.push(0);
-            
-            // For n > 1, add second Fibonacci number
+
             check ($n >= 2) {
                 $fib_sequence.push(1);
                 
@@ -94,7 +93,6 @@ birth {
                 int $b = 1;
                 int $i = 2; 
 
-                // Generate remaining Fibonacci numbers
                 while ($i < $n) {
                     int $next_fib = $a + $b;
                     $fib_sequence.push($next_fib);
@@ -105,13 +103,12 @@ birth {
                     $i = $i + 1;
                 }
             } otherwise {
-                // This case is logically unreachable (n > 1 but n < 2),
-                // but kept to maintain structure
+
             }
         }
 
         display "Fibonacci sequence generated. Displaying in reverse order:", "\n";
-        // Calculate the actual size of fib_sequence for proper indexing
+
         int $size = measure($fib_sequence);
         int $j = $size - 1;
         
