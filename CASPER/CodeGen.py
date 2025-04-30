@@ -2185,29 +2185,26 @@ class CodeGenerator:
                         self.stopped = True
                         return None
 
-                    # -- Start Fix --
-                    # Get the list_element node itself
+                    # -- Start Fix for Multiple Push Values --
                     if not assign_node.children:
                         self.log("ERROR: .push() has no child node (list_element expected).")
                         print("Error: .push() requires an argument.")
                         self.stopped = True
                         return None
-                    list_element_node = assign_node.children[0]
+                    list_element_node = assign_node.children[0] # This node contains the structure for one or more elements
                     
-                    # Get the ACTUAL argument node INSIDE the list_element node
-                    if not hasattr(list_element_node, 'children') or not list_element_node.children:
-                        self.log(f"ERROR: list_element node inside push for '{var_name}' is empty.")
-                        print("Error: .push() argument is empty or invalid.")
-                        self.stopped = True
-                        return None
-                    actual_argument_node = list_element_node.children[0]
-                    
-                    # Execute the actual argument node (literal, var_call, list_value)
-                    value_to_push = self.execute_node(actual_argument_node)
-                    # -- End Fix --
+                    # Execute the list_element node to get *all* values
+                    values_to_push = self.execute_list_element(list_element_node)
                     
                     if self.stopped:
                          return None # Error occurred during element evaluation
+                         
+                    if not isinstance(values_to_push, list):
+                        # Ensure we always have a list, even if execute_list_element returns a single item
+                        values_to_push = [values_to_push]
+                        
+                    self.log(f"Values to push onto '{var_name}': {values_to_push}")
+                    # -- End Fix for Multiple Push Values --
                     
                     # Look up the variable
                     list_var = self.lookup_variable(var_name)
@@ -2224,9 +2221,9 @@ class CodeGenerator:
                         self.stopped = True
                         return None
                         
-                    # Perform the push (append)
-                    list_var.append(value_to_push)
-                    self.log(f"Pushed {value_to_push} onto '{var_name}'. New list: {list_var}")
+                    # Perform the push (extend the list with all values)
+                    list_var.extend(values_to_push) # Use extend to add all elements
+                    self.log(f"Pushed {values_to_push} onto '{var_name}'. New list: {list_var}")
                     
                     # Since lookup_variable returns a copy for lists, we need to update the variable in the environment
                     self.assign_variable(var_name, list_var)
