@@ -131,6 +131,53 @@ function defineCasperMonacoTheme(monaco) {
   });
 }
 
+// --- Toggle Checkbox Dependency Logic ---
+document.addEventListener('DOMContentLoaded', function () {
+  const lexerToggle = document.getElementById('display_lexer');
+  const parserToggle = document.getElementById('execute_parser');
+  const semanticsToggle = document.getElementById('execute_semantics');
+  const codegenToggle = document.getElementById('execute_codegen');
+
+  if (!lexerToggle || !parserToggle || !semanticsToggle || !codegenToggle) {
+    console.warn("One or more toggle checkboxes not found.");
+    return; // Exit if any toggle is missing
+  }
+
+  const toggles = [
+    { el: lexerToggle, dependencies: [] },
+    { el: parserToggle, dependencies: [lexerToggle] },
+    { el: semanticsToggle, dependencies: [parserToggle, lexerToggle] },
+    { el: codegenToggle, dependencies: [semanticsToggle, parserToggle, lexerToggle] }
+  ];
+
+  toggles.forEach((item, index) => {
+    item.el.addEventListener('change', function () {
+      console.log(`Toggle changed: ${item.el.id}, Checked: ${item.el.checked}`);
+      if (item.el.checked) {
+        // If checked, ensure all dependencies are checked
+        item.dependencies.forEach(dep => {
+          if (!dep.checked) {
+            dep.checked = true;
+            // Manually trigger change event for dependencies if needed
+            // dep.dispatchEvent(new Event('change')); 
+          }
+        });
+      } else {
+        // If unchecked, uncheck all toggles that depend on this one
+        toggles.forEach((otherItem, otherIndex) => {
+          if (otherIndex > index && otherItem.dependencies.includes(item.el)) {
+            if (otherItem.el.checked) {
+              otherItem.el.checked = false;
+              // Manually trigger change event for dependents if needed
+              // otherItem.el.dispatchEvent(new Event('change'));
+            }
+          }
+        });
+      }
+    });
+  });
+});
+// --- End Toggle Checkbox Logic ---
 
 function openTab(evt, tabName) {
   const tabcontents = document.getElementsByClassName("tabcontent");

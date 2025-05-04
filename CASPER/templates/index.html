@@ -176,6 +176,30 @@
               </svg>
               main.casper
             </label>
+            <!-- Execution Stage Toggles (Moved INSIDE label-container) -->
+            <div class="toggles-container">
+                <label class="toggle-label">
+                    <input form="codeForm" type="checkbox" name="display_lexer" id="display_lexer" {{ 'checked' if display_lexer else '' }}>
+                    <span class="switch"></span>
+                    <span class="toggle-text">Display Lexer</span>
+                </label>
+                <label class="toggle-label">
+                    <input form="codeForm" type="checkbox" name="execute_parser" id="execute_parser" {{ 'checked' if execute_parser else '' }}>
+                    <span class="switch"></span>
+                    <span class="toggle-text">Execute Parser</span>
+                </label>
+                <label class="toggle-label">
+                    <input form="codeForm" type="checkbox" name="execute_semantics" id="execute_semantics" {{ 'checked' if execute_semantics else '' }}>
+                    <span class="switch"></span>
+                    <span class="toggle-text">Execute Semantics</span>
+                </label>
+                <label class="toggle-label">
+                    <input form="codeForm" type="checkbox" name="execute_codegen" id="execute_codegen" {{ 'checked' if execute_codegen else '' }}>
+                    <span class="switch"></span>
+                    <span class="toggle-text">Execute CodeGen</span>
+                </label>
+            </div>
+            <!-- End Toggles -->
             <div class="button-container">
               <button type="submit" class="run-button" form="codeForm">
                 Run Code

@@ -24,6 +24,7 @@ body {
   border-bottom: 1px solid #3a3a3a;
   padding: 10px 50px;
 }
+
 .main-header h1 {
   color: #4f46e5;
   margin: 0;
@@ -58,7 +59,7 @@ body {
   border: 1px solid #3a3a3a;
   border-radius: 6px;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.5);
-  
+
   min-width: 300px;
 }
 
@@ -66,14 +67,17 @@ body {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  flex-wrap: wrap;
   background: #2c2c2c;
   border-radius: 6px 6px 0 0;
   padding: 10px;
   border-bottom: 1px solid #3a3a3a;
 }
+
 .label-container svg path {
   fill: #cccccc;
 }
+
 .label-container label {
   color: #cccccc;
 }
@@ -88,6 +92,7 @@ body {
   cursor: pointer;
   transition: all 0.2s ease-in-out;
 }
+
 .run-button:hover {
   background-color: #5c54ec;
   transform: scale(1.05);
@@ -132,6 +137,7 @@ body {
   border-bottom: 1px solid #3a3a3a;
   border-radius: 6px 6px 0 0;
 }
+
 .lexer-header label {
   color: #4f46e5;
 }
@@ -147,6 +153,7 @@ body {
   border-collapse: collapse;
   table-layout: fixed;
 }
+
 .lex-table td {
   font-size: 0.85rem;
   padding: 10px;
@@ -170,6 +177,7 @@ body {
   border-bottom: 1px solid #3a3a3a;
   border-radius: 6px 6px 0 0;
 }
+
 .output-label-container label {
   color: #cccccc;
 }
@@ -189,9 +197,11 @@ body {
 ::-webkit-scrollbar {
   width: 8px;
 }
+
 ::-webkit-scrollbar-track {
   background: #2c2c2c;
 }
+
 ::-webkit-scrollbar-thumb {
   background-color: #4f46e5;
   border-radius: 4px;
@@ -212,38 +222,109 @@ body {
     max-height: 300px;
   }
 
-.tab-header {
+  .tab-header {
+    display: flex;
+    border-bottom: 1px solid #ccc;
+    background: #1e1e1e;
+  }
+
+  .tablink {
+    background: none;
+    border: none;
+    color: #ccc;
+    padding: 10px 20px;
+    cursor: pointer;
+    font-size: 1rem;
+  }
+
+  .tablink.active {
+    border-bottom: 2px solid #4fc1ff;
+    color: #fff;
+  }
+
+
+  .tabcontent {
+    display: none;
+    padding: 10px;
+    background: #1e1e1e;
+    color: #cccccc;
+    height: 200px;
+    overflow-y: auto;
+  }
+
+  .tabcontent pre {
+    margin: 0;
+  }
+
+}
+
+/* Toggles Styling */
+.toggles-container {
   display: flex;
-  border-bottom: 1px solid #ccc;
-  background: #1e1e1e;
+  flex-wrap: wrap;
+  gap: 20px;
+  padding: 0 20px;
+  flex-grow: 1;
+  justify-content: center;
 }
 
-.tablink {
-  background: none;
-  border: none;
-  color: #ccc;
-  padding: 10px 20px;
+.toggle-label {
+  display: inline-flex;
+  align-items: center;
   cursor: pointer;
-  font-size: 1rem;
-}
-
-.tablink.active {
-  border-bottom: 2px solid #4fc1ff;
-  color: #fff;
-}
-
-
-.tabcontent {
-  display: none;
-  padding: 10px;
-  background: #1e1e1e;
+  font-size: 0.9em;
   color: #cccccc;
-  height: 200px; 
-  overflow-y: auto;
+  font-family: 'Fira Code', monospace;
+  user-select: none;
 }
 
-.tabcontent pre {
-  margin: 0;
+.toggle-label input[type="checkbox"] {
+  opacity: 0;
+  width: 0;
+  height: 0;
+  position: absolute;
 }
 
+.switch {
+  position: relative;
+  display: inline-block;
+  width: 38px;
+  height: 20px;
+  background-color: #555;
+  border-radius: 20px;
+  transition: background-color 0.3s ease;
+  margin-right: 10px;
+  vertical-align: middle;
 }
+
+.switch::before {
+  content: "";
+  position: absolute;
+  width: 14px;
+  height: 14px;
+  left: 3px;
+  bottom: 3px;
+  background-color: white;
+  border-radius: 50%;
+  transition: transform 0.3s ease;
+}
+
+.toggle-label input[type="checkbox"]:checked+.switch {
+  background-color: #4f46e5;
+}
+
+.toggle-label input[type="checkbox"]:checked+.switch::before {
+  transform: translateX(18px);
+}
+
+.toggle-text {
+  vertical-align: middle;
+}
+
+.toggle-label::before,
+.toggle-label::after {
+  content: none;
+  display: none;
+}
+
+/* End Toggles Styling */

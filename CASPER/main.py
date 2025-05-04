@@ -11,9 +11,13 @@ from CodeGen import run_code_generation, CodeGenerator
 app = Flask(__name__)
 
 
-LEXER_DEBUG = True
-PARSER_DEBUG = True
-SEMANTICS_DEBUG = True
+# --- Default Toggle States --- 
+# Used for GET requests or if not specified in POST
+DEFAULT_DISPLAY_LEXER = True
+DEFAULT_EXECUTE_PARSER = True
+DEFAULT_EXECUTE_SEMANTICS = True
+DEFAULT_EXECUTE_CODEGEN = True
+# --- End Default Toggle States ---
 
 # Global state to store the running program
 current_generator = None
@@ -23,6 +27,28 @@ program_output = ""
 def home():
     global current_generator, program_output
     
+    # --- Determine Flag States from Request ---
+    if request.method == 'POST':
+        # Read from form checkboxes (if checkbox is unchecked, key won't be in form)
+        display_lexer = 'display_lexer' in request.form
+        execute_parser = 'execute_parser' in request.form
+        execute_semantics = 'execute_semantics' in request.form
+        execute_codegen = 'execute_codegen' in request.form
+    else: # GET request or initial load
+        # Use default values from above
+        display_lexer = DEFAULT_DISPLAY_LEXER
+        execute_parser = DEFAULT_EXECUTE_PARSER
+        execute_semantics = DEFAULT_EXECUTE_SEMANTICS
+        execute_codegen = DEFAULT_EXECUTE_CODEGEN
+    # --- End Flag State Determination ---
+    
+    # --- Debug Logging: Print flag states ---
+    print(f"[DEBUG] Received Flags - Method: {request.method}")
+    print(f"  Display Lexer: {display_lexer}")
+    print(f"  Execute Parser: {execute_parser}")
+    print(f"  Execute Semantics: {execute_semantics}")
+    print(f"  Execute CodeGen: {execute_codegen}")
+    # --- End Debug Logging ---
     
     if request.method == "GET":
         current_generator = None
@@ -39,6 +65,7 @@ def home():
     show_error_tab = False
     error_count = 0
     output = ""  # Will hold the final text shown in "Output Terminal"
+    ast = None # Initialize AST
 
     if request.method == "POST":
         code = request.form.get("code_input", "")
@@ -61,75 +88,153 @@ def home():
         if token_type == "ILLEGAL":
             illegal_tokens.append(str(token))
             
-    # Prepare lexer results for display, perhaps just the token type and literal
-    lexer_display_results = [(str(t.type).split(".")[-1], t.literal) for t in all_tokens]
+    # Prepare lexer results for display *only if* flag is set
+    lexer_display_results = [(str(t.type).split(".")[-1], t.literal) for t in all_tokens] if display_lexer else []
+    print(f"[DEBUG] Lexer Results Display Enabled: {display_lexer}, Items: {len(lexer_display_results)}")
+
+    # --- Conditional Execution based on Flags ---
+    parser_successful = False
+    semantics_successful = False
 
     if illegal_tokens:
+        # Lexical errors: Set errors and skip messages
         error_count += len(illegal_tokens)
+        errors = "Lexical Errors:\n" + "\n".join(illegal_tokens)
+        show_error_tab = True
+        parser_output = "Skipped due to Lexical Errors"
+        semantic_output = "Skipped due to Lexical Errors"
+        generated_code = "Skipped due to Lexical Errors"
+        output = "Processing stopped: Lexical Errors found."
+    
+    elif not execute_parser:
+        # --- Parser Skipped by Toggle ---
+        print("[DEBUG] Skipping Parser (execute_parser=False)")
+        parser_output = "Skipped by user toggle."
+        semantic_output = "Skipped (Parser toggle off)."
+        generated_code = "Skipped (Parser toggle off)."
+        output = "Processing stopped at Parser stage (toggle)."
 
-    if not illegal_tokens:
-        # 2. PARSING
+    else:
+        # --- Attempt Parser Execution --- 
         parser = build_parser()
         try:
             ast = parser.parse(lexer=Lexer(code))
-            parser_output = "No Syntax Error"
+            parser_output = "No Syntax Errors Found."
+            parser_successful = True # Mark parser as successful
 
-            # 3. SEMANTIC ANALYSIS
-            semantic_errors = run_semantic_analysis(ast)
-            if semantic_errors:
-                semantic_output = "Semantic Errors:\n" + "\n".join(semantic_errors)
-                error_count += len(semantic_errors)
+            # --- Check Semantics ---
+            if not execute_semantics:
+                # --- Semantics Skipped by Toggle ---
+                print("[DEBUG] Skipping Semantics (execute_semantics=False)")
+                semantic_output = "Skipped by user toggle."
+                generated_code = "Skipped (Semantics toggle off)."
+                output = "Processing stopped at Semantics stage (toggle)."
             else:
-                # If no semantic errors, set success message
-                semantic_output = "Compilation successful: no lexical, syntax, or semantic errors detected."
-                generated_code = "Code Generation Executed Successfully."
+                # --- Attempt Semantics Execution ---
+                semantic_errors = run_semantic_analysis(ast)
+                if semantic_errors:
+                    # Semantic errors found
+                    semantic_output = "Semantic Errors:\n" + "\n".join(semantic_errors)
+                    error_count += len(semantic_errors)
+                    errors = semantic_output
+                    show_error_tab = True
+                    generated_code = "Skipped due to Semantic Errors"
+                    output = "Processing stopped: Semantic Errors found."
+                else:
+                    # Semantics successful
+                    semantic_output = "No Semantic Errors Found."
+                    semantics_successful = True # Mark semantics as successful
 
-                # 4. CAPTURE CODE GENERATION OUTPUT
-                backup_stdout = sys.stdout
-                codegen_buffer = io.StringIO()
-                try:
-                    sys.stdout = codegen_buffer
-                    current_generator = run_code_generation(ast)
-                finally:
-                    sys.stdout = backup_stdout
-
-                # The codegen_buffer now holds whatever the code generator printed
-                program_output = codegen_buffer.getvalue()
-
-                # We'll combine the success message and the codegen prints
-                output = f"{semantic_output}\n{program_output}"
+                    # --- Check Code Generation ---
+                    if not execute_codegen:
+                        # --- CodeGen Skipped by Toggle ---
+                        print("[DEBUG] Skipping CodeGen (execute_codegen=False)")
+                        generated_code = "Skipped by user toggle."
+                        output = "Processing stopped at Code Generation stage (toggle)."
+                    else:
+                        # --- Attempt CodeGen Execution ---
+                        print("[DEBUG] Executing CodeGen")
+                        generated_code = "Code Generation Executed."
+                        backup_stdout = sys.stdout
+                        codegen_buffer = io.StringIO()
+                        try:
+                            sys.stdout = codegen_buffer
+                            current_generator = run_code_generation(ast)
+                        finally:
+                            sys.stdout = backup_stdout
+                        
+                        program_output = codegen_buffer.getvalue()
+                        # Use the specific semantic success message here for clarity
+                        output = f"No Semantic Errors Found.\n{program_output}"
 
         except SyntaxError as e:
-            parser_output = str(e)
+            # Syntax error during parsing
+            parser_output = f"Syntax Error: {str(e)}"
             error_count += 1
+            errors = parser_output
+            show_error_tab = True
+            semantic_output = "Skipped due to Syntax Errors"
+            generated_code = "Skipped due to Syntax Errors"
+            output = "Processing stopped: Syntax Errors found."
         except Exception as e:
+            # Unexpected error (likely during parsing or semantics)
             parser_output = f"Unexpected Error: {str(e)}"
             error_count += 1
+            errors = parser_output
+            show_error_tab = True
+            # Determine where the error likely occurred based on success flags
+            if not parser_successful:
+                semantic_output = "Skipped due to Unexpected Parsing Error"
+                generated_code = "Skipped due to Unexpected Parsing Error"
+                output = "Processing stopped: Unexpected Parsing Error."
+            elif not semantics_successful: # Parser succeeded, error likely in semantics
+                semantic_output = "Skipped due to Unexpected Semantic Error"
+                generated_code = "Skipped due to Unexpected Semantic Error"
+                output = "Processing stopped: Unexpected Semantic Error."
+            else: # Error likely during codegen
+                 semantic_output = "No Semantic Errors Found."
+                 generated_code = "Skipped due to Unexpected Error during CodeGen"
+                 output = "Processing stopped: Unexpected Error during CodeGen."
 
-    # 5. SET ERRORS AND OUTPUT
-    if illegal_tokens:
-        errors = "\n".join(illegal_tokens)
-        show_error_tab = True
-    elif parser_output != "No Syntax Error":
-        errors = parser_output
-        show_error_tab = True
-    elif semantic_output.startswith("Semantic Errors"):
-        errors = semantic_output
-        show_error_tab = True
 
-    # If we never set 'output' above (like in an error case), default it now:
-    if not output:
-        output = semantic_output or "WIP WIP WIP"
+    # --- Final Output Assignment (if not set above) ---
+    if not output and not errors:
+         # Stages might have been skipped by toggles without errors.
+         if execute_parser and parser_successful and execute_semantics and semantics_successful and execute_codegen:
+              # Should have been set during codegen, but as a fallback
+              output = "Processing completed (all enabled stages successful)."
+         elif execute_parser and parser_successful and execute_semantics and semantics_successful:
+              output = "Semantic analysis completed. Code generation skipped by toggle."
+         elif execute_parser and parser_successful:
+              output = "Parsing completed. Semantic analysis skipped by toggle."
+         elif display_lexer:
+              output = "Lexer display complete. Parsing skipped by toggle."
+         else:
+              output = "No stages selected for execution or display."
+         print(f"[DEBUG] Final Output (no errors, not set earlier): {output}")
+    elif not output and errors:
+         # Fallback if errors occurred but output wasn't set explicitly
+         output = f"Processing failed. Check Errors tab ({error_count} errors)."
+         print(f"[DEBUG] Final Output (errors, not set earlier): {output}")
+
 
     return render_template(
         "index.html",
         code=code,
-        lexer_results=lexer_display_results, # Pass all tokens info
-        output=output,               # This shows in the "Output Terminal"
+        # Pass results and statuses
+        lexer_results=lexer_display_results, 
+        parser_output=parser_output, 
+        semantic_output=semantic_output, 
+        generated_code=generated_code, # Status message for codegen
+        output=output,                 # Final output for the terminal
         errors=errors,
-        generated_code=generated_code,
         show_error_tab=show_error_tab,
-        error_count=error_count
+        error_count=error_count,
+        # Pass flag states to template for checkbox initial state
+        display_lexer=display_lexer,
+        execute_parser=execute_parser,
+        execute_semantics=execute_semantics,
+        execute_codegen=execute_codegen
     )
 
 
