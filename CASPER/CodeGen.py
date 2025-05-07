@@ -997,68 +997,96 @@ class CodeGenerator:
         
         return left_value
 
+    def get_operator_precedence(self, op: str) -> int:
+        if op in ['*', '/', '%']:
+            return 5  # Highest among these binary ops
+        if op in ['+', '-']:
+            return 4
+        if op in ['==', '!=', '>', '<', '>=', '<=']:
+            return 3
+        if op == '&&':
+            return 2
+        if op == '||':
+            return 1  # Lowest among these
+        return 0  # Default for others or if not a binary operator for this context
+
     def evaluate_expression_chain(self, left_value, binop_node, context="Chain"):
-        # This should primarily handle non-logical chains (arithmetic, comparison)
-        # or parts of logical chains delegated from evaluate_logical_expression
-        # print(f"DEBUG Factorial Condition ({context}): Entering evaluate_expression_chain - Left: {repr(left_value)}, Binop: {getattr(binop_node, 'type', 'N/A')}", flush=True)
-        
+        self.log(f"evaluate_expression_chain: left_value={left_value}, binop_node type={getattr(binop_node, 'type', 'N/A')}")
         if not binop_node or not binop_node.children:
-            # print(f"DEBUG Factorial Condition ({context}): Chain end, returning {repr(left_value)}", flush=True)
+            self.log(f"evaluate_expression_chain: Base case, returning left_value={left_value}")
             return left_value
         
-        operator_node = binop_node.children[0]
-        right_node = binop_node.children[1]
-        tail_node = binop_node.children[2] if len(binop_node.children) > 2 else None
+        current_op_node = binop_node.children[0]
+        if not hasattr(current_op_node, 'value'):
+            self.log(f"ERROR: current_op_node has no value attribute. Node: {current_op_node}")
+            self.stopped = True
+            return None
+        current_operator_str = current_op_node.value
+
+        immediate_right_operand_node = binop_node.children[1]
         
-        operator = operator_node.value if hasattr(operator_node, 'value') else operator_node
-        
-        # --- Important: Special handling for logical operators with condition nodes ---
-        # Handle the new AST structure for logical operators that contain a complete condition on the right side
-        if operator in ['&&', '||'] and hasattr(right_node, 'type') and right_node.type == "condition":
-            # print(f"DEBUG Factorial Condition ({context}): Found logical operator '{operator}' with complete condition on right side", flush=True)
+        if current_operator_str in ['&&', '||'] and hasattr(immediate_right_operand_node, 'type') and immediate_right_operand_node.type == "condition":
+            # print(f"DEBUG Factorial Condition ({context}): Found logical operator '{current_operator_str}' with complete condition on right side", flush=True)
+            self.log(f"evaluate_expression_chain: Handling logical operator '{current_operator_str}' with a condition node on RHS.")
             
-            # For logical operators, evaluate the right side completely as a condition
             # print(f"DEBUG Factorial Condition ({context}): Evaluating complete condition on right side", flush=True)
-            right_value = self.execute_condition(right_node, context=f"{context}:RightSide")
+            right_value_for_logical_op = self.execute_condition(immediate_right_operand_node, context=f"{context}:LogicalRHS")
             
             if self.stopped:
                 return None
                 
-            # Apply the logical operator
-            # print(f"DEBUG Factorial Condition ({context}): Applying logical operator '{operator}': Left={repr(left_value)}, Right={repr(right_value)}", flush=True)
-            current_result = self.apply_operator(operator, left_value, right_value)
-            # print(f"DEBUG Factorial Condition ({context}): Logical operator '{operator}' result: {repr(current_result)}", flush=True)
-            
-            return current_result
+            # print(f"DEBUG Factorial Condition ({context}): Applying logical operator '{current_operator_str}': Left={repr(left_value)}, Right={repr(right_value_for_logical_op)}", flush=True)
+            result = self.apply_operator(current_operator_str, left_value, right_value_for_logical_op)
+            # print(f"DEBUG Factorial Condition ({context}): Logical operator '{current_operator_str}' result: {repr(result)}", flush=True)
+            self.log(f"evaluate_expression_chain: Logical op special path returning result={result}")
+            return result 
+
+        remaining_chain_node = binop_node.children[2] if len(binop_node.children) > 2 else None
+
+        effective_right_operand_value = self.execute_node(immediate_right_operand_node)
+        if self.stopped:
+            return None
         
-        # --- Standard case: Normal right operand ---
-        # If the right_node itself starts another chain (e.g. in a + b * c), 
-        # execute_node should handle it, but be aware of potential precedence issues 
-        # stemming from the parser if it doesn't group correctly.
-        # print(f"DEBUG Factorial Condition ({context}): Evaluating right operand for '{operator}' - Node type: {getattr(right_node, 'type', 'N/A')}", flush=True)
-        right_value = self.execute_node(right_node)
-        # print(f"DEBUG Factorial Condition ({context}): Right operand for '{operator}' evaluated to: {repr(right_value)}", flush=True)
+        # print(f"DEBUG Factorial Condition ({context}): Current op='{current_operator_str}', initial effective_right_operand_value={repr(effective_right_operand_value)}", flush=True)
+        self.log(f"evaluate_expression_chain: Current op='{current_operator_str}', initial effective_right_operand_value={effective_right_operand_value}")
 
+        tail_for_final_recursion = remaining_chain_node
+        
+        if remaining_chain_node:
+            if not remaining_chain_node.children or not hasattr(remaining_chain_node.children[0], 'value'):
+                 self.log(f"ERROR: remaining_chain_node.children[0] has no value. Node: {remaining_chain_node.children[0] if remaining_chain_node.children else 'No children'}")
+                 self.stopped = True
+                 return None
+
+            next_operator_str = remaining_chain_node.children[0].value
+            # print(f"DEBUG Factorial Condition ({context}): Peeking next op='{next_operator_str}'. Current op prec={self.get_operator_precedence(current_operator_str)}, Next op prec={self.get_operator_precedence(next_operator_str)}", flush=True)
+            self.log(f"evaluate_expression_chain: Peeking next op='{next_operator_str}'. Current op prec={self.get_operator_precedence(current_operator_str)}, Next op prec={self.get_operator_precedence(next_operator_str)}")
+
+            if self.get_operator_precedence(next_operator_str) > self.get_operator_precedence(current_operator_str):
+                # print(f"DEBUG Factorial Condition ({context}): Precedence: '{next_operator_str}' > '{current_operator_str}'. Evaluating higher precedence sub-chain.", flush=True)
+                self.log(f"evaluate_expression_chain: Precedence: '{next_operator_str}' > '{current_operator_str}'. Evaluating higher precedence sub-chain.")
+                effective_right_operand_value = self.evaluate_expression_chain(effective_right_operand_value, remaining_chain_node, context)
+                if self.stopped:
+                    return None
+                # print(f"DEBUG Factorial Condition ({context}): Sub-chain evaluated. New effective_right_operand_value={repr(effective_right_operand_value)}", flush=True)
+                self.log(f"evaluate_expression_chain: Sub-chain evaluated. New effective_right_operand_value={effective_right_operand_value}")
+                tail_for_final_recursion = None
+        
+        # print(f"DEBUG Factorial Condition ({context}): Applying operator '{current_operator_str}': Left={repr(left_value)}, Right={repr(effective_right_operand_value)}", flush=True)
+        current_result = self.apply_operator(current_operator_str, left_value, effective_right_operand_value)
+        # print(f"DEBUG Factorial Condition ({context}): Operator '{current_operator_str}' result: {repr(current_result)}", flush=True)
+        self.log(f"evaluate_expression_chain: Applied '{current_operator_str}', result={current_result}")
         if self.stopped:
-             return None
-             
-        # Apply the current operator
-        # print(f"DEBUG Factorial Condition ({context}): Applying operator '{operator}': Left={repr(left_value)}, Right={repr(right_value)}", flush=True)
-        current_result = self.apply_operator(operator, left_value, right_value)
-        # print(f"DEBUG Factorial Condition ({context}): Operator '{operator}' result: {repr(current_result)}", flush=True)
+            return None
 
-        if self.stopped:
-             return None
-
-        # Recursively evaluate the rest of the chain with the current result
-        if tail_node is not None:
-            # print(f"DEBUG Factorial Condition ({context}): Evaluating tail expression starting with {repr(current_result)}", flush=True)
-            # Pass context down
-            return self.evaluate_expression_chain(current_result, tail_node, context=context)
+        if tail_for_final_recursion:
+            # print(f"DEBUG Factorial Condition ({context}): Recursing on tail with left_value={repr(current_result)}", flush=True)
+            self.log(f"evaluate_expression_chain: Recursing on tail with left_value={current_result}")
+            return self.evaluate_expression_chain(current_result, tail_for_final_recursion, context)
         else:
-             # No more operators in the chain
-             # print(f"DEBUG Factorial Condition ({context}): Chain evaluation complete, final result: {repr(current_result)}", flush=True)
-             return current_result
+            # print(f"DEBUG Factorial Condition ({context}): No tail for final recursion, returning result={repr(current_result)}", flush=True)
+            self.log(f"evaluate_expression_chain: No tail for final recursion, returning result={current_result}")
+            return current_result
 
     def execute_output_statement(self, node):
         self.log("Executing output_statement")
