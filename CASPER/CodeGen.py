@@ -1,5 +1,6 @@
 from Parser import ASTNode
 import sys # <-- ADD THIS IMPORT
+from decimal import Decimal, getcontext
 
 class CodeGenerator:
     def __init__(self):
@@ -1186,59 +1187,63 @@ class CodeGenerator:
         
         # Debug print for string equality comparisons
         if operator == '==' and (isinstance(left, str) or isinstance(right, str)):
-           
             # Print character codes for debugging potential invisible chars
             if isinstance(left, str) and isinstance(right, str):
                 left_codes = [ord(c) for c in left]
                 right_codes = [ord(c) for c in right]
-             
         
         # Apply implicit type conversion based on the operation type
         original_left, original_right = left, right
         left, right = self.apply_implicit_conversion(left, right, operator)
         
-        # Debug print after conversion
+        # Convert numeric values to Decimal for precise arithmetic
+        if isinstance(left, (int, float)):
+            left = Decimal(str(left))
+        if isinstance(right, (int, float)):
+            right = Decimal(str(right))
+        
+        def to_best_number_type(val):
+            # If val is a Decimal and is an integer, return as int, else as float
+            if isinstance(val, Decimal):
+                if val == val.to_integral_value():
+                    return int(val)
+                else:
+                    return float(val)
+            return val
         
         if operator == "+":
             # Handle string concatenation
             if isinstance(left, str) or isinstance(right, str):
                 return str(left) + str(right)
             # Numeric addition
-            return left + right
+            return to_best_number_type(left + right)
         elif operator == "-":
-            return left - right
+            return to_best_number_type(left - right)
         elif operator == "*":
-            return left * right
+            return to_best_number_type(left * right)
         elif operator == "/":
             if right == 0:
                 self.log("ERROR: Division by zero detected")
                 print("Error: Division by zero")
                 self.stopped = True
                 return 0
-            return left / right # Keep as float division
+            return float(left / right)  # Division always returns float
         elif operator == "%":
             if right == 0:
                 self.log("ERROR: Modulo by zero detected")
                 print("Error: Modulo by zero")
                 self.stopped = True
                 return 0
-            return left % right
+            return to_best_number_type(left % right)
         elif operator == "||":
-            # --- ADDED DEBUG --- 
             bool_left = bool(left)
             bool_right = bool(right)
-            # print(f"DEBUG Factorial Condition (apply_operator): Evaluating ||: bool({repr(left)}) || bool({repr(right)}) -> {bool_left} || {bool_right}", flush=True)
-            # --- END DEBUG --- 
             return bool_left or bool_right
         elif operator == "&&":
-             # --- ADDED DEBUG --- 
             bool_left = bool(left)
             bool_right = bool(right)
-            # print(f"DEBUG Factorial Condition (apply_operator): Evaluating &&: bool({repr(left)}) && bool({repr(right)}) -> {bool_left} && {bool_right}", flush=True)
-            # --- END DEBUG --- 
             return bool_left and bool_right
         elif operator == "==":
-            # Comparison already uses converted values
             return left == right
         elif operator == "!=":
             return left != right
@@ -1353,13 +1358,16 @@ class CodeGenerator:
                 self.log(f"Converted bool -> int: {value} -> {result}")
                 return result
 
-            # string -> int (Truncate float-like strings, error otherwise)
+            # string -> int (do NOT go through float for integer strings)
             elif source_type == "string" and target_type == "int":
                 try:
-                    # First, try converting to float to handle "123.45" cases
-                    float_val = float(value)
-                    result = int(float_val) # Truncate
-                    self.log(f"Converted string -> int (via float truncate): '{value}' -> {result}")
+                    s = value.strip()
+                    if s.isdigit() or (s.startswith('-') and s[1:].isdigit()):
+                        result = int(s)
+                    else:
+                        float_val = float(s)
+                        result = int(float_val) # Truncate
+                    self.log(f"Converted string -> int: '{value}' -> {result}")
                     return result
                 except ValueError:
                     self.log(f"ERROR: Cannot convert string '{value}' to int.")

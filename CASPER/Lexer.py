@@ -62,7 +62,7 @@ class Lexer:
             else:
                 if not is_decimal:
                     # Building the integer part
-                    if len(integer_part) >= 9:
+                    if len(integer_part) >= 256:
                         # Exceeds 9 digits => ILLEGAL
                         while self.current_char and self.current_char not in Delimiters.DEL10 and self.current_char != '\n':
                             self.__read_char()
@@ -71,7 +71,7 @@ class Lexer:
                     integer_part += self.current_char
                 else:
                     # Building the decimal part
-                    if len(decimal_part) >= 9:
+                    if len(decimal_part) >= 256:
                         # Exceeds 9 digits => ILLEGAL
                         while self.current_char and self.current_char not in Delimiters.DEL10 and self.current_char != '\n':
                             self.__read_char()
