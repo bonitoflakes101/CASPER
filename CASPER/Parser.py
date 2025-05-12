@@ -6,7 +6,7 @@ parser = None
 tokens = [token.name for token in TokenType]
 
 # Define valid types
-valid_types = {"int", "flt", "str", "chr", "bln"}  # Ensure tokens are strings
+valid_types = {"int", "flt", "str", "bln"}  # Ensure tokens are strings
 
 # Abstract Syntax Tree Nodes
 class ASTNode:
@@ -270,7 +270,6 @@ def p_data_type(p):
     data_type : INT   
               | FLT   
               | BLN  
-              | CHR  
               | STR  
     """
     p[0] = ASTNode("data_type", value=p[1].lower())
@@ -509,14 +508,8 @@ def p_factor_tail(p):
 def p_literal(p):
     """
     literal : literal1
-            | literal2
     """
-
-    if isinstance(p[1], ASTNode) and p[1].type == "chr_lit":
-        p[0] = p[1]
-    else:
-
-        p[0] = ASTNode("literal", value=p[1])
+    p[0] = ASTNode("literal", value=p[1])
 
 
 
@@ -644,12 +637,10 @@ def p_function_dtype(p):
     """
     function_dtype : FUNCTION_INT       
                    | FUNCTION_FLT      
-                   | FUNCTION_CHR       
                    | FUNCTION_BLN       
                    | FUNCTION_STR       
                    | FUNCTION_LIST_INT 
                    | FUNCTION_LIST_FLT  
-                   | FUNCTION_LIST_CHR 
                    | FUNCTION_LIST_STR  
                    | FUNCTION_LIST_BLN  
     """
@@ -952,7 +943,6 @@ def p_local_data_type(p):
     local_data_type : INT   
               | FLT   
               | BLN  
-              | CHR  
               | STR  
     """
     p[0] = ASTNode("local_data_type", value=p[1].lower())
@@ -2779,25 +2769,16 @@ def p_error(p):
         "BLN_LIT": "boolean literal",
         "STR": "string",
         "STR_LIT": "string literal",
-        "CHR": "char",
-        "CHR_LIT": "char literal",
         
         "FUNCTION": "function",
         "FUNCTION_INT": "function_int",
         "FUNCTION_STR": "function_str",
         "FUNCTION_BLN": "function_bln",
         "FUNCTION_FLT": "function_flt",
-        "FUNCTION_CHR": "function_chr",
         "FUNCTION_LIST_INT": "function_list_int",
         "FUNCTION_LIST_STR": "function_list_str",
         "FUNCTION_LIST_BLN": "function_list_bln",
         "FUNCTION_LIST_FLT": "function_list_flt",
-        "FUNCTION_LIST_CHR": "function_list_chr",
-        "FUNCTION_LIST_INT2D": "function_list_int2D",
-        "FUNCTION_LIST_STR2D": "function_list_str2D",
-        "FUNCTION_LIST_BLN2D": "function_list_bln2D",
-        "FUNCTION_LIST_FLT2D": "function_list_flt2D",
-        "FUNCTION_LIST_CHR2D": "function_list_chr2D",
         
         "CONVERT_TO_INT": "to_int",
         "CONVERT_TO_STR": "to_str",
@@ -2808,12 +2789,6 @@ def p_error(p):
         "LIST_STR": "list_str",
         "LIST_BLN": "list_bln",
         "LIST_FLT": "list_flt",
-        "LIST_CHR": "list_chr",
-        "LIST_INT2D": "list_int2D",
-        "LIST_STR2D": "list_str2D",
-        "LIST_BLN2D": "list_bln2D",
-        "LIST_FLT2D": "list_flt2D",
-        "LIST_CHR2D": "list_chr2D",
         
         "FUNCTION_NAME": "function_name",
         "MAIN_CASPER": "main_casper",
