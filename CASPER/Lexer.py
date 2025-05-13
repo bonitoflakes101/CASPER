@@ -129,9 +129,8 @@ class Lexer:
         
     # OKAY NA TO BAI
     def __read_identifier_or_keyword(self) -> Token:
-        start_pos = self.position
-        is_valid = True  # Flag to track validity
-
+        start_pos = self.position # Position of the first char of the sequence
+        
         # IDENTIFIERS - $ or @
         if self.current_char in {'$', '@'}:
             self.__read_char()  # Consume $ or @
@@ -139,7 +138,7 @@ class Lexer:
             # Ensure the identifier starts with a valid character
             if self.current_char is None or not (self.current_char.isalpha() or self.current_char == '_'):
                 # If the first character after $ is invalid, treat it as ILLEGAL
-                while self.current_char and self.current_char not in Delimiters.identifier_del and self.current_char != '\n':
+                while self.current_char and self.current_char not in Delimiters.identifier_del and self.current_char != '\\n':
                     self.__read_char()
                 illegal_literal = self.source[start_pos:self.position]
             
@@ -153,7 +152,7 @@ class Lexer:
                 elif self.current_char in {'$', '@'}:
                
                     # If another $ or @ is encountered mid-identifier, read the whole sequence as ILLEGAL
-                    while self.current_char and self.current_char not in Delimiters.identifier_del and self.current_char != '\n':
+                    while self.current_char and self.current_char not in Delimiters.identifier_del and self.current_char != '\\n':
                         self.__read_char()
                     illegal_literal = self.source[start_pos:self.position]
                     return self.__new_token(TokenType.ILLEGAL, illegal_literal)
@@ -201,82 +200,67 @@ class Lexer:
                     illegal_literal = self.source[start_pos:self.position]
                     return self.__return_illegal_token(identifier, valid_delims=valid_delims)
 
-            # Otherwise, treat as ILLEGAL
+            # Otherwise, treat as ILLEGAL (e.g. if logic above is incomplete for $/@)
             while self.current_char and self.current_char != ' ':   
                 self.__read_char()
             illegal_literal = self.source[start_pos:self.position]
             return self.__new_token(TokenType.ILLEGAL, illegal_literal)
+        # For sequences not starting with $ or @ (potential keywords or plain illegal sequences)
         else:
-            # KEYWORDS
-            while self.current_char and (
-                # PROBLEM : may prob sa mga gumagamit ng [], hindi siya nacocount as delimiter
-                Delimiters.is_valid_identifier_char(self.current_char) 
-            ):
-                  
-                    self.__read_char()
-                   
-
-        identifier = self.source[start_pos:self.position]
-      
-
-        # invalid token = ILLEGAL
-        if not is_valid:
-            return self.__new_token(TokenType.ILLEGAL, identifier)
-
-        token_type = lookup_ident(identifier)
-        
-
-        # Specific logic for the "BIRTH" keyword
-        # if token_type == TokenType.BIRTH or token_type == TokenType.SKIP or token_type == TokenType.STOP:
-        #     next_char = self.__peek_char()
-        #     valid_delims = KEYWORD_DELIMITERS.get("BIRTH", set())
-
-        #     # Allow both newline and other valid delimiters for BIRTH
-        #     if next_char == '\n':
-        #         return self.__new_token(token_type, identifier)
-        #     else:
-        #         return self.__return_illegal_token(identifier, valid_delims=valid_delims)
+            # Read the full sequence of characters that could form an identifier/keyword
+            # self.current_char is the first char (e.g., 'B'), start_pos is its position.
             
-        # General keyword validation for other keywords
-        if token_type != TokenType.IDENT:
-            valid_delims = KEYWORD_DELIMITERS.get(token_type.name, set())
+            while self.current_char and Delimiters.is_valid_identifier_char(self.current_char):
+                self.__read_char()
             
-            if self.current_char in valid_delims:
-                return self.__new_token(token_type, identifier)
+            # 'identifier' is the sequence we just read (e.g., "Birth")
+            # self.current_char is now the character *after* this sequence (e.g., ' ' or '{')
+            # self.position is the position of this terminating character.
+            identifier = self.source[start_pos : self.position] 
+            
+            token_type_from_lookup = lookup_ident(identifier)
+
+            if token_type_from_lookup == TokenType.ILLEGAL:
+                # The sequence 'identifier' (e.g., "Birth") is not a recognized keyword
+                # and lookup_ident has confirmed it's ILLEGAL as a whole.
+                # Tokenize only its first character as ILLEGAL.
+                
+                first_char_of_sequence = self.source[start_pos]
+                
+                tok = Token(type=TokenType.ILLEGAL, 
+                            literal=first_char_of_sequence, 
+                            line_no=self.line_no, 
+                            position=start_pos)
+                
+                # Reset the lexer's state so that the *next* character
+                # to be processed is identifier[1] (the second char of the sequence).
+                self.position = start_pos  # Position of the char we just tokenized
+                self.read_position = start_pos + 1 # Next read position for char after it
+                
+                self.__read_char() # Consumes first_char_of_sequence from lexer's perspective,
+                                   # sets self.current_char to the next one, and updates positions.
+                                   
+                return tok
             else:
-              
-                # Continue reading until a space is found
-                while self.current_char and self.current_char != ' ':
-                    self.__read_char()
+                # The 'identifier' is a known keyword.
+                # token_type_from_lookup is the actual TokenType (e.g., TokenType.BIRTH).
+                # Proceed with normal keyword delimiter checking.
+                # self.current_char is the character *after* 'identifier'.
+                
+                token_type = token_type_from_lookup
 
-                illegal_literal = self.source[start_pos:self.position]
-               
-                return self.__return_illegal_token(illegal_literal, valid_delims=valid_delims)
-        
-        # For identifiers
-        if token_type == TokenType.IDENT:
-            valid_delims = KEYWORD_DELIMITERS.get(token_type.name, set())
-          
-        
-            if self.current_char in valid_delims:
-              
-                return self.__new_token(token_type, identifier)
-            else:
-                return self.__return_illegal_token(identifier, valid_delims=valid_delims)
- 
-
-        # Handle as an illegal identifier if it doesn't start with $ or @
-        if not identifier.startswith(('$', '@')):
-            return self.__new_token(TokenType.ILLEGAL, identifier)
-
-        # Validate general delimiters for identifiers
-        if self.current_char not in Delimiters.identifier_del:
-            return self.__new_token(TokenType.ILLEGAL, identifier)
-        
-        # Otherwise, return the identifier token
-        return self.__new_token(TokenType.ILLEGAL, identifier)
-
-
+                # General keyword validation
+                # (lookup_ident for non-$/@ returns specific keyword TokenType or ILLEGAL, not IDENT)
+                valid_delims = KEYWORD_DELIMITERS.get(token_type.name, set())
+                
+                if self.current_char in valid_delims:
+                    # Keyword followed by a valid delimiter.
+                    return self.__new_token(token_type, identifier)
+                else:
+                    # Keyword is valid, but followed by an invalid delimiter.
+                    # Tokenize the keyword. The invalid delimiter will be handled
+                    # by the next call to next_token(). (This was the previous edit)
+                    return self.__new_token(token_type, identifier)
 
 
 
