@@ -119,6 +119,12 @@ def home():
         parser = build_parser()
         try:
             ast = parser.parse(lexer=Lexer(code))
+            # ---- ADDED FOR AST PRINTING ----
+            if ast:
+                print("\n--- Abstract Syntax Tree (AST) ---")
+                print(ast)
+                print("--------------------------------")
+            # ---- END AST PRINTING ----
             parser_output = "No Syntax Errors Found."
             parser_successful = True # Mark parser as successful
 

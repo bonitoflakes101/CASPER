@@ -15,8 +15,39 @@ class ASTNode:
         self.children = children or []
         self.value = value
 
+    def _pretty_print_repr(self, indent_level):
+        indent = "  " * indent_level
+        # Node type, and value if it exists and is not None
+        s = f"{indent}ASTNode(type={self.type!r}"
+        if self.value is not None:
+            s += f", value={self.value!r}"
+        
+        if self.children:
+            s += f", children=["
+            if len(self.children) == 1 and not isinstance(self.children[0], ASTNode):
+                # If only one child and it's not an ASTNode (e.g. a primitive value in a list)
+                s += f"{self.children[0]!r}])"
+            elif len(self.children) == 1 and isinstance(self.children[0], ASTNode):
+                s += f"\n{self.children[0]._pretty_print_repr(indent_level + 1)}\n{indent}] )"
+            else:
+                s += "\n"
+                for i, child in enumerate(self.children):
+                    if isinstance(child, ASTNode):
+                        s += child._pretty_print_repr(indent_level + 1)
+                    else:
+                        # Handle non-ASTNode children (e.g. literals in a list)
+                        s += "  " * (indent_level + 1) + repr(child)
+                    if i < len(self.children) - 1:
+                        s += ",\n"
+                    else:
+                        s += "\n"
+                s += f"{indent}] )"
+        else:
+            s += ")"
+        return s
+
     def __repr__(self):
-        return f"ASTNode({self.type}, {self.value}, {self.children})"
+        return self._pretty_print_repr(0)
     
 precedence = (
     ('right', 'EXPONENT'),  # 2 - Exponentiation
@@ -2894,7 +2925,8 @@ def p_error(p):
 # Build Parser
 def build_parser():
     global parser
-    parser = yacc.yacc()
+    # Added debug=True and debugfile arguments to generate parser.out
+    parser = yacc.yacc(debug=True, debugfile="parser.out")
     return parser
 
 # ADD NEW FUNCTION for measure_call
