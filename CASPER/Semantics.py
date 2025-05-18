@@ -44,10 +44,16 @@ class SemanticAnalyzer:
         self.array_2d_lengths = {}  
         self.found_revive_in_current_function = False
 
+    # triggers the whole traversal process, during which the various specialized visitor methods populate the self.errors list.
     def analyze(self, ast):
         self.visit(ast, self.global_symbols)
 
         return self.errors
+
+
+# When all nodes have been processed, the recursion naturally unwinds because there are no more children to visit. 
+# Each function call in the call stack returns one by one until the initial visit call (from analyze) returns. 
+# Then, analyze simply returns the accumulated list of self.errors.
 
     def visit(self, node, symtable):
         if node is None:
