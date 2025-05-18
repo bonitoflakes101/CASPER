@@ -8,7 +8,7 @@ tokens = [token.name for token in TokenType]
 def _is_prefix_of_any_keyword(sequence: str, keywords_dict: dict) -> bool:
     if not sequence: # An empty sequence can be seen as a prefix of any keyword.
         return True 
-    for kw in keywords_dict.keys(): # Make sure keywords_dict is the actual KEYWORDS dictionary
+    for kw in keywords_dict.keys(): # checks if the character sequence is a prefix of any keyword
         if kw.startswith(sequence):
             return True
     return False
@@ -162,37 +162,28 @@ class Lexer:
         else:
             current_sequence_so_far = ""
             
+            # reads character by character and checks if it's a valid identifier character (alphanumeric or underscore)
             while self.current_char and Delimiters.is_valid_identifier_char(self.current_char):
                 char_being_added = self.current_char
-                potential_next_sequence = current_sequence_so_far + char_being_added
+                potential_next_sequence = current_sequence_so_far + char_being_added  
 
-                if _is_prefix_of_any_keyword(potential_next_sequence, KEYWORDS):
-                    current_sequence_so_far = potential_next_sequence
-                    self.__read_char()
-                    if not self.current_char:
+                if _is_prefix_of_any_keyword(potential_next_sequence, KEYWORDS): # checks if the character sequence is a prefix of any keyword
+                    current_sequence_so_far = potential_next_sequence # updates the current sequence so far
+                    self.__read_char() # reads the next character
+                    if not self.current_char: # if the next character is None, break
                         break 
                 else:
-                    self.__read_char()
+                    self.__read_char() #
                     illegal_literal = self.source[start_pos:self.position]
                     return Token(TokenType.ILLEGAL, illegal_literal, self.line_no, start_pos)
 
             identifier_candidate = current_sequence_so_far 
 
-            if not identifier_candidate:
-                if self.source[start_pos:self.position]:
-                     problematic_literal = self.source[start_pos:self.position]
-                elif start_pos < len(self.source):
-                     problematic_literal = self.source[start_pos]
-                     self.__read_char()
-                else:
-                     return Token(TokenType.EOF, "", self.line_no, start_pos)
-                return Token(TokenType.ILLEGAL, problematic_literal, self.line_no, start_pos)
-
-            token_type = lookup_ident(identifier_candidate)
+            token_type = lookup_ident(identifier_candidate) # looks up the identifier in the keywords dictionary
 
             if token_type != TokenType.IDENT and token_type != TokenType.ILLEGAL:
-                valid_delims = KEYWORD_DELIMITERS.get(token_type.name, set())
-                if self.current_char in valid_delims or self.current_char is None:
+                valid_delims = KEYWORD_DELIMITERS.get(token_type.name, set()) # gets the valid delimiters for the token type
+                if self.current_char in valid_delims or self.current_char is None: 
                     return Token(token_type, identifier_candidate, self.line_no, start_pos)
                 else:
                     return Token(token_type, identifier_candidate, self.line_no, start_pos)
