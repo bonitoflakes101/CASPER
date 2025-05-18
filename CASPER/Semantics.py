@@ -9,9 +9,9 @@ class SemanticError(Exception):
 
 class SymbolTable:
     def __init__(self, parent=None):
-        self.symbols = {}
-        self.parent = parent
-        self.expected_return_type = None
+        self.symbols = {} # symbols = {"var_name": "var_type"}
+        self.parent = parent # parent = SymbolTable
+        self.expected_return_type = None # expected_return_type = "int", "flt", "bln", "str", "day", "night"
 
     def add(self, name, var_type):
         if name in self.symbols:
@@ -54,19 +54,20 @@ class SemanticAnalyzer:
             return
         if isinstance(node, list):
             for item in node:
-                self.visit(item, symtable)
+                self.visit(item, symtable) # visits each item in the list, with the current symbol table
             return
         if isinstance(node, tuple):
             for subnode in node:
                 if isinstance(subnode, (ASTNode, list, tuple)):
-                    self.visit(subnode, symtable)
+                    self.visit(subnode, symtable) # visits each subnode in the tuple, with the current symbol table
             return
         if not hasattr(node, "type"):
             return
         method_name = 'visit_' + node.type
         
-        visitor = getattr(self, method_name, self.generic_visit)
-        return visitor(node, symtable)
+        # getattr finds the specific method then assigns it to visitor, uses getattr to reference the method_name
+        visitor = getattr(self, method_name, self.generic_visit) # gets an attribute (variable or method) of the method_name (e.g. visit_program) if it exists, otherwise uses generic_visit
+        return visitor(node, symtable) # visitor = visit_program or whatever other method is called
 
     def generic_visit(self, node, symtable):
         if hasattr(node, "children") and node.children:

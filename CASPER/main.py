@@ -11,7 +11,7 @@ from CodeGen import run_code_generation, CodeGenerator
 
 app = Flask(__name__)
 
-class ListBasedLexer: # 
+class ListBasedLexer: # bridge between the lexer and the parser
     def __init__(self, raw_tokens_list):
         self.tokens_iterator = iter(raw_tokens_list) # iter = bookmark for the tokens_list
 

@@ -11,9 +11,9 @@ valid_types = {"int", "flt", "str", "bln"}  # Ensure tokens are strings
 # Abstract Syntax Tree Nodes
 class ASTNode:
     def __init__(self, type, children=None, value=None):
-        self.type = type
-        self.children = children if children is not None else []
-        self.value = value
+        self.type = type # type = "program", "global_dec", "main_function", "global_statement", "var_statement", "list_dec", "2d_list", "global_statement_tail", "global_value", "list_value", "element_tail", "data_type", "expression", "factor", "factor_tail", "literal", "literal1", "literal2", "chr_lit", "factor_index", "factor_list_index", "factor_list_index2", "factor_expression", "factor_expression_factor", "factor_expression_tail", "factor_var_call", "factor_postfix_op", "factor_postfix", "factor_list_index", "factor_list_index2", "factor_expression_tail", "factor_expression1", "factor_tail", "literal", "literal1", "literal2", "chr_lit"
+        self.children = children if children is not None else [] # children = [ASTNode, ASTNode, ...]
+        self.value = value # value = "int", "flt", "str", "bln", "int_lit", "flt_lit", "day", "night", "str_lit"
 
     def _pretty_print_repr(self, level=0):
         indent = "  " * level
