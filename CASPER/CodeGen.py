@@ -3499,24 +3499,13 @@ def find_func_declarations(node):
 
     return names
 
-# --- Helper function to check if the AST matches the permutation script ---
-def is_permutation_ast(ast_root):
-    """Checks if the AST contains declarations for @swap and @findPermutations."""
-    if ast_root is None:
-        return False
-    declared_functions = find_func_declarations(ast_root)
-    is_perm_script = "@swap" in declared_functions and "@findPermutations" in declared_functions
-    # print(f"DEBUG: Declared functions found: {declared_functions}. Is permutation script? {is_perm_script}") # Optional debug
-    return is_perm_script
+
 
 def run_code_generation(ast):
     """Create a CodeGenerator and run code generation on the given AST."""
     
     generator = CodeGenerator()
     generator.debug = True
-
-    if is_permutation_ast(ast): # Use the helper function
-        generator.is_permutation_bypass = True
 
     generator.global_vars = {}
     generator.env_stack = [generator.global_vars]
