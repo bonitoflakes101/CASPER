@@ -89,7 +89,7 @@ def home():
             illegal_tokens.append(str(token))
             
     # Prepare lexer results for display *only if* flag is set
-    lexer_display_results = [(str(t.type).split(".")[-1], t.literal) for t in all_tokens if t.type != TokenType.ILLEGAL] if display_lexer else []
+    lexer_display_results = [(str(t.type).split(".")[-1], t.literal) for t in all_tokens] if display_lexer else []
     print(f"[DEBUG] Lexer Results Display Enabled: {display_lexer}, Items: {len(lexer_display_results)}")
 
     # --- Conditional Execution based on Flags ---
