@@ -9,7 +9,7 @@ def _is_prefix_of_any_keyword(sequence: str, keywords_dict: dict) -> bool:
     if not sequence: # An empty sequence can be seen as a prefix of any keyword.
         return True 
     for kw in keywords_dict.keys(): # checks if the character sequence is a prefix of any keyword
-        if kw.startswith(sequence):
+        if kw.startswith(sequence): # if the sequence is a prefix of any keyword, return True
             return True
     return False
 

@@ -1,15 +1,45 @@
 from flask import Flask, request, render_template, jsonify
 import io
 import sys
+from enum import Enum
 
 from Lexer import Lexer
 from Parser import build_parser
-from Token import TokenType
+from Token import TokenType, Token
 from Semantics import run_semantic_analysis
 from CodeGen import run_code_generation, CodeGenerator
 
 app = Flask(__name__)
 
+class ListBasedLexer: # 
+    def __init__(self, raw_tokens_list):
+        self.tokens_iterator = iter(raw_tokens_list) # iter = bookmark for the tokens_list
+
+    def token(self): # called on demand by the parser
+        while True:
+            try:
+                tok = next(self.tokens_iterator) # fetches the next token from the tokens_iterator
+            except StopIteration:
+                return None 
+
+            if tok.type == TokenType.EOF: 
+                return None 
+
+            if tok.type == TokenType.ILLEGAL or tok.type == TokenType.COMMENT:
+                continue # Parser skips these, loop to get next raw token
+
+            ply_token_obj = type('PlyToken', (), {})() # creates a generic empty object
+
+            if isinstance(tok.type, Enum):
+                ply_token_obj.type = tok.type.name # tok.type.name = string representation of the tok.type = "BIRTH" or "IDENT"
+            else:
+                ply_token_obj.type = tok.type # tok.type =  TokenType.BIRTH or TokenType.IDENT
+
+            ply_token_obj.value = tok.literal # tok.literal = "birth" or "$name"
+            ply_token_obj.lineno = tok.line_no # tok.line_no = 1
+            ply_token_obj.lexpos = tok.position # tok.position = 0
+            
+            return ply_token_obj
 
 # --- Default Toggle States --- 
 # Used for GET requests or if not specified in POST
@@ -81,12 +111,16 @@ def home():
     lexer = Lexer(source=code)
     all_tokens = []  # Changed from lexer_results
     illegal_tokens = []
-    while lexer.current_char is not None:
-        token = lexer.next_token()
-        all_tokens.append(token) # Store all tokens
-        token_type = str(token.type).split(".")[-1]
-        if token_type == "ILLEGAL":
-            illegal_tokens.append(str(token))
+    # Populate all_tokens and illegal_tokens by consuming the lexer once
+    temp_lexer_for_all_tokens = Lexer(source=code) # Use a temporary lexer instance for this
+    while True:
+        token = temp_lexer_for_all_tokens.next_token() # call next_token() from Lexer class
+        all_tokens.append(token) # appends whatever token to the all_tokens list
+        token_type_str = str(token.type).split(".")[-1]
+        if token_type_str == "ILLEGAL":
+            illegal_tokens.append(str(token)) # appends the illegal token to the illegal_tokens list
+        if token.type == TokenType.EOF: # Stop after appending EOF
+            break
             
     # Prepare lexer results for display *only if* flag is set
     lexer_display_results = [(str(t.type).split(".")[-1], t.literal) for t in all_tokens if t.type != TokenType.ILLEGAL] if display_lexer else []
@@ -116,9 +150,11 @@ def home():
 
     else:
         # --- Attempt Parser Execution --- 
-        parser = build_parser()
+        parser = build_parser() # builds the parser
         try:
-            ast = parser.parse(lexer=Lexer(code))
+            # Use ListBasedLexer with the pre-generated all_tokens list
+            parser_lexer = ListBasedLexer(all_tokens)
+            ast = parser.parse(lexer=parser_lexer) # parses the code, builds the AST if no errors, repeatedly calls ListBasedLexer.token()
             # ---- ADDED FOR AST PRINTING ----
             if ast:
                 print("\n--- Abstract Syntax Tree (AST) ---")
@@ -249,24 +285,32 @@ def check_errors():
     """Provides quick error-checking for the Monaco editor (AJAX)."""
     code = request.json.get('code', '')
     lexer = Lexer(code)
-    illegal_tokens = []
-
-    while lexer.current_char is not None:
-        token = lexer.next_token()
+    illegal_tokens_list_for_ajax = [] # Renamed to avoid conflict
+    
+    # Lex once to get all tokens for AJAX check
+    ajax_lexer_instance = Lexer(code)
+    all_ajax_tokens = []
+    while True:
+        token = ajax_lexer_instance.next_token()
+        all_ajax_tokens.append(token)
         if token.type == TokenType.ILLEGAL:
-            illegal_tokens.append({
+            illegal_tokens_list_for_ajax.append({ # Use the renamed list
                 "line": token.line_no,
                 "startColumn": token.position,
                 "endColumn": token.position + len(token.literal),
                 "message": f"Illegal Token: {token.literal}"
             })
+        if token.type == TokenType.EOF:
+            break
 
-    if illegal_tokens:
-        return jsonify({"errors": illegal_tokens})
+    if illegal_tokens_list_for_ajax: # Check the renamed list
+        return jsonify({"errors": illegal_tokens_list_for_ajax})
 
     parser = build_parser()
     try:
-        parser.parse(lexer=Lexer(code))
+        # Use ListBasedLexer for parsing in AJAX check as well
+        ajax_parser_lexer = ListBasedLexer(all_ajax_tokens)
+        parser.parse(lexer=ajax_parser_lexer)
         return jsonify({"errors": []})
     except SyntaxError as e:
         import re
