@@ -12,38 +12,62 @@ valid_types = {"int", "flt", "str", "bln"}  # Ensure tokens are strings
 class ASTNode:
     def __init__(self, type, children=None, value=None):
         self.type = type
-        self.children = children or []
+        self.children = children if children is not None else []
         self.value = value
 
-    def _pretty_print_repr(self, indent_level):
-        indent = "  " * indent_level
-        # Node type, and value if it exists and is not None
-        s = f"{indent}ASTNode(type={self.type!r}"
+    def _pretty_print_repr(self, level=0):
+        indent = "  " * level
+        # Start the string for the current node
+        s = f"{indent}ASTNode(type='{self.type}'"
         if self.value is not None:
             s += f", value={self.value!r}"
+
+        # Check if there are children to print
+        if not self.children:
+            s += ")" # No children, close parenthesis and finish
+            return s
         
-        if self.children:
-            s += f", children=["
-            if len(self.children) == 1 and not isinstance(self.children[0], ASTNode):
-                # If only one child and it's not an ASTNode (e.g. a primitive value in a list)
-                s += f"{self.children[0]!r}])"
-            elif len(self.children) == 1 and isinstance(self.children[0], ASTNode):
-                s += f"\n{self.children[0]._pretty_print_repr(indent_level + 1)}\n{indent}] )"
-            else:
-                s += "\n"
-                for i, child in enumerate(self.children):
-                    if isinstance(child, ASTNode):
-                        s += child._pretty_print_repr(indent_level + 1)
-                    else:
-                        # Handle non-ASTNode children (e.g. literals in a list)
-                        s += "  " * (indent_level + 1) + repr(child)
-                    if i < len(self.children) - 1:
-                        s += ",\n"
-                    else:
+        s += ", children=[" # Start children list. Add newline only if there are children.
+        # Only add newline if there actually are children to print on new lines.
+        if self.children: # Redundant check if we are inside this block due to "if not self.children" above, but good for clarity.
+            s += "\n"
+
+        num_children = len(self.children)
+        for i, child in enumerate(self.children):
+            child_indent_prefix = "  " * (level + 1)
+
+            if isinstance(child, ASTNode):
+                s += child._pretty_print_repr(level + 1)
+            elif isinstance(child, list):
+                # If a child is itself a list, print a sub-list representation
+                s += f"{child_indent_prefix}SubList: ["
+                if child: # Add newline only if sublist is not empty
+                    s += "\n"
+                num_list_items = len(child)
+                for j, item in enumerate(child):
+                    item_indent_prefix = "  " * (level + 2)
+                    if isinstance(item, ASTNode):
+                        s += item._pretty_print_repr(level + 2)
+                    else: # Primitive item or None within the sub-list
+                        s += f"{item_indent_prefix}{item!r}"
+                    
+                    if j < num_list_items - 1:
+                        s += ",\n" # Comma for items in sub-list
+                    elif num_list_items > 0: # Add newline after last item if sublist was not empty
                         s += "\n"
-                s += f"{indent}] )"
-        else:
-            s += ")"
+                s += f"{child_indent_prefix}]" # Closing bracket for SubList
+            elif child is None:
+                s += f"{child_indent_prefix}None"
+            else: # Primitive child (string, number, etc.)
+                s += f"{child_indent_prefix}{child!r}"
+
+            # Add comma and newline if it's not the last child in the main children list
+            if i < num_children - 1:
+                s += ",\n"
+            elif num_children > 0 : # Add newline after the last child if there were children
+                s += "\n"
+        
+        s += f"{indent}])" # Closing bracket for the main children list
         return s
 
     def __repr__(self):
