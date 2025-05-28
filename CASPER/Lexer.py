@@ -143,8 +143,12 @@ class Lexer:
     #         self.__read_char()
 
     def __read_identifier_or_keyword(self) -> Token:
+        """
+        Reads an identifier or keyword. If an invalid sequence is encountered (e.g., multiple `$` or `@`),
+        the first identifier is marked as ILLEGAL, and the second identifier is tokenized correctly.
+        """
         start_pos = self.position
-        
+
         if self.current_char in {'$', '@'}:
             token_start_char = self.current_char
             self.__read_char()
@@ -155,70 +159,68 @@ class Lexer:
             char_count = 0
             while self.current_char and (self.current_char.isalnum() or self.current_char == '_'):
                 if self.current_char in {'$', '@'}:
-                    # Start collecting the illegal sequence from here
-                    illegal_start = self.position
-                    while self.current_char and (self.current_char.isalnum() or self.current_char == '_' or self.current_char in {'$', '@'}):
+                    # Mark the first identifier as ILLEGAL
+                    illegal_literal = token_start_char + ident_body_so_far
+                    illegal_token = Token(TokenType.ILLEGAL, illegal_literal, self.line_no, start_pos)
+
+                    # Start tokenizing the second identifier
+                    token_start_char = self.current_char
+                    self.__read_char()
+                    ident_body_so_far = ""
+                    char_count = 0
+                    while self.current_char and (self.current_char.isalnum() or self.current_char == '_'):
+                        ident_body_so_far += self.current_char
                         self.__read_char()
-                    illegal_literal = self.source[illegal_start:self.position]
-                    return Token(TokenType.ILLEGAL, illegal_literal, self.line_no, illegal_start)
+                        char_count += 1
+
+                    full_identifier = token_start_char + ident_body_so_far
+                    return Token(TokenType.IDENT, full_identifier, self.line_no, start_pos)
+
                 if char_count >= 16:
                     # Stop at 16 chars, do not consume further
                     break
                 ident_body_so_far += self.current_char
                 self.__read_char()
                 char_count += 1
-                        
+
             full_identifier = token_start_char + ident_body_so_far
             expected_delims = Delimiters.identifier_del
 
-            tt = None
-            if full_identifier.startswith('@'):
-                tt = TokenType.MAIN_CASPER if full_identifier == "@main_casper" else TokenType.FUNCTION_NAME
-            elif full_identifier.startswith('$'):
-                tt = TokenType.IDENT
-            
             if self.current_char in expected_delims or self.current_char is None:
-                return Token(tt, full_identifier, self.line_no, start_pos)
-            elif self.current_char in {'$', '@'}:
-                # Do not consume the $/@, let the next tokenization step handle it as illegal or as a new identifier
-                return Token(tt, full_identifier, self.line_no, start_pos)
+                return Token(TokenType.IDENT, full_identifier, self.line_no, start_pos)
             else:
-                # For any other invalid character, group as illegal until a delimiter or whitespace
-                illegal_start = self.position
-                while self.current_char and self.current_char not in expected_delims and self.current_char != '\n' and self.current_char != ' ':
-                    self.__read_char()
-                return Token(TokenType.ILLEGAL, self.source[illegal_start:self.position], self.line_no, illegal_start)
+                return Token(TokenType.ILLEGAL, full_identifier, self.line_no, start_pos)
         else:
             current_sequence_so_far = ""
-            
-            # reads character by character and checks if it's a valid identifier character (alphanumeric or underscore)
+
+            # Reads character by character and checks if it's a valid identifier character (alphanumeric or underscore)
             while self.current_char and Delimiters.is_valid_identifier_char(self.current_char):
                 char_being_added = self.current_char
-                potential_next_sequence = current_sequence_so_far + char_being_added  
+                potential_next_sequence = current_sequence_so_far + char_being_added
 
-                if _is_prefix_of_any_keyword(potential_next_sequence, KEYWORDS): # checks if the character sequence is a prefix of any keyword
-                    current_sequence_so_far = potential_next_sequence # updates the current sequence so far
-                    self.__read_char() # reads the next character
-                    if not self.current_char: # if the next character is None, break
-                        break 
+                if _is_prefix_of_any_keyword(potential_next_sequence, KEYWORDS):  # Checks if the character sequence is a prefix of any keyword
+                    current_sequence_so_far = potential_next_sequence  # Updates the current sequence so far
+                    self.__read_char()  # Reads the next character
+                    if not self.current_char:  # If the next character is None, break
+                        break
                 else:
                     break
 
-            identifier_candidate = current_sequence_so_far 
+            identifier_candidate = current_sequence_so_far
 
             if not identifier_candidate and self.current_char and Delimiters.is_valid_identifier_char(self.current_char):
                 identifier_candidate = self.current_char
                 self.__read_char()
 
-            token_type = lookup_ident(identifier_candidate) # looks up the identifier in the keywords dictionary
+            token_type = lookup_ident(identifier_candidate)  # Looks up the identifier in the keywords dictionary
 
             if token_type != TokenType.IDENT and token_type != TokenType.ILLEGAL:
-                valid_delims = KEYWORD_DELIMITERS.get(token_type.name, set()) # gets the valid delimiters for the token type
-                if self.current_char in valid_delims or self.current_char is None: 
+                valid_delims = KEYWORD_DELIMITERS.get(token_type.name, set())  # Gets the valid delimiters for the token type
+                if self.current_char in valid_delims or self.current_char is None:
                     return Token(token_type, identifier_candidate, self.line_no, start_pos)
                 else:
-                    return Token(token_type, identifier_candidate, self.line_no, start_pos)
-            else: 
+                    return Token(TokenType.ILLEGAL, identifier_candidate, self.line_no, start_pos)
+            else:
                 return Token(TokenType.ILLEGAL, identifier_candidate, self.line_no, start_pos)
 
 
