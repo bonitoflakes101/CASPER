@@ -52,8 +52,8 @@ class Lexer:
 
     def __read_number(self) -> Token:
         """
-        Reads a number (integer or float) with up to 9 digits in each part,
-        enforcing DEL10 as a delimiter, and returns the token with int/float value.
+        Reads a number (integer or float). If it exceeds 11 digits, the
+        first 11 digits are marked as ILLEGAL, and the exceeding digit is the int_lit.
         """
         start_pos = self.position
         dot_count = 0
@@ -70,35 +70,52 @@ class Lexer:
                     # More than one dot => break and treat as ILLEGAL
                     break
                 is_decimal = True
+                output += self.current_char
+                self.__read_char()
             else:
                 if not is_decimal:
                     # Building the integer part
                     if len(integer_part) >= 11:
-                        # Exceeds 9 digits => ILLEGAL
-                        while self.current_char and self.current_char not in Delimiters.DEL10 and self.current_char != '\n':
-                            self.__read_char()
+                        # Stop at 11 digits, mark as illegal and exit
+                        
+                        # Create ILLEGAL token for the first 11 digits
                         illegal_literal = self.source[start_pos:self.position]
-                        return self.__new_token(TokenType.ILLEGAL, illegal_literal)
+                        illegal_token = self.__new_token(TokenType.ILLEGAL, illegal_literal)
+
+                        # Create INT_LIT token for the exceeding digit
+                        #int_lit_literal = self.current_char
+                        #self.__read_char()
+                        #int_lit_token = self.__new_token(TokenType.INT_LIT, int(int_lit_literal))
+
+                        return illegal_token #Return the illegal token first
+                            
+
                     integer_part += self.current_char
+                    output += self.current_char
+                    self.__read_char()
                 else:
                     # Building the decimal part
                     if len(decimal_part) >= 11:
-                        # Exceeds 9 digits => ILLEGAL
-                        while self.current_char and self.current_char not in Delimiters.DEL10 and self.current_char != '\n':
-                            self.__read_char()
-                        illegal_literal = self.source[start_pos:self.position]
-                        return self.__new_token(TokenType.ILLEGAL, illegal_literal)
+                        # Stop at 11 digits, mark as illegal and exit
+                        illegal_literal = decimal_part
+                        int_lit_literal = self.current_char
+                        self.__read_char()
+                        illegal_token = self.__new_token(TokenType.ILLEGAL, illegal_literal)
+                        int_lit_token = self.__new_token(TokenType.INT_LIT, int(int_lit_literal))
+                        return illegal_token
+
                     decimal_part += self.current_char
+                    output += self.current_char
+                    self.__read_char()
 
-            output += self.current_char
-            self.__read_char()
-
+        # If we reach here, the number is valid (less than or equal to 11 digits)
         # After collecting digits, check the next character is a valid delimiter
         if self.current_char not in Delimiters.DEL10:
             # Read until we find a valid delimiter or newline, then treat as ILLEGAL
+            illegal_start = self.position
             while self.current_char and self.current_char not in Delimiters.DEL10 and self.current_char != '\n':
                 self.__read_char()
-            illegal_literal = self.source[start_pos:self.position]
+            illegal_literal = self.source[illegal_start:self.position]
             return self.__new_token(TokenType.ILLEGAL, illegal_literal)
 
         # Now produce the numeric token
@@ -135,15 +152,22 @@ class Lexer:
                 return Token(TokenType.ILLEGAL, token_start_char, self.line_no, start_pos)
 
             ident_body_so_far = ""
+            char_count = 0
             while self.current_char and (self.current_char.isalnum() or self.current_char == '_'):
-                if self.current_char in {'$', '@'}: 
-                    while self.current_char and self.current_char not in Delimiters.identifier_del and self.current_char != '\n':
+                if self.current_char in {'$', '@'}:
+                    # Start collecting the illegal sequence from here
+                    illegal_start = self.position
+                    while self.current_char and (self.current_char.isalnum() or self.current_char == '_' or self.current_char in {'$', '@'}):
                         self.__read_char()
-                    return Token(TokenType.ILLEGAL, self.source[start_pos:self.position], self.line_no, start_pos)
-
+                    illegal_literal = self.source[illegal_start:self.position]
+                    return Token(TokenType.ILLEGAL, illegal_literal, self.line_no, illegal_start)
+                if char_count >= 16:
+                    # Stop at 16 chars, do not consume further
+                    break
                 ident_body_so_far += self.current_char
                 self.__read_char()
-            
+                char_count += 1
+                        
             full_identifier = token_start_char + ident_body_so_far
             expected_delims = Delimiters.identifier_del
 
@@ -155,10 +179,15 @@ class Lexer:
             
             if self.current_char in expected_delims or self.current_char is None:
                 return Token(tt, full_identifier, self.line_no, start_pos)
-            else: 
+            elif self.current_char in {'$', '@'}:
+                # Do not consume the $/@, let the next tokenization step handle it as illegal or as a new identifier
+                return Token(tt, full_identifier, self.line_no, start_pos)
+            else:
+                # For any other invalid character, group as illegal until a delimiter or whitespace
+                illegal_start = self.position
                 while self.current_char and self.current_char not in expected_delims and self.current_char != '\n' and self.current_char != ' ':
                     self.__read_char()
-                return Token(TokenType.ILLEGAL, self.source[start_pos:self.position], self.line_no, start_pos)
+                return Token(TokenType.ILLEGAL, self.source[illegal_start:self.position], self.line_no, illegal_start)
         else:
             current_sequence_so_far = ""
             
@@ -173,9 +202,10 @@ class Lexer:
                     if not self.current_char: # if the next character is None, break
                         break 
                 else:
-                    self.__read_char() #
-                    illegal_literal = self.source[start_pos:self.position]
-                    return Token(TokenType.ILLEGAL, illegal_literal, self.line_no, start_pos)
+                    # Only report the current character as illegal, not the whole sequence
+                    illegal_literal = self.current_char
+                    self.__read_char()
+                    return Token(TokenType.ILLEGAL, illegal_literal, self.line_no, self.position - 1)
 
             identifier_candidate = current_sequence_so_far 
 

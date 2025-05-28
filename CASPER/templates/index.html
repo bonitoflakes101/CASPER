@@ -106,20 +106,20 @@
         cursor: pointer;
         transition: background-color 0.2s, transform 0.1s;
       }
-      
+
       .run-button:hover {
         background-color: #0263cc;
       }
-      
+
       .run-button:active {
         transform: scale(0.98);
       }
-      
+
       .button-container {
         display: flex;
         margin-left: 5px;
       }
-      
+
       .stop-button {
         margin-left: 5px;
         padding: 5px 15px;
@@ -131,17 +131,17 @@
         font-weight: 500;
         cursor: pointer;
         transition: background-color 0.2s, transform 0.1s;
-        box-shadow: 0 1px 3px rgba(0,0,0,0.12);
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
       }
-      
+
       .stop-button:hover:not(:disabled) {
         background-color: #c82333;
       }
-      
+
       .stop-button:active:not(:disabled) {
         transform: scale(0.98);
       }
-      
+
       .stop-button:disabled {
         background-color: #6c757d;
         cursor: not-allowed;
@@ -149,6 +149,58 @@
         box-shadow: none;
       }
     </style>
+    <script>
+      function replaceSymbols(lexeme) {
+        const symbolMap = {
+          lparen: "(",
+          rparen: ")",
+          lbrace: "{",
+          rbrace: "}",
+          semicolon: ";",
+          colon: ":",
+          dot: ".",
+          plus: "+",
+          minus: "-",
+          multiply: "*",
+          exponent: "^",
+          modulo: "%",
+          division: "/",
+          double_slash: "//",
+          tilde: "~",
+          not: "!",
+          plus_plus: "++",
+          minus_minus: "--",
+          eq: "=",
+          plus_eq: "+=",
+          minus_eq: "-=",
+          mul_eq: "*=",
+          div_eq: "/=",
+          mod_eq: "%=",
+          eq_eq: "==",
+          lt: "<",
+          gt: ">",
+          lt_eq: "<=",
+          gt_eq: ">=",
+          and: "&&",
+          or: "||",
+          comment: "comment",
+          double_lt: "<<",
+          comma: ",",
+          main_casper: "@main_casper",
+          ident: 'identifier',
+          str: 'string',
+          flt: 'float',
+          bln: 'boolean',
+          str_lit: 'string literal',
+          int_lit: 'integer literal',
+          flt_lit: 'float literal',
+          day: 'Day',
+          night: 'Night',
+        };
+        const lowerLexeme = lexeme.toLowerCase();
+        return symbolMap[lowerLexeme] || lowerLexeme;
+      }
+    </script>
   </head>
 
   <body>
@@ -178,33 +230,62 @@
             </label>
             <!-- Execution Stage Toggles (Moved INSIDE label-container) -->
             <div class="toggles-container">
-                <label class="toggle-label">
-                    <input form="codeForm" type="checkbox" name="display_lexer" id="display_lexer" {{ 'checked' if display_lexer else '' }}>
-                    <span class="switch"></span>
-                    <span class="toggle-text">Display Lexer</span>
-                </label>
-                <label class="toggle-label">
-                    <input form="codeForm" type="checkbox" name="execute_parser" id="execute_parser" {{ 'checked' if execute_parser else '' }}>
-                    <span class="switch"></span>
-                    <span class="toggle-text">Execute Parser</span>
-                </label>
-                <label class="toggle-label">
-                    <input form="codeForm" type="checkbox" name="execute_semantics" id="execute_semantics" {{ 'checked' if execute_semantics else '' }}>
-                    <span class="switch"></span>
-                    <span class="toggle-text">Execute Semantics</span>
-                </label>
-                <label class="toggle-label">
-                    <input form="codeForm" type="checkbox" name="execute_codegen" id="execute_codegen" {{ 'checked' if execute_codegen else '' }}>
-                    <span class="switch"></span>
-                    <span class="toggle-text">Execute CodeGen</span>
-                </label>
+              <label class="toggle-label">
+                <input
+                  form="codeForm"
+                  type="checkbox"
+                  name="display_lexer"
+                  id="display_lexer"
+                  {{ 'checked' if display_lexer else '' }}
+                />
+                <span class="switch"></span>
+                <span class="toggle-text">Display Lexer</span>
+              </label>
+              <label class="toggle-label">
+                <input
+                  form="codeForm"
+                  type="checkbox"
+                  name="execute_parser"
+                  id="execute_parser"
+                  {{ 'checked' if execute_parser else '' }}
+                />
+                <span class="switch"></span>
+                <span class="toggle-text">Execute Parser</span>
+              </label>
+              <label class="toggle-label">
+                <input
+                  form="codeForm"
+                  type="checkbox"
+                  name="execute_semantics"
+                  id="execute_semantics"
+                  {{ 'checked' if execute_semantics else '' }}
+                />
+                <span class="switch"></span>
+                <span class="toggle-text">Execute Semantics</span>
+              </label>
+              <label class="toggle-label">
+                <input
+                  form="codeForm"
+                  type="checkbox"
+                  name="execute_codegen"
+                  id="execute_codegen"
+                  {{ 'checked' if execute_codegen else '' }}
+                />
+                <span class="switch"></span>
+                <span class="toggle-text">Execute CodeGen</span>
+              </label>
             </div>
             <!-- End Toggles -->
             <div class="button-container">
               <button type="submit" class="run-button" form="codeForm">
                 Run Code
               </button>
-              <button type="button" class="stop-button" id="stopCodeButton" disabled>
+              <button
+                type="button"
+                class="stop-button"
+                id="stopCodeButton"
+                disabled
+              >
                 Stop Code
               </button>
             </div>
@@ -228,7 +309,7 @@
 
         <div class="lexer-div">
           <div class="lexer-header">
-            <label id="lexer-label">Lexer</label>
+            <label id="lexer-label">Lexeme</label>
             <label id="token-label">Token</label>
           </div>
           <div class="lex-table-container">
@@ -236,7 +317,11 @@
               <tbody>
                 {% for lexeme, token_type in lexer_results %}
                 <tr>
-                  <td>{{ lexeme }}</td>
+                  <td>
+                    <script>
+                      document.write(replaceSymbols("{{ lexeme }}"));
+                    </script>
+                  </td>
                   <td>{{ token_type }}</td>
                 </tr>
                 {% endfor %}
@@ -265,8 +350,13 @@
         <div id="Output" class="tabcontent" style="display: block">
           <pre id="output">{{ output }}</pre>
           <div class="terminal-input-container">
-            <span class="prompt">></span>
-            <input type="text" id="terminal-input" class="terminal-input" placeholder="Enter input here...">
+            <span class="prompt">&gt;</span>
+            <input
+              type="text"
+              id="terminal-input"
+              class="terminal-input"
+              placeholder="Enter input here..."
+            />
           </div>
         </div>
 
