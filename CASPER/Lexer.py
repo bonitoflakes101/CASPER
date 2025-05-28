@@ -144,14 +144,25 @@ class Lexer:
 
     def __read_identifier_or_keyword(self) -> Token:
         """
-        Reads an identifier or keyword. If an invalid sequence is encountered (e.g., multiple `$` or `@`),
-        the first identifier is marked as ILLEGAL, and the second identifier is tokenized correctly.
+        Reads an identifier or keyword. Handles special cases like '@main_casper' and marks invalid sequences as ILLEGAL.
         """
         start_pos = self.position
 
         if self.current_char in {'$', '@'}:
             token_start_char = self.current_char
             self.__read_char()
+
+            # Special case for '@main_casper'
+            if token_start_char == '@' and self.current_char and self.current_char.isalpha():
+                potential_keyword = token_start_char
+                while self.current_char and (self.current_char.isalnum() or self.current_char == '_'):
+                    potential_keyword += self.current_char
+                    self.__read_char()
+
+                if potential_keyword == "@main_casper":
+                    return Token(TokenType.MAIN_CASPER, potential_keyword, self.line_no, start_pos)
+
+            # Handle invalid sequences
             if self.current_char is None or not (self.current_char.isalpha() or self.current_char == '_'):
                 return Token(TokenType.ILLEGAL, token_start_char, self.line_no, start_pos)
 
