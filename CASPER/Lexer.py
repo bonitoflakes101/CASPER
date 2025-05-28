@@ -173,11 +173,13 @@ class Lexer:
                     if not self.current_char: # if the next character is None, break
                         break 
                 else:
-                    self.__read_char() #
-                    illegal_literal = self.source[start_pos:self.position]
-                    return Token(TokenType.ILLEGAL, illegal_literal, self.line_no, start_pos)
+                    break
 
             identifier_candidate = current_sequence_so_far 
+
+            if not identifier_candidate and self.current_char and Delimiters.is_valid_identifier_char(self.current_char):
+                identifier_candidate = self.current_char
+                self.__read_char()
 
             token_type = lookup_ident(identifier_candidate) # looks up the identifier in the keywords dictionary
 
@@ -189,7 +191,6 @@ class Lexer:
                     return Token(token_type, identifier_candidate, self.line_no, start_pos)
             else: 
                 return Token(TokenType.ILLEGAL, identifier_candidate, self.line_no, start_pos)
-
 
 
 
