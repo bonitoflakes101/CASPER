@@ -189,13 +189,17 @@ class Lexer:
                 if self.current_char in valid_delims or self.current_char is None:
                     return Token(token_type, identifier_candidate, self.line_no, start_pos)
                 else:
-                    for char in identifier_candidate:
-                        print(f"Lexical Error: '{char}'.")
                     return Token(TokenType.ILLEGAL, identifier_candidate, self.line_no, start_pos)
-            else:
-                for char in identifier_candidate:
-                    print(f"Lexical Error: '{char}'.")
-                return Token(TokenType.ILLEGAL, identifier_candidate, self.line_no, start_pos)
+            else: 
+                if identifier_candidate: 
+                    illegal_char = self.source[start_pos] 
+                    tok = Token(TokenType.ILLEGAL, illegal_char, self.line_no, start_pos)
+                    
+                    self.read_position = start_pos + 1
+                    self.__read_char() 
+                    return tok
+                else:
+                    return Token(TokenType.ILLEGAL, "", self.line_no, start_pos)
 
 
 
